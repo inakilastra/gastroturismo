@@ -1,15 +1,19 @@
 <nav class="navbar">
-  <div class="container">
-    <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index" class="navbar-brand">Gastroturismo</a>
-    <input type="checkbox" id="burger-toggle" class="burger-toggle">
-    <label for="burger-toggle" class="burger-menu-label">
-      <span></span> <span></span> <span></span>
-    </label>
-    <div class="nav-links">
-      <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#inicio" class="funneldisplay">Inicio</a>
-      <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#tapas" class="funneldisplay">Tapeo</a>
-      <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#restaurantes" class="funneldisplay">Restaurantes</a>
-      <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#contacto" class="funneldisplay">Contacto</a>
+    <div class="container">
+        <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index" class="navbar-brand">ANeKI Gastroturismo</a>
+        
+        <input type="checkbox" id="burger-toggle" class="burger-toggle">
+        <label for="burger-toggle" class="burger-menu-label" aria-label="Abrir menú de navegación">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
+        <ul class="nav-links">
+            <li><a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#inicio">Inicio</a></li>
+            <li><a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#autonomias">Comunidades</a></li>
+            <li><a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#restaurantes">Restaurantes</a></li>
+            <li><a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#contacto">Contacto</a></li>
+            </ul>
     </div>
-  </div>
 </nav>
