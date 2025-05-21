@@ -1,0 +1,235 @@
+  <style>
+/* Estilos personalizados para la webapp de Gastronomía y Turismo */
+/* Asegúrate de que Tailwind CSS esté cargado en index.html para que las clases @apply funcionen si las usaras en un entorno con procesamiento Tailwind.
+   Para este ejemplo, usaremos CSS estándar y Tailwind será cargado vía CDN en index.html para las clases de utilidad. */
+  /* Importa las fuentes de Google Fonts al principio del archivo */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif; /* Fuente similar a la predeterminada de Tailwind */
+    background-color: #f9fafb; /* Gris claro de fondo (Tailwind: bg-gray-50) */
+    color: #1f2937; /* Color de texto principal (Tailwind: text-gray-800) */
+    margin: 0; /* Eliminar margen por defecto del body */
+}
+
+/* Estilos para las tarjetas de presentación */
+.card {
+    background-color: white;
+    border-radius: 0.75rem; /* esquinas redondeadas (Tailwind: rounded-xl) */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra (Tailwind: shadow-lg) */
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+.card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Sombra más pronunciada al pasar el ratón (Tailwind: hover:shadow-2xl) */
+}
+
+.card-image-container {
+    width: 100%;
+    height: 12rem; /* Altura para imágenes en tarjetas (md:h-56 en Tailwind) */
+    object-fit: cover; /* Asegura que la imagen cubra el contenedor */
+}
+@media (min-width: 768px) { /* md breakpoint */
+    .card-image-container {
+        height: 14rem;
+    }
+}
+
+
+/* Estilos para etiquetas (tags) */
+.tag {
+    font-size: 0.75rem; /* Tamaño de fuente pequeño (Tailwind: text-xs) */
+    font-weight: 600; /* Semi-negrita (Tailwind: font-semibold) */
+    background-color: #e0f2fe; /* Fondo azul claro (Tailwind: bg-blue-100) */
+    color: #0ea5e9; /* Texto azul (Tailwind: text-blue-700) */
+    padding: 0.25rem 0.5rem; /* Espaciado interno (Tailwind: px-2 py-1) */
+    border-radius: 9999px; /* Totalmente redondeado (Tailwind: rounded-full) */
+    display: inline-block;
+}
+
+/* Estilos para las estrellas de valoración */
+.rating-stars .fa-star {
+    color: #f59e0b; /* Color ámbar para estrellas (Tailwind: text-amber-500) */
+}
+.rating-stars .far.fa-star { /* Estrella vacía */
+    color: #d1d5db; /* Gris claro (Tailwind: text-gray-300) */
+}
+
+
+/* Estilos para los enlaces de migas de pan (breadcrumbs) */
+.breadcrumb-link {
+    color: #2563eb; /* Azul (Tailwind: text-blue-600) */
+    text-decoration: none;
+}
+.breadcrumb-link:hover {
+    color: #1d4ed8; /* Azul más oscuro al pasar el ratón (Tailwind: hover:text-blue-800) */
+    text-decoration: underline;
+}
+
+/* Estilos generales para botones */
+.btn {
+    padding: 0.5rem 1rem; /* Espaciado interno (Tailwind: px-4 py-2) */
+    border-radius: 0.5rem; /* Esquinas redondeadas (Tailwind: rounded-lg) */
+    font-weight: 600; /* Semi-negrita (Tailwind: font-semibold) */
+    color: white;
+    transition: background-color 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+.btn-primary {
+    background-color: #2563eb; /* Azul (Tailwind: bg-blue-600) */
+}
+.btn-primary:hover {
+    background-color: #1d4ed8; /* Azul más oscuro (Tailwind: hover:bg-blue-700) */
+}
+.btn-secondary {
+    background-color: #6b7280; /* Gris (Tailwind: bg-gray-500) */
+}
+.btn-secondary:hover {
+    background-color: #4b5563; /* Gris más oscuro (Tailwind: hover:bg-gray-600) */
+}
+
+/* Galería de fotos responsive */
+.photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr); /* Una columna por defecto */
+    gap: 0.5rem; /* Espacio entre imágenes (Tailwind: gap-2) */
+    margin-top: 1rem; /* (Tailwind: mt-4) */
+}
+@media (min-width: 640px) { /* sm breakpoint */
+    .photo-gallery {
+        grid-template-columns: repeat(2, 1fr); /* Dos columnas en pantallas pequeñas */
+    }
+}
+.photo-gallery img {
+    width: 100%;
+    height: 10rem; /* Altura para fotos en galería (md:h-48 en Tailwind) */
+    object-fit: cover;
+    border-radius: 0.5rem; /* (Tailwind: rounded-lg) */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* (Tailwind: shadow) */
+}
+@media (min-width: 768px) { /* md breakpoint */
+     .photo-gallery img {
+        height: 12rem;
+    }
+}
+
+
+/* Ajustes específicos para móviles (complementando Tailwind) */
+@media (max-width: 768px) {
+    .main-content-area {
+        padding-left: 0.5rem; /* Menos padding en móviles (Tailwind: px-2) */
+        padding-right: 0.5rem;
+    }
+    .card-title {
+        font-size: 1.125rem; /* Títulos ligeramente más pequeños en móviles (Tailwind: text-lg) */
+    }
+    /* Reducir el tamaño de la fuente base en móviles para mejor lectura si es necesario */
+    /* body { font-size: 14px; } */
+}
+
+/* Estilos para el modal de imagen */
+#imageModal {
+    /* Clases de Tailwind aplicadas directamente en el HTML para el modal,
+       pero podrías definirlas aquí si prefieres no usar JS para las clases base del modal.
+       Ej: display: none; position: fixed; etc. */
+}
+#imageModal.hidden {
+    display: none;
+}
+#imageModal:not(.hidden) { /* Estilo para cuando el modal es visible */
+    display: flex;
+}
+
+/* Contenedor principal de la aplicación */
+.app-container {
+    max-width: 1280px; /* (Tailwind: container) */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem; /* (Tailwind: p-4) */
+}
+@media (min-width: 768px) { /* md breakpoint */
+    .app-container {
+        padding: 1.5rem; /* (Tailwind: md:p-6) */
+    }
+}
+
+/* Títulos de sección */
+.section-title {
+    font-size: 1.5rem; /* (Tailwind: text-2xl) */
+    font-weight: 600; /* (Tailwind: font-semibold) */
+    margin-bottom: 1.5rem; /* (Tailwind: mb-6) */
+    color: #374151; /* (Tailwind: text-gray-700) */
+}
+
+/* Estilos para la cabecera (nav_content.html) */
+.site-header {
+    padding: 1.5rem; /* (Tailwind: p-6) */
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-image: linear-gradient(to right, #2563eb, #7c3aed); /* (Tailwind: bg-gradient-to-r from-blue-600 to-purple-600) */
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); /* (Tailwind: shadow-md) */
+}
+.site-header .container {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column; /* Apilado en móvil */
+    justify-content: space-between;
+    align-items: center;
+}
+@media (min-width: 768px) { /* md breakpoint */
+    .site-header .container {
+        flex-direction: row; /* Lado a lado en escritorio */
+    }
+}
+.site-header h1 {
+    font-size: 1.875rem; /* (Tailwind: text-3xl) */
+    font-weight: 700; /* (Tailwind: font-bold) */
+    letter-spacing: -0.025em; /* (Tailwind: tracking-tight) */
+}
+.site-header p {
+    font-size: 0.875rem; /* (Tailwind: text-sm) */
+    margin-top: 0.5rem; /* (Tailwind: mt-2) */
+}
+@media (min-width: 768px) { /* md breakpoint */
+    .site-header p {
+        font-size: 1rem; /* (Tailwind: md:text-base) */
+        margin-top: 0; /* (Tailwind: md:mt-0) */
+    }
+}
+
+/* Estilos para breadcrumbs (nav_content.html) */
+.breadcrumbs-nav {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem; /* (Tailwind: p-4) */
+    background-color: #f3f4f6; /* (Tailwind: bg-gray-100) */
+    font-size: 0.875rem; /* (Tailwind: text-sm) */
+    border-bottom-left-radius: 0.5rem; /* (Tailwind: rounded-b-lg) */
+    border-bottom-right-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); /* (Tailwind: shadow) */
+    margin-bottom: 1.5rem; /* (Tailwind: mb-6) */
+}
+
+/* Estilos para el pie de página (footer_content.html) */
+.site-footer {
+    background-color: #1f2937; /* (Tailwind: bg-gray-800) */
+    color: #d1d5db; /* (Tailwind: text-gray-300) */
+    text-align: center;
+    padding: 1.5rem; /* (Tailwind: p-6) */
+    margin-top: 3rem; /* (Tailwind: mt-12) */
+}
+.site-footer p {
+    margin: 0;
+}
+.site-footer .text-xs {
+    font-size: 0.75rem; /* (Tailwind: text-xs) */
+    margin-top: 0.25rem; /* (Tailwind: mt-1) */
+}
+
+</style>
