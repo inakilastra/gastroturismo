@@ -1,124 +1,97 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <base target="_top">
-    <?!= include('css'); ?> 
-    <style>
-      /* Estilos específicos para esta página si no están en css.html */
-      /* Puedes copiar los estilos de .detalle-container y .volver-btn 
-         de mi respuesta anterior si te gustaron, o definir los tuyos. */
-      body {
-        /* Si no tienes una navbar fija, main-content no necesitaría padding-top igual a la altura de la navbar */
-      }
-      .sitios { /* Un nombre de clase más descriptivo */
-        padding: 25px;
-        background-color: #ffffff; 
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        margin: 20px auto; /* Centra el contenedor si es más estrecho que .container */
-        max-width: 700px; /* Limita el ancho para mejor lectura */
-      }
-      .sitios h1 {
-        color: #2c3e50; /* Azul oscuro para el título */
-        border-bottom: 2px solid #3498db; /* Línea azul debajo del título */
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-      }
-      .sitios p {
-        margin-bottom: 12px;
-        font-size: 1.1em; /* Ligeramente más grande para legibilidad */
-        color: #333333; /* Gris oscuro para el texto */
-      }
-      .sitios strong {
-        color: #2c3e50; /* Azul oscuro para los labels */
-      }
-      .error-text {
-        color: #e74c3c; /* Rojo para mensajes de error */
-        font-weight: bold;
-        padding: 10px;
-        border: 1px solid #e74c3c;
-        background-color: #fdeded;
-        border-radius: 4px;
-      }
-      .action-button { /* Estilo para el botón de volver */
-        display: inline-block;
-        padding: 12px 22px;
-        margin-top: 25px;
-        background-color: #6c757d; /* Gris como el que usaste */
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-        transition: background-color 0.2s ease-in-out;
-      }
-      .action-button:hover {
-        background-color: #5a6268; /* Un poco más oscuro al pasar el ratón */
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container"> <div class="sitios">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provincias de <?= (typeof autonomia !== "undefined" && autonomia && autonomia.nombre) ? autonomia.nombre : "Comunidad Autónoma" ?> - ANeKI Gastroturismo</title>
+    <meta name="description" content="Descubre las provincias y la riqueza gastronómica de <?= (typeof autonomia !== "undefined" && autonomia && autonomia.nombre) ? autonomia.nombre : 'una comunidad autónoma' ?>.">
+    <?!= include('css'); ?>
+</head>
+<body>
+    <?!= include('navbar'); ?>
 
-        <? 
-          // Lógica para determinar qué mostrar
-          var mostrarContenidoValido = false;
-          var mensajeErrorParaMostrar = "";
+    <main class="main-content">
+        <div class="container page-detail-container">
+            <div class="page-detail-card">
+                <? 
+                  // Lógica para determinar qué mostrar, mejorada para claridad
+                  var nombreAutonomiaParam = ""; // Nombre de la autonomía desde el parámetro URL
+                  var datosAutonomia = null;     // Objeto con los datos de la autonomía (nombre, tipo, provincias)
+                  var mensajeError = "";
+                  var mostrarContenido = false;
 
-          if (typeof autonomia !== "undefined" && autonomia) 
-          {
-            if (autonomia.error) 
-            {
-              // Si hay un error explícito en el objeto autonomia
-              mensajeErrorParaMostrar = autonomia.error;
-              if (autonomia.nombre && autonomia.nombre !== "N/D" && autonomia.nombre !== autonomia.error) 
-              {
-                // Añade el nombre de la autonomía al error si es útil y no es ya parte del error
-                mensajeErrorParaMostrar += " (Referencia: " + autonomia.nombre + ")";
-              }
-            } 
-            else if (autonomia.nombre && autonomia.nombre !== "N/D") 
-            {
-              // Si hay un nombre válido y no hay error, podemos mostrar el contenido
-              mostrarContenidoValido = true;
-            } 
-            else 
-            {
-              // Si no hay error explícito pero tampoco hay nombre, es un problema de datos
-              mensajeErrorParaMostrar = "No se encontraron datos válidos para esta autonomía.";
-            }
-          } 
-          else 
-          {
-            // Si la variable 'autonomia' ni siquiera está definida
-            mensajeErrorParaMostrar = "Error crítico: No se han podido cargar los datos (objeto 'autonomia' no disponible).";
-          }
-        ?>
+                  // 1. Obtener el nombre de la autonomía del parámetro URL (esto se hace en el backend .gs)
+                  // En el HTML, asumimos que la variable 'autonomia' ya ha sido procesada por el backend.
+                  // 'autonomia' podría ser un objeto como:
+                  // { nombre: "Andalucía", tipo: "Comunidad Autónoma Histórica", listaDeProvincias: ["Almería", "Cádiz", ...], error: null }
+                  // o { error: "Autonomía no encontrada" }
 
-        <? if (mostrarContenidoValido) { ?>
-            <h1><?= autonomia.nombre ?></h1>
-            <p><strong>Tipo Autonomia:</strong> <?= autonomia.tipo ?> </p>
-             <? if (autonomia.listaDeProvincias === null) { 
-                    // fProvincias devolvió null (error buscando provincias o la autonomía no estaba en V:W)
+                  if (typeof autonomia !== "undefined" && autonomia) {
+                      if (autonomia.error) {
+                          mensajeError = autonomia.error;
+                          if (autonomia.nombre && autonomia.nombre !== "N/D" && autonomia.nombre !== autonomia.error) {
+                              // Añade el nombre de la autonomía al error si es útil
+                              mensajeError += " (Referencia: " + autonomia.nombre + ")";
+                          }
+                      } else if (autonomia.nombre && autonomia.nombre !== "N/D") {
+                          datosAutonomia = autonomia; // Tenemos datos válidos
+                          mostrarContenido = true;
+                          nombreAutonomiaParam = autonomia.nombre; // Guardamos el nombre para el título y otros usos
+                      } else {
+                          mensajeError = "No se encontraron datos válidos para la comunidad autónoma especificada.";
+                      }
+                  } else {
+                      mensajeError = "Error crítico: No se pudo cargar la información de la comunidad autónoma. Por favor, inténtalo de nuevo desde la página principal.";
+                  }
                 ?>
-                    <p><strong>Provincias:</strong> <span class="info-text">No se pudo cargar la información de las provincias (puede que la autonomía no esté en la lista detallada de provincias o hubo un error al obtenerlas).</span></p>
-                <? } else if (autonomia.listaDeProvincias.length > 0) { ?>
-                    <p><strong>Provincias:</strong></p>
-                    <ul class="provincias-list">
-                        <? for (var i = 0; i < autonomia.listaDeProvincias.length; i++) { ?>
-                            <li><?= autonomia.listaDeProvincias[i] ?></li>
-                        <? } ?>
-                    </ul>
-                <? } else { 
-                    // autonomia.listaDeProvincias es un array vacío []
-                ?>
-                    <p><strong>Provincias:</strong> <span class="info-text">No hay provincias específicas listadas para esta autonomía o la celda correspondiente estaba vacía.</span></p>
-                <? } ?>  
-        <? } else { ?>
-            <h1>Información no Disponible</h1>
-            <p class="error-text"><?= mensajeErrorParaMostrar ?></p>
-            <p class="error-text"><?= autonomia.error ?></p>
-        <? } ?>
-        <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index" class="btn">Volver </a>
-      
-      </div> </div> </body>
+
+                <? if (mostrarContenido && datosAutonomia) { ?>
+                    <h1><?= datosAutonomia.nombre ?></h1>
+                    
+                    <? if (datosAutonomia.tipo) { ?>
+                        <p><span class="data-label">Tipo:</span> <?= datosAutonomia.tipo ?></p>
+                    <? } ?>
+
+                    <p><span class="data-label">Provincias:</span></p>
+                    <? if (datosAutonomia.listaDeProvincias && Array.isArray(datosAutonomia.listaDeProvincias) && datosAutonomia.listaDeProvincias.length > 0) { ?>
+                        <ul class="items-list provincias-list">
+                            <? for (var i = 0; i < datosAutonomia.listaDeProvincias.length; i++) { ?>
+                                <li><?= datosAutonomia.listaDeProvincias[i] ?></li>
+                            <? } ?>
+                        </ul>
+                    <? } else if (datosAutonomia.listaDeProvincias === null) { ?>
+                        <p class="info-text">No se pudo cargar la información de las provincias para <?= datosAutonomia.nombre ?>. Es posible que esta comunidad no tenga provincias detalladas en nuestro sistema o hubo un error al obtenerlas.</p>
+                    <? } else { // Lista vacía o no es un array válido ?>
+                        <p class="info-text">No hay provincias específicas listadas para <?= datosAutonomia.nombre ?> en este momento, o la información no está disponible.</p>
+                    <? } ?>
+
+                <? } else { ?>
+                    <h1>Información no Disponible</h1>
+                    <p class="error-message"><?= mensajeError ? mensajeError : "Ha ocurrido un error inesperado." ?></p>
+                <? } ?>
+
+                <div class="back-button-container">
+                    <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index#autonomias" class="btn btn-secondary">
+                        <span aria-hidden="true">&larr;</span> Volver a Comunidades Autónomas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <?!= include('footer'); ?>
+    <script>
+        // Script para manejar el menú hamburguesa (si no está en navbar-js)
+        const burgerToggle = document.getElementById('burger-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (burgerToggle && navLinks) {
+             navLinks.addEventListener('click', (event) => {
+                if (event.target.tagName === 'A') {
+                    burgerToggle.checked = false;
+                }
+            });
+        }
+    </script>
+</body>
 </html>
