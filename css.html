@@ -1,0 +1,316 @@
+<style>
+  /* Importa las fuentes de Google Fonts al principio del archivo */
+  @import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Special+Elite&display=swap');
+
+  /* --- Clases originales de las fuentes (disponibles para uso directo) --- */
+  .specialelite {
+    font-family: "Special Elite", system-ui;
+    font-style: normal;
+  }
+
+  .funneldisplay{
+    font-family: "Funnel Display", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+
+  /* Reset básico y estilos generales del body */
+  *,  *::before,  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: "Special Elite", system-ui;
+    font-size: 1.075em;
+    scroll-behavior: smooth;
+    background-color: #f0f2f5; /* Un gris claro para el fondo general */
+    color: #333;
+    line-height: 1.6;
+  }
+
+  /* Contenedor principal para centrar contenido */
+  .container {
+      width: 90%;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 15px;
+      padding-right: 15px;
+  }
+
+  /* Barra de Navegación Superior Fija */
+  .navbar {
+      background-color: #2c3e50; /* Azul oscuro/gris de las capturas */
+      color: #ffffff;
+      padding: 1rem 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100; /* Por encima de otros elementos */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .navbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+
+  .navbar-brand {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #ffffff;
+      text-decoration: none;
+  }
+
+  .nav-links a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.9em;
+      padding: 0.5em 0.8em; /* Añadido para mejor espaciado en escritorio */
+  }
+  .nav-links a:hover {
+      color: #f1c40f;
+  }
+
+  .burger-toggle {
+      display: none;
+  }
+
+  .burger-menu-label {
+      display: none;
+      cursor: pointer;
+      width: 30px;
+      height: 25px;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+  }
+
+  .burger-menu-label span {
+      display: block;
+      width: 100%;
+      height: 3px;
+      background-color: #ffffff;
+      border-radius: 3px;
+      transition: all 0.3s ease-in-out;
+  }
+
+  .burger-toggle:checked + .burger-menu-label span:nth-child(1) {
+      transform: translateY(11px) rotate(45deg);
+  }
+  .burger-toggle:checked + .burger-menu-label span:nth-child(2) {
+      opacity: 0;
+  }
+  .burger-toggle:checked + .burger-menu-label span:nth-child(3) {
+      transform: translateY(-11px) rotate(-45deg);
+  }
+
+  /* Sección de la Imagen Principal (Hero) */
+  #hero-image-container {
+    position: -webkit-sticky; /* Para Safari */
+    position: sticky;
+    /* top: es ajustado por JavaScript basado en la altura de la navbar */
+    width: 100%;
+    z-index: 1;
+    overflow: hidden;
+    background-color: #bdc3c7; /* Color de fondo por si las imágenes no cargan */
+    /* La altura será definida por las imágenes contenidas o por media queries específicas */
+  }
+
+  .hero-image-single {
+    display: block; /* Por defecto se muestra la imagen única */
+    width: 100%;
+    height: auto;   /* Se ajusta a la proporción de la imagen */
+  }
+
+  .hero-image-multiple {
+    display: none; /* Oculto por defecto (en móvil) */
+  }
+
+  /* Contenido Principal de la Página */
+  .main-content {
+      position: relative;
+      z-index: 2;
+      background-color: #f0f2f5; 
+      padding-top: 20px; 
+  }
+
+  .content-section {
+      padding: 40px 0;
+      margin-bottom: 20px;
+  }
+  
+  h1, h2, h3 {
+      margin-bottom: 1rem;
+      color: #2c3e50; 
+  }
+  h1 { font-size: 2.2em; text-align: center; }
+  h2 { font-size: 1.8em; }
+  h3 { font-size: 1.4em; }
+
+  p {
+      margin-bottom: 1rem;
+      font-size: 1em;
+      color: #555;
+  }
+
+  .text-center { text-align: center; }
+  .mb-4 { margin-bottom: 1rem; }
+  .mb-6 { margin-bottom: 1.5rem; }
+  .mt-8 { margin-top: 2rem; }
+
+  .btn {
+    display: block;
+    width: 98%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: #3498db;
+    color: #ffffff;
+    padding: 12px 0;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+  .btn:hover { background-color: #2980b9; }
+  .btn-secondary { background-color: #555; }
+  .btn-secondary:hover { background-color: #333; }
+  .button-group { text-align: center; margin-top: 20px; margin-bottom: 20px; }
+
+  .footer {
+      background-color: #2c3e50; 
+      color: #ffffff;
+      text-align: center;
+      padding: 25px 0;
+      margin-top: 30px;
+      position: relative; 
+      z-index: 2; 
+  }
+
+  /* --- Media Queries --- */
+
+  /* Dispositivos extra pequeños y móviles (hasta 768px) */
+  /* Aquí la imagen única del hero ocupa el 100% del ancho */
+  @media only screen and (max-width: 768px) {
+    .specialelite, .funneldisplay { font-size: 1.6em; /* Ajuste general para móviles */ }
+    footer { background: pink; /* Ejemplo de diferenciación */ }
+
+    .nav-links {
+      display: none; /* Ocultar enlaces por defecto en móvil */
+      position: absolute;
+      top: 100%; /* Justo debajo de la navbar */
+      left: 0;
+      width: 100%;
+      background-color: #2c3e50; /* Mismo fondo que la navbar */
+      flex-direction: column;
+      padding: 10px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .nav-links a {
+      display: block; /* Que cada enlace ocupe una línea */
+      padding: 10px 20px; /* Espaciado interno */
+      text-align: center;
+      border-top: 1px solid #3e5771; /* Separador ligero */
+    }
+    .nav-links a:first-child {
+        border-top: none;
+    }
+    .burger-menu-label {
+      display: flex; /* Mostrar el icono de hamburguesa */
+    }
+    .burger-toggle:checked ~ .nav-links {
+      display: flex; /* Mostrar los enlaces cuando la hamburguesa está activa */
+    }
+
+    .hero-image-single {
+      display: block; /* Asegura que la imagen única esté visible */
+      width: 100%;
+      height: auto; /* Mantiene la proporción de la imagen */
+    }
+    .hero-image-multiple {
+      display: none; /* Oculta el contenedor de múltiples imágenes */
+    }
+    h1 { font-size: 1.8em; }
+    h2 { font-size: 1.5em; }
+  }
+
+  /* Tablets medianas y Escritorio (769px en adelante) */
+  /* Aquí se muestran las tres imágenes en el hero */
+  @media only screen and (min-width: 769px) {
+    .nav-links {
+        display: flex !important; /* Asegura que se muestren los links en escritorio */
+        position: static;
+        width: auto;
+        background-color: transparent;
+        flex-direction: row;
+        padding: 0;
+        box-shadow: none;
+    }
+    .nav-links a {
+        padding: 0 15px; /* Espaciado horizontal para los enlaces en desktop */
+        border-top: none;
+    }
+    .burger-menu-label {
+        display: none !important; /* Oculta la hamburguesa en escritorio */
+    }
+
+    .hero-image-single {
+      display: none; /* Oculta la imagen única */
+    }
+    .hero-image-multiple {
+      display: flex; /* Usa flexbox para alinear las imágenes horizontalmente */
+      //gap: 5px; /* Espacio pequeño entre las imágenes (opcional) */
+      width: 100%;
+      /* Define una altura para el contenedor de las 3 imágenes */
+      /* Esto ayuda a controlar la altura total y que no sea excesiva */
+      height: 300px; /* Ajusta esta altura según tus necesidades */
+    }
+    .hero-image-multiple img {
+      flex: 1; /* Cada imagen tomará una parte igual del espacio disponible */
+      width: 0;  /* Necesario para que flex-basis (implícito en flex:1) funcione bien con gap y object-fit */
+      height: 100%; /* Las imágenes llenan la altura del contenedor .hero-image-multiple */
+      object-fit: cover; /* Cubre el área asignada sin distorsión, recortando si es necesario */
+    }
+  }
+
+  /* Ajustes específicos de fuentes y footer para diferentes tamaños de pantalla */
+  /* Small devices (portrait tablets and large phones, 600px and up) */
+  @media only screen and (min-width: 600px) and (max-width: 768px) {
+    .specialelite, .funneldisplay {font-size: 1.675em;}
+    footer {background: orange;}
+  }
+  /* Medium devices (landscape tablets, 769px and up, pero antes de los estilos de 3 imágenes) */
+  @media only screen and (min-width: 769px) and (max-width: 992px)  {
+    .specialelite, .funneldisplay {font-size: 1.475em;}
+    footer {background: blue;}
+    /* Ya no se necesita height: 40vh para #hero-image-container aquí, */
+    /* la regla min-width: 769px se encarga de las 3 imágenes. */
+    /* Si quieres una altura diferente para este rango específico para las 3 imágenes: */
+    /* .hero-image-multiple { height: 280px; } */
+  } 
+  /* Large devices (laptops/desktops, 992px and up) */
+  @media only screen and (min-width: 992px) and (max-width: 1200px)  {
+    .specialelite, .funneldisplay {font-size: 1.275em;}
+    footer {background: green;}
+    /* Si quieres una altura diferente para las 3 imágenes en este rango: */
+    /* .hero-image-multiple { height: 320px; } */
+  } 
+  /* Extra large devices (large laptops and desktops, 1200px and up) */
+  @media only screen and (min-width: 1200px) {
+    .specialelite, .funneldisplay {font-size: 1.075em;}
+    footer {background: red;}
+     /* Altura por defecto para las 3 imágenes en pantallas grandes ya está en min-width: 769px. */
+     /* Si necesitas una altura específica para pantallas muy grandes: */
+    /* .hero-image-multiple { height: 350px; } */
+  }
+
+</style>
