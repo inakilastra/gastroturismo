@@ -1,235 +1,154 @@
-  <style>
-/* Estilos personalizados para la webapp de Gastronomía y Turismo */
-/* Asegúrate de que Tailwind CSS esté cargado en index.html para que las clases @apply funcionen si las usaras en un entorno con procesamiento Tailwind.
-   Para este ejemplo, usaremos CSS estándar y Tailwind será cargado vía CDN en index.html para las clases de utilidad. */
-  /* Importa las fuentes de Google Fonts al principio del archivo */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+<style>
+/* styles.css */
+/* Ensure Tailwind base styles are applied if not using a PostCSS setup */
+/* @tailwind base; */
+/* @tailwind components; */
+/* @tailwind utilities; */
+
+    /* Estilos para la detección de dispositivo y color de fondo DEL BODY */
+    body {
+        /* Esta transición es para el body, se puede mantener si se quiere
+           la transición del fondo del body. El css_content.html ya define
+           un background-color para el body, que será anulado por estas clases. */
+        transition: background-color 0.5s ease;
+    }
+
+    body.fondo-movil {
+        background-color: #FF6B6B; /* Rojo claro para móvil */
+        color: white; /* Color de texto general por defecto para el body */
+    }
+
+    body.fondo-tablet {
+        background-color: #FFD93D; /* Amarillo para tablet */
+        /* El texto general del body será oscuro para contrastar con el amarillo.
+           css_content.html define color: #1f2937 para el body, que es oscuro y funciona bien.
+           Podemos ser explícitos o dejar que se herede si no hay otras anulaciones. */
+        color: #1f2937; /* Gris oscuro, igual que el default de css_content.html */
+    }
+
+    body.fondo-ordenador {
+        background-color: #6BCB77; /* Verde para ordenador */
+        color: white; /* Color de texto general por defecto para el body */
+    }
+
+    /* --- Ajustes de Contraste para elementos directamente sobre el fondo del BODY --- */
+
+    /* Para .section-title (ej. "Comunidades Autónomas") */
+    body.fondo-movil .section-title {
+        color: white;
+    }
+
+    body.fondo-tablet .section-title {
+        /* .section-title tiene color: #374151 (gris oscuro) desde css_content.html.
+           Este color ya contrasta bien con el fondo amarillo (#FFD93D).
+           No es estrictamente necesario anularlo aquí si el color base del body ya es oscuro.
+           Pero para ser explícitos: */
+        color: #374151; /* Mantenemos el color original definido en css_content.html */
+    }
+
+    body.fondo-ordenador .section-title {
+        color: white; /* Esto corregirá el contraste que se ve en tu captura de pantalla */
+    }
+
+    /*
+       NOTA IMPORTANTE:
+       No necesitas cambiar el color de texto de:
+       - Contenido dentro de .card (porque .card tiene fondo blanco).
+       - .site-header (tiene su propio fondo degradado y texto blanco).
+       - .breadcrumbs-nav (tiene su propio fondo gris claro).
+       - .site-footer (tiene su propio fondo gris oscuro y texto claro).
+       Estos componentes ya manejan su propio contraste internamente según tu css_content.html.
+    */
 
 body {
-    font-family: 'Inter', sans-serif; /* Fuente similar a la predeterminada de Tailwind */
-    background-color: #f9fafb; /* Gris claro de fondo (Tailwind: bg-gray-50) */
-    color: #1f2937; /* Color de texto principal (Tailwind: text-gray-800) */
-    margin: 0; /* Eliminar margen por defecto del body */
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #374151; /* text-neutral-700 equivalent */
 }
 
-/* Estilos para las tarjetas de presentación */
-.card {
-    background-color: white;
-    border-radius: 0.75rem; /* esquinas redondeadas (Tailwind: rounded-xl) */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra (Tailwind: shadow-lg) */
+/* Custom Burgundy Palette (examples, Tailwind handles most of this) */
+.text-burgundy-primary {
+    color: #6D2828; /* Darker burgundy for text */
+}
+
+.bg-burgundy-primary {
+    background-color: #4C1D1D; /* Deepest burgundy for backgrounds */
+}
+
+.border-burgundy-accent {
+    border-color: #800000; /* Classic burgundy for borders */
+}
+
+/* Styling for the line-clamp utility if not fully supported or for more complex cases */
+.line-clamp-3 {
     overflow: hidden;
-    transition: all 0.3s ease-in-out;
-}
-.card:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Sombra más pronunciada al pasar el ratón (Tailwind: hover:shadow-2xl) */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
 }
 
-.card-image-container {
-    width: 100%;
-    height: 12rem; /* Altura para imágenes en tarjetas (md:h-56 en Tailwind) */
-    object-fit: cover; /* Asegura que la imagen cubra el contenedor */
+/* Custom scrollbar for modal content if needed */
+#placeModal > div { /* Targets the direct child div of the modal for scrolling */
+    scrollbar-width: thin;
+    scrollbar-color: #800000 #f0f0f0; /* Thumb color and track color */
 }
-@media (min-width: 768px) { /* md breakpoint */
-    .card-image-container {
-        height: 14rem;
+
+#placeModal > div::-webkit-scrollbar {
+    width: 8px;
+}
+
+#placeModal > div::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+#placeModal > div::-webkit-scrollbar-thumb {
+    background-color: #800000;
+    border-radius: 10px;
+    border: 2px solid #f0f0f0;
+}
+
+/* Ensure modal is above everything */
+#placeModal {
+    z-index: 1000; /* Higher z-index if necessary */
+}
+
+/* Small enhancements for filter dropdowns */
+#filters select {
+    appearance: none; /* Remove default arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem; /* Make space for custom arrow */
+}
+
+/* Responsive adjustments for filters on smaller screens */
+@media (max-width: 640px) { /* sm breakpoint in Tailwind */
+    #filters .grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr)); /* Stack filters vertically */
+    }
+    #filters div:not(:last-child) {
+        margin-bottom: 0.75rem; /* Add some space between stacked filters */
     }
 }
 
-
-/* Estilos para etiquetas (tags) */
-.tag {
-    font-size: 0.75rem; /* Tamaño de fuente pequeño (Tailwind: text-xs) */
-    font-weight: 600; /* Semi-negrita (Tailwind: font-semibold) */
-    background-color: #e0f2fe; /* Fondo azul claro (Tailwind: bg-blue-100) */
-    color: #0ea5e9; /* Texto azul (Tailwind: text-blue-700) */
-    padding: 0.25rem 0.5rem; /* Espaciado interno (Tailwind: px-2 py-1) */
-    border-radius: 9999px; /* Totalmente redondeado (Tailwind: rounded-full) */
-    display: inline-block;
-}
-
-/* Estilos para las estrellas de valoración */
-.rating-stars .fa-star {
-    color: #f59e0b; /* Color ámbar para estrellas (Tailwind: text-amber-500) */
-}
-.rating-stars .far.fa-star { /* Estrella vacía */
-    color: #d1d5db; /* Gris claro (Tailwind: text-gray-300) */
-}
-
-
-/* Estilos para los enlaces de migas de pan (breadcrumbs) */
-.breadcrumb-link {
-    color: #2563eb; /* Azul (Tailwind: text-blue-600) */
-    text-decoration: none;
-}
-.breadcrumb-link:hover {
-    color: #1d4ed8; /* Azul más oscuro al pasar el ratón (Tailwind: hover:text-blue-800) */
-    text-decoration: underline;
-}
-
-/* Estilos generales para botones */
-.btn {
-    padding: 0.5rem 1rem; /* Espaciado interno (Tailwind: px-4 py-2) */
-    border-radius: 0.5rem; /* Esquinas redondeadas (Tailwind: rounded-lg) */
-    font-weight: 600; /* Semi-negrita (Tailwind: font-semibold) */
-    color: white;
-    transition: background-color 0.2s ease-in-out;
-    border: none;
-    cursor: pointer;
-}
-.btn-primary {
-    background-color: #2563eb; /* Azul (Tailwind: bg-blue-600) */
-}
-.btn-primary:hover {
-    background-color: #1d4ed8; /* Azul más oscuro (Tailwind: hover:bg-blue-700) */
-}
-.btn-secondary {
-    background-color: #6b7280; /* Gris (Tailwind: bg-gray-500) */
-}
-.btn-secondary:hover {
-    background-color: #4b5563; /* Gris más oscuro (Tailwind: hover:bg-gray-600) */
-}
-
-/* Galería de fotos responsive */
-.photo-gallery {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr); /* Una columna por defecto */
-    gap: 0.5rem; /* Espacio entre imágenes (Tailwind: gap-2) */
-    margin-top: 1rem; /* (Tailwind: mt-4) */
-}
-@media (min-width: 640px) { /* sm breakpoint */
-    .photo-gallery {
-        grid-template-columns: repeat(2, 1fr); /* Dos columnas en pantallas pequeñas */
+/* App-like feel for modal on mobile: full width, less margin */
+@media (max-width: 768px) { /* md breakpoint */
+    #placeModal > div { /* The main modal content container */
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        top:0;
+        left:0;
+        position:fixed;
     }
-}
-.photo-gallery img {
-    width: 100%;
-    height: 10rem; /* Altura para fotos en galería (md:h-48 en Tailwind) */
-    object-fit: cover;
-    border-radius: 0.5rem; /* (Tailwind: rounded-lg) */
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* (Tailwind: shadow) */
-}
-@media (min-width: 768px) { /* md breakpoint */
-     .photo-gallery img {
-        height: 12rem;
+     #placeModal {
+        padding: 0;
     }
-}
-
-
-/* Ajustes específicos para móviles (complementando Tailwind) */
-@media (max-width: 768px) {
-    .main-content-area {
-        padding-left: 0.5rem; /* Menos padding en móviles (Tailwind: px-2) */
-        padding-right: 0.5rem;
-    }
-    .card-title {
-        font-size: 1.125rem; /* Títulos ligeramente más pequeños en móviles (Tailwind: text-lg) */
-    }
-    /* Reducir el tamaño de la fuente base en móviles para mejor lectura si es necesario */
-    /* body { font-size: 14px; } */
-}
-
-/* Estilos para el modal de imagen */
-#imageModal {
-    /* Clases de Tailwind aplicadas directamente en el HTML para el modal,
-       pero podrías definirlas aquí si prefieres no usar JS para las clases base del modal.
-       Ej: display: none; position: fixed; etc. */
-}
-#imageModal.hidden {
-    display: none;
-}
-#imageModal:not(.hidden) { /* Estilo para cuando el modal es visible */
-    display: flex;
-}
-
-/* Contenedor principal de la aplicación */
-.app-container {
-    max-width: 1280px; /* (Tailwind: container) */
-    margin-left: auto;
-    margin-right: auto;
-    padding: 1rem; /* (Tailwind: p-4) */
-}
-@media (min-width: 768px) { /* md breakpoint */
-    .app-container {
-        padding: 1.5rem; /* (Tailwind: md:p-6) */
-    }
-}
-
-/* Títulos de sección */
-.section-title {
-    font-size: 1.5rem; /* (Tailwind: text-2xl) */
-    font-weight: 600; /* (Tailwind: font-semibold) */
-    margin-bottom: 1.5rem; /* (Tailwind: mb-6) */
-    color: #374151; /* (Tailwind: text-gray-700) */
-}
-
-/* Estilos para la cabecera (nav_content.html) */
-.site-header {
-    padding: 1.5rem; /* (Tailwind: p-6) */
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background-image: linear-gradient(to right, #2563eb, #7c3aed); /* (Tailwind: bg-gradient-to-r from-blue-600 to-purple-600) */
-    color: white;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); /* (Tailwind: shadow-md) */
-}
-.site-header .container {
-    max-width: 1280px;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    flex-direction: column; /* Apilado en móvil */
-    justify-content: space-between;
-    align-items: center;
-}
-@media (min-width: 768px) { /* md breakpoint */
-    .site-header .container {
-        flex-direction: row; /* Lado a lado en escritorio */
-    }
-}
-.site-header h1 {
-    font-size: 1.875rem; /* (Tailwind: text-3xl) */
-    font-weight: 700; /* (Tailwind: font-bold) */
-    letter-spacing: -0.025em; /* (Tailwind: tracking-tight) */
-}
-.site-header p {
-    font-size: 0.875rem; /* (Tailwind: text-sm) */
-    margin-top: 0.5rem; /* (Tailwind: mt-2) */
-}
-@media (min-width: 768px) { /* md breakpoint */
-    .site-header p {
-        font-size: 1rem; /* (Tailwind: md:text-base) */
-        margin-top: 0; /* (Tailwind: md:mt-0) */
-    }
-}
-
-/* Estilos para breadcrumbs (nav_content.html) */
-.breadcrumbs-nav {
-    max-width: 1280px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 1rem; /* (Tailwind: p-4) */
-    background-color: #f3f4f6; /* (Tailwind: bg-gray-100) */
-    font-size: 0.875rem; /* (Tailwind: text-sm) */
-    border-bottom-left-radius: 0.5rem; /* (Tailwind: rounded-b-lg) */
-    border-bottom-right-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); /* (Tailwind: shadow) */
-    margin-bottom: 1.5rem; /* (Tailwind: mb-6) */
-}
-
-/* Estilos para el pie de página (footer_content.html) */
-.site-footer {
-    background-color: #1f2937; /* (Tailwind: bg-gray-800) */
-    color: #d1d5db; /* (Tailwind: text-gray-300) */
-    text-align: center;
-    padding: 1.5rem; /* (Tailwind: p-6) */
-    margin-top: 3rem; /* (Tailwind: mt-12) */
-}
-.site-footer p {
-    margin: 0;
-}
-.site-footer .text-xs {
-    font-size: 0.75rem; /* (Tailwind: text-xs) */
-    margin-top: 0.25rem; /* (Tailwind: mt-1) */
 }
 
 </style>
