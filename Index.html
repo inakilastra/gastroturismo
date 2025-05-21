@@ -1,50 +1,161 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANeKI - Gastroturismo</title>
-    <meta name="description" content="Disfruta de los mejores pinchos y tapas en un ambiente acogedor.">
-    <?!=include('css'); ?>
-  </head>
+    <title>ANeKI Gastroturismo - Explora Sabores Únicos</title> <meta name="description" content="Descubre las mejores rutas de tapas, restaurantes auténticos y experiencias culinarias inolvidables con ANeKI Gastroturismo."> <?!= include('css'); ?>
+    <?!= include('navbar-js'); ?> </head>
 <body>
-  <?!= include('navbar'); ?>
-  <header id="hero-image-container">
-    <img src="https://drive.google.com/thumbnail?id=12U35mtNU8pHSBECucQEuZVmv_2Pl672x&sz=s1200" alt="Descripción Gastronómica Principal" class="hero-image-single">
-    <div class="hero-image-multiple">
-      <img src="https://drive.google.com/thumbnail?id=12U35mtNU8pHSBECucQEuZVmv_2Pl672x&sz=w600-h400" alt="Imagen Gastronómica 1">
-      <img src="https://drive.google.com/thumbnail?id=12U35mtNU8pHSBECucQEuZVmv_2Pl672x&sz=w600-h400" alt="Imagen Gastronómica 2">
-      <img src="https://drive.google.com/thumbnail?id=12U35mtNU8pHSBECucQEuZVmv_2Pl672x&sz=w600-h400" alt="Imagen Gastronómica 3">
-    </div>
-  </header>
-  <main class="main-content">
-    <div class="container">
-      <section class="content-section">
-        <div id="mi-contenido-embebido">
-            <p>Compartimos nuestras experiencias gastronómicas y turísticas, por si te apetece probar alguna...</p>
-            <p id="device-info-embed"></p>
+
+    <?!= include('navbar'); ?> <header id="hero-image-container" aria-labelledby="hero-title">
+        <img src="https://drive.google.com/thumbnail?id=12U35mtNU8pHSBECucQEuZVmv_2Pl672x&sz=s1200" alt="Paisaje idílico con delicias gastronómicas en primer plano" class="hero-image-single">
+        
+        <div class="hero-image-multiple">
+            <img src="https://drive.google.com/thumbnail?id=12U35mtNU8pHSBECucQEuZVmv_2Pl672x&sz=w600-h400" alt="Variedad de pinchos y tapas coloridas">
+            <img src="https://drive.google.com/uc?export=view&id=1U4oFJ_T9hwIgNWn3pYVxvFBRnguU0FEf" alt="Ambiente animado en un bar de gastroturismo"> <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1" alt="Plato exquisito servido en mesa de restaurante"> </div>
+        <div class="hero-overlay-content container">
+            <h1 id="hero-title" class="funneldisplay hero-main-title">Descubre la Esencia del Sabor</h1>
+            <p class="hero-subtitle">Tu aventura gastronómica comienza aquí. Explora, degusta, disfruta.</p>
+            <a href="#tapas" class="btn btn-primary hero-btn">Empezar a Explorar</a>
         </div>
-      </section> 
-      <section id="tapas" class="content-section">
-        <h2>Tapeo ➡️ Comunidades Autónomas</h2>
-        <? if (typeof Autonomia_Pais !== "undefined" && Autonomia_Pais && Autonomia_Pais.length > 0) { ?>
-          <div class="button-group">
-            <? for (var i = 0; i < Autonomia_Pais.length; i++) { ?>
-              <? if (Autonomia_Pais[i].Usar == 1) { ?>
-                <?
-                  var baseUrl = ScriptApp.getService().getUrl();
-                  var urlDestino = baseUrl + "?vista=Sitios&autonomia=" + encodeURIComponent(Autonomia_Pais[i].Nombre);
-                ?>
-                <a href="<?= urlDestino ?>" target="_self" class="btn"><?= Autonomia_Pais[i].Nombre ?></a>
-              <? } ?>
-            <? } ?>
-          </div>
-        <? } else { ?>
-          <p class="no-data">No hay datos de autonomías para mostrar.</p>
-        <? } ?>        
-      </section>
-    </div>
-  </main>
-  <?!= include('footer'); ?>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <section id="inicio" class="content-section text-center welcome-section" aria-labelledby="welcome-heading">
+                <h2 id="welcome-heading" class="section-title funneldisplay">Bienvenido a la Aventura Gastronómica</h2>
+                <p class="lead-text">En ANeKI Gastroturismo, te llevamos en un viaje culinario para descubrir los tesoros escondidos de la gastronomía. Explora rutas auténticas, encuentra restaurantes con encanto y vive experiencias que deleitarán tus sentidos.</p>
+                <div class="button-group">
+                    <a href="#tapas" class="btn btn-primary">Ver Rutas de Tapas</a>
+                    <a href="#restaurantes" class="btn btn-secondary">Restaurantes Destacados</a>
+                </div>
+            </section> 
+
+            <section id="tapas" class="content-section tapas-section" aria-labelledby="tapas-heading">
+                <h2 id="tapas-heading" class="section-title funneldisplay">Rutas de Tapeo por España</h2>
+                <p class="text-center section-intro">Selecciona una comunidad autónoma y sumérgete en su cultura de tapas única.</p>
+                <? if (typeof Autonomia_Pais !== "undefined" && Autonomia_Pais && Autonomia_Pais.length > 0) { ?>
+                    <div class="button-group autonomia-buttons">
+                        <? for (var i = 0; i < Autonomia_Pais.length; i++) { ?>
+                            <? if (Autonomia_Pais[i].Usar == 1) { ?>
+                                <?
+                                  var baseUrl = ScriptApp.getService().getUrl();
+                                  // Asegúrate que 'Sitios' es el nombre correcto de tu vista de detalle
+                                  var urlDestino = baseUrl + "?vista=Sitios&autonomia=" + encodeURIComponent(Autonomia_Pais[i].Nombre);
+                                ?>
+                                <a href="<?= urlDestino ?>" target="_self" class="btn btn-autonomia funneldisplay"><?= Autonomia_Pais[i].Nombre ?></a>
+                            <? } ?>
+                        <? } ?>
+                    </div>
+                <? } else { ?>
+                    <p class="no-data text-center">Próximamente nuevas rutas de tapas. ¡Mantente atento!</p>
+                <? } ?>        
+            </section>
+
+            <section id="restaurantes" class="content-section restaurantes-section" aria-labelledby="restaurantes-heading">
+                <h2 id="restaurantes-heading" class="section-title funneldisplay">Joyas Culinarias: Restaurantes que Debes Visitar</h2>
+                <div class="grid-card-layout">
+                    <article class="card restaurante-card">
+                        <img src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=1" alt="Fachada del Café Bar Rúa 11" class="card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">Café Bar Rúa 11</h3>
+                            <p class="card-rating"><strong>Valoración:</strong> <span class="stars">★★★★★</span></p>
+                            <p class="card-text">Imprescindible vermutería con tapas de autor. Rubén y su equipo ofrecen una atención de 10. ¡Más de 50 marcas de vermuts!</p>
+                            <div class="card-actions">
+                                <a href="#" class="btn btn-sm btn-outline" title="Ver en Mapa">📍 Ubicación</a>
+                                <a href="#" class="btn btn-sm btn-outline" title="Más Información">Leer Más</a>
+                            </div>
+                        </div>
+                        <div class="card-footer social-icons">
+                            <a href="#" title="Facebook" aria-label="Facebook del Café Bar Rúa 11">f</a>
+                            <a href="#" title="Instagram" aria-label="Instagram del Café Bar Rúa 11">📸</a>
+                            <a href="#" title="Sitio Web" aria-label="Sitio Web del Café Bar Rúa 11">🌐</a>
+                        </div>
+                    </article>
+
+                    <article class="card restaurante-card">
+                        <img src="https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=1" alt="Interior elegante del Restaurante Valderas" class="card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">Restaurante Valderas</h3>
+                            <p class="card-rating"><strong>Valoración:</strong> <span class="stars">★★★★☆</span></p>
+                            <p class="card-text">Cocina tradicional con un toque moderno. Ideal para una comida especial o una cena memorable. No te pierdas sus especialidades de temporada.</p>
+                            <div class="card-actions">
+                               <a href="#" class="btn btn-sm btn-outline" title="Ver en Mapa">📍 Ubicación</a>
+                                <a href="#" class="btn btn-sm btn-outline" title="Más Información">Leer Más</a>
+                            </div>
+                        </div>
+                         <div class="card-footer social-icons">
+                            <a href="#" title="Facebook" aria-label="Facebook del Restaurante Valderas">f</a>
+                            <a href="#" title="Sitio Web" aria-label="Sitio Web del Restaurante Valderas">🌐</a>
+                        </div>
+                    </article>
+                    </div>
+            </section>
+
+            <section id="extras" class="content-section extras-section" aria-labelledby="extras-heading">
+                <h2 id="extras-heading" class="section-title funneldisplay">Más Allá de la Mesa</h2>
+                <div class="grid-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">🗺️</span>
+                        <h3 class="feature-title">Mapas Interactivos</h3>
+                        <p>Navega fácilmente a tus destinos gastronómicos con nuestros mapas integrados.</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📸</span>
+                        <h3 class="feature-title">Galería de Curiosidades</h3>
+                        <p>Descubre fotos de carteles y señales curiosas encontradas en nuestras rutas.</p>
+                         <a href="#contacto" class="btn btn-link">Ver Galería (Próximamente)</a> </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">⭐</span>
+                        <h3 class="feature-title">Valoraciones Reales</h3>
+                        <p>Opiniones y valoraciones de nuestra comunidad para ayudarte a elegir.</p>
+                    </div>
+                </div>
+                 <div id="mi-contenido-embebido" style="margin-top: 20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
+                    <h4>Información del Dispositivo:</h4>
+                    <p>Detectando tipo de dispositivo...</p>
+                    <p id="device-info-embed"></p>
+                </div>
+            </section>
+
+            <section id="contacto" class="content-section contacto-section" aria-labelledby="contacto-heading">
+                <h2 id="contacto-heading" class="section-title funneldisplay">¿Hablamos?</h2>
+                <p class="text-center section-intro">¿Tienes alguna sugerencia, pregunta o quieres compartir tu experiencia? ¡Nos encantaría escucharte!</p>
+                <form id="contactForm" class="contact-form"> <div class="form-group">
+                        <label for="name">Nombre:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensaje:</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-submit">Enviar Mensaje</button>
+                </form>
+                <div id="form-status" style="margin-top:15px;"></div> </section>
+        </div>
+    </main>
+
+    <?!= include('footer'); ?> 
+    <script>
+        // Pequeño script para manejar el envío del formulario de contacto (ejemplo básico)
+        // Idealmente, el manejo del formulario se haría con Google Apps Script en el backend
+        const contactForm = document.getElementById('contactForm');
+        const formStatus = document.getElementById('form-status');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Aquí iría la lógica para google.script.run para enviar datos al backend
+                // Por ahora, solo mostramos un mensaje:
+                if(formStatus) {
+                     formStatus.innerHTML = '<p style="color:green;">Gracias por tu mensaje. Nos pondremos en contacto pronto.</p>';
+                }
+                contactForm.reset();
+            });
+        }
+    </script>
 </body>
 </html>
