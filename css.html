@@ -2,14 +2,34 @@
   /* Importa las fuentes de Google Fonts al principio del archivo */
   @import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Special+Elite&display=swap');
 
+  /* --- Variables CSS (Opcional, pero útil para consistencia) --- */
+  :root {
+    --primary-font: "Special Elite", system-ui;
+    --secondary-font: "Funnel Display", sans-serif;
+    --text-color: #333;
+    --background-color: #f0f2f5;
+    --navbar-background: #2c3e50;
+    --navbar-text: #ffffff;
+    --navbar-hover-text: #f1c40f;
+    --button-primary-bg: #3498db;
+    --button-primary-hover-bg: #2980b9;
+    --button-secondary-bg: #555;
+    --button-secondary-hover-bg: #3e3e3e;
+    --card-bg: #ffffff;
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --shadow-light: 0 2px 5px rgba(0,0,0,0.1);
+    --shadow-medium: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
   /* --- Clases originales de las fuentes (disponibles para uso directo) --- */
   .specialelite {
-    font-family: "Special Elite", system-ui;
+    font-family: var(--primary-font);
     font-style: normal;
   }
 
   .funneldisplay{
-    font-family: "Funnel Display", sans-serif;
+    font-family: var(--secondary-font);
     font-optical-sizing: auto;
     font-style: normal;
   }
@@ -22,295 +42,660 @@
   }
 
   body {
-    font-family: "Special Elite", system-ui;
-    font-size: 1.075em;
+    font-family: var(--primary-font);
+    font-size: 17px; /* Base para escritorio */
     scroll-behavior: smooth;
-    background-color: #f0f2f5; /* Un gris claro para el fondo general */
-    color: #333;
-    line-height: 1.6;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    padding-top: 70px; /* Ajusta este valor al alto de tu navbar fija */
   }
 
   /* Contenedor principal para centrar contenido */
   .container {
-      width: 90%;
-      max-width: 1100px;
-      margin-left: auto;
-      margin-right: auto;
-      padding-left: 15px;
-      padding-right: 15px;
+    width: 90%;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 
-  /* Barra de Navegación Superior Fija */
+  /* --- Barra de Navegación Superior Fija --- */
   .navbar {
-      background-color: #2c3e50; /* Azul oscuro/gris de las capturas */
-      color: #ffffff;
-      padding: 1rem 0;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 100; /* Por encima de otros elementos */
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: var(--navbar-background);
+    color: var(--navbar-text);
+    padding: 1rem 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Asegurar que esté por encima de otros z-index */
+    box-shadow: var(--shadow-light);
+    height: 70px; /* Alto fijo para la navbar */
+    display: flex; /* Para centrar verticalmente el contenido */
+    align-items: center; /* Para centrar verticalmente el contenido */
   }
 
   .navbar .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Asegurar que el container dentro de la navbar ocupe todo el ancho */
   }
 
   .navbar-brand {
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #ffffff;
-      text-decoration: none;
+    font-size: 1.6rem; /* Ligeramente más grande */
+    font-weight: bold;
+    color: var(--navbar-text);
+    text-decoration: none;
+    font-family: var(--secondary-font);
   }
 
   .nav-links a {
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 0.9em;
-      padding: 0.5em 0.8em; /* Añadido para mejor espaciado en escritorio */
+    color: var(--navbar-text);
+    text-decoration: none;
+    font-size: 1rem; /* Tamaño base para links de escritorio */
+    padding: 0.5em 1em; /* Más padding horizontal */
+    border-radius: var(--border-radius-sm);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
   }
-  .nav-links a:hover {
-      color: #f1c40f;
+  .nav-links a:hover, .nav-links a:focus {
+    color: var(--navbar-hover-text);
+    background-color: rgba(255, 255, 255, 0.1); /* Ligero fondo al hacer hover */
   }
 
+  /* Burger Menu */
   .burger-toggle {
-      display: none;
+    display: none;
   }
 
   .burger-menu-label {
-      display: none;
-      cursor: pointer;
-      width: 30px;
-      height: 25px;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
+    display: none; /* Oculto por defecto, se muestra en la media query para móviles */
+    cursor: pointer;
+    width: 35px; /* Un poco más grande */
+    height: 30px; /* Un poco más grande */
+    flex-direction: column;
+    justify-content: space-around; /* Mejor distribución de las líneas */
+    align-items: center;
+    padding: 5px; /* Área táctil */
   }
 
   .burger-menu-label span {
-      display: block;
-      width: 100%;
-      height: 3px;
-      background-color: #ffffff;
-      border-radius: 3px;
-      transition: all 0.3s ease-in-out;
+    display: block;
+    width: 100%;
+    height: 4px; /* Líneas más gruesas */
+    background-color: var(--navbar-text);
+    border-radius: 2px; /* Radio de borde para las líneas */
+    transition: all 0.3s ease-in-out;
   }
-
   .burger-toggle:checked + .burger-menu-label span:nth-child(1) {
-      transform: translateY(11px) rotate(45deg);
+    transform: translateY(13px) rotate(45deg); /* Ajustar traslación */
   }
   .burger-toggle:checked + .burger-menu-label span:nth-child(2) {
-      opacity: 0;
+    opacity: 0;
   }
   .burger-toggle:checked + .burger-menu-label span:nth-child(3) {
-      transform: translateY(-11px) rotate(-45deg);
+    transform: translateY(-13px) rotate(-45deg); /* Ajustar traslación */
   }
 
-  /* Sección de la Imagen Principal (Hero) */
+  /* --- Sección de la Imagen Principal (Hero) --- */
   #hero-image-container {
-    position: -webkit-sticky; /* Para Safari */
+    position: -webkit-sticky;
     position: sticky;
-    /* top: es ajustado por JavaScript basado en la altura de la navbar */
+    top: 70px; /* Debe coincidir con la altura de la navbar */
     width: 100%;
-    z-index: 1;
+    z-index: 1; /* Detrás de la navbar si la navbar tiene mayor z-index */
     overflow: hidden;
-    background-color: #bdc3c7; /* Color de fondo por si las imágenes no cargan */
-    /* La altura será definida por las imágenes contenidas o por media queries específicas */
+    background-color: #bdc3c7;
+    display: flex; /* Para centrar la imagen si es necesario */
+    align-items: center; /* Para centrar la imagen si es necesario */
+    justify-content: center; /* Para centrar la imagen si es necesario */
+    /* Altura definida por contenido o media queries */
   }
 
   .hero-image-single {
-    display: block; /* Por defecto se muestra la imagen única */
+    display: block;
     width: 100%;
-    height: auto;   /* Se ajusta a la proporción de la imagen */
+    height: auto;
+    max-height: 70vh; /* Limitar la altura en móviles para que no ocupe toda la pantalla */
+    object-fit: cover; /* Asegurar que la imagen cubra el área sin distorsión */
   }
 
   .hero-image-multiple {
-    display: none; /* Oculto por defecto (en móvil) */
+    display: none; /* Oculto por defecto, se muestra en escritorio */
+    width: 100%;
+    height: 350px; /* Altura para el carrusel de escritorio, ajustable */
+  }
+  .hero-image-multiple img {
+    flex: 1;
+    width: 0; 
+    height: 100%;
+    object-fit: cover;
+    border-left: 2px solid var(--background-color); /* Pequeño separador visual */
+    border-right: 2px solid var(--background-color);
+  }
+  .hero-image-multiple img:first-child { border-left: none; }
+  .hero-image-multiple img:last-child { border-right: none; }
+
+  /* Estilos para el contenido superpuesto en el Hero Section */
+  .hero-overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--navbar-text);
+    padding: 20px 30px;
+    background-color: rgba(44, 62, 80, 0.7); /* Usar un color de la paleta con opacidad */
+    border-radius: var(--border-radius-md);
+    width: clamp(280px, 85%, 650px); /* Ancho adaptable con mínimo y máximo */
+    z-index: 5; /* Encima de las imágenes del hero */
+  }
+  .hero-main-title {
+    font-size: clamp(2rem, 5vw, 3.5rem); /* Tamaño de fuente adaptable */
+    margin-bottom: 0.5em;
+    color: var(--navbar-text);
+    font-family: var(--secondary-font);
+    line-height: 1.2;
+  }
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.3rem); /* Tamaño de fuente adaptable */
+    margin-bottom: 1.5em;
+    color: #f8f9fa;
+    font-family: var(--primary-font); /* O una fuente sans-serif más legible para subtítulos */
+  }
+  .hero-btn {
+    font-size: clamp(1rem, 2vw, 1.2rem); /* */
+    padding: 12px 25px; /* */
+    background-color: var(--navbar-hover-text); /* */
+    color: var(--navbar-background) !important; /* */
+    box-shadow: var(--shadow-medium); /* */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .hero-btn:hover, .hero-btn:focus {
+    background-color: #e0b30f; /* */
+    transform: translateY(-2px) scale(1.05); /* */
   }
 
-  /* Contenido Principal de la Página */
+
+  /* --- Contenido Principal de la Página --- */
   .main-content {
-      position: relative;
-      z-index: 2;
-      background-color: #f0f2f5; 
-      padding-top: 20px; 
+    position: relative;
+    z-index: 2; /* Por encima de la imagen hero sticky si no hay overlay */
+    background-color: var(--background-color); 
+    padding-top: 1px; /* Evitar colapso de márgenes con el primer hijo */
   }
 
   .content-section {
-      padding: 40px 0;
-      margin-bottom: 20px;
+    padding: 50px 0; /* Más padding vertical */
+    margin-bottom: 0; /* Sin margen inferior, el padding de la siguiente sección creará espacio */
+    border-bottom: 1px solid #e0e0e0; /* Separador sutil entre secciones */
   }
-  
-  h1, h2, h3 {
-      margin-bottom: 1rem;
-      color: #2c3e50; 
-  }
-  h1 { font-size: 2.2em; text-align: center; }
-  h2 { font-size: 1.8em; }
-  h3 { font-size: 1.4em; }
-
-  p {
-      margin-bottom: 1rem;
-      font-size: 1em;
-      color: #555;
+  .content-section:last-of-type {
+    border-bottom: none; /* Sin borde para la última sección */
   }
 
-  .text-center { text-align: center; }
-  .mb-4 { margin-bottom: 1rem; }
-  .mb-6 { margin-bottom: 1.5rem; }
-  .mt-8 { margin-top: 2rem; }
-
-  .btn {
-    display: block;
-    width: 98%;
+  .section-title { /* Clase para H2 de secciones */
+    font-family: var(--secondary-font);
+    text-align: center;
+    font-size: 2.5rem; /* Tamaño base para títulos de sección */
+    margin-bottom: 1.5rem; /* Espacio después del título */
+    color: var(--navbar-background); /* Color oscuro para contraste */
+  }
+  .section-intro { /* Clase para párrafos introductorios de sección */
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #555;
+    max-width: 700px; /* Limitar ancho para legibilidad */
     margin-left: auto;
     margin-right: auto;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    background-color: #3498db;
-    color: #ffffff;
-    padding: 12px 0;
+    margin-bottom: 2rem; /* Espacio antes del contenido principal de la sección */
+  }
+
+  /* --- Textos y Utilidades --- */
+  .text-center { text-align: center; }
+  .lead-text {
+    font-size: 1.2rem;
+    font-weight: 300; /* O un peso más ligero si la fuente lo permite */
+    color: #4a4a4a;
+    margin-bottom: 1.5rem;
+  }
+  .no-data {
+    font-style: italic;
+    color: #777;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--navbar-hover-text);
+    border-radius: var(--border-radius-sm);
+  }
+
+  /* --- Botones --- */
+  .btn {
+    display: inline-block; /* Cambiado para flexibilidad, width se controla por contexto */
+    padding: 12px 28px; /* Más padding horizontal */
+    margin: 8px; /* Margen para espaciado en grupos */
+    background-color: var(--button-primary-bg); /* */
+    color: var(--navbar-text) !important; /* */
+    text-decoration: none !important; /* */
+    border-radius: var(--border-radius-md); /* */
+    font-weight: bold; /* */
+    text-align: center; /* */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* */
+    border: none; /* */
+    cursor: pointer; /* */
+    font-size: 1.1rem; /* */
+    line-height: 1.5; /* */
+    box-shadow: var(--shadow-light); /* */
+    font-family: var(--secondary-font); /* Usar Funnel Display para botones */
+    letter-spacing: 0.5px;
+  }
+  .btn:hover, .btn:focus { 
+    background-color: var(--button-primary-hover-bg); /* */
+    transform: translateY(-2px); /* */
+    box-shadow: var(--shadow-medium); /* */
+  }
+  .btn-secondary { 
+    background-color: var(--button-secondary-bg); /* */
+  }
+  .btn-secondary:hover, .btn-secondary:focus { 
+    background-color: var(--button-secondary-hover-bg); /* */
+  }
+  .btn-outline {
+    background-color: transparent;
+    color: var(--button-primary-bg) !important;
+    border: 2px solid var(--button-primary-bg);
+  }
+  .btn-outline:hover, .btn-outline:focus {
+    background-color: var(--button-primary-bg);
+    color: var(--navbar-text) !important;
+  }
+  .btn-sm { /* Botón más pequeño para acciones dentro de tarjetas */
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+  .btn-submit { /* Para el botón de envío del formulario */
+    width: 100%; /* Ocupar todo el ancho del contenedor del formulario */
+    max-width: 300px; /* Limitar el ancho */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .button-group { 
+    text-align: center; 
+    margin-top: 2rem; 
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px; /* Espacio entre botones en el grupo */
+  }
+  .button-group .btn { /* Ajustes para botones dentro de un button-group */
+     margin: 5px; /* Espaciado consistente */
+  }
+  /* Para los botones de autonomías específicamente */
+  .autonomia-buttons .btn-autonomia {
+    background-color: #6c757d; /* Un gris neutro */
+    min-width: 180px; /* Para que tengan un tamaño decente */
+  }
+  .autonomia-buttons .btn-autonomia:hover, .autonomia-buttons .btn-autonomia:focus {
+    background-color: #5a6268;
+  }
+
+  /* --- Diseño de Tarjetas (para Restaurantes) --- */
+  .grid-card-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas adaptables */
+    gap: 25px; /* Espacio entre tarjetas */
+    margin-top: 2rem;
+  }
+  .card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-medium);
+    overflow: hidden; /* Para que la imagen no se salga del borde redondeado */
+    display: flex;
+    flex-direction: column; /* Estructura vertical interna de la tarjeta */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
+  .card-img-top {
+    width: 100%;
+    height: 200px; /* Altura fija para las imágenes de las tarjetas */
+    object-fit: cover; /* Asegura que la imagen cubra el espacio */
+  }
+  .card-body {
+    padding: 20px;
+    flex-grow: 1; /* Permite que el cuerpo de la tarjeta crezca para llenar el espacio */
+  }
+  .card-title { /* Para H3 dentro de las tarjetas */
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+    font-family: var(--secondary-font);
+  }
+  .card-rating {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  .card-rating .stars {
+    color: var(--navbar-hover-text); /* Amarillo para las estrellas */
+    font-size: 1.1em;
+  }
+  .card-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .card-actions {
+    margin-top: auto; /* Empuja las acciones al final del card-body si hay espacio */
+    padding-top: 1rem; /* Espacio antes de los botones de acción */
+    border-top: 1px solid #eee; /* Separador sutil */
+    text-align: right; /* Alinea los botones a la derecha */
+  }
+  .card-footer.social-icons {
+    padding: 10px 20px;
+    background-color: #f9f9f9; /* Fondo ligero para el footer de la tarjeta */
+    text-align: right;
+  }
+  .social-icons a {
+    color: var(--navbar-background);
     text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
+    font-size: 1.3rem; /* Tamaño de los iconos sociales */
+    margin-left: 15px;
+    transition: color 0.2s ease;
+  }
+  .social-icons a:hover, .social-icons a:focus {
+    color: var(--button-primary-bg);
+  }
+
+  /* --- Sección Extras / Características --- */
+  .grid-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 2rem;
+  }
+  .feature-item {
     text-align: center;
-    transition: background-color 0.3s ease;
-    border: none;
-    cursor: pointer;
+    padding: 20px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
   }
-  .btn:hover { background-color: #2980b9; }
-  .btn-secondary { background-color: #555; }
-  .btn-secondary:hover { background-color: #333; }
-  .button-group { text-align: center; margin-top: 20px; margin-bottom: 20px; }
+  .feature-icon {
+    font-size: 3rem; /* Iconos grandes */
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--button-primary-bg);
+  }
+  .feature-title { /* Para H3 de características */
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--secondary-font);
+  }
 
+  /* --- Formulario de Contacto --- */
+  .contact-form {
+    max-width: 650px;
+    margin: 2rem auto 0 auto; /* Centrado y con margen superior */
+    padding: 25px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-medium);
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--navbar-background);
+  }
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius-sm);
+    font-size: 1rem;
+    font-family: var(--primary-font); /* O una fuente sans-serif para formularios */
+    line-height: 1.5;
+    transition: border-color 0.2s ease;
+  }
+  .form-group input[type="text"]:focus,
+  .form-group input[type="email"]:focus,
+  .form-group textarea:focus {
+    border-color: var(--button-primary-bg);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); /* Sombra de foco sutil */
+  }
+  .form-group textarea {
+    resize: vertical; /* Permitir redimensionar verticalmente */
+    min-height: 120px;
+  }
+  #form-status p {
+    text-align: center;
+    padding: 10px;
+    border-radius: var(--border-radius-sm);
+  }
+  #form-status p.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  #form-status p.error   { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+
+  /* --- Footer --- */
   .footer {
-      background-color: #2c3e50; 
-      color: #ffffff;
-      text-align: center;
-      padding: 25px 0;
-      margin-top: 30px;
-      position: relative; 
-      z-index: 2; 
+    background-color: var(--navbar-background); 
+    color: var(--navbar-text);
+    text-align: center;
+    padding: 30px 0; /* Más padding */
+    margin-top: 40px; /* Más margen superior */
+    position: relative; 
+    z-index: 2; 
+  }
+  .footer p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+  .footer .social-icons a { /* Hereda de .social-icons pero ajusta color para footer */
+    color: var(--navbar-text);
+  }
+  .footer .social-icons a:hover, .footer .social-icons a:focus {
+    color: var(--navbar-hover-text);
   }
 
-  /* --- Media Queries --- */
+  /* --- Estilos Específicos de la Página de Detalle (Sitios.html) --- */
+  .sitios, .page-detail-card { /* Aplicar a .sitios o la clase que uses */
+    padding: 25px 30px; /* Más padding */
+    background-color: var(--card-bg); 
+    border-radius: var(--border-radius-md); /* */
+    box-shadow: var(--shadow-medium); /* */
+    margin: 30px auto; /* Más margen superior/inferior */
+    max-width: 750px; /* Ligeramente más ancho para detalles */
+  }
+  .sitios h1, .page-detail-card h1 {
+    color: var(--navbar-background); /* */
+    border-bottom: 2px solid var(--button-primary-bg); /* */
+    padding-bottom: 15px; /* */
+    margin-bottom: 25px; /* */
+    font-size: 2.3rem; /* Ligeramente más grande para el título principal de la página */
+  }
+  .sitios p, .page-detail-card p {
+    margin-bottom: 15px; /* */
+    font-size: 1.1rem; /* */
+    line-height: 1.7; /* */
+    color: var(--text-color); /* */
+  }
+  .sitios strong, .page-detail-card strong {
+    color: var(--navbar-background); /* */
+    font-weight: bold; /* Asegurar que sea bold */
+  }
+  .provincias-list { 
+      list-style-type: none; /* Quitar viñetas por defecto, se añaden con ::before */
+      margin-top: 10px;
+      padding-left: 5px;
+  }
+  .provincias-list li { 
+      margin-bottom: 8px;
+      font-size: 1.1rem; /* Tamaño de las provincias */
+      position: relative;
+      padding-left: 20px; /* Espacio para el pseudo-elemento */
+  }
+  .provincias-list li::before {
+    content: "✓"; /* O "➢", "➔", "✔" */
+    color: var(--button-primary-bg); /* Color del checkmark/flecha */
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+  }
+  .info-text { /* Para mensajes como "No hay provincias" */
+    color: #666;
+    font-style: italic;
+    font-size: 1rem;
+  }
+  .error-text { /* Para mensajes de error dentro de la página de detalle */
+    color: #c0392b; /* Rojo más oscuro */
+    font-weight: bold;
+    font-size: 1.05rem;
+    padding: 12px;
+    border: 1px solid #c0392b;
+    background-color: #fdd;
+    border-radius: var(--border-radius-sm);
+  }
 
-  /* Dispositivos extra pequeños y móviles (hasta 768px) */
-  /* Aquí la imagen única del hero ocupa el 100% del ancho */
+
+  /* --- Media Queries para Adaptabilidad --- */
+
+  /* Móviles y Tablets Pequeñas (hasta 768px) */
   @media only screen and (max-width: 768px) {
-    .specialelite, .funneldisplay { font-size: 1.6em; /* Ajuste general para móviles */ }
-    footer { background: pink; /* Ejemplo de diferenciación */ }
+    body {
+      font-size: 18px; /* Aumentar base para móviles */
+      padding-top: 60px; /* Ajustar al alto de la navbar móvil si cambia */
+    }
+    .navbar { height: 60px; } /* Navbar un poco más pequeña en móvil */
+    #hero-image-container { top: 60px; }
+
+    h1, .section-title { font-size: 2rem; } /* */
+    h2 { font-size: 1.8rem; } /* */
+    h3 { font-size: 1.5rem; } /* */
+    p, .lead-text { font-size: 1.05rem; line-height: 1.7; } /* */
+    .hero-main-title { font-size: 2.2rem; }
+    .hero-subtitle { font-size: 1.1rem; }
 
     .nav-links {
-      display: none; /* Ocultar enlaces por defecto en móvil */
+      display: none;
       position: absolute;
-      top: 100%; /* Justo debajo de la navbar */
+      top: 60px; /* Justo debajo de la navbar (debe coincidir con su altura) */
       left: 0;
       width: 100%;
-      background-color: #2c3e50; /* Mismo fondo que la navbar */
+      background-color: var(--navbar-background);
       flex-direction: column;
       padding: 10px 0;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow-light); /* */
+      border-top: 1px solid rgba(255,255,255,0.1); /* Separador sutil */
     }
     .nav-links a {
-      display: block; /* Que cada enlace ocupe una línea */
-      padding: 10px 20px; /* Espaciado interno */
-      text-align: center;
-      border-top: 1px solid #3e5771; /* Separador ligero */
+      display: block;
+      padding: 15px 25px; /* Más padding */
+      text-align: left; /* O center, según preferencia */
+      border-top: none; /* Ya no es necesario si se usa el del contenedor */
+      font-size: 1.3rem; /* Letras grandes */
+      font-family: var(--secondary-font);
     }
-    .nav-links a:first-child {
-        border-top: none;
+    .nav-links a:not(:last-child) {
+      border-bottom: 1px solid rgba(255,255,255,0.05); /* Separadores entre links */
     }
+
     .burger-menu-label {
-      display: flex; /* Mostrar el icono de hamburguesa */
+      display: flex;
     }
     .burger-toggle:checked ~ .nav-links {
-      display: flex; /* Mostrar los enlaces cuando la hamburguesa está activa */
+      display: flex;
     }
 
+    /* Hero Images en Móvil */
     .hero-image-single {
-      display: block; /* Asegura que la imagen única esté visible */
-      width: 100%;
-      height: auto; /* Mantiene la proporción de la imagen */
+      display: block;
     }
     .hero-image-multiple {
-      display: none; /* Oculta el contenedor de múltiples imágenes */
+      display: none;
     }
-    h1 { font-size: 1.8em; }
-    h2 { font-size: 1.5em; }
+    
+    /* Botones en móvil (ya son display:block por defecto si se usa .button-group con flex-direction:column) */
+    .btn {
+      width: 90%; /* Asegurar que ocupen buen ancho */
+      padding: 15px 20px; /* Padding generoso */
+      font-size: 1.2rem; /* Texto más grande */
+      margin: 10px auto; /* Centrar si son block */
+    }
+    .button-group {
+        flex-direction: column; /* Apilar botones en móvil */
+    }
+    .button-group .btn {
+        width: 90%; /* Ocupar casi todo el ancho del button-group */
+    }
+
+    .grid-card-layout, .grid-features {
+        grid-template-columns: 1fr; /* Una columna en móviles */
+        gap: 20px;
+    }
+    .card-img-top { height: 220px; } /* Imagen de tarjeta un poco más alta en móvil */
+
+    .sitios h1, .page-detail-card h1 { font-size: 1.9rem; }
+    .sitios p, .page-detail-card p { font-size: 1rem; }
+    .provincias-list li { font-size: 1rem; }
   }
 
-  /* Tablets medianas y Escritorio (769px en adelante) */
-  /* Aquí se muestran las tres imágenes en el hero */
+  /* Tablets Medianas (ej. 769px a 992px) */
   @media only screen and (min-width: 769px) {
-    .nav-links {
-        display: flex !important; /* Asegura que se muestren los links en escritorio */
+    /* Hero Images en Escritorio */
+    .hero-image-single {
+      display: none;
+    }
+    .hero-image-multiple {
+      display: flex; /* Mostrar el contenedor de múltiples imágenes */
+    }
+
+    .nav-links { /* Asegurar que los links de la navbar se muestren en escritorio */
+        display: flex !important; 
         position: static;
         width: auto;
         background-color: transparent;
         flex-direction: row;
         padding: 0;
         box-shadow: none;
+        border-top: none;
     }
     .nav-links a {
-        padding: 0 15px; /* Espaciado horizontal para los enlaces en desktop */
-        border-top: none;
+        padding: 0.5em 1em; /* Padding original para escritorio */
+        font-size: 1rem; /* Tamaño original para escritorio */
+        border-bottom: none;
     }
     .burger-menu-label {
         display: none !important; /* Oculta la hamburguesa en escritorio */
     }
 
-    .hero-image-single {
-      display: none; /* Oculta la imagen única */
+    .button-group {
+        flex-direction: row; /* Botones en fila para tablets/escritorio */
     }
-    .hero-image-multiple {
-      display: flex; /* Usa flexbox para alinear las imágenes horizontalmente */
-      //gap: 5px; /* Espacio pequeño entre las imágenes (opcional) */
-      width: 100%;
-      /* Define una altura para el contenedor de las 3 imágenes */
-      /* Esto ayuda a controlar la altura total y que no sea excesiva */
-      height: 300px; /* Ajusta esta altura según tus necesidades */
-    }
-    .hero-image-multiple img {
-      flex: 1; /* Cada imagen tomará una parte igual del espacio disponible */
-      width: 0;  /* Necesario para que flex-basis (implícito en flex:1) funcione bien con gap y object-fit */
-      height: 100%; /* Las imágenes llenan la altura del contenedor .hero-image-multiple */
-      object-fit: cover; /* Cubre el área asignada sin distorsión, recortando si es necesario */
+    .button-group .btn {
+        width: auto; /* Ancho automático */
     }
   }
 
-  /* Ajustes específicos de fuentes y footer para diferentes tamaños de pantalla */
-  /* Small devices (portrait tablets and large phones, 600px and up) */
-  @media only screen and (min-width: 600px) and (max-width: 768px) {
-    .specialelite, .funneldisplay {font-size: 1.675em;}
-    footer {background: orange;}
-  }
-  /* Medium devices (landscape tablets, 769px and up, pero antes de los estilos de 3 imágenes) */
-  @media only screen and (min-width: 769px) and (max-width: 992px)  {
-    .specialelite, .funneldisplay {font-size: 1.475em;}
-    footer {background: blue;}
-    /* Ya no se necesita height: 40vh para #hero-image-container aquí, */
-    /* la regla min-width: 769px se encarga de las 3 imágenes. */
-    /* Si quieres una altura diferente para este rango específico para las 3 imágenes: */
-    /* .hero-image-multiple { height: 280px; } */
-  } 
-  /* Large devices (laptops/desktops, 992px and up) */
-  @media only screen and (min-width: 992px) and (max-width: 1200px)  {
-    .specialelite, .funneldisplay {font-size: 1.275em;}
-    footer {background: green;}
-    /* Si quieres una altura diferente para las 3 imágenes en este rango: */
-    /* .hero-image-multiple { height: 320px; } */
-  } 
-  /* Extra large devices (large laptops and desktops, 1200px and up) */
-  @media only screen and (min-width: 1200px) {
-    .specialelite, .funneldisplay {font-size: 1.075em;}
-    footer {background: red;}
-     /* Altura por defecto para las 3 imágenes en pantallas grandes ya está en min-width: 769px. */
-     /* Si necesitas una altura específica para pantallas muy grandes: */
-    /* .hero-image-multiple { height: 350px; } */
-  }
+  /* Puedes añadir más breakpoints si necesitas ajustes más finos */
+  /* Por ejemplo, para tablets en landscape o desktops muy grandes */
+  /* @media only screen and (min-width: 992px) { ... } */
+  /* @media only screen and (min-width: 1200px) { ... } */
 
 </style>
