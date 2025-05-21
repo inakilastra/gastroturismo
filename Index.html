@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANeKI Gastroturismo - Explora Sabores Únicos</title> <meta name="description" content="Descubre las mejores rutas de tapas, restaurantes auténticos y experiencias culinarias inolvidables con ANeKI Gastroturismo."> <?!= include('css'); ?>
-    <?!= include('navbar-js'); ?> </head>
+    <title>ANeKI Gastroturismo - Explora Sabores Únicos</title> 
+    <meta name="description" content="Descubre las mejores rutas de tapas, restaurantes auténticos y experiencias culinarias inolvidables con ANeKI Gastroturismo."> 
+    <?!= include('css'); ?>
+</head>
 <body>
 
     <?!= include('navbar'); ?> <header id="hero-image-container" aria-labelledby="hero-title">
@@ -140,22 +142,59 @@
     </main>
 
     <?!= include('footer'); ?> 
-    <script>
-        // Pequeño script para manejar el envío del formulario de contacto (ejemplo básico)
-        // Idealmente, el manejo del formulario se haría con Google Apps Script en el backend
-        const contactForm = document.getElementById('contactForm');
-        const formStatus = document.getElementById('form-status');
-        if (contactForm) {
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                // Aquí iría la lógica para google.script.run para enviar datos al backend
-                // Por ahora, solo mostramos un mensaje:
-                if(formStatus) {
-                     formStatus.innerHTML = '<p style="color:green;">Gracias por tu mensaje. Nos pondremos en contacto pronto.</p>';
+<script>
+        // Script para manejar el menú hamburguesa
+        const burgerToggle = document.getElementById('burger-toggle');
+        const navLinks = document.querySelector('.nav-links'); // Asegúrate que esta clase exista en tu navbar
+
+        if (burgerToggle && navLinks) {
+            // El comportamiento básico de abrir/cerrar se maneja con CSS (:checked)
+            // Este JS es para cerrar el menú al hacer clic en un enlace (mejora UX en móviles)
+            navLinks.addEventListener('click', (event) => {
+                if (event.target.tagName === 'A') {
+                    // Solo cierra si el menú está visible (controlado por el checkbox)
+                    if (burgerToggle.checked) {
+                        burgerToggle.checked = false; 
+                    }
                 }
-                contactForm.reset();
             });
         }
+        
+        // Script para el formulario de contacto
+        const contactForm = document.getElementById('contactForm');
+        const formStatus = document.getElementById('form-status');
+        if (contactForm && formStatus) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Simulación de envío. Reemplazar con google.script.run si es necesario.
+                formStatus.innerHTML = '<p class="success">¡Gracias por tu mensaje! Nos pondremos en contacto pronto.</p>';
+                contactForm.reset();
+                setTimeout(() => { formStatus.innerHTML = ''; }, 5000); // Limpiar mensaje después de 5s
+            });
+        }
+
+        // Smooth scroll para anclas (opcional, si no se usa CSS scroll-behavior)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const hrefAttribute = this.getAttribute('href');
+                if (hrefAttribute && hrefAttribute.length > 1) { // Asegurarse que no es solo "#"
+                    const targetElement = document.querySelector(hrefAttribute);
+                    if (targetElement) {
+                        e.preventDefault();
+                        // Considerar la altura de la navbar fija al hacer scroll
+                        const navbarHeight = document.querySelector('.navbar') ? document.querySelector('.navbar').offsetHeight : 0;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
     </script>
 </body>
 </html>
