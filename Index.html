@@ -6,6 +6,463 @@
     <title>ANeKI Gastroturismo</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <?= include('css_content') ?>
+</head>
+<body>
+    <div id="nav-placeholder">
+        <?= include('nav_content') ?>
+    </div>
+
+    <main id="app" class="app-container main-content-area">
+        <p>Cargando contenido...</p>
+    </main>
+
+    <div id="footer-placeholder">
+        <?= include('footer_content') ?>
+    </div>
+
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[100] hidden p-4">
+        <div class="bg-white p-2 sm:p-4 rounded-lg max-w-3xl max-h-[90vh] overflow-auto relative">
+            <img id="modalImage" src="" alt="Imagen ampliada" class="w-full h-auto object-contain rounded max-h-[85vh]">
+            <button id="closeModal" class="absolute top-2 right-2 sm:top-3 sm:right-3 text-black bg-white/70 hover:bg-white rounded-full p-1.5 leading-none text-2xl z-10">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- Datos de Ejemplo ---
+        const gastronomiaData = [
+            // ... (tus datos de gastronomiaData permanecen aquí sin cambios)
+            {
+                comunidad: "País Vasco",
+                provincias: [
+                    {
+                        provincia: "Guipúzcoa",
+                        ciudades: [
+                            {
+                                ciudad: "San Sebastián",
+                                lugares: [
+                                    {
+                                        id: "ss_la_cuchara",
+                                        nombre: "Bar La Cuchara de San Telmo",
+                                        tipo: "Bar de Pintxos",
+                                        valoracion: 5,
+                                        horario: "12:00-15:30, 19:30-23:00",
+                                        direccion: "Calle 31 de Agosto, 28, Parte Vieja",
+                                        rrss: { instagram: "https://www.instagram.com/explore/tags/lacucharadesantelmo/", web: "http://www.lacucharadesantelmo.com/" },
+                                        mapsLink: "https://maps.google.com/?q=Bar+La+Cuchara+de+San+Telmo+San+Sebastian",
+                                        fotos: [
+                                            "https://placehold.co/600x400/A9D5E5/333333?text=Pintxo+Delicioso+1",
+                                            "https://placehold.co/600x400/E5A9A9/333333?text=Ambiente+del+Bar",
+                                            "https://placehold.co/600x400/A9E5BB/333333?text=Otro+Pintxo"
+                                        ],
+                                        descripcion: "Pintxos innovadores y elaborados al momento en un ambiente concurrido y auténtico de la Parte Vieja. ¡Imprescindible probar su foie!"
+                                    },
+                                    {
+                                        id: "ss_gandarias",
+                                        nombre: "Gandarias",
+                                        tipo: "Restaurante y Bar de Tapas",
+                                        valoracion: 4,
+                                        horario: "11:00-00:00",
+                                        direccion: "Calle 31 de Agosto, 23, Parte Vieja",
+                                        rrss: { web: "https://restaurantegandarias.com/" },
+                                        mapsLink: "https://maps.google.com/?q=Gandarias+San+Sebastian",
+                                        fotos: [
+                                            "https://placehold.co/600x400/F0E68C/333333?text=Barra+de+Pintxos",
+                                            "https://placehold.co/600x400/ADD8E6/333333?text=Plato+Restaurante"
+                                        ],
+                                        descripcion: "Un clásico en San Sebastián, conocido por su extensa barra de pintxos tradicionales y su restaurante de cocina vasca."
+                                    }
+                                ]
+                            },
+                            {
+                                ciudad: "Hondarribia",
+                                lugares: [
+                                    {
+                                        id: "hond_gran_sol",
+                                        nombre: "Bar Gran Sol",
+                                        tipo: "Bar de Pintxos",
+                                        valoracion: 5,
+                                        horario: "12:00-16:00, 19:00-23:00 (variable)",
+                                        direccion: "San Pedro Kalea, 63",
+                                        rrss: { web: "https://bargransol.com/" },
+                                        mapsLink: "https://maps.google.com/?q=Bar+Gran+Sol+Hondarribia",
+                                        fotos: [
+                                            "https://placehold.co/600x400/FFDAB9/333333?text=Pintxo+Premiado",
+                                            "https://placehold.co/600x400/E6E6FA/333333?text=Interior+Bar"
+                                        ],
+                                        descripcion: "Famoso por sus pintxos creativos y premiados. Un referente en Hondarribia."
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        provincia: "Vizcaya",
+                        ciudades: [
+                            {
+                                ciudad: "Bilbao",
+                                lugares: [
+                                    {
+                                        id: "bil_gure_toki",
+                                        nombre: "Gure Toki",
+                                        tipo: "Bar de Pintxos",
+                                        valoracion: 4,
+                                        horario: "09:00-23:00 (en Mercado de la Ribera)",
+                                        direccion: "Plaza Nueva, 12 (Casco Viejo)",
+                                        rrss: { instagram: "https://www.instagram.com/guretoki/" },
+                                        mapsLink: "https://maps.google.com/?q=Gure+Toki+Bilbao",
+                                        fotos: [
+                                            "https://placehold.co/600x400/B2DFDB/333333?text=Pintxo+Moderno",
+                                            "https://placehold.co/600x400/FFCCBC/333333?text=Barra+Gure+Toki"
+                                        ],
+                                        descripcion: "Pintxos de autor en plena Plaza Nueva. Innovación y sabor en el corazón de Bilbao."
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                comunidad: "Andalucía",
+                provincias: [
+                    {
+                        provincia: "Sevilla",
+                        ciudades: [
+                            {
+                                ciudad: "Sevilla",
+                                lugares: [
+                                    {
+                                        id: "sev_el_rinconcillo",
+                                        nombre: "El Rinconcillo",
+                                        tipo: "Bar de Tapas",
+                                        valoracion: 4,
+                                        horario: "13:00-01:30",
+                                        direccion: "C. Gerona, 40",
+                                        rrss: { web: "https://www.elrinconcillo.es/" },
+                                        mapsLink: "https://maps.google.com/?q=El+Rinconcillo+Sevilla",
+                                        fotos: [
+                                            "https://placehold.co/600x400/D8BFD8/333333?text=Tapas+Clasicas",
+                                            "https://placehold.co/600x400/FFE4B5/333333?text=Fachada+Historica"
+                                        ],
+                                        descripcion: "Fundado en 1670, es el bar más antiguo de Sevilla. Ofrece tapas tradicionales en un ambiente cargado de historia."
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // --- Estado de la Aplicación ---
+        let currentView = 'comunidades';
+        let selectedComunidad = null;
+        let selectedProvincia = null;
+        let selectedCiudad = null;
+        let selectedLugar = null;
+
+        // --- Elementos del DOM ---
+        const appContainer = document.getElementById('app');
+        let breadcrumbsContainer; // Se definirá en initializeApp
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModalBtn = document.getElementById('closeModal');
+        
+        // --- Detección de Dispositivo y Cambio de Fondo ---
+        function detectarDispositivoYCambiarFondo() {
+            const cuerpo = document.body;
+            const anchoVentana = window.innerWidth;
+            const claseMovil = 'fondo-movil';
+            const claseTablet = 'fondo-tablet';
+            const claseOrdenador = 'fondo-ordenador';
+
+            cuerpo.classList.remove(claseMovil, claseTablet, claseOrdenador);
+            let tipoDispositivo = '';
+
+            if (anchoVentana < 768) {
+                cuerpo.classList.add(claseMovil);
+                tipoDispositivo = 'Móvil';
+            } else if (anchoVentana >= 768 && anchoVentana < 1024) {
+                cuerpo.classList.add(claseTablet);
+                tipoDispositivo = 'Tablet';
+            } else {
+                cuerpo.classList.add(claseOrdenador);
+                tipoDispositivo = 'Ordenador';
+            }
+            // console.log(`Dispositivo: ${tipoDispositivo}, Ancho: ${anchoVentana}px. Fondo aplicado.`);
+        }
+
+        // --- Funciones de Carga de Contenido Externo (YA NO SON NECESARIAS SI TODO SE INCLUYE CON SCRIPLETS) ---
+        // Se pueden eliminar las funciones loadHTML y loadCSS si no se usan para nada más.
+        /*
+        async function loadHTML(url, placeholderId) { ... }
+        async function loadCSS(url, placeholderId) { ... }
+        */
+
+        // --- Funciones de Renderizado ---
+        // ... (tus funciones renderBreadcrumbs, renderComunidades, etc. permanecen aquí sin cambios) ...
+        function renderBreadcrumbs() {
+            if (!breadcrumbsContainer) breadcrumbsContainer = document.getElementById('breadcrumbs');
+            if (!breadcrumbsContainer) return; 
+
+            let html = `<a href="#" class="breadcrumb-link" onclick="navigateTo('comunidades'); return false;">Inicio</a>`;
+            if (selectedComunidad) {
+                html += ` <span class="text-gray-500 mx-1">></span> <a href="#" class="breadcrumb-link" onclick="navigateTo('provincias', '${selectedComunidad.comunidad}'); return false;">${selectedComunidad.comunidad}</a>`;
+            }
+            if (selectedProvincia) {
+                html += ` <span class="text-gray-500 mx-1">></span> <a href="#" class="breadcrumb-link" onclick="navigateTo('ciudades', '${selectedComunidad.comunidad}', '${selectedProvincia.provincia}'); return false;">${selectedProvincia.provincia}</a>`;
+            }
+            if (selectedCiudad) {
+                html += ` <span class="text-gray-500 mx-1">></span> <a href="#" class="breadcrumb-link" onclick="navigateTo('lugares', '${selectedComunidad.comunidad}', '${selectedProvincia.provincia}', '${selectedCiudad.ciudad}'); return false;">${selectedCiudad.ciudad}</a>`;
+            }
+            if (selectedLugar) {
+                html += ` <span class="text-gray-500 mx-1">></span> <span class="text-gray-700 font-semibold">${selectedLugar.nombre}</span>`;
+            }
+            breadcrumbsContainer.innerHTML = html;
+        }
+
+        function renderComunidades() {
+            let html = `<h2 class="section-title">Comunidades Autónomas</h2>`;
+            html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+            gastronomiaData.forEach(com => {
+                html += `
+                    <div class="card cursor-pointer p-6 text-center hover:bg-blue-50" onclick="navigateTo('provincias', '${com.comunidad}')">
+                        <h3 class="text-xl font-semibold text-blue-700">${com.comunidad}</h3>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            appContainer.innerHTML = html;
+        }
+
+        function renderProvincias(comunidadNombre) {
+            selectedComunidad = gastronomiaData.find(c => c.comunidad === comunidadNombre);
+            if (!selectedComunidad) { renderComunidades(); return; }
+
+            let html = `<h2 class="section-title">Provincias en ${selectedComunidad.comunidad}</h2>`;
+            html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+            selectedComunidad.provincias.forEach(prov => {
+                html += `
+                    <div class="card cursor-pointer p-6 text-center hover:bg-blue-50" onclick="navigateTo('ciudades', '${selectedComunidad.comunidad}', '${prov.provincia}')">
+                        <h3 class="text-xl font-semibold text-blue-700">${prov.provincia}</h3>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            appContainer.innerHTML = html;
+        }
+
+        function renderCiudades(comunidadNombre, provinciaNombre) {
+            selectedComunidad = gastronomiaData.find(c => c.comunidad === comunidadNombre);
+            if (!selectedComunidad) { renderComunidades(); return; }
+            selectedProvincia = selectedComunidad.provincias.find(p => p.provincia === provinciaNombre);
+            if (!selectedProvincia) { renderProvincias(comunidadNombre); return; }
+
+            let html = `<h2 class="section-title">Ciudades en ${selectedProvincia.provincia}</h2>`;
+            html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+            selectedProvincia.ciudades.forEach(ciu => {
+                html += `
+                    <div class="card cursor-pointer p-6 text-center hover:bg-blue-50" onclick="navigateTo('lugares', '${selectedComunidad.comunidad}', '${selectedProvincia.provincia}', '${ciu.ciudad}')">
+                        <h3 class="text-xl font-semibold text-blue-700">${ciu.ciudad}</h3>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            appContainer.innerHTML = html;
+        }
+
+        function renderLugares(comunidadNombre, provinciaNombre, ciudadNombre) {
+            selectedComunidad = gastronomiaData.find(c => c.comunidad === comunidadNombre);
+            if (!selectedComunidad) { renderComunidades(); return; }
+            selectedProvincia = selectedComunidad.provincias.find(p => p.provincia === provinciaNombre);
+            if (!selectedProvincia) { renderProvincias(comunidadNombre); return; }
+            selectedCiudad = selectedProvincia.ciudades.find(c => c.ciudad === ciudadNombre);
+            if (!selectedCiudad) { renderCiudades(comunidadNombre, provinciaNombre); return; }
+
+            let html = `<h2 class="section-title">Lugares en ${selectedCiudad.ciudad}</h2>`;
+            if (selectedCiudad.lugares.length === 0) {
+                html += `<p class="text-gray-600">No hay lugares registrados para esta ciudad todavía.</p>`;
+            } else {
+                html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">`;
+                selectedCiudad.lugares.forEach(lugar => {
+                    html += `
+                        <div class="card">
+                            <img src="${lugar.fotos[0]}" alt="Foto de ${lugar.nombre}" class="card-image-container cursor-pointer" onclick="navigateTo('detalleLugar', '${selectedComunidad.comunidad}', '${selectedProvincia.provincia}', '${selectedCiudad.ciudad}', '${lugar.id}')">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2 card-title">${lugar.nombre}</h3>
+                                <p class="tag mb-2">${lugar.tipo}</p>
+                                <div class="rating-stars mb-3">
+                                    ${'<i class="fas fa-star"></i>'.repeat(lugar.valoracion)}
+                                    ${'<i class="far fa-star"></i>'.repeat(5 - lugar.valoracion)}
+                                </div>
+                                <p class="text-gray-600 text-sm truncate h-10">${lugar.descripcion}</p>
+                                <button class="mt-4 w-full btn btn-primary text-sm" onclick="navigateTo('detalleLugar', '${selectedComunidad.comunidad}', '${selectedProvincia.provincia}', '${selectedCiudad.ciudad}', '${lugar.id}')">Ver Detalles</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            appContainer.innerHTML = html;
+        }
+
+        function renderDetalleLugar(comunidadNombre, provinciaNombre, ciudadNombre, lugarId) {
+            selectedComunidad = gastronomiaData.find(c => c.comunidad === comunidadNombre);
+            selectedProvincia = selectedComunidad?.provincias.find(p => p.provincia === provinciaNombre);
+            selectedCiudad = selectedProvincia?.ciudades.find(c => c.ciudad === ciudadNombre);
+            selectedLugar = selectedCiudad?.lugares.find(l => l.id === lugarId);
+
+            if (!selectedLugar) { renderLugares(comunidadNombre, provinciaNombre, ciudadNombre); return; }
+
+            let fotosHtml = '<div class="photo-gallery">';
+            selectedLugar.fotos.forEach(fotoUrl => {
+                fotosHtml += `<img src="${fotoUrl}" alt="Foto de ${selectedLugar.nombre}" class="cursor-pointer hover:opacity-80 transition-opacity" onclick="openImageModal('${fotoUrl}')" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/969696?text=Imagen+no+disponible';">`;
+            });
+            fotosHtml += '</div>';
+
+            let rrssHtml = '';
+            if (selectedLugar.rrss) {
+                if (selectedLugar.rrss.instagram) {
+                    rrssHtml += `<a href="${selectedLugar.rrss.instagram}" target="_blank" rel="noopener noreferrer" class="text-pink-600 hover:text-pink-800 mr-3"><i class="fab fa-instagram fa-2x"></i><span class="sr-only">Instagram</span></a>`;
+                }
+                if (selectedLugar.rrss.web) {
+                    rrssHtml += `<a href="${selectedLugar.rrss.web}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-globe fa-2x"></i><span class="sr-only">Web</span></a>`;
+                }
+            }
+
+            let html = `
+                <article class="bg-white p-4 sm:p-6 md:p-8 rounded-xl shadow-xl max-w-4xl mx-auto">
+                    <div class="flex flex-col md:flex-row md:space-x-8">
+                        <div class="md:w-1/2">
+                            <img src="${selectedLugar.fotos[0]}" alt="Foto principal de ${selectedLugar.nombre}" class="w-full h-auto object-cover rounded-lg shadow-md mb-4 md:mb-0" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/969696?text=Imagen+principal+no+disponible';">
+                        </div>
+                        <div class="md:w-1/2">
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-3">${selectedLugar.nombre}</h2>
+                            <span class="tag mb-4">${selectedLugar.tipo}</span>
+                            <div class="rating-stars mb-4">
+                                ${'<i class="fas fa-star"></i>'.repeat(selectedLugar.valoracion)}
+                                ${'<i class="far fa-star"></i>'.repeat(5 - selectedLugar.valoracion)}
+                                <span class="ml-2 text-gray-600 text-sm">(${selectedLugar.valoracion}/5 estrellas)</span>
+                            </div>
+                            <p class="text-gray-700 mb-4 text-base">${selectedLugar.descripcion}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 border-t pt-6">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Detalles del Lugar:</h3>
+                        <ul class="space-y-3 text-gray-600">
+                            <li><i class="fas fa-map-marker-alt fa-fw mr-2 text-blue-500"></i><strong>Dirección:</strong> ${selectedLugar.direccion}</li>
+                            <li><i class="fas fa-clock fa-fw mr-2 text-blue-500"></i><strong>Horario:</strong> ${selectedLugar.horario}</li>
+                        </ul>
+                        <div class="mt-6 flex flex-wrap gap-3 items-center">
+                            <a href="${selectedLugar.mapsLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center btn btn-primary">
+                                <i class="fas fa-map-signs mr-2"></i>Cómo llegar
+                            </a>
+                            ${rrssHtml ? `<div class="flex items-center">${rrssHtml}</div>` : ''}
+                        </div>
+                        
+                        ${selectedLugar.fotos.length > 1 ? `<h3 class="text-xl font-semibold text-gray-700 mt-8 mb-4">Galería de Fotos:</h3> ${fotosHtml}` : ''}
+                    </div>
+                    <button onclick="navigateTo('lugares', '${selectedComunidad.comunidad}', '${selectedProvincia.provincia}', '${selectedCiudad.ciudad}')" class="btn btn-secondary mt-8"><i class="fas fa-arrow-left mr-2"></i>Volver a ${selectedCiudad.ciudad}</button>
+                </article>
+            `;
+            appContainer.innerHTML = html;
+        }
+
+        // --- Navegación ---
+        window.navigateTo = function(view, com, prov, ciu, lugarId) {
+            currentView = view;
+            selectedLugar = null;
+            appContainer.innerHTML = '<p class="text-center text-gray-500 py-10">Cargando...</p>';
+            setTimeout(() => {
+                switch (view) {
+                    case 'comunidades':
+                        selectedComunidad = null; selectedProvincia = null; selectedCiudad = null;
+                        renderComunidades();
+                        break;
+                    case 'provincias':
+                        selectedProvincia = null; selectedCiudad = null;
+                        renderProvincias(com);
+                        break;
+                    case 'ciudades':
+                        selectedCiudad = null;
+                        renderCiudades(com, prov);
+                        break;
+                    case 'lugares':
+                        renderLugares(com, prov, ciu);
+                        break;
+                    case 'detalleLugar':
+                        renderDetalleLugar(com, prov, ciu, lugarId);
+                        break;
+                    default:
+                        renderComunidades();
+                }
+                renderBreadcrumbs();
+                window.scrollTo(0, 0);
+            }, 50);
+        }
+
+        // --- Modal de Imagen ---
+        function openImageModal(imageUrl) {
+            modalImage.src = imageUrl;
+            imageModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        closeModalBtn.onclick = function() {
+            imageModal.classList.add('hidden');
+            modalImage.src = "";
+            document.body.style.overflow = 'auto';
+        }
+        imageModal.onclick = function(event) {
+            if (event.target === imageModal) {
+                imageModal.classList.add('hidden');
+                modalImage.src = "";
+                document.body.style.overflow = 'auto';
+            }
+        }
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !imageModal.classList.contains('hidden')) {
+                closeModalBtn.onclick();
+            }
+        });
+
+        // --- Inicialización ---
+        // La función initializeApp ya no necesita ser async si no usa await para loadHTML/loadCSS
+        function initializeApp() {
+            detectarDispositivoYCambiarFondo();
+
+            // El contenido de nav, footer y css ya está presente gracias a los scriplets.
+            // Ya no se necesitan las llamadas a loadHTML ni loadCSS aquí.
+
+            breadcrumbsContainer = document.getElementById('breadcrumbs');
+            
+            const yearSpan = document.getElementById('currentYear');
+            if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+            navigateTo('comunidades');
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+        window.addEventListener('resize', detectarDispositivoYCambiarFondo);
+
+    </script>
+</body>
+</html>
+
+<!--
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANeKI Gastroturismo</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -471,3 +928,4 @@
     </script>
 </body>
 </html>
+-->
