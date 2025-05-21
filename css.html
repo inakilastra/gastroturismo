@@ -1,37 +1,35 @@
 <style>
   /* Importa las fuentes de Google Fonts al principio del archivo */
-  @import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Special+Elite&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
 
-  /* --- Variables CSS (Opcional, pero útil para consistencia) --- */
+  /* --- Variables CSS --- */
   :root {
-    --primary-font: "Special Elite", system-ui;
-    --secondary-font: "Funnel Display", sans-serif;
-    --text-color: #333;
-    --background-color: #f0f2f5;
-    --navbar-background: #2c3e50;
-    --navbar-text: #ffffff;
-    --navbar-hover-text: #f1c40f;
-    --button-primary-bg: #3498db;
-    --button-primary-hover-bg: #2980b9;
-    --button-secondary-bg: #555;
-    --button-secondary-hover-bg: #3e3e3e;
-    --card-bg: #ffffff;
-    --border-radius-sm: 4px;
-    --border-radius-md: 8px;
-    --shadow-light: 0 2px 5px rgba(0,0,0,0.1);
-    --shadow-medium: 0 4px 8px rgba(0,0,0,0.15);
-  }
-
-  /* --- Clases originales de las fuentes (disponibles para uso directo) --- */
-  .specialelite {
-    font-family: var(--primary-font);
-    font-style: normal;
-  }
-
-  .funneldisplay{
-    font-family: var(--secondary-font);
-    font-optical-sizing: auto;
-    font-style: normal;
+    --primary-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    --secondary-font: "Playfair Display", serif;
+    --text-color: #333D4B; /* Gris oscuro azulado */
+    --text-color-light: #5A6A7B; /* Gris medio */
+    --background-color: #F7F9FC; /* Blanco hueso muy claro */
+    --surface-color: #FFFFFF; /* Blanco puro para tarjetas, modales */
+    --primary-color: #007AFF;  /* Azul Apple */
+    --primary-color-dark: #0056b3;
+    --secondary-color: #FF9500; /* Naranja Apple */
+    --accent-color: #34C759; /* Verde Apple */
+    --border-color: #D1D9E6; /* Gris claro para bordes */
+    --navbar-background: #FFFFFF; /* Navbar blanca */
+    --navbar-text: var(--text-color);
+    --navbar-hover-text: var(--primary-color);
+    --button-primary-bg: var(--primary-color);
+    --button-primary-hover-bg: var(--primary-color-dark);
+    --button-secondary-bg: #E5E7EB; /* Gris claro para botones secundarios */
+    --button-secondary-text: #1F2937; /* Texto oscuro para botones secundarios */
+    --button-secondary-hover-bg: #D1D5DB; /* Gris un poco más oscuro */
+    --border-radius-sm: 6px;
+    --border-radius-md: 10px;
+    --border-radius-lg: 16px;
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 8px 16px -4px rgba(0, 0, 0, 0.05);
   }
 
   /* Reset básico y estilos generales del body */
@@ -41,536 +39,631 @@
     padding: 0;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     font-family: var(--primary-font);
-    font-size: 17px; /* Base para escritorio */
-    scroll-behavior: smooth;
+    font-size: 16px; /* Base para escritorio */
     background-color: var(--background-color);
     color: var(--text-color);
-    line-height: 1.7;
+    line-height: 1.65;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-    padding-top: 70px; /* Ajusta este valor al alto de tu navbar fija */
+    padding-top: 75px; /* Ajusta este valor al alto de tu navbar fija */
   }
 
   /* Contenedor principal para centrar contenido */
   .container {
     width: 90%;
-    max-width: 1100px;
+    max-width: 1200px; /* Ancho máximo un poco mayor */
     margin-left: auto;
     margin-right: auto;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   /* --- Barra de Navegación Superior Fija --- */
   .navbar {
     background-color: var(--navbar-background);
     color: var(--navbar-text);
-    padding: 1rem 0;
+    padding: 0; /* Padding se maneja en el container */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 1000; /* Asegurar que esté por encima de otros z-index */
-    box-shadow: var(--shadow-light);
-    height: 70px; /* Alto fijo para la navbar */
-    display: flex; /* Para centrar verticalmente el contenido */
-    align-items: center; /* Para centrar verticalmente el contenido */
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+    height: 75px; /* Alto fijo para la navbar */
+    display: flex;
+    align-items: center;
   }
 
   .navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; /* Asegurar que el container dentro de la navbar ocupe todo el ancho */
+    width: 100%;
   }
 
   .navbar-brand {
-    font-size: 1.6rem; /* Ligeramente más grande */
-    font-weight: bold;
+    font-size: 1.75rem;
+    font-weight: 700;
     color: var(--navbar-text);
     text-decoration: none;
     font-family: var(--secondary-font);
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
   }
 
   .nav-links a {
     color: var(--navbar-text);
     text-decoration: none;
-    font-size: 1rem; /* Tamaño base para links de escritorio */
-    padding: 0.5em 1em; /* Más padding horizontal */
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.75em 1.25em;
     border-radius: var(--border-radius-sm);
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
   }
-  .nav-links a:hover, .nav-links a:focus {
-    color: var(--navbar-hover-text);
-    background-color: rgba(255, 255, 255, 0.1); /* Ligero fondo al hacer hover */
+  .nav-links a:hover, .nav-links a:focus, .nav-links a.active {
+    color: var(--primary-color);
+    background-color: rgba(0, 122, 255, 0.08); /* Fondo muy sutil azul */
   }
 
   /* Burger Menu */
   .burger-toggle {
-    display: none;
+    display: none; /* Oculto por defecto */
   }
 
   .burger-menu-label {
     display: none; /* Oculto por defecto, se muestra en la media query para móviles */
     cursor: pointer;
-    width: 35px; /* Un poco más grande */
-    height: 30px; /* Un poco más grande */
+    width: 30px;
+    height: 24px;
     flex-direction: column;
-    justify-content: space-around; /* Mejor distribución de las líneas */
+    justify-content: space-between;
     align-items: center;
-    padding: 5px; /* Área táctil */
+    padding: 4px;
   }
 
   .burger-menu-label span {
     display: block;
     width: 100%;
-    height: 4px; /* Líneas más gruesas */
+    height: 3px;
     background-color: var(--navbar-text);
-    border-radius: 2px; /* Radio de borde para las líneas */
-    transition: all 0.3s ease-in-out;
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
   }
   .burger-toggle:checked + .burger-menu-label span:nth-child(1) {
-    transform: translateY(13px) rotate(45deg); /* Ajustar traslación */
+    transform: translateY(10.5px) rotate(45deg);
   }
   .burger-toggle:checked + .burger-menu-label span:nth-child(2) {
     opacity: 0;
+    transform: translateX(-100%);
   }
   .burger-toggle:checked + .burger-menu-label span:nth-child(3) {
-    transform: translateY(-13px) rotate(-45deg); /* Ajustar traslación */
+    transform: translateY(-10.5px) rotate(-45deg);
   }
 
   /* --- Sección de la Imagen Principal (Hero) --- */
   #hero-image-container {
-    position: -webkit-sticky;
-    position: sticky;
-    top: 70px; /* Debe coincidir con la altura de la navbar */
+    position: relative; /* Cambiado de sticky para evitar problemas con el contenido principal */
     width: 100%;
-    z-index: 1; /* Detrás de la navbar si la navbar tiene mayor z-index */
     overflow: hidden;
-    background-color: #bdc3c7;
-    display: flex; /* Para centrar la imagen si es necesario */
-    align-items: center; /* Para centrar la imagen si es necesario */
-    justify-content: center; /* Para centrar la imagen si es necesario */
-    /* Altura definida por contenido o media queries */
+    background-color: #E0E0E0; /* Color de fondo mientras carga la imagen */
+    /* Altura se ajusta con padding-top en un pseudo-elemento o min-height */
+    min-height: 60vh; /* Altura mínima para el hero */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .hero-image-single {
-    display: block;
+  .hero-image-single, .hero-image-multiple img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: auto;
-    max-height: 70vh; /* Limitar la altura en móviles para que no ocupe toda la pantalla */
-    object-fit: cover; /* Asegurar que la imagen cubra el área sin distorsión */
-  }
-
-  .hero-image-multiple {
-    display: none; /* Oculto por defecto, se muestra en escritorio */
-    width: 100%;
-    height: 350px; /* Altura para el carrusel de escritorio, ajustable */
-  }
-  .hero-image-multiple img {
-    flex: 1;
-    width: 0; 
     height: 100%;
     object-fit: cover;
-    border-left: 2px solid var(--background-color); /* Pequeño separador visual */
-    border-right: 2px solid var(--background-color);
+    object-position: center;
   }
-  .hero-image-multiple img:first-child { border-left: none; }
-  .hero-image-multiple img:last-child { border-right: none; }
+  .hero-image-multiple {
+    display: none; /* Se activa en desktop si se desea un carrusel */
+  }
 
-  /* Estilos para el contenido superpuesto en el Hero Section */
   .hero-overlay-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative; /* Ya no es absolute, el contenedor hero lo centra */
     text-align: center;
-    color: var(--navbar-text);
-    padding: 20px 30px;
-    background-color: rgba(44, 62, 80, 0.7); /* Usar un color de la paleta con opacidad */
-    border-radius: var(--border-radius-md);
-    width: clamp(280px, 85%, 650px); /* Ancho adaptable con mínimo y máximo */
-    z-index: 5; /* Encima de las imágenes del hero */
+    color: var(--surface-color);
+    padding: 30px 40px;
+    background-color: rgba(20, 30, 40, 0.65); /* Overlay más oscuro para contraste */
+    border-radius: var(--border-radius-lg);
+    width: clamp(300px, 90%, 700px);
+    z-index: 5;
+    box-shadow: var(--shadow-lg);
   }
   .hero-main-title {
-    font-size: clamp(2rem, 5vw, 3.5rem); /* Tamaño de fuente adaptable */
+    font-size: clamp(2.25rem, 6vw, 3.75rem);
     margin-bottom: 0.5em;
-    color: var(--navbar-text);
+    color: var(--surface-color);
     font-family: var(--secondary-font);
-    line-height: 1.2;
+    line-height: 1.15;
+    font-weight: 700;
   }
   .hero-subtitle {
-    font-size: clamp(1rem, 2.5vw, 1.3rem); /* Tamaño de fuente adaptable */
-    margin-bottom: 1.5em;
-    color: #f8f9fa;
-    font-family: var(--primary-font); /* O una fuente sans-serif más legible para subtítulos */
+    font-size: clamp(1.1rem, 3vw, 1.35rem);
+    margin-bottom: 1.75em;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
   }
   .hero-btn {
-    font-size: clamp(1rem, 2vw, 1.2rem); /* */
-    padding: 12px 25px; /* */
-    background-color: var(--navbar-hover-text); /* */
-    color: var(--navbar-background) !important; /* */
-    box-shadow: var(--shadow-medium); /* */
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    padding: 14px 30px;
+    background-color: var(--secondary-color);
+    color: var(--surface-color) !important;
+    box-shadow: var(--shadow-md);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    font-weight: 600;
   }
   .hero-btn:hover, .hero-btn:focus {
-    background-color: #e0b30f; /* */
-    transform: translateY(-2px) scale(1.05); /* */
+    background-color: #FFAC33; /* Naranja más claro al pasar el ratón */
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: var(--shadow-lg);
   }
-
 
   /* --- Contenido Principal de la Página --- */
   .main-content {
     position: relative;
-    z-index: 2; /* Por encima de la imagen hero sticky si no hay overlay */
-    background-color: var(--background-color); 
-    padding-top: 1px; /* Evitar colapso de márgenes con el primer hijo */
+    z-index: 2;
+    background-color: var(--background-color);
+    padding-top: 1px; /* Evitar colapso de márgenes */
   }
 
   .content-section {
-    padding: 50px 0; /* Más padding vertical */
-    margin-bottom: 0; /* Sin margen inferior, el padding de la siguiente sección creará espacio */
-    border-bottom: 1px solid #e0e0e0; /* Separador sutil entre secciones */
+    padding: 60px 0;
+    margin-bottom: 0;
   }
-  .content-section:last-of-type {
-    border-bottom: none; /* Sin borde para la última sección */
+  .content-section:not(:last-of-type) {
+     border-bottom: 1px solid var(--border-color);
   }
 
-  .section-title { /* Clase para H2 de secciones */
+  .section-title {
     font-family: var(--secondary-font);
     text-align: center;
-    font-size: 2.5rem; /* Tamaño base para títulos de sección */
-    margin-bottom: 1.5rem; /* Espacio después del título */
-    color: var(--navbar-background); /* Color oscuro para contraste */
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    font-weight: 700;
   }
-  .section-intro { /* Clase para párrafos introductorios de sección */
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: #555;
-    max-width: 700px; /* Limitar ancho para legibilidad */
+  .section-subtitle { /* Para subtítulos de sección opcionales */
+    font-family: var(--primary-font);
+    text-align: center;
+    font-size: clamp(1.1rem, 3vw, 1.3rem);
+    margin-bottom: 2.5rem;
+    color: var(--text-color-light);
+    font-weight: 400;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 2rem; /* Espacio antes del contenido principal de la sección */
+  }
+  .section-intro {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-color-light);
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2.5rem;
+    text-align: center;
   }
 
   /* --- Textos y Utilidades --- */
   .text-center { text-align: center; }
   .lead-text {
-    font-size: 1.2rem;
-    font-weight: 300; /* O un peso más ligero si la fuente lo permite */
-    color: #4a4a4a;
-    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: var(--text-color-light);
+    margin-bottom: 1.75rem;
   }
   .no-data {
     font-style: italic;
-    color: #777;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-left: 4px solid var(--navbar-hover-text);
-    border-radius: var(--border-radius-sm);
+    color: var(--text-color-light);
+    padding: 25px;
+    background-color: var(--surface-color);
+    border-left: 5px solid var(--secondary-color);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
   }
 
   /* --- Botones --- */
   .btn {
-    display: inline-block; /* Cambiado para flexibilidad, width se controla por contexto */
-    padding: 12px 28px; /* Más padding horizontal */
-    margin: 8px; /* Margen para espaciado en grupos */
-    background-color: var(--button-primary-bg); /* */
-    color: var(--navbar-text) !important; /* */
-    text-decoration: none !important; /* */
-    border-radius: var(--border-radius-md); /* */
-    font-weight: bold; /* */
-    text-align: center; /* */
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* */
-    border: none; /* */
-    cursor: pointer; /* */
-    font-size: 1.1rem; /* */
-    line-height: 1.5; /* */
-    box-shadow: var(--shadow-light); /* */
-    font-family: var(--secondary-font); /* Usar Funnel Display para botones */
-    letter-spacing: 0.5px;
+    display: inline-block;
+    padding: 12px 28px;
+    margin: 8px;
+    background-color: var(--button-primary-bg);
+    color: var(--surface-color) !important; /* Importante para sobreescribir estilos de link */
+    text-decoration: none !important;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1.5;
+    box-shadow: var(--shadow-sm);
+    font-family: var(--primary-font);
+    letter-spacing: 0.3px;
   }
-  .btn:hover, .btn:focus { 
-    background-color: var(--button-primary-hover-bg); /* */
-    transform: translateY(-2px); /* */
-    box-shadow: var(--shadow-medium); /* */
+  .btn:hover, .btn:focus {
+    background-color: var(--button-primary-hover-bg);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
-  .btn-secondary { 
-    background-color: var(--button-secondary-bg); /* */
+  .btn-secondary {
+    background-color: var(--button-secondary-bg);
+    color: var(--button-secondary-text) !important;
   }
-  .btn-secondary:hover, .btn-secondary:focus { 
-    background-color: var(--button-secondary-hover-bg); /* */
+  .btn-secondary:hover, .btn-secondary:focus {
+    background-color: var(--button-secondary-hover-bg);
   }
   .btn-outline {
     background-color: transparent;
-    color: var(--button-primary-bg) !important;
-    border: 2px solid var(--button-primary-bg);
+    color: var(--primary-color) !important;
+    border: 2px solid var(--primary-color);
   }
   .btn-outline:hover, .btn-outline:focus {
-    background-color: var(--button-primary-bg);
-    color: var(--navbar-text) !important;
+    background-color: var(--primary-color);
+    color: var(--surface-color) !important;
   }
-  .btn-sm { /* Botón más pequeño para acciones dentro de tarjetas */
-    padding: 8px 15px;
+  .btn-sm {
+    padding: 10px 20px;
     font-size: 0.9rem;
   }
-  .btn-submit { /* Para el botón de envío del formulario */
-    width: 100%; /* Ocupar todo el ancho del contenedor del formulario */
-    max-width: 300px; /* Limitar el ancho */
+  .btn-lg {
+    padding: 16px 36px;
+    font-size: 1.15rem;
+  }
+  .btn-block { /* Para que el botón ocupe el ancho disponible */
+    display: block;
+    width: 100%;
+  }
+  .btn-submit {
+    width: 100%;
+    max-width: 320px;
     display: block;
     margin-left: auto;
     margin-right: auto;
   }
 
-  .button-group { 
-    text-align: center; 
-    margin-top: 2rem; 
-    margin-bottom: 1rem;
+  .button-group {
+    text-align: center;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px; /* Espacio entre botones en el grupo */
+    gap: 12px;
   }
-  .button-group .btn { /* Ajustes para botones dentro de un button-group */
-     margin: 5px; /* Espaciado consistente */
-  }
-  /* Para los botones de autonomías específicamente */
-  .autonomia-buttons .btn-autonomia {
-    background-color: #6c757d; /* Un gris neutro */
-    min-width: 180px; /* Para que tengan un tamaño decente */
-  }
-  .autonomia-buttons .btn-autonomia:hover, .autonomia-buttons .btn-autonomia:focus {
-    background-color: #5a6268;
+  .button-group .btn {
+     margin: 6px; /* Espaciado consistente */
   }
 
-  /* --- Diseño de Tarjetas (para Restaurantes) --- */
-  .grid-card-layout {
+  /* Para los botones de autonomías específicamente */
+  .autonomia-buttons .btn-autonomia {
+    background-color: var(--surface-color); /* Fondo blanco */
+    color: var(--primary-color) !important; /* Texto azul */
+    border: 1px solid var(--border-color); /* Borde sutil */
+    min-width: 200px; /* Ancho mínimo */
+    font-weight: 500;
+    box-shadow: var(--shadow-xs);
+  }
+  .autonomia-buttons .btn-autonomia:hover, .autonomia-buttons .btn-autonomia:focus {
+    background-color: rgba(0, 122, 255, 0.05); /* Ligero fondo azul */
+    border-color: var(--primary-color);
+    color: var(--primary-color-dark) !important;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* --- Diseño de Tarjetas (para Restaurantes, Provincias, etc.) --- */
+  .grid-layout { /* Clase genérica para layouts de rejilla */
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas adaptables */
-    gap: 25px; /* Espacio entre tarjetas */
-    margin-top: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Columnas adaptables */
+    gap: 24px; /* Espacio entre tarjetas */
+    margin-top: 2.5rem;
   }
   .card {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-medium);
-    overflow: hidden; /* Para que la imagen no se salga del borde redondeado */
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg); /* Bordes más redondeados */
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
     display: flex;
-    flex-direction: column; /* Estructura vertical interna de la tarjeta */
+    flex-direction: column;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--border-color);
   }
   .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
   }
   .card-img-top {
     width: 100%;
-    height: 200px; /* Altura fija para las imágenes de las tarjetas */
-    object-fit: cover; /* Asegura que la imagen cubra el espacio */
+    height: 220px;
+    object-fit: cover;
   }
   .card-body {
-    padding: 20px;
-    flex-grow: 1; /* Permite que el cuerpo de la tarjeta crezca para llenar el espacio */
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
-  .card-title { /* Para H3 dentro de las tarjetas */
-    font-size: 1.6rem;
+  .card-title {
+    font-size: 1.5rem;
     margin-bottom: 0.75rem;
     font-family: var(--secondary-font);
+    color: var(--text-color);
+    font-weight: 700;
+  }
+  .card-subtitle { /* Para subtítulos en tarjetas */
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+    margin-bottom: 1rem;
+    font-weight: 500;
   }
   .card-rating {
     font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 0.5rem;
+    color: var(--text-color-light);
+    margin-bottom: 0.75rem;
   }
   .card-rating .stars {
-    color: var(--navbar-hover-text); /* Amarillo para las estrellas */
-    font-size: 1.1em;
+    color: var(--secondary-color);
+    font-size: 1.15em;
   }
   .card-text {
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-color-light);
+    flex-grow: 1; /* Para que el texto ocupe espacio antes de las acciones */
   }
   .card-actions {
-    margin-top: auto; /* Empuja las acciones al final del card-body si hay espacio */
-    padding-top: 1rem; /* Espacio antes de los botones de acción */
-    border-top: 1px solid #eee; /* Separador sutil */
-    text-align: right; /* Alinea los botones a la derecha */
-  }
-  .card-footer.social-icons {
-    padding: 10px 20px;
-    background-color: #f9f9f9; /* Fondo ligero para el footer de la tarjeta */
+    margin-top: auto; /* Empuja las acciones al final */
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
     text-align: right;
+    display: flex; /* Para alinear botones */
+    justify-content: flex-end; /* Alinea botones a la derecha */
+    gap: 10px; /* Espacio entre botones de acción */
+  }
+  .card-footer {
+    padding: 12px 24px;
+    background-color: rgba(247, 249, 252, 0.7); /* Fondo muy ligero para el footer */
+    text-align: right;
+    border-top: 1px solid var(--border-color);
   }
   .social-icons a {
-    color: var(--navbar-background);
+    color: var(--text-color-light);
     text-decoration: none;
-    font-size: 1.3rem; /* Tamaño de los iconos sociales */
-    margin-left: 15px;
+    font-size: 1.35rem;
+    margin-left: 18px;
     transition: color 0.2s ease;
   }
   .social-icons a:hover, .social-icons a:focus {
-    color: var(--button-primary-bg);
+    color: var(--primary-color);
   }
 
   /* --- Sección Extras / Características --- */
   .grid-features {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    margin-top: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+    margin-top: 2.5rem;
   }
   .feature-item {
     text-align: center;
-    padding: 20px;
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-light);
+    padding: 28px 24px;
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .feature-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
   }
   .feature-icon {
-    font-size: 3rem; /* Iconos grandes */
+    font-size: 2.8rem;
     display: block;
-    margin-bottom: 1rem;
-    color: var(--button-primary-bg);
+    margin-bottom: 1.25rem;
+    color: var(--primary-color);
   }
-  .feature-title { /* Para H3 de características */
-    font-size: 1.4rem;
-    margin-bottom: 0.5rem;
-    font-family: var(--secondary-font);
+  .feature-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+    font-family: var(--primary-font); /* Usar fuente primaria para consistencia */
+    font-weight: 600;
+    color: var(--text-color);
+  }
+  .feature-item p {
+    font-size: 0.95rem;
+    color: var(--text-color-light);
   }
 
   /* --- Formulario de Contacto --- */
   .contact-form {
-    max-width: 650px;
-    margin: 2rem auto 0 auto; /* Centrado y con margen superior */
-    padding: 25px;
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-medium);
+    max-width: 700px;
+    margin: 2.5rem auto 0 auto;
+    padding: 32px;
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
   }
   .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
   }
   .form-group label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
+    margin-bottom: 10px;
+    font-weight: 600;
     font-size: 1rem;
-    color: var(--navbar-background);
+    color: var(--text-color);
   }
   .form-group input[type="text"],
   .form-group input[type="email"],
   .form-group textarea {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
     font-size: 1rem;
-    font-family: var(--primary-font); /* O una fuente sans-serif para formularios */
+    font-family: var(--primary-font);
     line-height: 1.5;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #FDFEFF; /* Ligeramente diferente al fondo para destacar */
   }
   .form-group input[type="text"]:focus,
   .form-group input[type="email"]:focus,
   .form-group textarea:focus {
-    border-color: var(--button-primary-bg);
+    border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); /* Sombra de foco sutil */
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
   }
   .form-group textarea {
-    resize: vertical; /* Permitir redimensionar verticalmente */
-    min-height: 120px;
+    resize: vertical;
+    min-height: 130px;
+  }
+  #form-status {
+    margin-top: 20px;
+    text-align: center;
   }
   #form-status p {
-    text-align: center;
-    padding: 10px;
+    padding: 12px 18px;
     border-radius: var(--border-radius-sm);
+    font-weight: 500;
   }
-  #form-status p.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-  #form-status p.error   { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  #form-status p.success { background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; } /* Verde Tailwind */
+  #form-status p.error   { background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; } /* Rojo Tailwind */
 
 
   /* --- Footer --- */
   .footer {
-    background-color: var(--navbar-background); 
-    color: var(--navbar-text);
+    background-color: #2C3A47; /* Un gris oscuro más profundo */
+    color: rgba(255, 255, 255, 0.8); /* Blanco con ligera transparencia */
     text-align: center;
-    padding: 30px 0; /* Más padding */
-    margin-top: 40px; /* Más margen superior */
-    position: relative; 
-    z-index: 2; 
+    padding: 40px 0;
+    margin-top: 50px;
+    position: relative;
+    z-index: 2;
   }
   .footer p {
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
   }
-  .footer .social-icons a { /* Hereda de .social-icons pero ajusta color para footer */
-    color: var(--navbar-text);
+  .footer .social-icons a {
+    color: rgba(255, 255, 255, 0.8);
   }
   .footer .social-icons a:hover, .footer .social-icons a:focus {
-    color: var(--navbar-hover-text);
+    color: var(--surface-color);
+  }
+  .footer-brand { /* Si quieres un logo o nombre en el footer */
+    font-family: var(--secondary-font);
+    font-size: 1.5rem;
+    color: var(--surface-color);
+    margin-bottom: 1rem;
+    display: block;
   }
 
+
   /* --- Estilos Específicos de la Página de Detalle (Sitios.html) --- */
-  .sitios, .page-detail-card { /* Aplicar a .sitios o la clase que uses */
-    padding: 25px 30px; /* Más padding */
-    background-color: var(--card-bg); 
-    border-radius: var(--border-radius-md); /* */
-    box-shadow: var(--shadow-medium); /* */
-    margin: 30px auto; /* Más margen superior/inferior */
-    max-width: 750px; /* Ligeramente más ancho para detalles */
+  .page-detail-container { /* Contenedor principal para la página de sitios */
+    padding: 30px 0; /* Padding superior e inferior para la sección */
   }
-  .sitios h1, .page-detail-card h1 {
-    color: var(--navbar-background); /* */
-    border-bottom: 2px solid var(--button-primary-bg); /* */
-    padding-bottom: 15px; /* */
-    margin-bottom: 25px; /* */
-    font-size: 2.3rem; /* Ligeramente más grande para el título principal de la página */
+  .page-detail-card {
+    padding: 32px 36px;
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    margin: 0 auto; /* Ya centrado por .container, pero asegura */
+    max-width: 850px;
+    border: 1px solid var(--border-color);
   }
-  .sitios p, .page-detail-card p {
-    margin-bottom: 15px; /* */
-    font-size: 1.1rem; /* */
-    line-height: 1.7; /* */
-    color: var(--text-color); /* */
+  .page-detail-card h1 {
+    color: var(--text-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 18px;
+    margin-bottom: 28px;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-family: var(--secondary-font);
+    font-weight: 700;
   }
-  .sitios strong, .page-detail-card strong {
-    color: var(--navbar-background); /* */
-    font-weight: bold; /* Asegurar que sea bold */
+  .page-detail-card p {
+    margin-bottom: 18px;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-color-light);
   }
-  .provincias-list { 
-      list-style-type: none; /* Quitar viñetas por defecto, se añaden con ::before */
-      margin-top: 10px;
+  .page-detail-card strong {
+    color: var(--text-color);
+    font-weight: 600;
+  }
+  .data-label { /* Para etiquetas como "Tipo Autonomía:", "Provincias:" */
+    font-weight: 600;
+    color: var(--text-color);
+    margin-right: 8px;
+  }
+
+  /* Lista de Provincias/Elementos */
+  .items-list {
+      list-style-type: none;
+      margin-top: 12px;
       padding-left: 5px;
   }
-  .provincias-list li { 
-      margin-bottom: 8px;
-      font-size: 1.1rem; /* Tamaño de las provincias */
+  .items-list li {
+      margin-bottom: 10px;
+      font-size: 1.05rem;
       position: relative;
-      padding-left: 20px; /* Espacio para el pseudo-elemento */
+      padding-left: 28px; /* Espacio para el icono */
+      color: var(--text-color-light);
+      line-height: 1.6;
   }
-  .provincias-list li::before {
-    content: "✓"; /* O "➢", "➔", "✔" */
-    color: var(--button-primary-bg); /* Color del checkmark/flecha */
+  .items-list li::before {
+    content: "➔"; /* O un SVG, o un icono de FontAwesome si estuviera disponible */
+    color: var(--primary-color);
     position: absolute;
     left: 0;
+    top: 2px; /* Ajuste vertical */
     font-weight: bold;
+    font-size: 1.1em;
   }
-  .info-text { /* Para mensajes como "No hay provincias" */
-    color: #666;
+  .info-text {
+    color: var(--text-color-light);
     font-style: italic;
     font-size: 1rem;
+    padding: 10px 0;
   }
-  .error-text { /* Para mensajes de error dentro de la página de detalle */
-    color: #c0392b; /* Rojo más oscuro */
-    font-weight: bold;
+  .error-message { /* Mensajes de error más destacados */
+    color: #B91C1C; /* Rojo oscuro */
+    font-weight: 500;
     font-size: 1.05rem;
-    padding: 12px;
-    border: 1px solid #c0392b;
-    background-color: #fdd;
-    border-radius: var(--border-radius-sm);
+    padding: 16px 20px;
+    border: 1px solid #FCA5A5; /* Borde rojo claro */
+    background-color: #FEE2E2; /* Fondo rojo muy claro */
+    border-radius: var(--border-radius-md);
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .back-button-container { /* Contenedor para el botón de volver */
+    margin-top: 30px;
+    text-align: center; /* O left, si se prefiere */
   }
 
 
@@ -579,95 +672,105 @@
   /* Móviles y Tablets Pequeñas (hasta 768px) */
   @media only screen and (max-width: 768px) {
     body {
-      font-size: 18px; /* Aumentar base para móviles */
-      padding-top: 60px; /* Ajustar al alto de la navbar móvil si cambia */
+      font-size: 15px; /* Ligeramente más pequeño en móviles */
+      padding-top: 65px; /* Ajustar al alto de la navbar móvil */
     }
-    .navbar { height: 60px; } /* Navbar un poco más pequeña en móvil */
-    #hero-image-container { top: 60px; }
+    .navbar { height: 65px; }
+    #hero-image-container { min-height: 50vh; } /* Hero más bajo en móviles */
 
-    h1, .section-title { font-size: 2rem; } /* */
-    h2 { font-size: 1.8rem; } /* */
-    h3 { font-size: 1.5rem; } /* */
-    p, .lead-text { font-size: 1.05rem; line-height: 1.7; } /* */
-    .hero-main-title { font-size: 2.2rem; }
-    .hero-subtitle { font-size: 1.1rem; }
+    .section-title { font-size: clamp(1.8rem, 7vw, 2.4rem); }
+    .section-subtitle { font-size: clamp(1rem, 4vw, 1.2rem); margin-bottom: 2rem; }
+    .hero-main-title { font-size: clamp(2rem, 8vw, 3rem); }
+    .hero-subtitle { font-size: clamp(1rem, 4vw, 1.25rem); }
 
     .nav-links {
-      display: none;
+      display: none; /* Oculto hasta que se active con el burger */
       position: absolute;
-      top: 60px; /* Justo debajo de la navbar (debe coincidir con su altura) */
+      top: 65px; /* Justo debajo de la navbar */
       left: 0;
       width: 100%;
       background-color: var(--navbar-background);
       flex-direction: column;
       padding: 10px 0;
-      box-shadow: var(--shadow-light); /* */
-      border-top: 1px solid rgba(255,255,255,0.1); /* Separador sutil */
+      box-shadow: var(--shadow-md);
+      border-top: 1px solid var(--border-color);
+      z-index: 999; /* Asegurar que esté sobre el contenido pero debajo de la navbar */
     }
     .nav-links a {
       display: block;
-      padding: 15px 25px; /* Más padding */
-      text-align: left; /* O center, según preferencia */
-      border-top: none; /* Ya no es necesario si se usa el del contenedor */
-      font-size: 1.3rem; /* Letras grandes */
-      font-family: var(--secondary-font);
+      padding: 16px 25px;
+      text-align: left;
+      font-size: 1.1rem; /* Letras un poco más grandes en el menú móvil */
+      font-weight: 500;
     }
     .nav-links a:not(:last-child) {
-      border-bottom: 1px solid rgba(255,255,255,0.05); /* Separadores entre links */
+      border-bottom: 1px solid var(--border-color);
     }
 
     .burger-menu-label {
-      display: flex;
+      display: flex; /* Mostrar el burger en móviles */
     }
     .burger-toggle:checked ~ .nav-links {
-      display: flex;
+      display: flex; /* Mostrar el menú cuando el burger está activo */
     }
 
     /* Hero Images en Móvil */
-    .hero-image-single {
-      display: block;
-    }
-    .hero-image-multiple {
-      display: none;
-    }
-    
-    /* Botones en móvil (ya son display:block por defecto si se usa .button-group con flex-direction:column) */
+    .hero-image-single { display: block; }
+    .hero-image-multiple { display: none; }
+
     .btn {
-      width: 90%; /* Asegurar que ocupen buen ancho */
-      padding: 15px 20px; /* Padding generoso */
-      font-size: 1.2rem; /* Texto más grande */
-      margin: 10px auto; /* Centrar si son block */
+      padding: 14px 24px;
+      font-size: 1rem;
+    }
+    .btn-lg {
+      padding: 15px 30px;
+      font-size: 1.1rem;
     }
     .button-group {
-        flex-direction: column; /* Apilar botones en móvil */
+        flex-direction: column; /* Apilar botones */
+        align-items: center; /* Centrar botones apilados */
     }
-    .button-group .btn {
-        width: 90%; /* Ocupar casi todo el ancho del button-group */
+    .button-group .btn,
+    .autonomia-buttons .btn-autonomia {
+        width: 85%; /* Ocupar buen ancho */
+        max-width: 350px; /* Pero no demasiado */
+        margin: 8px 0; /* Ajustar margen para apilados */
+    }
+    .autonomia-buttons .btn-autonomia {
+      min-width: unset; /* Resetear min-width en móvil */
     }
 
-    .grid-card-layout, .grid-features {
-        grid-template-columns: 1fr; /* Una columna en móviles */
+
+    .grid-layout, .grid-features {
+        grid-template-columns: 1fr; /* Una columna */
         gap: 20px;
     }
-    .card-img-top { height: 220px; } /* Imagen de tarjeta un poco más alta en móvil */
+    .card-img-top { height: 200px; }
 
-    .sitios h1, .page-detail-card h1 { font-size: 1.9rem; }
-    .sitios p, .page-detail-card p { font-size: 1rem; }
-    .provincias-list li { font-size: 1rem; }
+    .page-detail-card { padding: 24px 20px; }
+    .page-detail-card h1 { font-size: clamp(1.6rem, 5vw, 2rem); padding-bottom: 14px; margin-bottom: 22px; }
+    .page-detail-card p { font-size: 1rem; }
+    .items-list li { font-size: 1rem; padding-left: 24px; }
+
+    .contact-form { padding: 24px; }
   }
 
-  /* Tablets Medianas (ej. 769px a 992px) */
-  @media only screen and (min-width: 769px) {
-    /* Hero Images en Escritorio */
-    .hero-image-single {
-      display: none;
-    }
-    .hero-image-multiple {
-      display: flex; /* Mostrar el contenedor de múltiples imágenes */
-    }
+  /* Tablets Medianas (ej. 769px a 1024px) */
+  @media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .container { width: 85%; }
+    .grid-layout { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .grid-features { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .hero-main-title { font-size: clamp(2.5rem, 5vw, 3.5rem); }
+  }
 
-    .nav-links { /* Asegurar que los links de la navbar se muestren en escritorio */
-        display: flex !important; 
+  /* Escritorios y pantallas más grandes (a partir de 769px para mostrar nav-links) */
+  @media only screen and (min-width: 769px) {
+    /* Hero Images en Escritorio (si se usa el carrusel) */
+    /* .hero-image-single { display: none; } */
+    /* .hero-image-multiple { display: flex; } */
+
+    .nav-links { /* Asegurar que los links de la navbar se muestren */
+        display: flex !important;
         position: static;
         width: auto;
         background-color: transparent;
@@ -677,25 +780,25 @@
         border-top: none;
     }
     .nav-links a {
-        padding: 0.5em 1em; /* Padding original para escritorio */
-        font-size: 1rem; /* Tamaño original para escritorio */
+        padding: 0.75em 1.25em;
+        font-size: 1rem;
         border-bottom: none;
     }
     .burger-menu-label {
-        display: none !important; /* Oculta la hamburguesa en escritorio */
+        display: none !important; /* Oculta la hamburguesa */
     }
 
     .button-group {
-        flex-direction: row; /* Botones en fila para tablets/escritorio */
+        flex-direction: row; /* Botones en fila */
     }
-    .button-group .btn {
+    .button-group .btn,
+    .autonomia-buttons .btn-autonomia {
         width: auto; /* Ancho automático */
+        margin: 8px; /* Margen original */
+    }
+     .autonomia-buttons .btn-autonomia {
+      min-width: 200px; /* Restaurar min-width */
     }
   }
-
-  /* Puedes añadir más breakpoints si necesitas ajustes más finos */
-  /* Por ejemplo, para tablets en landscape o desktops muy grandes */
-  /* @media only screen and (min-width: 992px) { ... } */
-  /* @media only screen and (min-width: 1200px) { ... } */
 
 </style>
