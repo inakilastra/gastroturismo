@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include('css'); ?> 
+    <style>
+      /* Estilos específicos para esta página si no están en css.html */
+      /* Puedes copiar los estilos de .detalle-container y .volver-btn 
+         de mi respuesta anterior si te gustaron, o definir los tuyos. */
+      body {
+        /* Si no tienes una navbar fija, main-content no necesitaría padding-top igual a la altura de la navbar */
+      }
+      .sitios { /* Un nombre de clase más descriptivo */
+        padding: 25px;
+        background-color: #ffffff; 
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin: 20px auto; /* Centra el contenedor si es más estrecho que .container */
+        max-width: 700px; /* Limita el ancho para mejor lectura */
+      }
+      .sitios h1 {
+        color: #2c3e50; /* Azul oscuro para el título */
+        border-bottom: 2px solid #3498db; /* Línea azul debajo del título */
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+      .sitios p {
+        margin-bottom: 12px;
+        font-size: 1.1em; /* Ligeramente más grande para legibilidad */
+        color: #333333; /* Gris oscuro para el texto */
+      }
+      .sitios strong {
+        color: #2c3e50; /* Azul oscuro para los labels */
+      }
+      .error-text {
+        color: #e74c3c; /* Rojo para mensajes de error */
+        font-weight: bold;
+        padding: 10px;
+        border: 1px solid #e74c3c;
+        background-color: #fdeded;
+        border-radius: 4px;
+      }
+      .action-button { /* Estilo para el botón de volver */
+        display: inline-block;
+        padding: 12px 22px;
+        margin-top: 25px;
+        background-color: #6c757d; /* Gris como el que usaste */
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.2s ease-in-out;
+      }
+      .action-button:hover {
+        background-color: #5a6268; /* Un poco más oscuro al pasar el ratón */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container"> <div class="sitios">
+
+        <? 
+          // Lógica para determinar qué mostrar
+          var mostrarContenidoValido = false;
+          var mensajeErrorParaMostrar = "";
+
+          if (typeof autonomia !== "undefined" && autonomia) 
+          {
+            if (autonomia.error) 
+            {
+              // Si hay un error explícito en el objeto autonomia
+              mensajeErrorParaMostrar = autonomia.error;
+              if (autonomia.nombre && autonomia.nombre !== "N/D" && autonomia.nombre !== autonomia.error) 
+              {
+                // Añade el nombre de la autonomía al error si es útil y no es ya parte del error
+                mensajeErrorParaMostrar += " (Referencia: " + autonomia.nombre + ")";
+              }
+            } 
+            else if (autonomia.nombre && autonomia.nombre !== "N/D") 
+            {
+              // Si hay un nombre válido y no hay error, podemos mostrar el contenido
+              mostrarContenidoValido = true;
+            } 
+            else 
+            {
+              // Si no hay error explícito pero tampoco hay nombre, es un problema de datos
+              mensajeErrorParaMostrar = "No se encontraron datos válidos para esta autonomía.";
+            }
+          } 
+          else 
+          {
+            // Si la variable 'autonomia' ni siquiera está definida
+            mensajeErrorParaMostrar = "Error crítico: No se han podido cargar los datos (objeto 'autonomia' no disponible).";
+          }
+        ?>
+
+        <? if (mostrarContenidoValido) { ?>
+            <h1><?= autonomia.nombre ?></h1>
+            <p><strong>Tipo Autonomia:</strong> <?= autonomia.tipo ?> </p>
+             <? if (autonomia.listaDeProvincias === null) { 
+                    // fProvincias devolvió null (error buscando provincias o la autonomía no estaba en V:W)
+                ?>
+                    <p><strong>Provincias:</strong> <span class="info-text">No se pudo cargar la información de las provincias (puede que la autonomía no esté en la lista detallada de provincias o hubo un error al obtenerlas).</span></p>
+                <? } else if (autonomia.listaDeProvincias.length > 0) { ?>
+                    <p><strong>Provincias:</strong></p>
+                    <ul class="provincias-list">
+                        <? for (var i = 0; i < autonomia.listaDeProvincias.length; i++) { ?>
+                            <li><?= autonomia.listaDeProvincias[i] ?></li>
+                        <? } ?>
+                    </ul>
+                <? } else { 
+                    // autonomia.listaDeProvincias es un array vacío []
+                ?>
+                    <p><strong>Provincias:</strong> <span class="info-text">No hay provincias específicas listadas para esta autonomía o la celda correspondiente estaba vacía.</span></p>
+                <? } ?>  
+        <? } else { ?>
+            <h1>Información no Disponible</h1>
+            <p class="error-text"><?= mensajeErrorParaMostrar ?></p>
+            <p class="error-text"><?= autonomia.error ?></p>
+        <? } ?>
+        <a href="<?= ScriptApp.getService().getUrl() ?>?vista=Index" class="btn">Volver </a>
+      
+      </div> </div> </body>
+</html>
