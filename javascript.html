@@ -1,0 +1,526 @@
+<script>
+      const appData = {
+          gastronomia: [
+              {
+                  nombre: "País Vasco",
+                  provincias: [
+                      {
+                          nombre: "Vizcaya",
+                          ciudades: [
+                              {
+                                  nombre: "Bilbao",
+                                  barrios: [
+                                      {
+                                          nombre: "Casco Viejo",
+                                          lugares: [
+                                              {
+                                                  id: "g1",
+                                                  nombre: "Bar Pintxos Increíbles",
+                                                  tipo: "Bar de Pintxos",
+                                                  valoracion: "⭐⭐⭐⭐⭐",
+                                                  direccion: "Calle Somera, 12, Bilbao",
+                                                  horario: "L-D 12:00-00:00",
+                                                  rrss: [{nombre: "Instagram", url: "https://instagram.com/barpintxosincreibles", icon: "photo_camera"}, {nombre: "Facebook", url: "#", icon: "facebook"}],
+                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Calle+Somera+12+Bilbao",
+                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Pintxo+Delicioso+1", "https://placehold.co/600x400/022831/FFFFFF?text=Ambiente+Bar+2", "https://placehold.co/600x400/FCEA48/000000?text=Especialidad+Casa+3"],
+                                                  descripcion: "Auténticos pintxos vascos en el corazón del Casco Viejo. Una experiencia inolvidable con ingredientes frescos y combinaciones creativas."
+                                              },
+                                              {
+                                                  id: "g2",
+                                                  nombre: "La Olla de la Plaza Nueva",
+                                                  tipo: "Restaurante Tradicional",
+                                                  valoracion: "⭐⭐⭐⭐",
+                                                  direccion: "Plaza Nueva, 5, Bilbao",
+                                                  horario: "M-D 11:00-23:00",
+                                                  rrss: [{nombre: "Web", url: "#", icon: "language"}],
+                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Plaza+Nueva+5+Bilbao",
+                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Raciones+Variadas", "https://placehold.co/600x400/022831/FFFFFF?text=Terraza+Animada"],
+                                                  descripcion: "Ideal para probar raciones y tapas tradicionales en un ambiente animado. Perfecto para ir con amigos."
+                                              }
+                                          ]
+                                      },
+                                      {
+                                          nombre: "Indautxu",
+                                          lugares: [
+                                              {
+                                                  id: "g3",
+                                                  nombre: "Restaurante Moderno Fusión",
+                                                  tipo: "Restaurante de Fusión",
+                                                  valoracion: "⭐⭐⭐⭐⭐",
+                                                  direccion: "Alameda Urquijo, 50, Bilbao",
+                                                  horario: "M-S 13:00-16:00, 20:00-23:00",
+                                                  rrss: [{nombre: "Instagram", url: "#", icon: "photo_camera"}],
+                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Alameda+Urquijo+50+Bilbao",
+                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Plato+Fusión+1", "https://placehold.co/600x400/022831/FFFFFF?text=Interior+Elegante+2"],
+                                                  descripcion: "Cocina de vanguardia que fusiona sabores locales e internacionales. Presentaciones espectaculares."
+                                              }
+                                          ]
+                                      }
+                                  ]
+                              }
+                          ]
+                      },
+                      {
+                          nombre: "Guipúzcoa",
+                          ciudades: [
+                              {
+                                  nombre: "San Sebastián",
+                                  barrios: [
+                                      {
+                                          nombre: "Parte Vieja",
+                                          lugares: [
+                                                {
+                                                  id: "g4",
+                                                  nombre: "Txepetxa",
+                                                  tipo: "Bar de Pintxos",
+                                                  valoracion: "⭐⭐⭐⭐⭐",
+                                                  direccion: "Calle Pescadería, 5, San Sebastián",
+                                                  horario: "M-D 12:00-15:30, 19:00-23:00",
+                                                  rrss: [],
+                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Calle+Pescaderia+5+San+Sebastian",
+                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Antxoas+Famosas", "https://placehold.co/600x400/022831/FFFFFF?text=Barra+Tradicional"],
+                                                  descripcion: "El paraíso de las antxoas. Un bar con solera y pintxos que son pura tradición y sabor."
+                                              }
+                                          ]
+                                      }
+                                  ]
+                              }
+                          ]
+                      }
+                  ]
+              },
+              {
+                  nombre: "Andalucía",
+                  provincias: [
+                      {
+                          nombre: "Sevilla",
+                          ciudades: [
+                              {
+                                  nombre: "Sevilla",
+                                  barrios: [
+                                      {
+                                          nombre: "Triana",
+                                          lugares: [
+                                              {
+                                                  id: "g5",
+                                                  nombre: "Casa Cuesta",
+                                                  tipo: "Bar de Tapas",
+                                                  valoracion: "⭐⭐⭐⭐",
+                                                  direccion: "Calle Castilla, 1, Sevilla",
+                                                  horario: "L-D 12:00-00:00",
+                                                  rrss: [{nombre: "Web", url: "#", icon: "language"}],
+                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Calle+Castilla+1+Sevilla",
+                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Tapas+Trianeras", "https://placehold.co/600x400/022831/FFFFFF?text=Patio+Andaluz"],
+                                                  descripcion: "Sabor andaluz en el emblemático barrio de Triana. Tapas caseras y ambiente auténtico."
+                                              }
+                                          ]
+                                      }
+                                  ]
+                              }
+                          ]
+                      }
+                  ]
+              }
+          ],
+          turismo: [
+                {
+                  id: "t1",
+                  nombre: "Bodegas Tradición Centenaria",
+                  tipo: "Bodega",
+                  region: "La Rioja",
+                  localidad: "Haro",
+                  valoracion: "⭐⭐⭐⭐",
+                  direccion: "Carretera del Vino, km 5, Haro, La Rioja",
+                  horario: "Visitas: M-S 10:00-18:00 (cita previa)",
+                  rrss: [{nombre: "Web", url: "#", icon: "language"}],
+                  mapLink: "https://www.google.com/maps/search/?api=1&query=Carretera+del+Vino+km+5+Haro+La+Rioja",
+                  fotos: ["https://placehold.co/600x400/AAB624/000000?text=Bodega+Exterior+Viñedos", "https://placehold.co/600x400/FCEA48/000000?text=Sala+de+Barricas", "https://placehold.co/600x400/E46F44/FFFFFF?text=Cata+de+Vinos"],
+                  descripcion: "Descubre la tradición vinícola en estas bodegas con siglos de historia. Ofrecen catas de vinos y visitas guiadas por sus instalaciones y viñedos."
+              },
+              {
+                  id: "t2",
+                  nombre: "Parque Natural de las Bardenas Reales",
+                  tipo: "Naturaleza",
+                  region: "Navarra",
+                  localidad: "Arguedas (acceso principal)",
+                  direccion: "NA-134, Arguedas, Navarra",
+                  valoracion: "⭐⭐⭐⭐⭐",
+                  horario: "Abierto 24h (consultar restricciones acceso)",
+                  rrss: [{nombre: "Info", url: "#", icon: "info"}],
+                  mapLink: "https://www.google.com/maps/search/?api=1&query=Parque+Natural+Bardenas+Reales+Navarra",
+                  fotos: ["https://placehold.co/600x400/AAB624/000000?text=Paisaje+Lunar+Bardenas", "https://placehold.co/600x400/FCEA48/000000?text=Castildetierra"],
+                  descripcion: "Un paisaje semidesértico de belleza impactante, con formaciones rocosas únicas. Ideal para senderismo y fotografía."
+              }
+          ],
+          carteles: [
+              {
+                  id: "c1",
+                  foto: "https://placehold.co/400x300/FF6F61/FFFFFF?text=Cartel+Divertido+1",
+                  caption: "Encontrado en un pueblo perdido. ¡Prohibido aburrirse!"
+              },
+              {
+                  id: "c2",
+                  foto: "https://placehold.co/400x300/87DCF0/000000?text=Señal+Tráfico+Original+2",
+                  caption: "¡Cuidado con los patos bailarines! Zona de coreografías inesperadas."
+              },
+              {
+                  id: "c3",
+                  foto: "https://placehold.co/400x300/AAB624/FFFFFF?text=Advertencia+Peculiar+3",
+                  caption: "Solo para valientes... o muy despistados."
+              },
+              {
+                  id: "c4",
+                  foto: "https://placehold.co/400x300/FCEA48/000000?text=Norma+Absurda+4",
+                  caption: "Las reglas están para romperse, ¿o no?"
+              }
+          ]
+      };
+
+      const gastronomiaContent = document.getElementById('gastronomiaContent');
+      const turismoContent = document.getElementById('turismoContent');
+      const cartelesContent = document.getElementById('cartelesContent');
+      const heroSection = document.getElementById('heroSection');
+      const contentSections = document.querySelectorAll('.content-section');
+      const navLinks = document.querySelectorAll('nav a[data-section], #mobileMenu a[data-section]');
+      const homeLink = document.getElementById('homeLink');
+      const mobileMenuButton = document.getElementById('mobileMenuButton');
+      const mobileMenu = document.getElementById('mobileMenu');
+      
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+      let currentGastronomiaPath = [];
+      let currentTurismoPath = [];
+
+      async function callGeminiAPI(prompt, lugarId) {
+          const geminiResponseEl = document.getElementById(`gemini-response-${lugarId}`);
+          const geminiButton = document.getElementById(`gemini-btn-${lugarId}`);
+          if (!geminiResponseEl || !geminiButton) return;
+
+          geminiButton.disabled = true;
+          geminiButton.innerHTML = '<div class="loader"></div> Procesando...';
+          geminiResponseEl.innerHTML = ''; 
+          geminiResponseEl.classList.remove('hidden');
+
+
+          let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+          const payload = { contents: chatHistory };
+          /*const apiKey = ""; 
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+          try {
+              const response = await fetch(apiUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+              });
+              if (!response.ok) {
+                  throw new Error(`Error de API: ${response.status}`);
+              }
+              const result = await response.json();
+              
+              if (result.candidates && result.candidates.length > 0 &&
+                  result.candidates[0].content && result.candidates[0].content.parts &&
+                  result.candidates[0].content.parts.length > 0) {
+                  const text = result.candidates[0].content.parts[0].text;
+                  geminiResponseEl.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`;
+              } else {
+                  geminiResponseEl.innerHTML = '<p>No se pudo obtener una respuesta creativa esta vez. Inténtalo de nuevo más tarde.</p>';
+                  console.error("Respuesta inesperada de la API:", result);
+              }
+          } catch (error) {
+              console.error('Error llamando a la API de Gemini:', error);
+              geminiResponseEl.innerHTML = `<p>Hubo un problema al contactar con el servicio de IA: ${error.message}. Por favor, inténtalo más tarde.</p>`;
+          } finally {
+              geminiButton.disabled = false;
+              geminiButton.innerHTML = '<span class="material-symbols-outlined mr-1">auto_awesome</span>Descubrir Algo Más';
+          }*/
+      }
+
+
+      function updateBreadcrumb(type) {
+          const breadcrumbContainer = document.getElementById(`${type}Breadcrumb`);
+          const path = type === 'gastronomia' ? currentGastronomiaPath : currentTurismoPath;
+          breadcrumbContainer.innerHTML = ''; 
+          
+          const homeSpan = document.createElement('span');
+          homeSpan.textContent = 'Inicio';
+          homeSpan.classList.add('cursor-pointer', 'hover:underline', 'breadcrumb-item');
+          homeSpan.onclick = () => navigateToSection(type, true);
+          breadcrumbContainer.appendChild(homeSpan);
+
+          path.forEach((item, index) => {
+              const itemSpan = document.createElement('span');
+              itemSpan.textContent = item.nombre || item; 
+              itemSpan.classList.add('breadcrumb-item');
+              if (index < path.length -1) {
+                  itemSpan.classList.add('cursor-pointer', 'hover:underline');
+                  itemSpan.onclick = () => {
+                      if (type === 'gastronomia') {
+                          currentGastronomiaPath = currentGastronomiaPath.slice(0, index + 1);
+                          renderGastronomiaLevel(currentGastronomiaPath);
+                      } else {
+                          currentTurismoPath = currentTurismoPath.slice(0, index + 1);
+                          renderTurismoLevel(currentTurismoPath);
+                      }
+                  };
+              } else {
+                  itemSpan.classList.add('font-semibold', 'text-[#E46F44]');
+              }
+              breadcrumbContainer.appendChild(itemSpan);
+          });
+      }
+
+
+      function createInteractiveCard(item, type) {
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-lg shadow-md p-4 md:p-6 cursor-pointer transition-all duration-300 card-hover flex flex-col';
+          card.innerHTML = `<h3 class="text-xl font-semibold font-display text-[#1A385A] mb-2">${item.nombre}</h3>`;
+          if (type === 'gastronomia') {
+              card.onclick = () => {
+                  currentGastronomiaPath.push(item);
+                  renderGastronomiaLevel(currentGastronomiaPath);
+              };
+          } else if (type === 'turismoRegion') { 
+                card.onclick = () => {
+                  currentTurismoPath.push(item.nombre); 
+                  renderTurismoLevel(currentTurismoPath);
+              };
+          }
+          return card;
+      }
+      
+      function renderLugarCard(lugar) {
+          let currentImageIndex = 0;
+          const imageGalleryId = `gallery-${lugar.id}`;
+          const prevButtonId = `prev-${lugar.id}`;
+          const nextButtonId = `next-${lugar.id}`;
+          const imageDisplayId = `img-${lugar.id}`;
+          const geminiButtonId = `gemini-btn-${lugar.id}`;
+          const geminiResponseId = `gemini-response-${lugar.id}`;
+          const walkDirectionsButtonId = `walk-dir-btn-${lugar.id}`;
+
+          let rrssLinks = lugar.rrss.map(rs => 
+              `<a href="${rs.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center bg-[#022831] hover:bg-[#E46F44] text-white text-xs px-3 py-2 rounded-full mr-2 mb-2 transition-colors duration-300">
+                  <span class="material-symbols-outlined mr-1 text-sm">${rs.icon}</span> ${rs.nombre}
+                </a>`
+          ).join('');
+
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-lg shadow-xl p-4 md:p-6 flex flex-col space-y-3 col-span-1 md:col-span-2 lg:col-span-3';
+          card.innerHTML = `
+              <div id="${imageGalleryId}" class="relative">
+                  <img id="${imageDisplayId}" src="${lugar.fotos[0]}" alt="${lugar.nombre}" class="w-full h-64 object-cover rounded-lg mb-3 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/ffffff?text=Imagen+no+disponible';">
+                  ${lugar.fotos.length > 1 ? `
+                      <button id="${prevButtonId}" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-[#1A385A] bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-100 focus:outline-none"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+                      <button id="${nextButtonId}" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-[#1A385A] bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-100 focus:outline-none"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+                  ` : ''}
+              </div>
+              <h3 class="text-2xl font-bold font-display text-[#E46F44]">${lugar.nombre}</h3>
+              <p class="text-lg text-yellow-500">${lugar.valoracion}</p>
+              <p class="text-sm text-gray-700"><strong class="font-semibold text-[#1A385A]">Dirección:</strong> ${lugar.direccion}</p>
+              <p class="text-sm text-gray-700"><strong class="font-semibold text-[#1A385A]">Horario:</strong> ${lugar.horario}</p>
+              <p class="text-sm text-gray-700 mt-1">${lugar.descripcion}</p>
+              <div class="mt-3 flex flex-wrap items-center">
+                  ${rrssLinks}
+                  <a href="${lugar.mapLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-2 rounded-full mr-2 mb-2 transition-colors duration-300">
+                      <span class="material-symbols-outlined mr-1 text-sm">location_on</span> Ver en Mapa
+                  </a>
+                  <button id="${walkDirectionsButtonId}" class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded-full mr-2 mb-2 transition-colors duration-300">
+                      <span class="material-symbols-outlined mr-1 text-sm">directions_walk</span> Cómo ir andando
+                  </button>
+              </div>
+              <div class="mt-4">
+                  <button id="${geminiButtonId}" class="bg-[#AAB624] hover:bg-[#8f9a1e] text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out flex items-center justify-center text-sm w-full md:w-auto">
+                      <span class="material-symbols-outlined mr-1">auto_awesome</span>Descubrir Algo Más
+                  </button>
+                  <div id="${geminiResponseId}" class="gemini-response-area hidden mt-3"></div>
+              </div>
+          `;
+          
+          setTimeout(() => {
+              if (lugar.fotos.length > 1) {
+                  const imgElement = document.getElementById(imageDisplayId);
+                  if(imgElement) { 
+                      document.getElementById(prevButtonId)?.addEventListener('click', () => {
+                          currentImageIndex = (currentImageIndex - 1 + lugar.fotos.length) % lugar.fotos.length;
+                          imgElement.src = lugar.fotos[currentImageIndex];
+                      });
+                      document.getElementById(nextButtonId)?.addEventListener('click', () => {
+                          currentImageIndex = (currentImageIndex + 1) % lugar.fotos.length;
+                          imgElement.src = lugar.fotos[currentImageIndex];
+                      });
+                  }
+              }
+              const geminiBtn = document.getElementById(geminiButtonId);
+              if(geminiBtn){
+                  geminiBtn.addEventListener('click', () => {
+                      const promptType = lugar.tipo === "Bodega" || lugar.tipo === "Bar de Pintxos" || lugar.tipo === "Restaurante Tradicional" || lugar.tipo === "Restaurante de Fusión" || lugar.tipo === "Bar de Tapas" 
+                          ? `Dame una sugerencia especial o un dato curioso sobre ${lugar.nombre}, un ${lugar.tipo} en ${lugar.localidad || currentGastronomiaPath.find(p => p.ciudades)?.nombre || currentTurismoPath[0]}. Sé breve y creativo.`
+                          : `Proporciona un dato curioso o una actividad interesante relacionada con ${lugar.nombre}, un lugar de ${lugar.tipo} en ${lugar.localidad || currentTurismoPath[0]}. Sé breve y creativo.`;
+                      callGeminiAPI(promptType, lugar.id);
+                  });
+              }
+
+              const walkBtn = document.getElementById(walkDirectionsButtonId);
+              if(walkBtn) {
+                  walkBtn.addEventListener('click', () => {
+                      if (!navigator.geolocation) {
+                          walkBtn.innerHTML = '<span class="material-symbols-outlined mr-1 text-sm">error</span> Geolocalización no soportada';
+                          setTimeout(() => { walkBtn.innerHTML = '<span class="material-symbols-outlined mr-1 text-sm">directions_walk</span> Cómo ir andando'; }, 3000);
+                          return;
+                      }
+
+                      walkBtn.disabled = true;
+                      walkBtn.innerHTML = '<div class="button-loader"></div> Obteniendo ubicación...';
+
+                      navigator.geolocation.getCurrentPosition(
+                          (position) => {
+                              const lat = position.coords.latitude;
+                              const lon = position.coords.longitude;
+                              const destination = encodeURIComponent(lugar.direccion);
+                              const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lon}&destination=${destination}&travelmode=walking`;
+                              window.open(mapsUrl, '_blank');
+                              walkBtn.disabled = false;
+                              walkBtn.innerHTML = '<span class="material-symbols-outlined mr-1 text-sm">directions_walk</span> Cómo ir andando';
+                          },
+                          (error) => {
+                              console.error("Error obteniendo ubicación: ", error);
+                              let errorMessageText = 'No se pudo obtener ubicación.';
+                              if (error.code === error.PERMISSION_DENIED) {
+                                  errorMessageText = 'Permiso de ubicación denegado.';
+                              }
+                              walkBtn.disabled = false;
+                              const originalButtonText = '<span class="material-symbols-outlined mr-1 text-sm">directions_walk</span> Cómo ir andando';
+                              walkBtn.innerHTML = `<span class="material-symbols-outlined mr-1 text-sm">error</span> ${errorMessageText}`;
+                              setTimeout(() => { walkBtn.innerHTML = originalButtonText; }, 5000);
+                          }
+                      );
+                  });
+              }
+
+          }, 0);
+          return card;
+      }
+
+      function renderGastronomiaLevel(path) {
+          gastronomiaContent.innerHTML = ''; 
+          updateBreadcrumb('gastronomia');
+          let currentLevelData;
+
+          if (path.length === 0) { 
+              currentLevelData = appData.gastronomia;
+              currentLevelData.forEach(comunidad => gastronomiaContent.appendChild(createInteractiveCard(comunidad, 'gastronomia')));
+          } else if (path.length === 1) { 
+              currentLevelData = path[0].provincias;
+              currentLevelData.forEach(provincia => gastronomiaContent.appendChild(createInteractiveCard(provincia, 'gastronomia')));
+          } else if (path.length === 2) { 
+              currentLevelData = path[1].ciudades;
+              currentLevelData.forEach(ciudad => gastronomiaContent.appendChild(createInteractiveCard(ciudad, 'gastronomia')));
+          } else if (path.length === 3) { 
+              currentLevelData = path[2].barrios;
+              currentLevelData.forEach(barrio => gastronomiaContent.appendChild(createInteractiveCard(barrio, 'gastronomia')));
+          } else if (path.length === 4) { 
+              currentLevelData = path[3].lugares;
+              if (currentLevelData && currentLevelData.length > 0) {
+                  currentLevelData.forEach(lugar => gastronomiaContent.appendChild(renderLugarCard(lugar)));
+              } else {
+                  gastronomiaContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay lugares en esta selección.</p>';
+              }
+          }
+      }
+      
+      function renderTurismoLevel(path) {
+          turismoContent.innerHTML = '';
+          updateBreadcrumb('turismo');
+
+          if (path.length === 0) { 
+              const regions = [...new Set(appData.turismo.map(item => item.region))];
+              regions.forEach(regionName => {
+                  const regionCard = createInteractiveCard({ nombre: regionName }, 'turismoRegion');
+                  turismoContent.appendChild(regionCard);
+              });
+                if (regions.length === 0) {
+                  turismoContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay destinos turísticos disponibles.</p>';
+              }
+          } else if (path.length === 1) { 
+              const selectedRegion = path[0];
+              const placesInRegion = appData.turismo.filter(item => item.region === selectedRegion);
+              if (placesInRegion.length > 0) {
+                  placesInRegion.forEach(lugar => turismoContent.appendChild(renderLugarCard(lugar)));
+              } else {
+                  turismoContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay lugares en esta región.</p>';
+              }
+          }
+      }
+
+
+      function renderCarteles() {
+          cartelesContent.innerHTML = '';
+          if (appData.carteles.length === 0) {
+              cartelesContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">Próximamente, ¡una galería de los carteles más curiosos!</p>';
+              return;
+          }
+          appData.carteles.forEach(cartel => {
+              const item = document.createElement('figure');
+              item.className = 'bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover group';
+              item.innerHTML = `
+                  <img src="${cartel.foto}" alt="${cartel.caption}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null;this.src='https://placehold.co/400x300/cccccc/ffffff?text=Cartel+no+disponible';">
+                  <figcaption class="p-3 text-xs text-center text-[#022831] bg-gray-50">${cartel.caption}</figcaption>
+              `;
+              cartelesContent.appendChild(item);
+          });
+      }
+      
+      function navigateToSection(sectionId, resetPath = false) {
+          heroSection.classList.add('hidden');
+          contentSections.forEach(section => section.classList.add('hidden'));
+          navLinks.forEach(link => link.classList.remove('active-nav-link'));
+
+          const activeSection = document.getElementById(sectionId + 'Section');
+          if (activeSection) {
+              activeSection.classList.remove('hidden');
+              document.querySelector(`nav a[data-section="${sectionId}"]`)?.classList.add('active-nav-link');
+                const mobileLink = document.querySelector(`#mobileMenu a[data-section="${sectionId}"]`);
+                if(mobileLink) mobileLink.classList.add('active-nav-link');
+
+
+              if (sectionId === 'gastronomia') {
+                  if (resetPath) currentGastronomiaPath = [];
+                  renderGastronomiaLevel(currentGastronomiaPath);
+              } else if (sectionId === 'turismo') {
+                  if (resetPath) currentTurismoPath = [];
+                  renderTurismoLevel(currentTurismoPath);
+              } else if (sectionId === 'carteles') {
+                  renderCarteles();
+              }
+          } else { 
+              heroSection.classList.remove('hidden');
+          }
+          mobileMenu.classList.add('hidden'); 
+      }
+
+      navLinks.forEach(link => {
+          link.addEventListener('click', (e) => {
+              e.preventDefault();
+              const sectionId = e.target.closest('a').dataset.section;
+              navigateToSection(sectionId, true); 
+          });
+      });
+
+      homeLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          heroSection.classList.remove('hidden');
+          contentSections.forEach(section => section.classList.add('hidden'));
+          navLinks.forEach(link => link.classList.remove('active-nav-link'));
+          currentGastronomiaPath = []; 
+          currentTurismoPath = [];
+          mobileMenu.classList.add('hidden');
+      });
+
+      mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+      });
+
+      navigateToSection('hero');
+
+  </script>
