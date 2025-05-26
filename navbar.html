@@ -1,0 +1,24 @@
+<header class="bg-[#1A385A] text-white shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <a href="#" id="homeLink" class="text-2xl font-bold font-display">GastroTurismo Curioso</a>
+            </div>
+            <nav class="hidden md:flex space-x-1">
+                <a href="#" data-section="gastronomia" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Gastronomía</a>
+                <a href="#" data-section="turismo" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Turismo</a>
+                <a href="#" data-section="carteles" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Carteles Curiosos</a>
+            </nav>
+            <div class="md:hidden">
+                <button id="mobileMenuButton" class="text-white hover:text-[#E46F44] focus:outline-none">
+                    <span class="material-symbols-outlined text-3xl">menu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden bg-[#1A385A] bg-opacity-95">
+        <a href="#" data-section="gastronomia" class="block nav-link px-3 py-3 text-base font-medium text-center">Gastronomía</a>
+        <a href="#" data-section="turismo" class="block nav-link px-3 py-3 text-base font-medium text-center">Turismo</a>
+        <a href="#" data-section="carteles" class="block nav-link px-3 py-3 text-base font-medium text-center">Carteles Curiosos</a>
+    </div>
+</header>
