@@ -162,7 +162,12 @@ function cargarDatosDetalle(nombreAutonomia) {
   };
 }
 
-// Tu función include sigue siendo útil
+/**
+ * Incluye el contenido de un archivo HTML dentro de otro.
+ * Usado por los scriplets como <?= include('nombre_archivo_sin_extension') ?>
+ * @param {string} filename El nombre del archivo HTML (sin la extensión .html).
+ * @return {string} El contenido del archivo HTML.
+ */
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
