@@ -1,181 +1,5 @@
 <script>
-      const appData = {
-          gastronomia: [
-              {
-                  nombre: "País Vasco",
-                  provincias: [
-                      {
-                          nombre: "Vizcaya",
-                          ciudades: [
-                              {
-                                  nombre: "Bilbao",
-                                  barrios: [
-                                      {
-                                          nombre: "Casco Viejo",
-                                          lugares: [
-                                              {
-                                                  id: "g1",
-                                                  nombre: "Bar Pintxos Increíbles",
-                                                  tipo: "Bar de Pintxos",
-                                                  valoracion: "⭐⭐⭐⭐⭐",
-                                                  direccion: "Calle Somera, 12, Bilbao",
-                                                  horario: "L-D 12:00-00:00",
-                                                  rrss: [{nombre: "Instagram", url: "https://instagram.com/barpintxosincreibles", icon: "photo_camera"}, {nombre: "Facebook", url: "#", icon: "facebook"}],
-                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Calle+Somera+12+Bilbao",
-                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Pintxo+Delicioso+1", "https://placehold.co/600x400/022831/FFFFFF?text=Ambiente+Bar+2", "https://placehold.co/600x400/FCEA48/000000?text=Especialidad+Casa+3"],
-                                                  descripcion: "Auténticos pintxos vascos en el corazón del Casco Viejo. Una experiencia inolvidable con ingredientes frescos y combinaciones creativas."
-                                              },
-                                              {
-                                                  id: "g2",
-                                                  nombre: "La Olla de la Plaza Nueva",
-                                                  tipo: "Restaurante Tradicional",
-                                                  valoracion: "⭐⭐⭐⭐",
-                                                  direccion: "Plaza Nueva, 5, Bilbao",
-                                                  horario: "M-D 11:00-23:00",
-                                                  rrss: [{nombre: "Web", url: "#", icon: "language"}],
-                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Plaza+Nueva+5+Bilbao",
-                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Raciones+Variadas", "https://placehold.co/600x400/022831/FFFFFF?text=Terraza+Animada"],
-                                                  descripcion: "Ideal para probar raciones y tapas tradicionales en un ambiente animado. Perfecto para ir con amigos."
-                                              }
-                                          ]
-                                      },
-                                      {
-                                          nombre: "Indautxu",
-                                          lugares: [
-                                              {
-                                                  id: "g3",
-                                                  nombre: "Restaurante Moderno Fusión",
-                                                  tipo: "Restaurante de Fusión",
-                                                  valoracion: "⭐⭐⭐⭐⭐",
-                                                  direccion: "Alameda Urquijo, 50, Bilbao",
-                                                  horario: "M-S 13:00-16:00, 20:00-23:00",
-                                                  rrss: [{nombre: "Instagram", url: "#", icon: "photo_camera"}],
-                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Alameda+Urquijo+50+Bilbao",
-                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Plato+Fusión+1", "https://placehold.co/600x400/022831/FFFFFF?text=Interior+Elegante+2"],
-                                                  descripcion: "Cocina de vanguardia que fusiona sabores locales e internacionales. Presentaciones espectaculares."
-                                              }
-                                          ]
-                                      }
-                                  ]
-                              }
-                          ]
-                      },
-                      {
-                          nombre: "Guipúzcoa",
-                          ciudades: [
-                              {
-                                  nombre: "San Sebastián",
-                                  barrios: [
-                                      {
-                                          nombre: "Parte Vieja",
-                                          lugares: [
-                                                {
-                                                  id: "g4",
-                                                  nombre: "Txepetxa",
-                                                  tipo: "Bar de Pintxos",
-                                                  valoracion: "⭐⭐⭐⭐⭐",
-                                                  direccion: "Calle Pescadería, 5, San Sebastián",
-                                                  horario: "M-D 12:00-15:30, 19:00-23:00",
-                                                  rrss: [],
-                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Calle+Pescaderia+5+San+Sebastian",
-                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Antxoas+Famosas", "https://placehold.co/600x400/022831/FFFFFF?text=Barra+Tradicional"],
-                                                  descripcion: "El paraíso de las antxoas. Un bar con solera y pintxos que son pura tradición y sabor."
-                                              }
-                                          ]
-                                      }
-                                  ]
-                              }
-                          ]
-                      }
-                  ]
-              },
-              {
-                  nombre: "Andalucía",
-                  provincias: [
-                      {
-                          nombre: "Sevilla",
-                          ciudades: [
-                              {
-                                  nombre: "Sevilla",
-                                  barrios: [
-                                      {
-                                          nombre: "Triana",
-                                          lugares: [
-                                              {
-                                                  id: "g5",
-                                                  nombre: "Casa Cuesta",
-                                                  tipo: "Bar de Tapas",
-                                                  valoracion: "⭐⭐⭐⭐",
-                                                  direccion: "Calle Castilla, 1, Sevilla",
-                                                  horario: "L-D 12:00-00:00",
-                                                  rrss: [{nombre: "Web", url: "#", icon: "language"}],
-                                                  mapLink: "https://www.google.com/maps/search/?api=1&query=Calle+Castilla+1+Sevilla",
-                                                  fotos: ["https://placehold.co/600x400/E46F44/FFFFFF?text=Tapas+Trianeras", "https://placehold.co/600x400/022831/FFFFFF?text=Patio+Andaluz"],
-                                                  descripcion: "Sabor andaluz en el emblemático barrio de Triana. Tapas caseras y ambiente auténtico."
-                                              }
-                                          ]
-                                      }
-                                  ]
-                              }
-                          ]
-                      }
-                  ]
-              }
-          ],
-          turismo: [
-                {
-                  id: "t1",
-                  nombre: "Bodegas Tradición Centenaria",
-                  tipo: "Bodega",
-                  region: "La Rioja",
-                  localidad: "Haro",
-                  valoracion: "⭐⭐⭐⭐",
-                  direccion: "Carretera del Vino, km 5, Haro, La Rioja",
-                  horario: "Visitas: M-S 10:00-18:00 (cita previa)",
-                  rrss: [{nombre: "Web", url: "#", icon: "language"}],
-                  mapLink: "https://www.google.com/maps/search/?api=1&query=Carretera+del+Vino+km+5+Haro+La+Rioja",
-                  fotos: ["https://placehold.co/600x400/AAB624/000000?text=Bodega+Exterior+Viñedos", "https://placehold.co/600x400/FCEA48/000000?text=Sala+de+Barricas", "https://placehold.co/600x400/E46F44/FFFFFF?text=Cata+de+Vinos"],
-                  descripcion: "Descubre la tradición vinícola en estas bodegas con siglos de historia. Ofrecen catas de vinos y visitas guiadas por sus instalaciones y viñedos."
-              },
-              {
-                  id: "t2",
-                  nombre: "Parque Natural de las Bardenas Reales",
-                  tipo: "Naturaleza",
-                  region: "Navarra",
-                  localidad: "Arguedas (acceso principal)",
-                  direccion: "NA-134, Arguedas, Navarra",
-                  valoracion: "⭐⭐⭐⭐⭐",
-                  horario: "Abierto 24h (consultar restricciones acceso)",
-                  rrss: [{nombre: "Info", url: "#", icon: "info"}],
-                  mapLink: "https://www.google.com/maps/search/?api=1&query=Parque+Natural+Bardenas+Reales+Navarra",
-                  fotos: ["https://placehold.co/600x400/AAB624/000000?text=Paisaje+Lunar+Bardenas", "https://placehold.co/600x400/FCEA48/000000?text=Castildetierra"],
-                  descripcion: "Un paisaje semidesértico de belleza impactante, con formaciones rocosas únicas. Ideal para senderismo y fotografía."
-              }
-          ],
-          carteles: [
-              {
-                  id: "c1",
-                  foto: "https://placehold.co/400x300/FF6F61/FFFFFF?text=Cartel+Divertido+1",
-                  caption: "Encontrado en un pueblo perdido. ¡Prohibido aburrirse!"
-              },
-              {
-                  id: "c2",
-                  foto: "https://placehold.co/400x300/87DCF0/000000?text=Señal+Tráfico+Original+2",
-                  caption: "¡Cuidado con los patos bailarines! Zona de coreografías inesperadas."
-              },
-              {
-                  id: "c3",
-                  foto: "https://placehold.co/400x300/AAB624/FFFFFF?text=Advertencia+Peculiar+3",
-                  caption: "Solo para valientes... o muy despistados."
-              },
-              {
-                  id: "c4",
-                  foto: "https://placehold.co/400x300/FCEA48/000000?text=Norma+Absurda+4",
-                  caption: "Las reglas están para romperse, ¿o no?"
-              }
-          ]
-      };
-
+      // Elementos del DOM
       const gastronomiaContent = document.getElementById('gastronomiaContent');
       const turismoContent = document.getElementById('turismoContent');
       const cartelesContent = document.getElementById('cartelesContent');
@@ -185,11 +9,253 @@
       const homeLink = document.getElementById('homeLink');
       const mobileMenuButton = document.getElementById('mobileMenuButton');
       const mobileMenu = document.getElementById('mobileMenu');
+      const globalLoadingIndicator = document.getElementById('globalLoadingIndicator');
       
       document.getElementById('currentYear').textContent = new Date().getFullYear();
 
+      // Estructura de datos principal de la aplicación
+      let appData = {
+          gastronomia: [],
+          turismo: [],
+          carteles: [] 
+      };
+      // Rutas de navegación actuales para las migas de pan
       let currentGastronomiaPath = [];
       let currentTurismoPath = [];
+
+      // --- Configuración para Cargar Datos desde Google Apps Script Web App ---
+      // ¡¡¡REEMPLAZA ESTA URL CON LA URL DE TU APLICACIÓN WEB DESPLEGADA!!!
+      const APPS_SCRIPT_WEB_APP_URL = 'URL_DE_TU_APLICACION_WEB_DE_APPS_SCRIPT_AQUI'; 
+
+      // --- Inicio: Funciones para Cargar y Procesar Datos ---
+
+      /**
+       * Convierte una valoración numérica (ej. 0-20) a una cadena de estrellas (0-5).
+       * @param {string|number} numericVal - El valor numérico de la hoja de cálculo.
+       * @returns {string} Una cadena de caracteres de estrellas.
+       */
+      function convertNumericToStars(numericVal) {
+          const val = parseInt(numericVal, 10);
+          if (isNaN(val) || val <= 0) return ""; // Si no es un número válido o es 0 o menos, no muestra estrellas
+          
+          // Asumimos una escala donde 20 es el máximo (5 estrellas).
+          // Ajusta esta lógica si tu escala de valoración es diferente.
+          // Por ejemplo, si 20 -> 5 estrellas, 16 -> 4 estrellas, etc.
+          const starsCount = Math.round(val / 4); 
+          return '⭐'.repeat(Math.min(Math.max(0, starsCount), 5)); // Asegura entre 0 y 5 estrellas
+      }
+
+      /**
+       * Transforma los datos crudos (array de arrays de Google Sheets, ya sin encabezados)
+       * a la estructura anidada de appData, usando los índices de columna de tu hoja.
+       * @param {Array<Array<string>>} dataRows - Array de filas de datos (sin encabezados).
+       */
+      function transformData(dataRows) {
+          const newAppData = {
+              gastronomia: [],
+              turismo: [],
+              carteles: [] // Los carteles no se procesan desde esta lógica, necesitarían su propia columna "Tipo"
+          };
+          const gastronomiaMap = new Map(); // Ayuda a construir la estructura anidada
+
+          dataRows.forEach(row => {
+              // Verifica que la fila tenga suficientes datos y un nombre de lugar
+              if (!row || row.length < 18 || !row[4] || row[4].trim() === '') { 
+                  // console.warn("Fila incompleta o sin nombre de lugar, saltando:", row);
+                  return; 
+              }
+
+              // Mapeo de índices de columna a variables (0-indexed)
+              const autonomia = row[0] ? row[0].trim() : '';         // Col A
+              const provinciaNombre = row[1] ? row[1].trim() : '';   // Col B
+              const ciudadNombre = row[2] ? row[2].trim() : '';      // Col C
+              const barrioNombre = row[3] ? row[3].trim() : '';      // Col D
+              const nombreLugar = row[4] ? row[4].trim() : '';       // Col E
+              const descripcion = row[5] ? row[5].trim() : '';       // Col F (Nota)
+              const direccion = row[6] ? row[6].trim() : '';         // Col G
+              const horario = row[7] ? row[7].trim() : '';           // Col H
+              const pintxoTapa = row[8] ? row[8].trim() : '';        // Col I
+              const mapLink = row[9] ? row[9].trim() : '';           // Col J
+              const facebookUrl = row[10] ? row[10].trim() : '';     // Col K
+              const instagramUrl = row[11] ? row[11].trim() : '';    // Col L
+              const webUrl = row[12] ? row[12].trim() : '';          // Col M
+              
+              const fotos = [];
+              if (row[13] && row[13].trim() !== '') fotos.push(row[13].trim()); // Col N (Foto1)
+              if (row[14] && row[14].trim() !== '') fotos.push(row[14].trim()); // Col O (Foto2)
+              if (row[15] && row[15].trim() !== '') fotos.push(row[15].trim()); // Col P (Foto3)
+              if (row[16] && row[16].trim() !== '') fotos.push(row[16].trim()); // Col Q (Foto4)
+              
+              const tipoLugarSheet = row[17] ? row[17].trim() : '';    // Col R (Tipo Lugar)
+              const valoracionNumerica = row[18] ? row[18].trim() : ''; // Col S (Valoracion numérica)
+
+              const valoracionEstrellas = convertNumericToStars(valoracionNumerica);
+
+              // Construye el array de redes sociales
+              const rrss = [];
+              if (instagramUrl) rrss.push({ nombre: "Instagram", url: instagramUrl, icon: "photo_camera" });
+              if (facebookUrl) rrss.push({ nombre: "Facebook", url: facebookUrl, icon: "forum" }); // 'forum' como icono genérico para FB
+              if (webUrl) rrss.push({ nombre: "Web", url: webUrl, icon: "language" });
+
+              // Determina el tipo de lugar para la app y la estructura de datos
+              let appDataTipo = "";
+              if (tipoLugarSheet.toLowerCase() === "restaurante") appDataTipo = "Restaurante Tradicional";
+              else if (tipoLugarSheet.toLowerCase() === "bar") appDataTipo = "Bar de Pintxos";
+              else if (tipoLugarSheet.toLowerCase() === "tienda") appDataTipo = "Tienda";
+              else if (tipoLugarSheet.toLowerCase() === "turismo") appDataTipo = "Interés Turístico";
+              else {
+                  // console.warn(`Tipo de lugar desconocido '${tipoLugarSheet}' para '${nombreLugar}', saltando fila.`);
+                  return; // Salta esta fila si el tipo no es reconocido
+              }
+
+              // Objeto base para cada lugar
+              const lugarBase = {
+                  id: `item-${Math.random().toString(36).substr(2, 9)}`, // ID único generado
+                  nombre: nombreLugar,
+                  tipo: appDataTipo,
+                  valoracion: valoracionEstrellas,
+                  descripcion: descripcion,
+                  direccion: direccion,
+                  horario: horario,
+                  mapLink: mapLink,
+                  fotos: fotos,
+                  rrss: rrss,
+              };
+
+              // Añade pintxo/tapa si aplica
+              if (appDataTipo === "Restaurante Tradicional" || appDataTipo === "Bar de Pintxos") {
+                if (pintxoTapa) lugarBase.pintxo_tapa = pintxoTapa;
+              }
+
+              // Clasifica el lugar en gastronomía o turismo
+              if (appDataTipo === "Restaurante Tradicional" || appDataTipo === "Bar de Pintxos" || appDataTipo === "Tienda") {
+                  // Requiere todos los niveles geográficos para gastronomía
+                  if (!autonomia || !provinciaNombre || !ciudadNombre || !barrioNombre) {
+                      // console.warn(`Datos geográficos incompletos para gastronomía/tienda '${nombreLugar}', saltando.`);
+                      return;
+                  }
+                  // Construye la estructura anidada para gastronomía
+                  let comunidad = gastronomiaMap.get(autonomia);
+                  if (!comunidad) {
+                      comunidad = { nombre: autonomia, provincias: new Map() };
+                      gastronomiaMap.set(autonomia, comunidad);
+                      newAppData.gastronomia.push({ nombre: autonomia, provincias: [] }); // Referencia para el array final
+                  }
+                  let finalComunidad = newAppData.gastronomia.find(c => c.nombre === autonomia);
+
+                  let provincia = comunidad.provincias.get(provinciaNombre);
+                  if (!provincia) {
+                      provincia = { nombre: provinciaNombre, ciudades: new Map() };
+                      comunidad.provincias.set(provinciaNombre, provincia);
+                      finalComunidad.provincias.push({ nombre: provinciaNombre, ciudades: [] });
+                  }
+                  let finalProvincia = finalComunidad.provincias.find(p => p.nombre === provinciaNombre);
+
+                  let ciudad = provincia.ciudades.get(ciudadNombre);
+                  if (!ciudad) {
+                      ciudad = { nombre: ciudadNombre, barrios: new Map() };
+                      provincia.ciudades.set(ciudadNombre, ciudad);
+                      finalProvincia.ciudades.push({ nombre: ciudadNombre, barrios: [] });
+                  }
+                  let finalCiudad = finalProvincia.ciudades.find(c => c.nombre === ciudadNombre);
+                  
+                  let barrio = ciudad.barrios.get(barrioNombre);
+                  if (!barrio) {
+                      barrio = { nombre: barrioNombre, lugares: [] };
+                      ciudad.barrios.set(barrioNombre, barrio);
+                      finalCiudad.barrios.push(barrio); // El barrio ya tiene la estructura final
+                  }
+                  barrio.lugares.push(lugarBase);
+
+              } else if (appDataTipo === "Interés Turístico") {
+                   // Requiere al menos autonomía y ciudad para turismo
+                   if (!autonomia || !ciudadNombre ) {
+                      // console.warn(`Datos geográficos incompletos para turismo '${nombreLugar}', saltando.`);
+                      return;
+                  }
+                  newAppData.turismo.push({
+                      ...lugarBase,
+                      region: autonomia, // Para turismo, Autonomía es la Región
+                      localidad: ciudadNombre // Ciudad es la Localidad
+                  });
+              }
+          });
+          
+          // Limpia los Maps de la estructura de gastronomiaMap para que appData solo tenga arrays
+          newAppData.gastronomia.forEach(com => {
+              com.provincias.forEach(prov => {
+                  prov.ciudades.forEach(ciu => { /* La estructura de barrios ya es un array de lugares */ });
+              });
+          });
+          return newAppData;
+      }
+
+      /**
+       * Carga los datos desde la aplicación web de Google Apps Script.
+       */
+      async function loadDataAndInitialize() {
+          if (APPS_SCRIPT_WEB_APP_URL === 'URL_DE_TU_APLICACION_WEB_DE_APPS_SCRIPT_AQUI' || APPS_SCRIPT_WEB_APP_URL.trim() === '') {
+              console.error("Por favor, configura la APPS_SCRIPT_WEB_APP_URL en el script.");
+              heroSection.innerHTML += '<p class="text-red-500 text-center mt-4">Error: URL de la aplicación web de Apps Script no configurada.</p>';
+              globalLoadingIndicator.classList.add('hidden');
+              appData = { gastronomia: [], turismo: [], carteles: [] }; // Datos vacíos
+              initializeUI(); // Llama para que la UI sepa que no hay datos
+              return;
+          }
+
+          globalLoadingIndicator.classList.remove('hidden'); // Mostrar indicador de carga
+          heroSection.classList.add('hidden'); // Ocultar hero mientras carga
+
+          try {
+              const response = await fetch(APPS_SCRIPT_WEB_APP_URL);
+              if (!response.ok) {
+                  let errorMsg = `Error al cargar datos desde Apps Script: ${response.status} ${response.statusText}.`;
+                  try {
+                      const errorBody = await response.json(); // Intenta obtener más detalles del error
+                      errorMsg += ` Detalles: ${errorBody.error || JSON.stringify(errorBody)}`;
+                  } catch (e) { /* No se pudo parsear el cuerpo del error como JSON */ }
+                  throw new Error(errorMsg);
+              }
+              const result = await response.json(); // Parsea la respuesta JSON del Apps Script
+              
+              if (result.error) { // Si el JSON del Apps Script contiene un campo 'error'
+                  throw new Error(`Error devuelto por Apps Script: ${result.error}`);
+              }
+
+              if (result.values && result.values.length > 0) {
+                  // Tu Apps Script ya hace data.shift(), por lo que result.values son solo los datos.
+                  appData = transformData(result.values); 
+                  console.log("Datos cargados y transformados desde Apps Script:", appData);
+              } else {
+                  console.warn("No se encontraron datos (result.values) en la respuesta de Apps Script o está vacío.");
+                  appData = { gastronomia: [], turismo: [], carteles: [] }; // Asegurar que appData está definido
+              }
+              initializeUI(); // Inicializa la UI con los datos cargados (o vacíos)
+
+          } catch (error) {
+              console.error('Error al cargar o procesar los datos desde Apps Script:', error);
+              // Muestra el error en la sección hero para que el usuario lo vea
+              heroSection.innerHTML = `<p class="text-red-600 text-center py-10 text-lg">Error al cargar los datos: ${error.message}.<br>Por favor, revisa la URL y el despliegue de tu Apps Script, y asegúrate de que la hoja de cálculo es accesible.</p>`;
+              heroSection.classList.remove('hidden');
+              appData = { gastronomia: [], turismo: [], carteles: [] }; // Datos vacíos en caso de error
+              initializeUI(); // Llama para que la UI sepa que hubo un error
+          } finally {
+            globalLoadingIndicator.classList.add('hidden'); // Ocultar indicador de carga
+            // Si no hay datos y no hubo un error explícito mostrado en hero, muestra el hero por defecto
+            if (appData.gastronomia.length === 0 && appData.turismo.length === 0 && appData.carteles.length === 0 && !heroSection.innerHTML.includes('text-red-600')) {
+                heroSection.classList.remove('hidden');
+            }
+          }
+      }
+      
+      /**
+       * Inicializa la interfaz de usuario. Se llama después de que los datos se han intentado cargar.
+       */
+      function initializeUI() {
+        navigateToSection('hero'); // Navega a la sección de inicio por defecto
+      }
+
+      // --- Funciones de renderizado y navegación (sin cambios significativos, deben estar completas) ---
 
       async function callGeminiAPI(prompt, lugarId) {
           const geminiResponseEl = document.getElementById(`gemini-response-${lugarId}`);
@@ -201,10 +267,9 @@
           geminiResponseEl.innerHTML = ''; 
           geminiResponseEl.classList.remove('hidden');
 
-
           let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
           const payload = { contents: chatHistory };
-          /*const apiKey = ""; 
+          const apiKey = ""; 
           const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
           try {
@@ -214,7 +279,7 @@
                   body: JSON.stringify(payload)
               });
               if (!response.ok) {
-                  throw new Error(`Error de API: ${response.status}`);
+                  throw new Error(`Error de API Gemini: ${response.status}`);
               }
               const result = await response.json();
               
@@ -225,20 +290,19 @@
                   geminiResponseEl.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`;
               } else {
                   geminiResponseEl.innerHTML = '<p>No se pudo obtener una respuesta creativa esta vez. Inténtalo de nuevo más tarde.</p>';
-                  console.error("Respuesta inesperada de la API:", result);
               }
           } catch (error) {
               console.error('Error llamando a la API de Gemini:', error);
-              geminiResponseEl.innerHTML = `<p>Hubo un problema al contactar con el servicio de IA: ${error.message}. Por favor, inténtalo más tarde.</p>`;
+              geminiResponseEl.innerHTML = `<p>Hubo un problema al contactar con el servicio de IA: ${error.message}.</p>`;
           } finally {
               geminiButton.disabled = false;
               geminiButton.innerHTML = '<span class="material-symbols-outlined mr-1">auto_awesome</span>Descubrir Algo Más';
-          }*/
+          }
       }
-
 
       function updateBreadcrumb(type) {
           const breadcrumbContainer = document.getElementById(`${type}Breadcrumb`);
+          if (!breadcrumbContainer) return; 
           const path = type === 'gastronomia' ? currentGastronomiaPath : currentTurismoPath;
           breadcrumbContainer.innerHTML = ''; 
           
@@ -258,7 +322,7 @@
                       if (type === 'gastronomia') {
                           currentGastronomiaPath = currentGastronomiaPath.slice(0, index + 1);
                           renderGastronomiaLevel(currentGastronomiaPath);
-                      } else {
+                      } else { 
                           currentTurismoPath = currentTurismoPath.slice(0, index + 1);
                           renderTurismoLevel(currentTurismoPath);
                       }
@@ -266,10 +330,10 @@
               } else {
                   itemSpan.classList.add('font-semibold', 'text-[#E46F44]');
               }
+              breadcrumbContainer.appendChild(document.createTextNode(' ')); 
               breadcrumbContainer.appendChild(itemSpan);
           });
       }
-
 
       function createInteractiveCard(item, type) {
           const card = document.createElement('div');
@@ -299,7 +363,7 @@
           const geminiResponseId = `gemini-response-${lugar.id}`;
           const walkDirectionsButtonId = `walk-dir-btn-${lugar.id}`;
 
-          let rrssLinks = lugar.rrss.map(rs => 
+          let rrssLinks = (lugar.rrss || []).map(rs => 
               `<a href="${rs.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center bg-[#022831] hover:bg-[#E46F44] text-white text-xs px-3 py-2 rounded-full mr-2 mb-2 transition-colors duration-300">
                   <span class="material-symbols-outlined mr-1 text-sm">${rs.icon}</span> ${rs.nombre}
                 </a>`
@@ -308,26 +372,27 @@
           const card = document.createElement('div');
           card.className = 'bg-white rounded-lg shadow-xl p-4 md:p-6 flex flex-col space-y-3 col-span-1 md:col-span-2 lg:col-span-3';
           card.innerHTML = `
-              <div id="${imageGalleryId}" class="relative">
-                  <img id="${imageDisplayId}" src="${lugar.fotos[0]}" alt="${lugar.nombre}" class="w-full h-64 object-cover rounded-lg mb-3 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/ffffff?text=Imagen+no+disponible';">
-                  ${lugar.fotos.length > 1 ? `
-                      <button id="${prevButtonId}" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-[#1A385A] bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-100 focus:outline-none"><span class="material-symbols-outlined">arrow_back_ios</span></button>
-                      <button id="${nextButtonId}" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-[#1A385A] bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-100 focus:outline-none"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+              <div id="${imageGalleryId}" class="relative w-full aspect-video rounded-lg mb-3 shadow-md overflow-hidden">
+                  <img id="${imageDisplayId}" src="${(lugar.fotos && lugar.fotos.length > 0) ? lugar.fotos[0] : 'https://placehold.co/600x338/cccccc/ffffff?text=Imagen+no+disponible'}" alt="${lugar.nombre}" class="absolute top-0 left-0 w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x338/cccccc/ffffff?text=Imagen+no+disponible';">
+                  ${(lugar.fotos && lugar.fotos.length > 1) ? `
+                      <button id="${prevButtonId}" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-[#1A385A] bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-100 focus:outline-none z-10"><span class="material-symbols-outlined">arrow_back_ios</span></button>
+                      <button id="${nextButtonId}" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-[#1A385A] bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-100 focus:outline-none z-10"><span class="material-symbols-outlined">arrow_forward_ios</span></button>
                   ` : ''}
               </div>
-              <h3 class="text-2xl font-bold font-display text-[#E46F44]">${lugar.nombre}</h3>
-              <p class="text-lg text-yellow-500">${lugar.valoracion}</p>
-              <p class="text-sm text-gray-700"><strong class="font-semibold text-[#1A385A]">Dirección:</strong> ${lugar.direccion}</p>
-              <p class="text-sm text-gray-700"><strong class="font-semibold text-[#1A385A]">Horario:</strong> ${lugar.horario}</p>
-              <p class="text-sm text-gray-700 mt-1">${lugar.descripcion}</p>
+              <h3 class="text-2xl font-bold font-display text-[#E46F44]">${lugar.nombre || 'Nombre no disponible'}</h3>
+              <p class="text-lg text-yellow-500">${lugar.valoracion || ''}</p>
+              <p class="text-sm text-gray-700"><strong class="font-semibold text-[#1A385A]">Dirección:</strong> ${lugar.direccion || 'No disponible'}</p>
+              <p class="text-sm text-gray-700"><strong class="font-semibold text-[#1A385A]">Horario:</strong> ${lugar.horario || 'No disponible'}</p>
+              <p class="text-sm text-gray-700 mt-1">${lugar.descripcion || ''}</p>
+              ${lugar.pintxo_tapa ? `<p class="text-sm text-gray-700"><strong class="font-semibold text-[#1A385A]">Especialidad:</strong> ${lugar.pintxo_tapa}</p>` : ''}
               <div class="mt-3 flex flex-wrap items-center">
                   ${rrssLinks}
-                  <a href="${lugar.mapLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-2 rounded-full mr-2 mb-2 transition-colors duration-300">
+                  ${lugar.mapLink ? `<a href="${lugar.mapLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-2 rounded-full mr-2 mb-2 transition-colors duration-300">
                       <span class="material-symbols-outlined mr-1 text-sm">location_on</span> Ver en Mapa
-                  </a>
-                  <button id="${walkDirectionsButtonId}" class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded-full mr-2 mb-2 transition-colors duration-300">
+                  </a>` : ''}
+                  ${lugar.direccion ? `<button id="${walkDirectionsButtonId}" class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded-full mr-2 mb-2 transition-colors duration-300">
                       <span class="material-symbols-outlined mr-1 text-sm">directions_walk</span> Cómo ir andando
-                  </button>
+                  </button>`: ''}
               </div>
               <div class="mt-4">
                   <button id="${geminiButtonId}" class="bg-[#AAB624] hover:bg-[#8f9a1e] text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out flex items-center justify-center text-sm w-full md:w-auto">
@@ -337,8 +402,8 @@
               </div>
           `;
           
-          setTimeout(() => {
-              if (lugar.fotos.length > 1) {
+          setTimeout(() => { 
+              if (lugar.fotos && lugar.fotos.length > 1) {
                   const imgElement = document.getElementById(imageDisplayId);
                   if(imgElement) { 
                       document.getElementById(prevButtonId)?.addEventListener('click', () => {
@@ -354,15 +419,14 @@
               const geminiBtn = document.getElementById(geminiButtonId);
               if(geminiBtn){
                   geminiBtn.addEventListener('click', () => {
-                      const promptType = lugar.tipo === "Bodega" || lugar.tipo === "Bar de Pintxos" || lugar.tipo === "Restaurante Tradicional" || lugar.tipo === "Restaurante de Fusión" || lugar.tipo === "Bar de Tapas" 
-                          ? `Dame una sugerencia especial o un dato curioso sobre ${lugar.nombre}, un ${lugar.tipo} en ${lugar.localidad || currentGastronomiaPath.find(p => p.ciudades)?.nombre || currentTurismoPath[0]}. Sé breve y creativo.`
-                          : `Proporciona un dato curioso o una actividad interesante relacionada con ${lugar.nombre}, un lugar de ${lugar.tipo} en ${lugar.localidad || currentTurismoPath[0]}. Sé breve y creativo.`;
+                      const nombreGeografico = lugar.localidad || (currentGastronomiaPath.length > 0 ? currentGastronomiaPath[currentGastronomiaPath.length -1].nombre : '') || (currentTurismoPath.length > 0 ? currentTurismoPath[0] : 'esta área');
+                      const promptType = `Dame una sugerencia especial o un dato curioso sobre ${lugar.nombre}, un ${lugar.tipo} en ${nombreGeografico}. Sé breve y creativo.`;
                       callGeminiAPI(promptType, lugar.id);
                   });
               }
 
               const walkBtn = document.getElementById(walkDirectionsButtonId);
-              if(walkBtn) {
+              if(walkBtn && lugar.direccion) {
                   walkBtn.addEventListener('click', () => {
                       if (!navigator.geolocation) {
                           walkBtn.innerHTML = '<span class="material-symbols-outlined mr-1 text-sm">error</span> Geolocalización no soportada';
@@ -409,15 +473,27 @@
 
           if (path.length === 0) { 
               currentLevelData = appData.gastronomia;
+              if (!currentLevelData || currentLevelData.length === 0) {
+                  gastronomiaContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay datos de gastronomía disponibles.</p>'; return;
+              }
               currentLevelData.forEach(comunidad => gastronomiaContent.appendChild(createInteractiveCard(comunidad, 'gastronomia')));
           } else if (path.length === 1) { 
               currentLevelData = path[0].provincias;
+               if (!currentLevelData || currentLevelData.length === 0) {
+                  gastronomiaContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay provincias en esta comunidad.</p>'; return;
+              }
               currentLevelData.forEach(provincia => gastronomiaContent.appendChild(createInteractiveCard(provincia, 'gastronomia')));
           } else if (path.length === 2) { 
               currentLevelData = path[1].ciudades;
+              if (!currentLevelData || currentLevelData.length === 0) {
+                  gastronomiaContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay ciudades en esta provincia.</p>'; return;
+              }
               currentLevelData.forEach(ciudad => gastronomiaContent.appendChild(createInteractiveCard(ciudad, 'gastronomia')));
           } else if (path.length === 3) { 
               currentLevelData = path[2].barrios;
+              if (!currentLevelData || currentLevelData.length === 0) {
+                  gastronomiaContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay barrios en esta ciudad.</p>'; return;
+              }
               currentLevelData.forEach(barrio => gastronomiaContent.appendChild(createInteractiveCard(barrio, 'gastronomia')));
           } else if (path.length === 4) { 
               currentLevelData = path[3].lugares;
@@ -434,13 +510,16 @@
           updateBreadcrumb('turismo');
 
           if (path.length === 0) { 
-              const regions = [...new Set(appData.turismo.map(item => item.region))];
+              if (!appData.turismo || appData.turismo.length === 0) {
+                  turismoContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay destinos turísticos disponibles.</p>'; return;
+              }
+              const regions = [...new Set(appData.turismo.map(item => item.region).filter(Boolean))];
               regions.forEach(regionName => {
                   const regionCard = createInteractiveCard({ nombre: regionName }, 'turismoRegion');
                   turismoContent.appendChild(regionCard);
               });
                 if (regions.length === 0) {
-                  turismoContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay destinos turísticos disponibles.</p>';
+                  turismoContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay regiones turísticas definidas.</p>';
               }
           } else if (path.length === 1) { 
               const selectedRegion = path[0];
@@ -453,13 +532,22 @@
           }
       }
 
-
       function renderCarteles() {
           cartelesContent.innerHTML = '';
-          if (appData.carteles.length === 0) {
-              cartelesContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">Próximamente, ¡una galería de los carteles más curiosos!</p>';
-              return;
+          // Los carteles no se cargan desde la hoja de cálculo con la lógica actual.
+          // Si quieres añadir carteles, deberías hacerlo directamente en appData.carteles
+          // o modificar tu hoja y el script para incluir un tipo "Cartel".
+          if (!appData.carteles || appData.carteles.length === 0) {
+              appData.carteles = [ // Ejemplo de datos de carteles si los quieres estáticos
+                  { id: "c1", foto: "https://placehold.co/400x300/FF6F61/FFFFFF?text=Cartel+Divertido+1", caption: "Encontrado en un pueblo perdido." },
+                  { id: "c2", foto: "https://placehold.co/400x300/87DCF0/000000?text=Señal+Tráfico+Original+2", caption: "¡Cuidado con los patos!" }
+              ];
           }
+          if (!appData.carteles || appData.carteles.length === 0){
+             cartelesContent.innerHTML = '<p class="text-center text-gray-600 col-span-full">No hay carteles curiosos disponibles.</p>';
+             return;
+          }
+
           appData.carteles.forEach(cartel => {
               const item = document.createElement('figure');
               item.className = 'bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover group';
@@ -475,6 +563,8 @@
           heroSection.classList.add('hidden');
           contentSections.forEach(section => section.classList.add('hidden'));
           navLinks.forEach(link => link.classList.remove('active-nav-link'));
+          
+          mobileMenu.classList.add('hidden'); 
 
           const activeSection = document.getElementById(sectionId + 'Section');
           if (activeSection) {
@@ -493,10 +583,9 @@
               } else if (sectionId === 'carteles') {
                   renderCarteles();
               }
-          } else { 
+          } else { // Si sectionId es 'hero' o no se encuentra una sección de contenido
               heroSection.classList.remove('hidden');
           }
-          mobileMenu.classList.add('hidden'); 
       }
 
       navLinks.forEach(link => {
@@ -509,18 +598,16 @@
 
       homeLink.addEventListener('click', (e) => {
           e.preventDefault();
-          heroSection.classList.remove('hidden');
-          contentSections.forEach(section => section.classList.add('hidden'));
-          navLinks.forEach(link => link.classList.remove('active-nav-link'));
+          navigateToSection('hero'); 
           currentGastronomiaPath = []; 
           currentTurismoPath = [];
-          mobileMenu.classList.add('hidden');
       });
 
       mobileMenuButton.addEventListener('click', () => {
           mobileMenu.classList.toggle('hidden');
       });
 
-      navigateToSection('hero');
+      // Iniciar la carga de datos cuando el DOM esté listo
+      document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
 
   </script>
