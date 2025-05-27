@@ -1,63 +1,23 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
-<head>
+<html>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GastroTurismo Curioso</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <!-- Visualization & Content Choices:
-        - Hierarchical Gastronomy/Tourism Data: Goal: Organize & Explore. Method: Interactive nested lists/sections (HTML/Tailwind) revealed by JS. Interaction: Click to drill-down. Justification: Intuitive for structured data. Library: Vanilla JS.
-        - Place Details: Goal: Inform & Engage. Method: Tailwind-styled cards with text, links (with Material Symbols), image switcher, "Descubrir Algo Más" button (Gemini API), and "Cómo llegar andando" button (Geolocation API + Google Maps). Interaction: View info, click links, cycle images, click AI button, click walking directions button. Justification: Clear, consolidated presentation with engaging AI and utility features. Library: Vanilla JS, Gemini API, Geolocation API.
-        - Curious Signs: Goal: Showcase images. Method: Responsive CSS Grid gallery (Tailwind). Interaction: View images and captions. Justification: Standard for image collections. Library: None (HTML/Tailwind).
-        - Navigation: Goal: Switch between main app sections. Method: JS to show/hide content divs. Interaction: Click nav links. Justification: SPA behavior. Library: Vanilla JS.
-        - Data Loading: Goal: Fetch data from Google Sheet via Apps Script. Method: JS `fetch` call to deployed Apps Script Web App URL. Response (JSON) is processed to populate `appData`. Justification: Allows "live" data updates from Sheet without client-side API keys.
-        - Gemini API Integration: Goal: Enhance content & engagement. Method: Button on place cards triggers API call. Prompt engineering to get relevant facts/suggestions. Response displayed in card. Justification: Adds unique, dynamic information. Library: Fetch API to Gemini.
-        - Geolocation for Walking Directions: Goal: Provide utility. Method: Button triggers Geolocation API, constructs Google Maps URL for walking. Interaction: Click button, grant permission. Justification: Useful feature for on-the-go users. Library: Geolocation API.
-    -->
-  <?!=include('css'); ?>
-</head>
-<body class="flex flex-col min-h-screen bg-gray-100">
-  <?!=include('navbar'); ?>
-  <main class="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
-      <div id="globalLoadingIndicator" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 hidden">
-          <div class="text-center">
-              <div class="loader-global border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin"></div>
-              <p class="mt-2 text-lg text-gray-700">Cargando datos...</p>
-          </div>
-      </div>
-
-      <section id="heroSection" class="text-center py-10 md:py-16 bg-white rounded-lg shadow-md">
-          <h2 class="text-4xl md:text-5xl font-bold font-display text-[#E46F44] mb-4">Descubre, Saborea, Explora</h2>
-          <p class="text-lg md:text-xl text-[#022831] max-w-2xl mx-auto">
-              Bienvenido/a a mis aventuras. Aquí comparto mis rincones favoritos de gastronomía, destinos turísticos inolvidables y los carteles más originales que he encontrado.
-          </p>
-          <p class="mt-6 text-md text-[#022831]">Utiliza la navegación para sumergirte en cada sección.</p>
-      </section>
-
-      <section id="gastronomiaSection" class="content-section hidden mt-8">
-          <h2 class="text-3xl font-bold font-display text-center mb-2 text-[#E46F44]">Delicias Gastronómicas</h2>
-          <div id="gastronomiaBreadcrumb" class="text-sm text-gray-600 mb-6 flex flex-wrap items-center justify-center"></div>
-          <div id="gastronomiaContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              </div>
-      </section>
-
-      <section id="turismoSection" class="content-section hidden mt-8">
-          <h2 class="text-3xl font-bold font-display text-center mb-2 text-[#E46F44]">Rincones por Descubrir</h2>
-          <div id="turismoBreadcrumb" class="text-sm text-gray-600 mb-6 flex flex-wrap items-center justify-center"></div>
-          <div id="turismoContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              </div>
-      </section>
-
-      <section id="cartelesSection" class="content-section hidden mt-8">
-          <h2 class="text-3xl font-bold font-display text-center mb-6 text-[#E46F44]">Carteles y Señales Curiosas</h2>
-          <p class="text-center text-[#022831] mb-6">Una colección de hallazgos visuales divertidos y sorprendentes.</p>
-          <div id="cartelesContent" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              </div>
-      </section>
-  </main>
-  <?!=include('footer'); ?>
-  <?!=include('javascript'); ?>
-</body>
+    <title>ANeKI - GastroTurismo</title>
+    <base target="_top">
+    <?!=include('css'); ?>
+  </head>
+    <body>
+    <div id="output">
+      <?
+        // ScriptApp.getService().getUrl() obtiene la URL base de tu aplicación web desplegada.
+        var baseUrl = ScriptApp.getService().getUrl();
+      ?>
+      <? Autonomia_Pais.forEach( Autonomia => { ?>
+        <? if(Autonomia.Autonomia != ""){ ?>   
+          <p><a href="<?= baseUrl ?>?page=Provincia&autonomia=<?= Autonomia.Autonomia ?>"><?= Autonomia.Autonomia ?></a></p>
+        <? } ?> 
+      <? }); ?>      
+    </div> 
+  </body>
 </html>
