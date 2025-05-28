@@ -1,9 +1,23 @@
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Special+Elite&display=swap');
+
+:root{
+  --md-ref-typeface-brand: 'Special Elite'; /* O como el builder nombre la fuente de marca/display */
+}
+
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif; /* Fuente recomendada por Material Design */
-  background-color: var(--mdc-theme-background, #fff);
-  color: var(--mdc-theme-on-surface, #000);
+  font-family: var(--md-ref-typeface-plain, 'Roboto', sans-serif); /* Usa la variable para el cuerpo */
+  background-color: var(--md-sys-color-background, #fff); /* Usa variables de color del tema */
+  color: var(--md-sys-color-on-background, #000); /* Usa variables de color del tema */
+
+  /*background-color: var(--mdc-theme-background, #fff);
+  color: var(--mdc-theme-on-surface, #000);*/
+}
+
+h1, h2, h3, h4, h5, h6, .mdc-typography--headline4, .mdc-top-app-bar__title /* y otros elementos de display */ {
+    font-family: var(--md-ref-typeface-brand, 'Special Elite', cursive);
 }
 
 .mdc-top-app-bar {
@@ -33,30 +47,54 @@ body {
 
 .mdc-card__primary-action {
   padding: 16px;
-  background-color: rgba(0, 0, 0, 0.04);
-cursor: pointer;
-  /* Añade estas propiedades para centrar el contenido */
+  /* background-color: rgba(0, 0, 0, 0.04); */ /* Eliminado para que no interfiera con hover */
+  cursor: pointer;
   display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center;    /* Centra verticalmente */
+  justify-content: center; 
+  align-items: center;    
   text-align: center; 
+  transition: background-color 0.3s, color 0.3s; /* Transición suave para hover */
 }
 
 .mdc-card__primary-action:hover {
-  background-color: #990000; /* Ligero feedback al pasar el ratón */
+  background-color: #990000; 
   color: white;
+}
+.mdc-card__primary-action:hover h2,
+.mdc-card__primary-action:hover h3,
+.mdc-card__primary-action:hover p {
+    color: white !important; /* Forzar color blanco en texto al hacer hover */
 }
 
 
 /* Estilos para el indicador de carga lineal */
 #loader {
-  position: fixed; /* O 'absolute' si está dentro de un contenedor con posición relativa */
-  top: 64px; /* Altura de la top-app-bar (ajusta si es diferente) */
+  position: fixed; 
+  top: 64px; 
   left: 0;
   width: 100%;
-  z-index: 1000; /* Asegurar que esté por encima de otro contenido */
+  z-index: 1000; 
+  /* --mdc-linear-progress-bar-color: #4CAF50; */ /* Comentado temporalmente */
+  /* --mdc-linear-progress-buffer-color: #C8E6C9; */ /* Comentado temporalmente, o mantenlo si el buffer se ve bien */
 }
-@media (max-width: 599px) { /* Para pantallas pequeñas, la top-app-bar puede ser más pequeña */
+
+/* Aplicar colores directamente a los elementos internos de la barra */
+#loader .mdc-linear-progress__primary-bar > .mdc-linear-progress__bar-inner {
+    background-color: #4CAF50 !important; /* Verde principal para la barra activa */
+}
+
+/* Si el buffer se veía bien con la variable, puedes mantenerla o también definirla así: */
+#loader .mdc-linear-progress__buffer-bar {
+    background-color: #C8E6C9 !important; /* Verde claro para el buffer */
+}
+
+/* Adicionalmente, algunos temas de MDC usan una barra secundaria para la animación
+   en el modo indeterminado. Vamos a asegurarnos de que también sea verde. */
+#loader .mdc-linear-progress__secondary-bar > .mdc-linear-progress__bar-inner {
+    background-color: #4CAF50 !important; /* Verde también para la barra secundaria, si existe y es visible */
+}
+
+@media (max-width: 599px) { 
   #loader {
     top: 56px; 
   }
@@ -65,7 +103,7 @@ cursor: pointer;
 
 /* Estilos para las migas de pan (breadcrumb) */
 #breadcrumb-nav {
-  padding: 8px 0; /* Ajusta el padding según necesites */
+  padding: 8px 0; 
   font-size: 0.875rem;
 }
 
@@ -79,7 +117,7 @@ cursor: pointer;
 
 #breadcrumb-nav .breadcrumb-item a {
   text-decoration: none;
-  color: var(--mdc-theme-primary, #6200ee); /* Color primario o un color de enlace adecuado */
+  color: var(--mdc-theme-primary, #6200ee); 
 }
 
 #breadcrumb-nav .breadcrumb-item a:hover {
@@ -87,13 +125,13 @@ cursor: pointer;
 }
 
 #breadcrumb-nav .breadcrumb-item[aria-current="page"] {
-  color: var(--mdc-theme-on-surface, #000); /* Color del texto normal para el elemento actual */
+  color: var(--mdc-theme-on-surface, #000); 
   font-weight: normal;
 }
 
 /* Mejoras visuales para tarjetas de sitio */
 #site-detail-container .mdc-card {
-    padding: 20px; /* Más padding interno para la tarjeta de detalle */
+    padding: 20px; 
 }
 
 #site-detail-container .mdc-typography--headline5 {
@@ -106,29 +144,110 @@ cursor: pointer;
 
 #site-detail-container p.mdc-typography--body1 {
     margin-bottom: 8px;
-    display: flex; /* Para alinear iconos con texto */
+    display: flex; 
     align-items: center;
 }
 #site-detail-container p.mdc-typography--body1 .material-icons {
-    margin-right: 8px; /* Espacio entre icono y texto */
-    color: var(--mdc-theme-primary); /* Iconos con color primario */
+    margin-right: 8px; 
+    color: var(--mdc-theme-primary); 
 }
 
 #site-detail-container .mdc-layout-grid {
-    padding: 0; /* Quitar padding extra si es necesario */
+    padding: 0; 
 }
 
-#site-detail-container img {
-    border: 1px solid #eee; /* Borde sutil para imágenes */
+#site-detail-container img { /* Estilo general para imágenes dentro del detalle */
+    border: 1px solid #eee; 
+    border-radius: 8px; /* Bordes redondeados para todas las imágenes */
+    object-fit: cover; /* Asegura que la imagen cubra el espacio sin distorsionarse */
 }
 
 /* Ajustes para botones en detalle del sitio */
 #site-detail-container .mdc-button {
-    margin-top: 8px; /* Espacio sobre los botones */
+    margin-top: 8px; 
 }
 
 /* Ocultar el botón de menú por defecto, se mostrará con JS cuando sea necesario (ej. como botón de atrás) */
-#menu-button {
+#menu-button, #volver-button {
     display: none;
+}
+
+/* --- Estilos del Carrusel --- */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px; /* Ajusta el ancho máximo según prefieras */
+    margin: 0 auto 16px auto; /* Centrado y con margen inferior */
+    overflow: hidden;
+    border-radius: 8px; /* Bordes redondeados para el contenedor del carrusel */
+    background-color: #f0f0f0; /* Un fondo suave por si las imágenes no cargan o tienen transparencias */
+    min-height: 300px; /* Altura mínima para evitar colapso si la imagen no ha cargado */
+    display: flex; /* Para centrar la imagen si es más pequeña que el contenedor */
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-slide {
+    display: none; /* Ocultar todas las diapositivas por defecto */
+    width: 100%;
+    height: auto; /* La altura se ajustará a la imagen */
+    text-align: center; /* Centrar la imagen dentro del slide */
+}
+
+.carousel-slide.active {
+    display: block; /* Mostrar solo la diapositiva activa */
+    animation: fadeIn 0.5s; /* Animación suave de aparición */
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: auto;
+    max-height: 450px; /* Altura máxima para las imágenes del carrusel */
+    object-fit: contain; /* 'contain' para asegurar que toda la imagen sea visible, 'cover' si prefieres que llene */
+    border-radius: 0; /* Las imágenes internas no necesitan su propio borde redondeado si el contenedor ya lo tiene */
+    border: none; /* Quitar borde individual de la imagen si el contenedor ya lo tiene */
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px 12px; /* Ajustado para mejor apariencia */
+    cursor: pointer;
+    border-radius: 50%; /* Botones redondos */
+    font-size: 20px; /* Tamaño del icono de flecha */
+    line-height: 1; /* Para centrar mejor el icono de flecha */
+    z-index: 10;
+    transition: background-color 0.3s;
+    width: 40px; /* Ancho fijo */
+    height: 40px; /* Alto fijo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-button.prev {
+    left: 10px;
+}
+
+.carousel-button.next {
+    right: 10px;
+}
+
+.carousel-button:disabled {
+    background-color: rgba(0, 0, 0, 0.2);
+    cursor: default;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
 }
 </style>
