@@ -1,22 +1,441 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANeKI - GastroTurismo</title>
-    <?!=include('css'); ?>
-  </head>
-    <body>
-    <div id="output">
-      <?
-        // ScriptApp.getService().getUrl() obtiene la URL base de tu aplicación web desplegada.
-        var baseUrl = ScriptApp.getService().getUrl();
-      ?>
-      <? Autonomia_Pais.forEach( Autonomia => { ?>
-        <? if(Autonomia.Autonomia != ""){ ?>   
-          <p><a href="<?= baseUrl ?>?page=Provincia&autonomia=<?= Autonomia.Autonomia ?>"><?= Autonomia.Autonomia ?></a></p>
-        <? } ?> 
-      <? }); ?>      
-    </div> 
-  </body>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANeKI - GastroTurismo Moderno</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+  <?!= include('css'); ?>
+</head>
+<body class="mdc-typography">
+
+  <header class="mdc-top-app-bar">
+    <div class="mdc-top-app-bar__row">
+      <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+        <button id="menu-button" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu" style="display:none;">menu</button>
+        <span class="mdc-top-app-bar__title">GastroTurismo</span>
+      </section>
+      <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+        </section>
+    </div>
+  </header>
+  <div class="mdc-top-app-bar--fixed-adjust"> <main class="main-content mdc-padding--16">
+      <nav id="breadcrumb-nav" aria-label="breadcrumb" style="margin-bottom: 16px;">
+        </nav>
+
+      <h1 id="page-title" class="mdc-typography--headline4">Bienvenido</h1>
+      
+      <div id="list-container" class="mdc-layout-grid">
+        <div class="mdc-layout-grid__inner">
+          </div>
+      </div>
+
+      <div id="site-detail-container" style="display:none;">
+        </div>
+
+      <div id="loader" class="mdc-linear-progress mdc-linear-progress--indeterminate" role="progressbar" style="display:none;">
+        <div class="mdc-linear-progress__buffer">
+          <div class="mdc-linear-progress__buffer-bar"></div>
+          <div class="mdc-linear-progress__buffer-dots"></div>
+        </div>
+        <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+          <span class="mdc-linear-progress__bar-inner"></span>
+        </div>
+        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+          <span class="mdc-linear-progress__bar-inner"></span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="snackbar" class="mdc-snackbar">
+    <div class="mdc-snackbar__surface" role="status" aria-relevant="additions text">
+      <div class="mdc-snackbar__label" aria-atomic="false">
+        Mensaje aquí.
+      </div>
+      <div class="mdc-snackbar__actions" aria-atomic="true">
+        <button type="button" class="mdc-button mdc-snackbar__action">
+          <div class="mdc-button__ripple"></div>
+          <span class="mdc-button__label">Cerrar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Inicializar componentes MDC
+    const topAppBar = new mdc.topAppBar.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
+    const snackbar = new mdc.snackbar.MDCSnackbar(document.getElementById('snackbar'));
+    const linearProgress = new mdc.linearProgress.MDCLinearProgress(document.getElementById('loader'));
+    
+    const menuButton = document.getElementById('menu-button'); // Para el botón de menú/atrás
+    const pageTitle = document.getElementById('page-title');
+    const listContainer = document.getElementById('list-container').querySelector('.mdc-layout-grid__inner');
+    const siteDetailContainer = document.getElementById('site-detail-container');
+    const breadcrumbNav = document.getElementById('breadcrumb-nav');
+
+    let currentLevel = 'autonomias'; // 'autonomias', 'provincias', 'ciudades', 'barrios', 'sitios'
+    let currentFilters = {}; // { autonomia: 'País Vasco', provincia: 'Bizkaia', ... }
+    let breadcrumbs = []; // [{label: 'Inicio', level: 'autonomias', filters: {}}]
+
+    // --- Funciones de Carga y Renderizado ---
+    function showLoader() {
+      document.getElementById('loader').style.display = 'block';
+      linearProgress.open();
+    }
+
+    function hideLoader() {
+      linearProgress.close();
+      document.getElementById('loader').style.display = 'none';
+    }
+
+    function showMessage(message) {
+      snackbar.labelText = message;
+      snackbar.open();
+    }
+
+    function updateBreadcrumbs() {
+      breadcrumbNav.innerHTML = '';
+      if (breadcrumbs.length <= 1 && currentLevel !== 'sitio_detail') { // No mostrar migas si solo es "Inicio" y no estamos en detalle de sitio
+         menuButton.style.display = 'none'; // Ocultar botón de menú/atrás si estamos en el nivel superior
+         return;
+      }
+      
+      menuButton.style.display = 'inline-flex'; // Mostrar botón de menú/atrás
+      menuButton.innerHTML = 'arrow_back'; // Cambiar a icono de atrás
+      menuButton.onclick = goBack;
+
+
+      const ol = document.createElement('ol');
+      ol.className = 'breadcrumb'; // Puedes estilizar esta clase
+      breadcrumbs.forEach((crumb, index) => {
+        const li = document.createElement('li');
+        li.className = 'breadcrumb-item';
+        if (index === breadcrumbs.length - 1) {
+          li.textContent = crumb.label;
+          li.setAttribute('aria-current', 'page');
+        } else {
+          const a = document.createElement('a');
+          a.href = '#'; // Evitar recarga de página
+          a.textContent = crumb.label;
+          a.onclick = (e) => {
+            e.preventDefault();
+            // Navegar a este nivel de la miga de pan
+            // Necesitamos restaurar el estado hasta este punto
+            breadcrumbs = breadcrumbs.slice(0, index + 1);
+            currentLevel = crumb.level;
+            currentFilters = { ...crumb.filters }; // Copiar los filtros
+            pageTitle.textContent = crumb.label === 'Inicio' ? 'Comunidades/Países' : crumb.label;
+            
+            // Determinar qué cargar basado en el nivel de la miga de pan
+            if (crumb.level === 'autonomias') loadAutonomias();
+            else if (crumb.level === 'provincias') loadProvincias(crumb.filters.autonomia);
+            else if (crumb.level === 'ciudades') loadCiudades(crumb.filters.provincia);
+            else if (crumb.level === 'barrios') loadBarrios(crumb.filters.ciudad);
+            // No deberíamos poder hacer clic en "sitios" desde aquí, ya que es una lista.
+            // El detalle del sitio es un estado diferente.
+            updateBreadcrumbs(); // Actualizar las migas de pan de nuevo
+          };
+          li.appendChild(a);
+        }
+        ol.appendChild(li);
+        if (index < breadcrumbs.length - 1) {
+          const separator = document.createElement('span');
+          separator.className = 'breadcrumb-separator';
+          separator.textContent = '>'; // Separador
+          separator.style.margin = "0 8px";
+          ol.appendChild(separator);
+        }
+      });
+      breadcrumbNav.appendChild(ol);
+    }
+    
+    function goBack() {
+        if (breadcrumbs.length > 1) {
+            breadcrumbs.pop(); // Quitar el último elemento
+            const previousCrumb = breadcrumbs[breadcrumbs.length - 1];
+            currentLevel = previousCrumb.level;
+            currentFilters = { ...previousCrumb.filters };
+            pageTitle.textContent = previousCrumb.label === 'Inicio' ? 'Comunidades/Países' : previousCrumb.label;
+
+            if (currentLevel === 'sitio_detail') { // Si volvemos desde el detalle de un sitio
+                // El crumb anterior debería ser la lista de barrios o la página de la que vino
+                const barrioActual = previousCrumb.filters.barrio; // Asumiendo que el filtro de barrio está en el crumb anterior
+                loadSitios(barrioActual); // Recargar la lista de sitios del barrio
+            } else {
+                 // Lógica similar a la de updateBreadcrumbs onclick
+                if (previousCrumb.level === 'autonomias') loadAutonomias();
+                else if (previousCrumb.level === 'provincias') loadProvincias(previousCrumb.filters.autonomia);
+                else if (previousCrumb.level === 'ciudades') loadCiudades(previousCrumb.filters.provincia);
+                else if (previousCrumb.level === 'barrios') loadBarrios(previousCrumb.filters.ciudad);
+            }
+            updateBreadcrumbs();
+        }
+    }
+
+
+    function renderList(items, type) { // type: 'autonomia', 'provincia', 'ciudad', 'barrio', 'sitio'
+      listContainer.innerHTML = ''; // Limpiar contenido anterior
+      siteDetailContainer.style.display = 'none';
+      listContainer.style.display = 'grid'; // Asegurarse que el contenedor de lista es visible
+
+      if (!items || items.length === 0) {
+        listContainer.innerHTML = `<p class="mdc-typography--body1 mdc-layout-grid__cell--span-12">No hay ${type}s disponibles.</p>`;
+        return;
+      }
+
+      items.forEach(itemData => {
+        const value = itemData[capitalizeFirstLetter(type)]; // Ej: itemData.Autonomia, itemData.Provincia
+        if (!value && type !== 'sitio') return; // Saltar si no hay valor (excepto para sitios que usan 'Nombre')
+        
+        const name = type === 'sitio' ? itemData.Nombre : value;
+        if(!name) return; // Si el nombre sigue siendo indefinido, saltar.
+
+        const cell = document.createElement('div');
+        cell.className = 'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-12-phone';
+
+        const card = document.createElement('div');
+        card.className = 'mdc-card mdc-card--outlined';
+        card.style.width = '100%';
+        card.style.marginBottom = '16px';
+
+        const primaryAction = document.createElement('div');
+        primaryAction.className = 'mdc-card__primary-action';
+        primaryAction.tabIndex = 0;
+        
+        // Contenido de la tarjeta
+        let cardContentHTML = `<div style="padding: 16px;">`;
+        if (type === 'sitio') {
+          cardContentHTML += `<h2 class="mdc-typography--headline6" style="margin: 0 0 8px 0;">${itemData.Nombre || 'Sin nombre'}</h2>`;
+          if (itemData.Tipo_Lugar) cardContentHTML += `<h3 class="mdc-typography--subtitle2" style="color: var(--mdc-theme-on-surface-variant); margin:0 0 8px 0;">${itemData.Tipo_Lugar}</h3>`;
+          if (itemData.Nota) cardContentHTML += `<p class="mdc-typography--body2" style="margin:0 0 8px 0;">Nota: ${itemData.Nota}</p>`;
+          if (itemData.Pintxo_Tapa) cardContentHTML += `<p class="mdc-typography--caption" style="margin:0 0 8px 0;">Especialidad: ${itemData.Pintxo_Tapa}</p>`;
+        } else {
+          cardContentHTML += `<h2 class="mdc-typography--headline6" style="margin: 0;">${name}</h2>`;
+        }
+        cardContentHTML += `</div>`;
+        primaryAction.innerHTML = cardContentHTML;
+
+        primaryAction.onclick = () => {
+          if (type === 'autonomia') {
+            loadProvincias(name);
+          } else if (type === 'provincia') {
+            loadCiudades(name);
+          } else if (type === 'ciudad') {
+            loadBarrios(name);
+          } else if (type === 'barrio') {
+            loadSitios(name);
+          } else if (type === 'sitio') {
+            showSiteDetail(itemData);
+          }
+        };
+
+        card.appendChild(primaryAction);
+        cell.appendChild(card);
+        listContainer.appendChild(cell);
+        new mdc.ripple.MDCRipple(primaryAction);
+      });
+    }
+
+    function showSiteDetail(sitioData) {
+      currentLevel = 'sitio_detail';
+      pageTitle.textContent = sitioData.Nombre || "Detalle del Sitio";
+      listContainer.style.display = 'none'; // Ocultar la lista
+      siteDetailContainer.innerHTML = ''; // Limpiar detalles anteriores
+      siteDetailContainer.style.display = 'block'; // Mostrar contenedor de detalles
+
+      let detailHTML = `<div class="mdc-card mdc-card--outlined" style="padding:16px;">`;
+      detailHTML += `<h2 class="mdc-typography--headline5">${sitioData.Nombre || 'Sin nombre'}</h2>`;
+      
+      if (sitioData.Tipo_Lugar) detailHTML += `<p class="mdc-typography--subtitle1" style="color: var(--mdc-theme-on-surface-variant);">${sitioData.Tipo_Lugar}</p>`;
+      if (sitioData.Valoracion) detailHTML += `<p class="mdc-typography--body1">Valoración: ${sitioData.Valoracion}</p>`; // Podrías usar iconos de estrellas
+      if (sitioData.Nota) detailHTML += `<p class="mdc-typography--body1">Nota: ${sitioData.Nota}</p>`;
+      if (sitioData.Direccion) detailHTML += `<p class="mdc-typography--body1"><span class="material-icons" style="vertical-align: bottom;">place</span> ${sitioData.Direccion}</p>`;
+      if (sitioData.Horario) detailHTML += `<p class="mdc-typography--body1"><span class="material-icons" style="vertical-align: bottom;">schedule</span> ${sitioData.Horario}</p>`;
+      if (sitioData.Pintxo_Tapa) detailHTML += `<p class="mdc-typography--body1"><strong>Especialidad:</strong> ${sitioData.Pintxo_Tapa}</p>`;
+
+      // Fotos
+      const fotos = [sitioData.Foto1, sitioData.Foto2, sitioData.Foto3, sitioData.Foto4].filter(Boolean);
+      if (fotos.length > 0) {
+        detailHTML += `<h3 class="mdc-typography--headline6" style="margin-top:16px;">Galería</h3>`;
+        detailHTML += `<div class="mdc-layout-grid"><div class="mdc-layout-grid__inner">`;
+        fotos.forEach(fotoUrl => {
+          // ¡IMPORTANTE! Google Apps Script podría no servir imágenes directamente de Drive sin configuración.
+          // Para Google Sites, las imágenes deben ser accesibles públicamente o subidas a Sites.
+          // Si las URLs son de Google Drive, necesitan ser formateadas para visualización directa o usar la API de Drive.
+          // Ejemplo de URL pública:
+          detailHTML += `<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-phone">
+                           <img src="${fotoUrl}" alt="Foto de ${sitioData.Nombre}" style="width:100%; height:auto; border-radius: 8px; object-fit: cover;">
+                         </div>`;
+        });
+        detailHTML += `</div></div>`;
+      }
+      
+      detailHTML += `<div style="margin-top: 16px;">`;
+      if (sitioData.Maps) detailHTML += `<a href="${sitioData.Maps}" target="_blank" class="mdc-button mdc-button--outlined" style="margin-right: 8px;"><span class="mdc-button__ripple"></span><span class="material-icons mdc-button__icon" aria-hidden="true">map</span><span class="mdc-button__label">Ver en Mapa</span></a>`;
+      if (sitioData.Web) detailHTML += `<a href="${sitioData.Web}" target="_blank" class="mdc-button mdc-button--outlined" style="margin-right: 8px;"><span class="mdc-button__ripple"></span><span class="material-icons mdc-button__icon" aria-hidden="true">language</span><span class="mdc-button__label">Sitio Web</span></a>`;
+      // Podrías añadir Facebook, Instagram de forma similar si tienes los iconos o usas texto
+      if (sitioData.Facebook) detailHTML += `<a href="${sitioData.Facebook}" target="_blank" class="mdc-button mdc-button--outlined" style="margin-right: 8px;"><span class="mdc-button__ripple"></span><span class="mdc-button__label">Facebook</span></a>`; // Idealmente un icono de FB
+      if (sitioData.Instagram) detailHTML += `<a href="${sitioData.Instagram}" target="_blank" class="mdc-button mdc-button--outlined"><span class="mdc-button__ripple"></span><span class="mdc-button__label">Instagram</span></a>`; // Idealmente un icono de IG
+      detailHTML += `</div>`;
+
+      detailHTML += `</div>`; // Cierre de la tarjeta
+      siteDetailContainer.innerHTML = detailHTML;
+      
+      // Inicializar ripples para los nuevos botones
+      const buttons = siteDetailContainer.querySelectorAll('.mdc-button');
+      buttons.forEach(button => new mdc.ripple.MDCRipple(button));
+
+      // Actualizar migas de pan para el detalle del sitio
+      breadcrumbs.push({ label: sitioData.Nombre, level: 'sitio_detail', filters: {...currentFilters, sitio: sitioData.Nombre} });
+      updateBreadcrumbs();
+    }
+
+
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    // --- Funciones para llamar a Google Apps Script ---
+    function loadAutonomias() {
+      showLoader();
+      currentLevel = 'autonomias';
+      currentFilters = {};
+      pageTitle.textContent = 'Comunidades / Países';
+      breadcrumbs = [{label: 'Inicio', level: 'autonomias', filters: {}}];
+      updateBreadcrumbs();
+      google.script.run
+        .withSuccessHandler(autonomias => {
+          renderList(autonomias, 'autonomia');
+          hideLoader();
+        })
+        .withFailureHandler(err => {
+          showMessage('Error al cargar autonomías: ' + err.message);
+          hideLoader();
+        })
+        .getAutonomias(); // Debes crear esta función en Code.gs
+    }
+
+    function loadProvincias(autonomia) {
+      showLoader();
+      currentLevel = 'provincias';
+      currentFilters = { autonomia: autonomia };
+      pageTitle.textContent = autonomia;
+      // Actualizar migas de pan
+      breadcrumbs = breadcrumbs.slice(0, 1); // Mantener solo "Inicio"
+      breadcrumbs.push({label: autonomia, level: 'provincias', filters: {autonomia: autonomia}});
+      updateBreadcrumbs();
+      google.script.run
+        .withSuccessHandler(provincias => {
+          renderList(provincias, 'provincia');
+          hideLoader();
+        })
+        .withFailureHandler(err => {
+          showMessage('Error al cargar provincias: ' + err.message);
+          hideLoader();
+        })
+        .getProvincias(autonomia); // Debes crear esta función en Code.gs
+    }
+
+    function loadCiudades(provincia) {
+      showLoader();
+      currentLevel = 'ciudades';
+      currentFilters.provincia = provincia;
+      pageTitle.textContent = provincia;
+      // Actualizar migas de pan
+      breadcrumbs = breadcrumbs.slice(0, 2); // Mantener Inicio > Autonomia
+      breadcrumbs.push({label: provincia, level: 'ciudades', filters: {...currentFilters}});
+      updateBreadcrumbs();
+      google.script.run
+        .withSuccessHandler(ciudades => {
+          renderList(ciudades, 'ciudad');
+          hideLoader();
+        })
+        .withFailureHandler(err => {
+          showMessage('Error al cargar ciudades: ' + err.message);
+          hideLoader();
+        })
+        .getCiudades(provincia); // Debes crear esta función en Code.gs
+    }
+
+    function loadBarrios(ciudad) {
+      showLoader();
+      currentLevel = 'barrios';
+      currentFilters.ciudad = ciudad;
+      pageTitle.textContent = ciudad;
+      // Actualizar migas de pan
+      breadcrumbs = breadcrumbs.slice(0, 3); // Mantener Inicio > Autonomia > Provincia
+      breadcrumbs.push({label: ciudad, level: 'barrios', filters: {...currentFilters}});
+      updateBreadcrumbs();
+      google.script.run
+        .withSuccessHandler(barrios => {
+          renderList(barrios, 'barrio');
+          hideLoader();
+        })
+        .withFailureHandler(err => {
+          showMessage('Error al cargar barrios: ' + err.message);
+          hideLoader();
+        })
+        .getBarrios(ciudad); // Debes crear esta función en Code.gs
+    }
+    
+    function loadSitios(barrio) {
+      showLoader();
+      currentLevel = 'sitios'; // Nivel de lista de sitios
+      currentFilters.barrio = barrio;
+      pageTitle.textContent = barrio;
+      // Actualizar migas de pan
+      breadcrumbs = breadcrumbs.slice(0, 4); // Mantener Inicio > Autonomia > Provincia > Ciudad
+      breadcrumbs.push({label: barrio, level: 'sitios', filters: {...currentFilters}}); // 'sitios' es la lista
+      updateBreadcrumbs();
+      google.script.run
+        .withSuccessHandler(sitios => {
+          renderList(sitios, 'sitio');
+          hideLoader();
+        })
+        .withFailureHandler(err => {
+          showMessage('Error al cargar sitios: ' + err.message);
+          hideLoader();
+        })
+        .getSitios(barrio); // Debes crear esta función en Code.gs
+    }
+
+    // Carga inicial
+    document.addEventListener('DOMContentLoaded', () => {
+      // Aquí podrías verificar parámetros en la URL para cargar un estado específico
+      // Por ahora, cargamos la lista de autonomías por defecto.
+      loadAutonomias();
+    });
+
+    // Para manejar el botón de "atrás" del navegador (opcional, más avanzado)
+    // window.onpopstate = function(event) {
+    //   if (event.state) {
+    //     // Cargar el estado guardado
+    //     currentLevel = event.state.level;
+    //     currentFilters = event.state.filters;
+    //     pageTitle.textContent = event.state.title;
+    //     breadcrumbs = event.state.breadcrumbs;
+    //     // Volver a renderizar basado en el estado
+    //     if (currentLevel === 'autonomias') loadAutonomias();
+    //     // ... y así sucesivamente para otros niveles
+    //     updateBreadcrumbs();
+    //   } else {
+    //     // Estado inicial si no hay historial
+    //     loadAutonomias();
+    //   }
+    // };
+
+    // function updateHistory(title, level, filtersToSave, breadcrumbsToSave) {
+    //   const state = { title, level, filters: filtersToSave, breadcrumbs: breadcrumbsToSave };
+    //   // Construir una URL amigable si es posible (ej: ?nivel=provincias&autonomia=...)
+    //   // Por simplicidad, no cambiaremos la URL visible aquí, solo el estado del historial.
+    //   history.pushState(state, title, ScriptApp.getService().getUrl()); // O una URL más específica
+    // }
+
+  </script>
+</body>
 </html>
