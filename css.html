@@ -1,9 +1,134 @@
 <style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  h1, h2 { color: #333; }
-  p { margin: 8px 0; }
-  a { text-decoration: none; color: #007BFF; }
-  a:hover { text-decoration: underline; }
-  .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-  ul { list-style-type: square; }
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif; /* Fuente recomendada por Material Design */
+  background-color: var(--mdc-theme-background, #fff);
+  color: var(--mdc-theme-on-surface, #000);
+}
+
+.mdc-top-app-bar {
+  /* Color primario de Material 3 - Puedes ajustarlo */
+  /* Visita https://m3.material.io/theme-builder para generar tu esquema de color */
+  --mdc-theme-primary: #990000; 
+  --mdc-theme-on-primary: #FFFFFF;
+  background-color: var(--mdc-theme-primary);
+  color: var(--mdc-theme-on-primary);
+}
+
+.mdc-top-app-bar__title,
+.mdc-top-app-bar__navigation-icon,
+.mdc-top-app-bar__action-item {
+  color: var(--mdc-theme-on-primary);
+}
+
+.main-content.mdc-padding--16 {
+    padding: 16px;
+}
+
+/* Estilo para las tarjetas */
+.mdc-card {
+  margin-bottom: 16px;
+  border-radius: 12px; /* Bordes más redondeados para M3 */
+}
+
+.mdc-card__primary-action {
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.04);
+cursor: pointer;
+  /* Añade estas propiedades para centrar el contenido */
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center;    /* Centra verticalmente */
+  text-align: center; 
+}
+
+.mdc-card__primary-action:hover {
+  background-color: #990000; /* Ligero feedback al pasar el ratón */
+  color: white;
+}
+
+
+/* Estilos para el indicador de carga lineal */
+#loader {
+  position: fixed; /* O 'absolute' si está dentro de un contenedor con posición relativa */
+  top: 64px; /* Altura de la top-app-bar (ajusta si es diferente) */
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Asegurar que esté por encima de otro contenido */
+}
+@media (max-width: 599px) { /* Para pantallas pequeñas, la top-app-bar puede ser más pequeña */
+  #loader {
+    top: 56px; 
+  }
+}
+
+
+/* Estilos para las migas de pan (breadcrumb) */
+#breadcrumb-nav {
+  padding: 8px 0; /* Ajusta el padding según necesites */
+  font-size: 0.875rem;
+}
+
+#breadcrumb-nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+#breadcrumb-nav .breadcrumb-item a {
+  text-decoration: none;
+  color: var(--mdc-theme-primary, #6200ee); /* Color primario o un color de enlace adecuado */
+}
+
+#breadcrumb-nav .breadcrumb-item a:hover {
+  text-decoration: underline;
+}
+
+#breadcrumb-nav .breadcrumb-item[aria-current="page"] {
+  color: var(--mdc-theme-on-surface, #000); /* Color del texto normal para el elemento actual */
+  font-weight: normal;
+}
+
+/* Mejoras visuales para tarjetas de sitio */
+#site-detail-container .mdc-card {
+    padding: 20px; /* Más padding interno para la tarjeta de detalle */
+}
+
+#site-detail-container .mdc-typography--headline5 {
+    margin-bottom: 12px;
+}
+
+#site-detail-container .mdc-typography--subtitle1 {
+    margin-bottom: 16px;
+}
+
+#site-detail-container p.mdc-typography--body1 {
+    margin-bottom: 8px;
+    display: flex; /* Para alinear iconos con texto */
+    align-items: center;
+}
+#site-detail-container p.mdc-typography--body1 .material-icons {
+    margin-right: 8px; /* Espacio entre icono y texto */
+    color: var(--mdc-theme-primary); /* Iconos con color primario */
+}
+
+#site-detail-container .mdc-layout-grid {
+    padding: 0; /* Quitar padding extra si es necesario */
+}
+
+#site-detail-container img {
+    border: 1px solid #eee; /* Borde sutil para imágenes */
+}
+
+/* Ajustes para botones en detalle del sitio */
+#site-detail-container .mdc-button {
+    margin-top: 8px; /* Espacio sobre los botones */
+}
+
+/* Ocultar el botón de menú por defecto, se mostrará con JS cuando sea necesario (ej. como botón de atrás) */
+#menu-button {
+    display: none;
+}
 </style>
