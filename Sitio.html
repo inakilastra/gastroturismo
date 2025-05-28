@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANeKI - GastroTurismo</title>
+    <?!=include('css'); ?>
+  </head>
+    <body>
+    <div id="output">
+      <?
+        // ScriptApp.getService().getUrl() obtiene la URL base de tu aplicación web desplegada.
+        var baseUrl = ScriptApp.getService().getUrl();
+      ?>        
+      <h1><?=barrio ?></h1>
+      <? Sitios.forEach( Sitio => { ?>
+        <? if(Sitio.Nombre != ""){ ?>   
+          <p>
+            <?=Sitio.Nombre ?>
+            <?=Sitio.Nota ?>
+            <?=Sitio.Direccion ?>	
+          <?=Sitio.Horario ?>
+          <?=Sitio.Pintxo_Tapa ?>	
+          <?=Sitio.Maps ?>	
+          <?=Sitio.Facebook ?>	
+          <?=Sitio.Instagram ?>	
+          <?=Sitio.Web ?>
+          <?=Sitio.Foto1 ?>,	
+          <?=Sitio.Foto2 ?>
+          <?=Sitio.Foto3 ?>
+          <?=Sitio.Foto4 ?>
+          <?=Sitio.Tipo_Lugar ?>	
+          <?=Sitio.Valoracion ?>
+          </p>
+        <? } ?> 
+      <? }); ?>
+      <p><a href="<?= baseUrl ?>">Volver</a></p>
+    </div> 
+  </body>
+</html>
