@@ -11,26 +11,38 @@
   <?!= include('css'); ?>
 </head>
 <body class="mdc-typography">
+
   <header class="mdc-top-app-bar">
     <div class="mdc-top-app-bar__row">
       <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-        <button id="menu-button" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu" style="display:none;">menu</button>
+        <button id="menu-button" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Abrir menú de navegación" style="display:none;">menu</button>
         <span class="mdc-top-app-bar__title">GastroTurismo</span>
       </section>
       <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
         </section>
     </div>
   </header>
-  <div class="mdc-top-app-bar--fixed-adjust"> 
+  <div class="mdc-top-app-bar--fixed-adjust">
     <main class="main-content mdc-padding--16">
-      <nav id="breadcrumb-nav" aria-label="breadcrumb" style="margin-bottom: 16px;"></nav>
-      <h1 id="page-title" class="mdc-typography--headline4">Bienvenido</h1>     
+      <nav id="breadcrumb-nav" aria-label="breadcrumb" style="margin-bottom: 16px;">
+      </nav>
+
+      <div id="page-header-container" style="display: flex; align-items: center; margin-bottom: 16px;">
+        <button id="main-back-button" class="mdc-button mdc-button--outlined" style="display: none; margin-right: 16px;">
+          <span class="mdc-button__ripple"></span>
+          <span class="mdc-button__label">Volver</span>
+        </button>
+        <h1 id="page-title" class="mdc-typography--headline4" style="margin-bottom: 0;">Bienvenido</h1>
+      </div>
+      
       <div id="list-container" class="mdc-layout-grid">
         <div class="mdc-layout-grid__inner">
         </div>
       </div>
+
       <div id="site-detail-container" style="display:none;">
       </div>
+
       <div id="loader" class="mdc-linear-progress mdc-linear-progress--indeterminate" role="progressbar" style="display:none;">
         <div class="mdc-linear-progress__buffer">
           <div class="mdc-linear-progress__buffer-bar"></div>
@@ -43,6 +55,7 @@
           <span class="mdc-linear-progress__bar-inner"></span>
         </div>
       </div>
+
     </main>
   </div>
 
@@ -61,13 +74,17 @@
   </div>
 
   <script>
-    // Initialize MDC components
+    // Inicializar componentes MDC
     const topAppBar = new mdc.topAppBar.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
     const snackbar = new mdc.snackbar.MDCSnackbar(document.getElementById('snackbar'));
     const linearProgress = new mdc.linearProgress.MDCLinearProgress(document.getElementById('loader'));
     
     const menuButton = document.getElementById('menu-button'); 
-    const volverButton = document.getElementById('volver-button'); 
+    const mainBackButton = document.getElementById('main-back-button'); // Referencia al nuevo botón
+    if (mainBackButton) { // Inicializar ripple para el nuevo botón
+        new mdc.ripple.MDCRipple(mainBackButton);
+    }
+
     const pageTitle = document.getElementById('page-title');
     const listContainer = document.getElementById('list-container').querySelector('.mdc-layout-grid__inner');
     const siteDetailContainer = document.getElementById('site-detail-container');
@@ -80,7 +97,7 @@
     let photoElements = [];
 
 
-    // --- Loader and Message Functions ---
+    // --- Funciones de Carga y Mensajes ---
     function showLoader() {
       document.getElementById('loader').style.display = 'block';
       linearProgress.open();
@@ -96,22 +113,46 @@
       snackbar.open();
     }
 
-    // --- Breadcrumb Navigation ---
+    // --- Navegación por Migas de Pan y Botón Volver ---
     function updateBreadcrumbs() {
-      breadcrumbNav.innerHTML = '';
+      breadcrumbNav.innerHTML = ''; // Limpiar migas de pan anteriores
+
+      // Configuración de los botones "Volver"
       if (breadcrumbs.length <= 1 && currentLevel !== 'sitio_detail') { 
-         menuButton.style.display = 'none';
-         volverButton.style.display = 'none'; 
-         return;
+         menuButton.style.display = 'none'; 
+         if(mainBackButton) mainBackButton.style.display = 'none'; // Ocultar botón "Volver" de main
+
+         // Restaurar menuButton a icono de menú (si fuera necesario, aunque aquí no se usa como tal)
+         // Asegurarse de que tenga la clase material-icons si se va a mostrar como icono
+         if (!menuButton.classList.contains('material-icons')) {
+            menuButton.classList.add('material-icons');
+         }
+         menuButton.textContent = 'menu'; 
+         menuButton.setAttribute('aria-label', 'Abrir menú de navegación');
+      } else {
+         // Mostrar botón de flecha atrás en la top-app-bar
+         menuButton.style.display = 'inline-flex'; 
+         if (!menuButton.classList.contains('material-icons')) { // Asegurar que sea un icono
+            menuButton.classList.add('material-icons');
+         }
+         menuButton.textContent = 'arrow_back'; 
+         menuButton.setAttribute('aria-label', 'Volver atrás');
+         menuButton.onclick = goBack;
+
+         // Mostrar botón "Volver" de texto en el main
+         if(mainBackButton) {
+            mainBackButton.style.display = 'inline-block'; // o 'flex' si prefieres
+            mainBackButton.onclick = goBack;
+         }
       }
       
-      menuButton.style.display = 'inline-flex'; 
-      menuButton.innerHTML = 'arrow_back'; 
-      menuButton.onclick = goBack;
-      volverButton.style.display = 'inline-flex'; 
-      volverButton.innerHTML = 'arrow_back'; 
-      volverButton.onclick = goBack;
-
+      // No mostrar migas de pan si solo es "Inicio" y no estamos en detalle de sitio,
+      // o si no hay breadcrumbs (aunque el primer caso ya lo cubre)
+      if (breadcrumbs.length === 0 || (breadcrumbs.length === 1 && breadcrumbs[0].level === 'autonomias' && currentLevel !== 'sitio_detail')) {
+         // No renderizar la lista de migas de pan si estamos en el nivel superior
+         // y no es un detalle de sitio (el detalle de sitio siempre muestra su miga completa)
+         return; 
+      }
 
       const ol = document.createElement('ol');
       ol.className = 'breadcrumb'; 
@@ -130,7 +171,7 @@
             breadcrumbs = breadcrumbs.slice(0, index + 1);
             currentLevel = crumb.level;
             currentFilters = { ...crumb.filters }; 
-            pageTitle.textContent = crumb.label === 'Inicio' ? 'Autonomia/Pais' : crumb.label;
+            pageTitle.textContent = crumb.label === 'Inicio' ? 'Autonomía/País' : crumb.label;
             
             if (crumb.level === 'autonomias') loadAutonomias();
             else if (crumb.level === 'provincias') loadProvincias(crumb.filters.autonomia);
@@ -153,52 +194,47 @@
     }
     
     function goBack() {
-      if (breadcrumbs.length > 1) {
-          breadcrumbs.pop(); // Elimina el nivel actual (ej. 'sitio_detail')
-          const targetCrumb = breadcrumbs[breadcrumbs.length - 1]; // Este es el "breadcrumb" al que vamos a volver (ej. la lista de 'sitios')
+        if (breadcrumbs.length > 1) {
+            breadcrumbs.pop(); 
+            const targetCrumb = breadcrumbs[breadcrumbs.length - 1]; 
 
-          currentLevel = targetCrumb.level;
-          currentFilters = { ...targetCrumb.filters };
-          pageTitle.textContent = targetCrumb.label === 'Inicio' ? 'Comunidades/Países' : targetCrumb.label;
+            currentLevel = targetCrumb.level;
+            currentFilters = { ...targetCrumb.filters };
+            pageTitle.textContent = targetCrumb.label === 'Inicio' ? 'Autonomía/País' : targetCrumb.label;
 
-          // Carga el contenido basándose en el nivel del "breadcrumb" de destino
-          if (targetCrumb.level === 'autonomias') {
-              loadAutonomias();
-          } else if (targetCrumb.level === 'provincias') {
-              loadProvincias(targetCrumb.filters.autonomia);
-          } else if (targetCrumb.level === 'ciudades') {
-              loadCiudades(targetCrumb.filters.provincia);
-          } else if (targetCrumb.level === 'barrios') {
-              loadBarrios(targetCrumb.filters.ciudad);
-          } else if (targetCrumb.level === 'sitios') {
-              // Si volvemos al nivel 'sitios', cargamos los sitios del barrio correspondiente
-              if (targetCrumb.filters && targetCrumb.filters.barrio) {
-                  loadSitios(targetCrumb.filters.barrio);
-              } else {
-                  // Fallback en caso de que falte el filtro del barrio, aunque no debería ocurrir
-                  console.error("Error en goBack: No se encontró el filtro de barrio para el nivel 'sitios'.");
-                  loadAutonomias(); // Volver al inicio como medida de seguridad
-              }
-          }
-          // No es necesario un caso especial para 'sitio_detail' aquí, 
-          // ya que la lógica se basa en el nivel *al que se regresa*.
-
-          updateBreadcrumbs();
-      }
+            if (targetCrumb.level === 'autonomias') {
+                loadAutonomias();
+            } else if (targetCrumb.level === 'provincias') {
+                loadProvincias(targetCrumb.filters.autonomia);
+            } else if (targetCrumb.level === 'ciudades') {
+                loadCiudades(targetCrumb.filters.provincia);
+            } else if (targetCrumb.level === 'barrios') {
+                loadBarrios(targetCrumb.filters.ciudad);
+            } else if (targetCrumb.level === 'sitios') {
+                if (targetCrumb.filters && targetCrumb.filters.barrio) {
+                    loadSitios(targetCrumb.filters.barrio);
+                } else {
+                    console.error("Error en goBack: No se encontró el filtro de barrio para el nivel 'sitios'.");
+                    loadAutonomias(); 
+                }
+            }
+            updateBreadcrumbs();
+        }
     }
 
-    // --- Rendering Functions ---
+    // --- Funciones de Renderizado ---
     function renderList(items, type) { 
       listContainer.innerHTML = ''; 
       siteDetailContainer.style.display = 'none';
-      listContainer.style.display = 'grid'; // Use grid for list layout
+      listContainer.style.display = 'grid'; 
 
       if (!items || items.length === 0) {
         listContainer.innerHTML = `<p class="mdc-typography--body1 mdc-layout-grid__cell--span-12">No hay ${type}s disponibles.</p>`;
         return;
       }
 
-      items.forEach(itemData => {
+      // Añadido itemIndex para generar IDs únicos para las imágenes y loaders
+      items.forEach((itemData, itemIndex) => { 
         const value = itemData[capitalizeFirstLetter(type)]; 
         if (!value && type !== 'sitio') return; 
         
@@ -215,144 +251,176 @@
 
         const primaryAction = document.createElement('div');
         primaryAction.className = 'mdc-card__primary-action';
+        primaryAction.style.flexDirection = 'column'; // Para que la imagen y el texto se apilen
+        primaryAction.style.alignItems = 'stretch'; // Para que la imagen ocupe el ancho
         primaryAction.tabIndex = 0;
         
-        let cardContentHTML = `<div style="padding: 16px;">`;
+        let cardContentHTML = ''; // Iniciar vacío, construiremos con divs separados para mejor control
+
+        // Contenedor para la imagen (solo para sitios y si Foto1 existe)
+        if (type === 'sitio' && itemData.Foto1) {
+          cardContentHTML += `<div id="list-thumb-loader-${itemIndex}" class="list-thumbnail-loader" style="width:100%; height:150px; background-color:#f0f0f0; display:flex; align-items:center; justify-content:center; margin-bottom:0px; border-top-left-radius: 12px; border-top-right-radius: 12px;">Cargando...</div>`;
+          cardContentHTML += `<img id="list-thumb-img-${itemIndex}" src="" alt="Miniatura de ${itemData.Nombre || 'sitio'}" style="display:none; width:100%; height:150px; object-fit:cover; border-top-left-radius: 12px; border-top-right-radius: 12px;">`;
+        }
+        
+        // Contenedor para el texto
+        cardContentHTML += `<div style="padding: 16px;">`; // Padding solo para la sección de texto
         if (type === 'sitio') {
-          cardContentHTML += `<h2 class="mdc-typography--headline6" style="margin: 0 0 8px 0;">${itemData.Nombre || 'Sin nombre'}</h2>`;
-          if (itemData.Tipo_Lugar) cardContentHTML += `<h3 class="mdc-typography--subtitle2" style="color: var(--mdc-theme-on-surface-variant); margin:0 0 8px 0;">${itemData.Tipo_Lugar}</h3>`;
-          if (itemData.Nota) cardContentHTML += `<p class="mdc-typography--body2" style="margin:0 0 8px 0;">${itemData.Nota}</p>`;
-          if (itemData.Pintxo_Tapa) cardContentHTML += `<p class="mdc-typography--caption" style="margin:0 0 8px 0;">Especialidad: ${itemData.Pintxo_Tapa}</p>`;
+          cardContentHTML += `<h2 class="mdc-typography--headline6" style="margin: 0 0 8px 0;">${itemData.Nombre || 'Sin nombre'}`;
+          if (itemData.Valoracion) cardContentHTML += ` ${itemData.Valoracion}`;
+          cardContentHTML += `</h2>`;
+          if (itemData.GoogleResenas && itemData.GoogleResenas.startsWith('http')) {
+            cardContentHTML += `<a href="${itemData.GoogleResenas}" target="_blank" class="mdc-button mdc-button--outlined"><span class="mdc-button__ripple"></span><span class="mdc-button__label">Reseñas Google</span></a>`;
+          }   
+  
+          if (itemData.Tipo_Lugar) cardContentHTML += `<h3 class="mdc-typography--subtitle2" style="color: var(--mdc-theme-on-surface-variant); margin:0 0 8px 0; font-size: 0.8rem;">${itemData.Tipo_Lugar}</h3>`;
+          if (itemData.Pintxo_Tapa) {
+            const pintxoTapaConSaltos = itemData.Pintxo_Tapa.replace(/\n/g, '<br>');
+            cardContentHTML += `<p class="mdc-typography--caption" style="margin:0; font-size: 0.75rem;">${pintxoTapaConSaltos}</p>`;
+          }
+          
         } else {
           cardContentHTML += `<h2 class="mdc-typography--headline6" style="margin: 0;">${name}</h2>`;
         }
-        cardContentHTML += `</div>`;
+        cardContentHTML += `</div>`; // Cierre del div de padding para texto
+        
         primaryAction.innerHTML = cardContentHTML;
 
         primaryAction.onclick = () => {
-          if (type === 'autonomia') {
-            loadProvincias(name);
-          } else if (type === 'provincia') {
-            loadCiudades(name);
-          } else if (type === 'ciudad') {
-            loadBarrios(name);
-          } else if (type === 'barrio') {
-            loadSitios(name);
-          } else if (type === 'sitio') {
-            showSiteDetail(itemData);
-          }
+          if (type === 'autonomia') loadProvincias(name);
+          else if (type === 'provincia') loadCiudades(name);
+          else if (type === 'ciudad') loadBarrios(name);
+          else if (type === 'barrio') loadSitios(name);
+          else if (type === 'sitio') showSiteDetail(itemData);
         };
 
         card.appendChild(primaryAction);
         cell.appendChild(card);
         listContainer.appendChild(cell);
         new mdc.ripple.MDCRipple(primaryAction);
-      });
+
+        // Cargar la miniatura asíncronamente si es un sitio y tiene Foto1
+        if (type === 'sitio' && itemData.Foto1) {
+            const thumbImgElement = document.getElementById(`list-thumb-img-${itemIndex}`);
+            const thumbLoaderElement = document.getElementById(`list-thumb-loader-${itemIndex}`);
+            if (thumbImgElement && thumbLoaderElement) {
+                google.script.run
+                    .withSuccessHandler(function(base64Image) {
+                        if (thumbLoaderElement) thumbLoaderElement.style.display = 'none';
+                        if (base64Image) {
+                            thumbImgElement.src = base64Image;
+                            thumbImgElement.style.display = 'block';
+                        } else {
+                            thumbImgElement.style.display = 'none'; 
+                            console.warn("No se recibió base64 para miniatura (ID: " + itemData.Foto1 + "). El elemento de imagen será ocultado.");
+                        }
+                    })
+                    .withFailureHandler(function(error) {
+                        if (thumbLoaderElement) thumbLoaderElement.style.display = 'none';
+                        thumbImgElement.style.display = 'none';
+                        console.error("Error cargando miniatura " + itemData.Foto1 + ": " + error.message);
+                    })
+                    .getImageAsBase64(itemData.Foto1);
+            }
+        }
+      }); // Fin de items.forEach
     }
 
     function showSiteDetail(sitioData) {
       currentLevel = 'sitio_detail';
       pageTitle.textContent = sitioData.Nombre || "Detalle del Sitio";
-      listContainer.style.display = 'none';
-      siteDetailContainer.innerHTML = '';
-      siteDetailContainer.style.display = 'block';
+      listContainer.style.display = 'none'; 
+      siteDetailContainer.innerHTML = ''; 
+      siteDetailContainer.style.display = 'block'; 
 
       let detailHTML = `<div class="mdc-card mdc-card--outlined" style="padding:16px;">`;
-      detailHTML += `<h2 class="mdc-typography--headline5">${sitioData.Nombre || 'Sin nombre'}</h2>`;
-      if (sitioData.Tipo_Lugar) detailHTML += `<p class="mdc-typography--subtitle1" style="color: var(--mdc-theme-on-surface-variant);">${sitioData.Tipo_Lugar}</p>`;
-      if (sitioData.Valoracion) detailHTML += `<p class="mdc-typography--body1">Valoración: ${sitioData.Valoracion}</p>`;
-      if (sitioData.Nota) detailHTML += `<p class="mdc-typography--body1">Nota: ${sitioData.Nota}</p>`;
+      detailHTML += `<h2 class="mdc-typography--headline5">${sitioData.Nombre || 'Sin nombre'}`;
+      if (sitioData.Valoracion) detailHTML += ` ${sitioData.Valoracion}`; 
+      detailHTML += `</h2>`;
+      if (sitioData.Tipo_Lugar) detailHTML += `<p class="mdc-typography--subtitle1" style="color: var(--mdc-theme-on-surface-variant);">${sitioData.Tipo_Lugar}</p>`; 
+      if (sitioData.Nota) detailHTML += `<p class="mdc-typography--body1">${sitioData.Nota}</p>`;
       if (sitioData.Direccion) detailHTML += `<p class="mdc-typography--body1"><span class="material-icons" style="vertical-align: bottom;">place</span> ${sitioData.Direccion}</p>`;
       if (sitioData.Horario) detailHTML += `<p class="mdc-typography--body1"><span class="material-icons" style="vertical-align: bottom;">schedule</span> ${sitioData.Horario}</p>`;
-      if (sitioData.Pintxo_Tapa) detailHTML += `<p class="mdc-typography--body1"><strong>Especialidad:</strong> ${sitioData.Pintxo_Tapa}</p>`;
+      if (sitioData.Pintxo_Tapa) {
+        const pintxoTapaConSaltos = sitioData.Pintxo_Tapa.replace(/\n/g, '<br>');
+        detailHTML += `<p class="mdc-typography--caption" style="margin:0; font-size: 0.75rem;">${pintxoTapaConSaltos}</p>`;
+      }
 
       const fotoIds = [sitioData.Foto1, sitioData.Foto2, sitioData.Foto3, sitioData.Foto4].filter(Boolean);
-      photoElements = []; // Reset
+      photoElements = []; 
 
       if (fotoIds.length > 0) {
         detailHTML += `<h3 class="mdc-typography--headline6" style="margin-top:24px; margin-bottom: 12px;">Galería</h3>`;
         detailHTML += `<div class="carousel-container">`;
         fotoIds.forEach((idFoto, index) => {
-          // Placeholder para la imagen y un loader (puedes usar el de MDC o uno simple)
           detailHTML += `<div class="carousel-slide ${index === 0 ? 'active' : ''}" data-index="${index}">
-                          <img id="carousel-img-${index}" src="" alt="Foto ${index + 1} de ${sitioData.Nombre}" style="display:none; width:100%; height:auto; max-height: 450px; object-fit: contain;">
-                          <div id="carousel-loader-${index}" class="image-loader-placeholder" style="display:flex; align-items:center; justify-content:center; height:300px; background-color:#eee;">Cargando foto...</div>
-                        </div>`;
+                           <img id="carousel-img-${index}" src="" alt="Foto ${index + 1} de ${sitioData.Nombre}" style="display:none; width:100%; height:auto; max-height: 450px; object-fit: contain;">
+                           <div id="carousel-loader-${index}" class="image-loader-placeholder" style="display:flex; align-items:center; justify-content:center; height:300px; background-color:#eee;">Cargando foto...</div>
+                         </div>`;
         });
         detailHTML += `<button class="carousel-button prev" onclick="changePhoto(-1)">&#10094;</button>`;
         detailHTML += `<button class="carousel-button next" onclick="changePhoto(1)">&#10095;</button>`;
         detailHTML += `</div>`;
       }
-
+      
       detailHTML += `<div style="margin-top: 24px;">`;
-      if (sitioData.Maps) detailHTML += `<a href="${sitioData.Maps}" target="_blank" class="mdc-button mdc-button--outlined" style="margin-right: 8px;"><span class="mdc-button__ripple"></span><span class="material-icons mdc-button__icon" aria-hidden="true">map</span><span class="mdc-button__label">Ver en Mapa</span></a>`;
+      if (sitioData.Maps) detailHTML += `<a href="${sitioData.Maps}" target="_blank" class="mdc-button mdc-button--outlined" style="margin-right: 8px;"><span class="mdc-button__ripple"></span><span class="material-icons mdc-button__icon" aria-hidden="true">map</span><span class="mdc-button__label">Como llegar</span></a>`;
       if (sitioData.Web) detailHTML += `<a href="${sitioData.Web}" target="_blank" class="mdc-button mdc-button--outlined" style="margin-right: 8px;"><span class="mdc-button__ripple"></span><span class="material-icons mdc-button__icon" aria-hidden="true">language</span><span class="mdc-button__label">Sitio Web</span></a>`;
-      if (sitioData.Facebook) detailHTML += `<a href="${sitioData.Facebook}" target="_blank" class="mdc-button mdc-button--outlined" style="margin-right: 8px;"><span class="mdc-button__ripple"></span><span class="mdc-button__label">Facebook</span></a>`;
-      if (sitioData.Instagram) detailHTML += `<a href="${sitioData.Instagram}" target="_blank" class="mdc-button mdc-button--outlined"><span class="mdc-button__ripple"></span><span class="mdc-button__label">Instagram</span></a>`;
+      if (sitioData.Facebook) detailHTML += `<a href="${sitioData.Facebook}" target="_blank" class="mdc-button mdc-button--outlined" style="margin-right: 8px;"><span class="mdc-button__ripple"></span><span class="material-icons mdc-button__icon" aria-hidden="true">groups</span><span class="mdc-button__label">Facebook</span></a>`; 
+      if (sitioData.Instagram) detailHTML += `<a href="${sitioData.Instagram}" target="_blank" class="mdc-button mdc-button--outlined"><span class="mdc-button__ripple"></span><span class="mdc-button__label">Instagram</span></a>`; 
       detailHTML += `</div>`;
-      detailHTML += `</div>`;
+      detailHTML += `</div>`; 
       siteDetailContainer.innerHTML = detailHTML;
+      
+      const mdcButtonsInDetail = siteDetailContainer.querySelectorAll('.mdc-button');
+      mdcButtonsInDetail.forEach(button => new mdc.ripple.MDCRipple(button));
 
-      // Inicializar botones MDC
-      const buttons = siteDetailContainer.querySelectorAll('.mdc-button');
-      buttons.forEach(button => new mdc.ripple.MDCRipple(button));
-
-      // Cargar las imágenes después de que el HTML base del detalle esté en la página
       if (fotoIds.length > 0) {
         fotoIds.forEach((idFoto, index) => {
-          if (!idFoto) return; // Saltar si no hay ID
-
+          if (!idFoto) return;
           const imgElement = document.getElementById(`carousel-img-${index}`);
           const loaderElement = document.getElementById(`carousel-loader-${index}`);
-
           google.script.run
             .withSuccessHandler(function(base64Image) {
-//              console.log("Recibido para imgElement:", imgElement, "Datos Base64 (primeros 100 chars):", base64Image ? base64Image.substring(0, 100) : "NADA"); // NUEVO LOG
-              if (loaderElement) loaderElement.style.display = 'none'; // Ocultar loader
+              if (loaderElement) loaderElement.style.display = 'none';
               if (imgElement && base64Image) {
                 imgElement.src = base64Image;
-                imgElement.style.display = ''; // Mostrar imagen
+                imgElement.style.display = '';
               } else if (imgElement) {
                 imgElement.alt = "Error al cargar imagen (ID: " + idFoto + ")";
-                imgElement.style.display = ''; // Mostrar texto de error en alt
+                imgElement.style.display = '';
                 console.error("No se recibió base64Image para el ID:", idFoto);
               }
             })
             .withFailureHandler(function(error) {
-              if (loaderElement) loaderElement.style.display = 'none'; // Ocultar loader
+              if (loaderElement) loaderElement.style.display = 'none';
               if (imgElement) {
                 imgElement.alt = "Fallo al cargar: " + idFoto;
-                imgElement.style.display = ''; // Mostrar texto de error en alt
+                imgElement.style.display = '';
               }
               console.error("Fallo al llamar a getImageAsBase64 para " + idFoto + ": " + JSON.stringify(error));
               showMessage("Error cargando imagen: " + idFoto);
             })
             .getImageAsBase64(idFoto);
         });
-
         photoElements = Array.from(siteDetailContainer.querySelectorAll('.carousel-slide'));
         currentPhotoIndex = 0;
-        // updatePhotoDisplay() se encargará de la visibilidad de los slides,
-        // pero las imágenes internas ahora cargan asíncronamente.
-        // El 'active' inicial del slide se maneja al crear el HTML.
-        // updatePhotoDisplay() principalmente gestiona los botones prev/next
         updatePhotoDisplay(); 
       }
 
-      // Lógica de Breadcrumbs (asegúrate que esta parte esté como la tenías funcionando)
       if (breadcrumbs.length > 0 && breadcrumbs[breadcrumbs.length -1].level !== 'sitios') {
           console.warn("Migas de pan inconsistentes al mostrar detalle. Reconstruyendo.");
           const tempFiltersForSiteList = {...currentFilters};
           delete tempFiltersForSiteList.sitio;
           breadcrumbs = breadcrumbs.filter(b => b.level !== 'sitio_detail');
           if(currentFilters.barrio && !breadcrumbs.find(b => b.level === 'sitios' && b.filters.barrio === currentFilters.barrio)) {
-            breadcrumbs.push({ label: currentFilters.barrio, level: 'sitios', filters: tempFiltersForSiteList });
+             breadcrumbs.push({ label: currentFilters.barrio, level: 'sitios', filters: tempFiltersForSiteList });
           }
       }
       breadcrumbs.push({ label: sitioData.Nombre, level: 'sitio_detail', filters: {...currentFilters, sitio: sitioData.Nombre} });
       updateBreadcrumbs();
     }
-
+    
     function updatePhotoDisplay() {
         if (!photoElements || photoElements.length === 0) return;
         photoElements.forEach((slide, index) => {
@@ -362,7 +430,6 @@
                 slide.classList.remove('active');
             }
         });
-        // Habilitar/deshabilitar botones
         const prevButton = siteDetailContainer.querySelector('.carousel-button.prev');
         const nextButton = siteDetailContainer.querySelector('.carousel-button.next');
         if (prevButton) prevButton.disabled = currentPhotoIndex === 0;
@@ -378,18 +445,16 @@
         }
     }
 
-
     function capitalizeFirstLetter(string) {
       if (!string) return string;
       return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    // --- Google Apps Script Call Functions (Modified for Auto-Navigation) ---
     function loadAutonomias() {
       showLoader();
       currentLevel = 'autonomias';
       currentFilters = {};
-      pageTitle.textContent = 'Autonomia/Pais';
+      pageTitle.textContent = 'Autonomía / País';
       breadcrumbs = [{label: 'Inicio', level: 'autonomias', filters: {}}];
       updateBreadcrumbs();
       google.script.run
@@ -412,8 +477,7 @@
       showLoader();
       currentLevel = 'provincias';
       currentFilters = { autonomia: autonomia };
-      pageTitle.textContent = autonomia;
-      // Limpiar migas de pan más allá de "Inicio" y añadir la autonomía actual
+      pageTitle.textContent = "Provincias de " + autonomia;
       breadcrumbs = breadcrumbs.slice(0, 1); 
       breadcrumbs.push({label: autonomia, level: 'provincias', filters: {autonomia: autonomia}});
       updateBreadcrumbs();
@@ -437,7 +501,7 @@
       showLoader();
       currentLevel = 'ciudades';
       currentFilters.provincia = provincia; 
-      pageTitle.textContent = provincia;
+      pageTitle.textContent = "Ciudades de " + provincia;
       breadcrumbs = breadcrumbs.slice(0, 2); 
       breadcrumbs.push({label: provincia, level: 'ciudades', filters: {...currentFilters}});
       updateBreadcrumbs();
@@ -461,7 +525,7 @@
       showLoader();
       currentLevel = 'barrios';
       currentFilters.ciudad = ciudad; 
-      pageTitle.textContent = ciudad;
+      pageTitle.textContent = "Barrios de " + ciudad;
       breadcrumbs = breadcrumbs.slice(0, 3); 
       breadcrumbs.push({label: ciudad, level: 'barrios', filters: {...currentFilters}});
       updateBreadcrumbs();
@@ -485,13 +549,13 @@
       showLoader();
       currentLevel = 'sitios'; 
       currentFilters.barrio = barrio; 
-      pageTitle.textContent = barrio;
+      pageTitle.textContent = "Sitios de " + barrio;
       breadcrumbs = breadcrumbs.slice(0, 4); 
       breadcrumbs.push({label: barrio, level: 'sitios', filters: {...currentFilters}}); 
       updateBreadcrumbs();
       google.script.run
         .withSuccessHandler(sitios => {
-          renderList(sitios, 'sitio'); // renderList ahora es solo para listas, no para detalles
+          renderList(sitios, 'sitio'); 
           hideLoader(); 
         })
         .withFailureHandler(err => {
@@ -501,7 +565,7 @@
         .getSitios(barrio); 
     }
 
-    // Initial Load
+    // Carga Inicial
     document.addEventListener('DOMContentLoaded', () => {
       loadAutonomias();
     });
