@@ -1,6 +1,6 @@
 // VARIABLES WEB ================================================================================================================================
   const w_SS = SpreadsheetApp.openById('1sZngQQr6loqWUoIWipG5IWFkraEsbHD8mfaf9iirfjw');
-  const w_Datos = w_SS.getSheetByName('Datos_Web');
+  const w_Datos = w_SS.getSheetByName('Datos_Tapeo');
 
 // Code.gs
 
@@ -11,11 +11,11 @@ const SHEET_PROVINCIAS = "Provincias";
 const SHEET_CIUDADES = "Ciudades";
 const SHEET_BARRIOS = "Barrios";
 const SHEET_SITIOS = "Sitios"; // Tu hoja principal con todos los datos de los sitios*/
-const SHEET_AUTONOMIAS = "Datos_AutonomiaPais";
-const SHEET_PROVINCIAS = "Datos_Web";
-const SHEET_CIUDADES = "Datos_Web";
-const SHEET_BARRIOS = "Datos_Web";
-const SHEET_SITIOS = "Datos_Web"; 
+const SHEET_AUTONOMIAS = "Datos_Tapeo";
+const SHEET_PROVINCIAS = "Datos_Tapeo";
+const SHEET_CIUDADES = "Datos_Tapeo";
+const SHEET_BARRIOS = "Datos_Tapeo";
+const SHEET_SITIOS = "Datos_Tapeo"; 
 
 function doGet(e) {
   // Podrías manejar parámetros aquí si quieres cargar un estado específico inicialmente
