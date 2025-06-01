@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANeKI - Gastroturismo</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Special+Elite&display=swap');
+
+        :root {
+            --md-ref-typeface-brand: 'Special Elite', cursive;
+            --mdc-theme-primary: #009688; /* Teal 500 */
+            --mdc-theme-on-primary: #FFFFFF;
+            --mdc-theme-secondary: #4DB6AC; /* Teal 300 */
+            --mdc-theme-on-secondary: #FFFFFF;
+            --mdc-theme-surface: #E0F2F1; /* Teal 50 */
+            --mdc-theme-on-surface: #004D40; /* Teal 900 */
+            --mdc-theme-background: #B2DFDB; /* Teal 100 */
+            --mdc-theme-primary-container: #A7FFEB; /* Teal A100 */
+            --mdc-theme-on-primary-container: #004D40; /* Teal 900 */
+            --top-app-bar-height: 64px; /* Altura de la Top App Bar, ajustar si cambia */
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--mdc-theme-on-surface);
+            background-color: var(--mdc-theme-background);
+            overflow-x: hidden; 
+        }
+
+        .brand-font {
+            font-family: var(--md-ref-typeface-brand);
+        }
+
+        .hero-section {
+            height: calc(100vh - var(--top-app-bar-height));
+            background-image: url('https://placehold.co/1920x1080/00796B/FFFFFF?text=Imagen+Principal+ANeKI'); /* Teal oscuro para el fondo del placeholder */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            color: white;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); 
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+        }
+        .hero-title {
+            font-family: var(--md-ref-typeface-brand);
+            font-size: 3.5rem; 
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        @media (max-width: 600px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-container { 
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .section-padding {
+            padding-top: 48px;
+            padding-bottom: 48px;
+        }
+        .section-title {
+            font-family: var(--md-ref-typeface-brand);
+            font-size: 2.8rem;
+            color: var(--mdc-theme-primary);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+         @media (max-width: 600px) {
+            .section-title {
+                font-size: 2.2rem;
+            }
+        }
+
+        .category-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background-color: var(--mdc-theme-surface);
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra sutil */
+        }
+        .category-card .mdc-card__primary-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1; 
+        }
+
+        .category-card__icon-container {
+            background-color: var(--mdc-theme-primary-container);
+            color: var(--mdc-theme-on-primary-container);
+            border-radius: 50%;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: inline-flex; 
+        }
+        .category-card__icon-container .material-icons {
+            font-size: 36px;
+        }
+        .category-card__title {
+            font-family: var(--md-ref-typeface-brand);
+            font-size: 1.75rem; 
+            color: var(--mdc-theme-primary);
+            margin-bottom: 8px;
+        }
+        .category-card__description {
+            margin-bottom: 16px;
+            min-height: 60px; 
+            flex-grow: 1;
+            color: var(--mdc-theme-on-surface); /* Asegurar color de texto */
+        }
+        .category-card .mdc-card__actions {
+            width: 100%; 
+        }
+        .category-card .mdc-button {
+            margin-top: auto; 
+        }
+
+        .about-us-content {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 32px;
+            align-items: center;
+            max-width: 960px; 
+            margin: 0 auto; 
+        }
+        @media (min-width: 768px) { 
+            .about-us-content {
+                grid-template-columns: 2fr 3fr; 
+                text-align: left;
+            }
+             .about-us-content > div:last-child { 
+                text-align: left;
+            }
+        }
+
+        .about-us-image {
+            width: 100%;
+            max-width: 400px; 
+            height: auto;
+            border-radius: 24px; 
+            object-fit: cover;
+            margin: 0 auto; 
+            display: block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .map-preview-image {
+            width: 100%;
+            max-width: 700px;
+            height: auto;
+            border-radius: 16px;
+            margin: 24px auto;
+            display: block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .latest-experience-card .mdc-card__media { 
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .grid-container {
+            display: grid;
+            gap: 24px;
+        }
+        @media (min-width: 600px) { 
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 960px) { 
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .mdc-top-app-bar {
+             background-color: var(--mdc-theme-surface);
+             color: var(--mdc-theme-on-surface);
+        }
+        .mdc-top-app-bar__title.brand-font {
+            color: var(--mdc-theme-primary);
+            font-size: 1.75rem;
+        }
+        .mdc-drawer {
+            background-color: var(--mdc-theme-surface);
+        }
+        .mdc-list-item__text {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .footer {
+            background-color: #263238; /* Gris azulado oscuro, complementa bien el teal */
+            color: #ECEFF1; /* Texto claro para el footer */
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .footer a {
+            color: #B0BEC5; /* Un gris azulado más claro para enlaces */
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .footer a:hover {
+            color: var(--mdc-theme-secondary); /* Teal claro al pasar el ratón */
+        }
+    </style>
+</head>
+<body class="mdc-typography">
+
+    <aside class="mdc-drawer mdc-drawer--modal">
+        <div class="mdc-drawer__header">
+            <h3 class="mdc-drawer__title brand-font" style="color: var(--mdc-theme-primary);">ANeKI</h3>
+            <h6 class="mdc-drawer__subtitle">Gastroturismo</h6>
+        </div>
+        <div class="mdc-drawer__content">
+            <nav class="mdc-list">
+                <a class="mdc-list-item mdc-list-item--activated" href="#hero" aria-current="page" tabindex="0">
+                    <span class="mdc-list-item__ripple"></span>
+                    <i class="material-icons mdc-list-item__graphic" aria-hidden="true">home</i>
+                    <span class="mdc-list-item__text">Inicio</span>
+                </a>
+                <a class="mdc-list-item" href="#tapear-target">
+                    <span class="mdc-list-item__ripple"></span>
+                    <i class="material-icons mdc-list-item__graphic" aria-hidden="true">tapas</i>
+                    <span class="mdc-list-item__text">Tapear</span>
+                </a>
+                <a class="mdc-list-item" href="#restaurantes-target">
+                    <span class="mdc-list-item__ripple"></span>
+                    <i class="material-icons mdc-list-item__graphic" aria-hidden="true">restaurant</i>
+                    <span class="mdc-list-item__text">Restaurantes</span>
+                </a>
+                <a class="mdc-list-item" href="#eventos-culinarios-target">
+                    <span class="mdc-list-item__ripple"></span>
+                    <i class="material-icons mdc-list-item__graphic" aria-hidden="true">local_dining</i>
+                    <span class="mdc-list-item__text">Eventos Culinarios</span>
+                </a>
+                <a class="mdc-list-item" href="#turismo-target">
+                    <span class="mdc-list-item__ripple"></span>
+                    <i class="material-icons mdc-list-item__graphic" aria-hidden="true">explore</i>
+                    <span class="mdc-list-item__text">Turismo</span>
+                </a>
+                <a class="mdc-list-item" href="#eventos-turisticos-target">
+                    <span class="mdc-list-item__ripple"></span>
+                    <i class="material-icons mdc-list-item__graphic" aria-hidden="true">festival</i>
+                    <span class="mdc-list-item__text">Eventos Turísticos</span>
+                </a>
+                <a class="mdc-list-item" href="#curiosidades-target">
+                    <span class="mdc-list-item__ripple"></span>
+                    <i class="material-icons mdc-list-item__graphic" aria-hidden="true">emoji_objects</i>
+                    <span class="mdc-list-item__text">Curiosidades</span>
+                </a>
+                <a class="mdc-list-item" href="#mapa-target">
+                    <span class="mdc-list-item__ripple"></span>
+                    <i class="material-icons mdc-list-item__graphic" aria-hidden="true">map</i>
+                    <span class="mdc-list-item__text">Mapa Global</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+    <div class="mdc-drawer-scrim"></div>
+
+    <div class="mdc-drawer-app-content">
+        <header class="mdc-top-app-bar app-bar" id="app-bar">
+            <div class="mdc-top-app-bar__row">
+                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                    <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
+                    <span class="mdc-top-app-bar__title brand-font">ANeKI - Gastroturismo</span>
+                </section>
+                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+                    </section>
+            </div>
+        </header>
+
+        <div id="main-content-wrapper"> <div class="mdc-top-app-bar--fixed-adjust"> 
+                <section id="hero" class="hero-section">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Gastronomía y turismo en tu bolsillo.</h1>
+                        <p class="hero-subtitle">Compartimos nuestras experiencias gastronómicas y turísticas, por si te apetece probar alguna...</p>
+                        <a href="#categories" class="mdc-button mdc-button--raised mdc-button--leading">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="mdc-button__label">Pasa a ver nuestras recomendaciones</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section id="about-us" class="section-padding" style="background-color: var(--mdc-theme-surface);">
+                    <div class="page-container">
+                         <div class="about-us-content">
+                            <div>
+                                <img src="https://placehold.co/600x450/A7FFEB/004D40?text=Angels+e+Iñaki" alt="Angels e Iñaki" class="about-us-image">
+                            </div>
+                            <div>
+                                <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 16px; text-align: inherit;">¡Hola! Somos Angels e Iñaki</h2>
+                                <p class="mdc-typography--body1" style="font-size: 1.1rem; line-height: 1.7;">
+                                    Este es nuestro rincón digital donde compartimos: la buena mesa, los viajes que marcan y esas curiosidades que encontramos por el camino. Nuestro objetivo es inspirarte y, quién sabe, ¡quizás darte alguna idea para tu próxima escapada!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="categories" class="section-padding">
+                    <div class="page-container">
+                        <h2 class="section-title">Sumérgete en Nuestros Mundos</h2>
+                        <div class="grid-container">
+                            <div id="tapear-target" class="mdc-card category-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="category-card__icon-container">
+                                        <i class="material-icons">tapas</i>
+                                    </div>
+                                    <h3 class="category-card__title">Pintxos y Tapas</h3>
+                                    <p class="mdc-typography--body2 category-card__description">Descubre sitios donde ofrecen buenos pintxos o buenas tapas. 😋</p>
+                                </div>
+                                <div class="mdc-card__actions">
+                                    <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Pintxos y Tapas</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div id="restaurantes-target" class="mdc-card category-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="category-card__icon-container">
+                                        <i class="material-icons">restaurant</i>
+                                    </div>
+                                    <h3 class="category-card__title">Restaurantes</h3>
+                                    <p class="mdc-typography--body2 category-card__description">Desde cocina casera, con soles e incluso hasta con estrellas. ¡Buen provecho!</p>
+                                </div>
+                                <div class="mdc-card__actions">
+                                     <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Restaurantes</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div id="eventos-culinarios-target" class="mdc-card category-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="category-card__icon-container">
+                                        <i class="material-icons">local_dining</i>
+                                    </div>
+                                    <h3 class="category-card__title">Citas Culinarias Imperdibles</h3>
+                                    <p class="mdc-typography--body2 category-card__description">Ferias gastronómicas, Menús temáticos, Maridajes... Revivid con nosotros los mejores momentos.</p>
+                                </div>
+                                <div class="mdc-card__actions">
+                                     <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Ver Eventos Culinarios</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div id="turismo-target" class="mdc-card category-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="category-card__icon-container">
+                                        <i class="material-icons">explore</i>
+                                    </div>
+                                    <h3 class="category-card__title">Experiencias Turísticas</h3>
+                                    <p class="mdc-typography--body2 category-card__description">Acompañadnos a explorar experiencias turísticas, pueblos con encanto y paisajes que os dejarán sin aliento.</p>
+                                </div>
+                                <div class="mdc-card__actions">
+                                     <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Explorar Turismo</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div id="eventos-turisticos-target" class="mdc-card category-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="category-card__icon-container">
+                                        <i class="material-icons">festival</i>
+                                    </div>
+                                    <h3 class="category-card__title">Citas Turísticas Imperdibles</h3>
+                                    <p class="mdc-typography--body2 category-card__description">Mercados medievales, festivales locales, eventos turísticos... Revivid con nosotros los mejores momentos.</p>
+                                </div>
+                                <div class="mdc-card__actions">
+                                     <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Ver Eventos Turísticos</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div id="curiosidades-target" class="mdc-card category-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="category-card__icon-container">
+                                        <i class="material-icons">emoji_objects</i>
+                                    </div>
+                                    <h3 class="category-card__title">Carteles y Señales “diferentes”</h3>
+                                    <p class="mdc-typography--body2 category-card__description">Porque la vida está llena de pequeñas sorpresas. Aquí coleccionamos esos carteles y detalles curiosos.</p>
+                                </div>
+                                <div class="mdc-card__actions">
+                                     <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Ver Curiosidades</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="mapa-target" class="section-padding" style="background-color: var(--mdc-theme-primary); color: var(--mdc-theme-on-primary);">
+                    <div class="page-container text-center">
+                        <h2 class="section-title" style="color: var(--mdc-theme-on-primary);">Explora Nuestras Experiencias en el Mapa</h2>
+                        <p class="mdc-typography--body1" style="font-size: 1.1rem; margin-bottom: 24px;">Visualiza todos nuestros descubrimientos en un mapa interactivo y planifica tu próxima aventura.</p>
+                        <img src="https://placehold.co/800x400/E0F2F1/004D40?text=Previsualización+del+Mapa+Interactivo" alt="Mapa Interactivo" class="map-preview-image">
+                        <a href="#" class="mdc-button mdc-button--raised" style="background-color: var(--mdc-theme-surface); color: var(--mdc-theme-primary);">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="mdc-button__label">Ir al Mapa Interactivo</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section id="latest-experiences" class="section-padding" style="background-color: var(--mdc-theme-surface);">
+                    <div class="page-container">
+                        <h2 class="section-title">Lo Último de ANeKI</h2>
+                        <div class="grid-container">
+                            <div class="mdc-card latest-experience-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/A7FFEB/004D40?text=Pintxos+en+Donosti');"></div>
+                                    <div style="padding: 16px;">
+                                        <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Pintxos Increíbles en Donosti</h3>
+                                        <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Tapear</p>
+                                        <p class="mdc-typography--body2">Una ruta por los mejores bares de pintxos de la Parte Vieja...</p>
+                                    </div>
+                                </div>
+                                <div class="mdc-card__actions">
+                                    <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Leer más</span>
+                                        <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
+                                    </a>
+                                </div>
+                            </div>
+                             <div class="mdc-card latest-experience-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/80CBC4/004D40?text=Ruta+Rioja+Alavesa');"></div>
+                                    <div style="padding: 16px;">
+                                        <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Ruta por la Rioja Alavesa</h3>
+                                        <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Turismo</p>
+                                        <p class="mdc-typography--body2">Descubriendo bodegas y paisajes de viñedos espectaculares...</p>
+                                    </div>
+                                </div>
+                                <div class="mdc-card__actions">
+                                     <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Leer más</span>
+                                        <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
+                                    </a>
+                                </div>
+                            </div>
+                             <div class="mdc-card latest-experience-card">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                                    <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/4DB6AC/FFFFFF?text=Feria+Medieval');"></div>
+                                    <div style="padding: 16px;">
+                                        <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Feria Medieval de Artziniega</h3>
+                                        <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Eventos Turísticos</p>
+                                        <p class="mdc-typography--body2">Un viaje al pasado en uno de los mercados medievales más auténticos...</p>
+                                    </div>
+                                </div>
+                                <div class="mdc-card__actions">
+                                     <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label">Leer más</span>
+                                        <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 40px;">
+                            <a href="#" class="mdc-button mdc-button--raised">
+                                <span class="mdc-button__ripple"></span>
+                                <span class="mdc-button__label">Ver Todas las Experiencias</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="footer">
+                    <div class="page-container">
+                        <div style="margin-bottom: 16px;">
+                            <a href="#about-us">Sobre Nosotros</a>
+                            <a href="#">Contacto</a>
+                            <a href="#">Política de Privacidad</a>
+                            </div>
+                        <p class="mdc-typography--caption">&copy; <span id="currentYear"></span> ANeKI - Gastroturismo. Todos los derechos reservados.</p>
+                    </div>
+                </footer>
+            </div> </div> </div> 
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script>
+        // Inicialización de componentes MDC
+        const topAppBarElement = document.querySelector('.mdc-top-app-bar');
+        const topAppBar = new mdc.topAppBar.MDCTopAppBar(topAppBarElement);
+        const drawer = mdc.drawer.MDCDrawer.attachTo(document.querySelector('.mdc-drawer'));
+        
+        topAppBar.listen('MDCTopAppBar:nav', () => {
+            drawer.open = !drawer.open;
+        });
+
+        // Inicializar ripples
+        const ripples = Array.from(document.querySelectorAll('.mdc-button, .mdc-card__primary-action, .mdc-list-item')); // FAB eliminado de aquí
+        ripples.forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+
+        // Actualizar año en el footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        const topAppBarHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-app-bar-height').replace('px', '')) || 64;
+
+        const drawerListItems = document.querySelectorAll('.mdc-drawer .mdc-list-item');
+        drawerListItems.forEach(item => {
+            item.addEventListener('click', (event) => {
+                if (drawer.open) {
+                    drawer.open = false;
+                }
+                const anchorHref = event.currentTarget.getAttribute('href');
+                if (anchorHref && anchorHref.startsWith('#')) {
+                    event.preventDefault();
+                    const targetElement = document.querySelector(anchorHref);
+                    if (targetElement) {
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - topAppBarHeight;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
