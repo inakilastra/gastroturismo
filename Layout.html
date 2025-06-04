@@ -362,48 +362,48 @@
       </div>
       <div class="mdc-drawer__content">
         <nav class="mdc-list">
-          <a class="mdc-list-item" href="<?=baseUrl ?>?page=inicio">
+          <a class="mdc-list-item <?= activePage === 'inicio' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>">
             <!--<a class="mdc-list-item mdc-list-item--activated" href="<?=baseUrl ?>?page=index" aria-current="page" tabindex="0">-->
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">home</i>
             <span class="mdc-list-item__text">Inicio</span>
           </a>
-          <a class="mdc-list-item" href="<?=baseUrl ?>?page=tapeo">
+          <a class="mdc-list-item <?= activePage === 'tapeo' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?page=tapeo">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">tapas</i>
             <span class="mdc-list-item__text">Tapear</span>
           </a>
-          <a class="mdc-list-item" href="#restaurantes-target">
+          <a class="mdc-list-item <?= activePage === 'restaurantes' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?restaurantes">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">restaurant</i>
             <span class="mdc-list-item__text">Restaurantes</span>
           </a>
-          <a class="mdc-list-item" href="#bodegas-target">
+          <a class="mdc-list-item <?= activePage === 'tapeo' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?bodegas">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">local_dining</i>
             <span class="mdc-list-item__text">Eventos Culinarios</span>
           </a>
-          <a class="mdc-list-item" href="#turismo-target">
+          <a class="mdc-list-item <?= activePage === 'turismo' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?turismo">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">explore</i>
             <span class="mdc-list-item__text">Turismo</span>
           </a>
-          <a class="mdc-list-item" href="#riendas-target">
+          <a class="mdc-list-item <?= activePage === 'tiendas' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?tiendas">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">local_dining</i>
             <span class="mdc-list-item__text">Tiendas Gourmet</span>
           </a>      
-          <a class="mdc-list-item" href="#eventos-culinarios-target">
+          <a class="mdc-list-item <?= activePage === 'eventosculinarios' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?eventosculinarios">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">local_dining</i>
             <span class="mdc-list-item__text">Eventos Culinarios</span>
           </a>      
-          <a class="mdc-list-item" href="#eventos-turisticos-target">
+          <a class="mdc-list-item <?= activePage === 'eventosturisticos' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?eventosturisticos">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">festival</i>
             <span class="mdc-list-item__text">Eventos Turísticos</span>
           </a>
-          <a class="mdc-list-item" href="#curiosidades-target">
+          <a class="mdc-list-item <?= activePage === 'carteles' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?carteles">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">emoji_objects</i>
             <span class="mdc-list-item__text">Curiosidades</span>
