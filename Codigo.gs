@@ -25,39 +25,42 @@ const SPREADSHEET_ID = "1sZngQQr6loqWUoIWipG5IWFkraEsbHD8mfaf9iirfjw";
 function doGet(e) {
   const baseUrl = ScriptApp.getService().getUrl();
   let pageFile = 'Index.html'; // Página por defecto
+  let activePage = 'inicio';
   let title = "ANeKI - GastroTurismo"; // Título por defecto
 
   // Router para decidir qué archivo de contenido cargar
   if (e.parameter.page === 'tapeo') {
     pageFile = 'Tapeo.html';
+    activePage = 'tapeo';
     title = "ANeKI - Tapeo";
   } else if (e.parameter.page === 'restaurantes') {
     pageFile = 'Restaurantes.html';
+    activePage = 'restaurantes';
     title = "ANeKI - Restaurantes";
   } else if (e.parameter.page === 'bodegas') {
     pageFile = 'Bodegas.html';
+    activePage = 'bodegas';
     title = "ANeKI - Bodegas";
   } else if (e.parameter.page === 'turismo') {
     pageFile = 'Turismo.html';
+    activePage = 'turismo';
     title = "ANeKI - Turismo";
   } else if (e.parameter.page === 'tiendas') {
     pageFile = 'Tiendas.html';
+    activePage = 'tiendas';
     title = "ANeKI - Tiendas";
   } else if (e.parameter.page === 'eventosculinarios') {
     pageFile = 'EventosCulinarios.html';
+    activePage = 'eventosculinarios';
     title = "ANeKI - Eventos Culinarios";
   } else if (e.parameter.page === 'eventosturisticos') {
     pageFile = 'EventosTuristicos.html';
+    activePage = 'eventosturisticos';
     title = "ANeKI - Eventos Turisticos";
   } else if (e.parameter.page === 'carteles') {
     pageFile = 'Carteles.html';
+    activePage = 'carteles';
     title = "ANeKI - Carteles";
-  } else if (e.parameter.page === 'inicio') {
-    pageFile = 'Index.html';
-    title = "ANeKI - GastroTurismo";
-  } else {
-    pageFile = 'Index.html';
-    title = "ANeKI - GastroTurismo";
   }
 
   // Carga el contenido de la página específica
@@ -68,6 +71,7 @@ function doGet(e) {
   
   // Pasa las variables a la plantilla
   layout.baseUrl = baseUrl;
+  layout.activePage = activePage
   layout.pageContent = pageContent;
   
   // Si es la página de inicio, pasa también la URL de la imagen del hero
@@ -88,6 +92,77 @@ function doGet(e) {
   return layout.evaluate()
       .setTitle(title)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+function doGetOLD(e) {
+  // Obtiene la URL base de la aplicación web. Esencial para construir los enlaces.
+  const baseUrl = ScriptApp.getService().getUrl();
+  let page = e.parameter.page;
+  let template;
+  let title = "ANeKI - GastroTurismo"; // Título por defecto
+
+  // Si no se especifica ninguna página en la URL, se carga 'tapeo' por defecto.
+  if (!page) {
+    page = 'Index';
+  }
+
+  // Seleccionamos la plantilla HTML y el título según la página solicitada.
+  switch (page.toLowerCase()) {
+    case 'tapeo':
+      template = HtmlService.createTemplateFromFile('Tapeo'); // Requiere archivo Tapeo.html
+      title = "ANeKI - Tapeo";
+      break;
+    case 'restaurantes':
+      template = HtmlService.createTemplateFromFile('Restaurantes'); // Requiere archivo Restaurantes.html
+      title = "ANeKI - Restaurantes";
+      break;
+    case 'bodegas':
+      template = HtmlService.createTemplateFromFile('Bodegas'); // Requiere archivo Bodegas.html
+      title = "ANeKI - Bodegas";
+      break;
+    case 'turismo':
+      template = HtmlService.createTemplateFromFile('Turismo'); // Requiere archivo Turismo.html
+      title = "ANeKI - Turismo";
+      break;
+    case 'tiendas':
+      template = HtmlService.createTemplateFromFile('Tiendas'); // Requiere archivo Tiendas.html
+      title = "ANeKI - Tiendas Gourmet";
+      break;      
+    case 'eventosculinarios':
+      template = HtmlService.createTemplateFromFile('EventosCulinarios'); // Requiere archivo EventosCulinarios.html
+      title = "ANeKI - Eventos Culinarios";
+      break; 
+    case 'eventosturisticos':
+      template = HtmlService.createTemplateFromFile('EventosTuristicos'); // Requiere archivo EventosTuristicos.html
+      title = "ANeKI - Eventos Turisticos";
+      break;         
+    case 'carteles':
+      template = HtmlService.createTemplateFromFile('Carteles'); // Requiere archivo Carteles.html
+      title = "ANeKI - Carteles";
+      break;                
+    default:
+      // Si la página no existe, mostramos una página principal o de error.
+      template = HtmlService.createTemplateFromFile('Index'); // Requiere archivo Index.html
+      title = "ANeKI - Bienvenido";
+      // Aquí es donde pones el ID de tu imagen que copiaste en el Paso 1.
+      //const fondo_landin = '17yV5z7LQUheTWPq6Bx4-GqNrlwh5PxiE'; // Delirios
+      const fondo_landin = '1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ'; //Jamon Jamon
+      // Llama a la función para obtener la imagen y la añade a una variable para el HTML.
+      template.heroImageUrl = getImageAsBase64(fondo_landin);
+  }
+
+  // Obtiene la URL base de la aplicación (ej: .../exec) y la añade a una variable 'baseUrl'
+  //template.baseUrl = ScriptApp.getService().getUrl();
+  // Pasamos la URL base a la plantilla para que la use en los enlaces.
+  template.baseUrl = baseUrl;
+  // Pasamos el nombre de la hoja de datos a la plantilla HTML.
+  // Esto permite que el JavaScript del cliente sepa qué datos pedir.
+  template.sheetName = page === 'tapeo' ? 'Datos_Tapeo' : 
+                       page === 'restaurantes' ? 'Datos_Restaurante' :
+                       page === 'turismo' ? 'Datos_Turismo' : '';
+  
+  return template.evaluate()
+    .setTitle(title)
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 /**
