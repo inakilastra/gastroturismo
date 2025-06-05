@@ -24,332 +24,75 @@
         --mdc-theme-on-primary-container: #004D40; /* Teal 900 */
         --top-app-bar-height: 64px; /* Altura de la Top App Bar, ajustar si cambia */
       }
-
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+      
+      html, body{height:100%;margin:0;padding:0}
+      body{font-family:'Roboto',sans-serif;color:var(--mdc-theme-on-surface);background-color:var(--mdc-theme-background);overflow-x:hidden}
+      .brand-font{font-family:var(--md-ref-typeface-brand)}
+      .hero-section{height:calc(100vh - var(--top-app-bar-height));background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;color:white}
+      .hero-section::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,.3)}
+      .hero-content{position:relative;z-index:1;padding:20px}
+      .hero-title{font-family:var(--md-ref-typeface-brand);font-size:3.5rem;margin-bottom:1rem;line-height:1.2}
+      @media (max-width:600px){
+        .hero-title{font-size:2.5rem}
+        .hero-subtitle{font-size:1.2rem}
+      }.
+      hero-subtitle{font-size:1.5rem;margin-bottom:2rem}
+      .page-container{max-width:1200px;margin-left:auto;margin-right:auto;padding-left:16px;padding-right:16px}
+      .section-padding{padding-top:48px;padding-bottom:48px}
+      .section-title{font-family:var(--md-ref-typeface-brand);font-size:2.8rem;color:var(--mdc-theme-primary);text-align:center;margin-bottom:40px}
+      @media (max-width:600px){
+        .section-title{font-size:2.2rem}
       }
-
-      body {
-        font-family: 'Roboto', sans-serif;
-        color: var(--mdc-theme-on-surface);
-        background-color: var(--mdc-theme-background);
-        overflow-x: hidden; 
+      .category-card{display:flex;flex-direction:column;align-items:center;text-align:center;background-color:var(--mdc-theme-surface);border-radius:16px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+      .category-card .mdc-card__primary-action{display:flex;flex-direction:column;align-items:center;padding:24px;width:100%;box-sizing:border-box;flex-grow:1}
+      .category-card__icon-container{background-color:var(--mdc-theme-primary-container);color:var(--mdc-theme-on-primary-container);border-radius:50%;padding:16px;margin-bottom:16px;display:inline-flex}
+      .category-card__icon-container .material-icons{font-size:36px}
+      .category-card__title{font-family:var(--md-ref-typeface-brand);font-size:1.75rem;color:var(--mdc-theme-primary);margin-bottom:8px}
+      .category-card__description{margin-bottom:16px;min-height:60px;flex-grow:1;color:var(--mdc-theme-on-surface)}
+      .category-card .mdc-card__actions{width:100%}
+      .category-card .mdc-button{margin-top:auto}.about-us-content{display:grid;grid-template-columns:1fr;gap:32px;align-items:center;max-width:960px;margin:0 auto}
+      @media (min-width:768px){
+        .about-us-content{grid-template-columns:2fr 3fr;text-align:left}
+        .about-us-content>div:last-child{text-align:left}
       }
-
-      .brand-font {
-        font-family: var(--md-ref-typeface-brand);
+      .about-us-image{width:100%;max-width:400px;height:auto;border-radius:24px;object-fit:cover;margin:0 auto;display:block;box-shadow:0 4px 8px rgba(0,0,0,.15)}
+      .map-preview-image{width:100%;max-width:700px;height:auto;border-radius:16px;margin:24px auto;display:block;box-shadow:0 4px 8px rgba(0,0,0,.1)}
+      .latest-experience-card .mdc-card__media{height:200px;background-size:cover;background-position:center}
+      .grid-container{display:grid;gap:24px}
+      @media (min-width:600px){
+        .grid-container{grid-template-columns:repeat(2,1fr)}
       }
-
-      .hero-section {
-        height: calc(100vh - var(--top-app-bar-height));
-        /*background-image: url('https://placehold.co/1920x1080/00796B/FFFFFF?text=Imagen+Principal+ANeKI');*/
-        /*background-image: url('<?= heroImageUrl ?>'); */
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        position: relative;
-        color: white;
+      @media (min-width:960px){
+        .grid-container{grid-template-columns:repeat(3,1fr)}
       }
-      .hero-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.3); 
-      }
-      .hero-content {
-        position: relative;
-        z-index: 1;
-        padding: 20px;
-      }
-      .hero-title {
-        font-family: var(--md-ref-typeface-brand);
-        font-size: 3.5rem; 
-        margin-bottom: 1rem;
-        line-height: 1.2;
-      }
-      @media (max-width: 600px) {
-        .hero-title {
-          font-size: 2.5rem;
-        }
-        .hero-subtitle {
-          font-size: 1.2rem;
-        }
-      }
-      .hero-subtitle {
-        font-size: 1.5rem;
-        margin-bottom: 2rem;
-      }
-
-      .page-container { 
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 16px;
-        padding-right: 16px;
-      }
-
-      .section-padding {
-        padding-top: 48px;
-        padding-bottom: 48px;
-      }
-      .section-title {
-        font-family: var(--md-ref-typeface-brand);
-        font-size: 2.8rem;
-        color: var(--mdc-theme-primary);
-        text-align: center;
-        margin-bottom: 40px;
-      }
-      @media (max-width: 600px) {
-        .section-title {
-          font-size: 2.2rem;
-        }
-      }
-
-      .category-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        background-color: var(--mdc-theme-surface);
-        border-radius: 16px; 
-        overflow: hidden; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra sutil */
-      }
-      .category-card .mdc-card__primary-action {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 24px;
-        width: 100%;
-        box-sizing: border-box;
-        flex-grow: 1; 
-      }
-
-      .category-card__icon-container {
-        background-color: var(--mdc-theme-primary-container);
-        color: var(--mdc-theme-on-primary-container);
-        border-radius: 50%;
-        padding: 16px;
-        margin-bottom: 16px;
-        display: inline-flex; 
-      }
-      .category-card__icon-container .material-icons {
-        font-size: 36px;
-      }
-      .category-card__title {
-        font-family: var(--md-ref-typeface-brand);
-        font-size: 1.75rem; 
-        color: var(--mdc-theme-primary);
-        margin-bottom: 8px;
-      }
-      .category-card__description {
-        margin-bottom: 16px;
-        min-height: 60px; 
-        flex-grow: 1;
-        color: var(--mdc-theme-on-surface); /* Asegurar color de texto */
-      }
-      .category-card .mdc-card__actions {
-        width: 100%; 
-      }
-      .category-card .mdc-button {
-        margin-top: auto; 
-      }
-
-      .about-us-content {
-        display: grid;
-        grid-template-columns: 1fr; 
-        gap: 32px;
-        align-items: center;
-        max-width: 960px; 
-        margin: 0 auto; 
-      }
-      @media (min-width: 768px) { 
-        .about-us-content {
-          grid-template-columns: 2fr 3fr; 
-          text-align: left;
-        }
-        .about-us-content > div:last-child { 
-          text-align: left;
-        }
-      }
-
-      .about-us-image {
-        width: 100%;
-        max-width: 400px; 
-        height: auto;
-        border-radius: 24px; 
-        object-fit: cover;
-        margin: 0 auto; 
-        display: block;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-      }
-      .map-preview-image {
-        width: 100%;
-        max-width: 700px;
-        height: auto;
-        border-radius: 16px;
-        margin: 24px auto;
-        display: block;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      }
-      .latest-experience-card .mdc-card__media { 
-        height: 200px;
-        background-size: cover;
-        background-position: center;
-      }
-
-      .grid-container {
-        display: grid;
-        gap: 24px;
-      }
-      @media (min-width: 600px) { 
-        .grid-container {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-      @media (min-width: 960px) { 
-        .grid-container {
-          grid-template-columns: repeat(3, 1fr);
-        }
-      }
-      .mdc-top-app-bar {
-        background-color: var(--mdc-theme-surface);
-        color: var(--mdc-theme-on-surface);
-      }
-      .mdc-top-app-bar__title.brand-font {
-        color: var(--mdc-theme-primary);
-        font-size: 1.75rem;
-      }
-      .mdc-top-app-bar__navigation-icon {
-        color: var(--mdc-theme-on-surface) !important;
-      }
-      .mdc-drawer {
-        background-color: var(--mdc-theme-surface);
-      }
-      .mdc-drawer__title, .mdc-drawer__subtitle {
-        font-family: var(--md-ref-typeface-brand, 'Special Elite');
-        font-weight: bold;
-        color: var(--mdc-theme-on-surface) !important;
-      }
-      .mdc-list .mdc-list-item {
-        padding-top: 6px;
-        padding-bottom: 6px;
-      }
-      .mdc-list-item__text {
-        font-family: var(--md-ref-typeface-brand, 'Special Elite');
-        font-weight: bold;
-        margin-left: 12px;
-      }
-
-      .footer {
-        background-color: #263238; /* Gris azulado oscuro, complementa bien el teal */
-        color: #ECEFF1; /* Texto claro para el footer */
-        padding: 40px 20px;
-        text-align: center;
-      }
-      .footer a {
-        color: #B0BEC5; /* Un gris azulado más claro para enlaces */
-        text-decoration: none;
-        margin: 0 10px;
-      }
-      .footer a:hover {
-        color: var(--mdc-theme-secondary); /* Teal claro al pasar el ratón */
-      }
-
-      /* --- ESTILOS PARA DISPOSITIVOS TÁCTILES O SIN HOVER CONVENIENTE  or (max-width: 1024px)--- */
-      @media ((hover: none) or (pointer: coarse)) and (orientation: portrait) {
-        /* --- Ancho y Padding del Panel Lateral (Menú) --- */
-        .mdc-drawer {
-            width: 85vw !important;
-        }
-        .mdc-drawer__header {
-            padding: 24px 5vw !important;
-        }
-        .mdc-list {
-            padding: 0 5vw !important;
-        }
-
-        /* --- Alineación y Tamaño de Items de la Lista del Menú --- */
-        .mdc-list-item {
-            display: flex !important;
-            align-items: center !important;
-            padding-top: 1.5vh !important;
-            padding-bottom: 1.5vh !important;
-        }
-        .mdc-list-item__graphic {
-            font-size: 6vw !important;
-        }
-        .mdc-list-item__text {
-            font-size: 5.5vw !important;
-            margin-left: 4vw !important;
-        }
-
-        /* --- Título y Subtítulo del Menú --- */
-        .mdc-drawer__title {
-            font-size: 5.5vw !important;
-        }
-        .mdc-drawer__subtitle {
-            font-size: 3.5vw !important;
-        }
-
-        /* --- Ajustes del Header (Barra de Navegación Superior) --- */
-        .mdc-top-app-bar, .mdc-top-app-bar__row {
-            height: 90px !important;
-        }
-        .mdc-top-app-bar--fixed-adjust {
-            padding-top: 90px !important;
-        }
-        .mdc-top-app-bar__title.brand-font {
-            font-size: 5vw !important;
-            white-space: normal !important;
-            line-height: 1.2 !important;
-        }
-        .mdc-top-app-bar__navigation-icon {
-            font-size: 36px !important;
-            width: 52px !important;
-            height: 52px !important;
-            position: relative !important;
-            top: -5px !important;
-        }
-        .mdc-top-app-bar__section--align-start {
-            display: flex !important;
-            align-items: center !important;
-            height: 100% !important;
-        }
-
-        /* --- Ajustes del Layout General de la Página --- */
-        .grid-container {
-            grid-template-columns: 1fr !important;
-        }
-        .about-us-content {
-            grid-template-columns: 1fr !important;
-            text-align: center !important;
-        }
-        .about-us-content > div:last-child {
-              text-align: center !important;
-        }
-
-        /* --- Ajustes de Fuentes Principales de la Página --- */
-        .hero-title {
-            font-size: 8vw !important;
-        }
-        .hero-subtitle {
-            font-size: 4vw !important;
-        }
-        .section-title {
-            font-size: 6.5vw !important;
-        }
-        .category-card__title {
-            font-size: 5.5vw !important;
-        }     
+      .mdc-top-app-bar{background-color:var(--mdc-theme-surface);color:var(--mdc-theme-on-surface)}
+      .mdc-top-app-bar__title.brand-font{color:var(--mdc-theme-primary);font-size:1.75rem}
+      .mdc-top-app-bar__navigation-icon{color:var(--mdc-theme-on-surface)!important}
+      .mdc-drawer{background-color:var(--mdc-theme-surface)}
+      .mdc-drawer__title,.mdc-drawer__subtitle{font-family:var(--md-ref-typeface-brand,'Special Elite');font-weight:700;color:var(--mdc-theme-on-surface)!important}
+      .mdc-list .mdc-list-item{padding-top:6px;padding-bottom:6px}
+      .mdc-list-item__text{font-family:var(--md-ref-typeface-brand,'Special Elite');font-weight:700;margin-left:12px}.footer{background-color:#263238;color:#eceff1;padding:40px 20px;text-align:center}
+      .footer a{color:#b0bec5;text-decoration:none;margin:0 10px}.
+      footer a:hover{color:var(--mdc-theme-secondary)}
+      @media ((hover:none) or (pointer:coarse)) and (orientation:portrait){
+          .mdc-drawer{width:85vw!important}
+        .mdc-drawer__header{padding:24px 5vw!important}.mdc-list{padding:0 5vw!important}
+        .mdc-list-item{display:flex!important;align-items:center!important;padding-top:1.5vh!important;padding-bottom:1.5vh!important}
+        .mdc-list-item__graphic{font-size:6vw!important}
+        .mdc-list-item__text{font-size:5.5vw!important;margin-left:4vw!important}
+        .mdc-drawer__title{font-size:5.5vw!important}
+        .mdc-drawer__subtitle{font-size:3.5vw!important}
+        .mdc-top-app-bar,.mdc-top-app-bar__row{height:90px!important}
+        .mdc-top-app-bar--fixed-adjust{padding-top:90px!important}
+        .mdc-top-app-bar__title.brand-font{font-size:5vw!important;white-space:normal!important;line-height:1.2!important}
+        .mdc-top-app-bar__navigation-icon{font-size:36px!important;width:52px!important;height:52px!important;position:relative!important;top:-5px!important}
+        .mdc-top-app-bar__section--align-start{display:flex!important;align-items:center!important;height:100%!important}
+        .grid-container{grid-template-columns:1fr!important}
+        .about-us-content{grid-template-columns:1fr!important;text-align:center!important}
+        .about-us-content>div:last-child{text-align:center!important}
+        .hero-title{font-size:8vw!important}
+        .hero-subtitle{font-size:4vw!important}
+        .section-title{font-size:6.5vw!important}.category-card__title{font-size:5.5vw!important}
       }
     </style>
   </head>
@@ -363,7 +106,6 @@
       <div class="mdc-drawer__content">
         <nav class="mdc-list">
           <a class="mdc-list-item <?= activePage === 'inicio' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>">
-            <!--<a class="mdc-list-item mdc-list-item--activated" href="<?=baseUrl ?>?page=index" aria-current="page" tabindex="0">-->
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">home</i>
             <span class="mdc-list-item__text">Inicio</span>
@@ -373,37 +115,32 @@
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">tapas</i>
             <span class="mdc-list-item__text">Tapear</span>
           </a>
-          <a class="mdc-list-item <?= activePage === 'restaurantes' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?restaurantes">
+          <a class="mdc-list-item <?= activePage === 'restaurantes' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?page=restaurantes">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">restaurant</i>
             <span class="mdc-list-item__text">Restaurantes</span>
           </a>
-          <a class="mdc-list-item <?= activePage === 'bodegas' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?bodegas">
+          <a class="mdc-list-item <?= activePage === 'eventosculinarios' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?page=eventosculinarios">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">local_dining</i>
             <span class="mdc-list-item__text">Eventos Culinarios</span>
           </a>
-          <a class="mdc-list-item <?= activePage === 'turismo' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?turismo">
+          <a class="mdc-list-item <?= activePage === 'turismo' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?page=turismo">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">explore</i>
             <span class="mdc-list-item__text">Turismo</span>
           </a>
-          <a class="mdc-list-item <?= activePage === 'tiendas' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?tiendas">
+          <a class="mdc-list-item <?= activePage === 'tiendas' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?page=tiendas">
             <span class="mdc-list-item__ripple"></span>
-            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">local_dining</i>
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">storefront</i>
             <span class="mdc-list-item__text">Tiendas Gourmet</span>
           </a>      
-          <a class="mdc-list-item <?= activePage === 'eventosculinarios' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?eventosculinarios">
-            <span class="mdc-list-item__ripple"></span>
-            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">local_dining</i>
-            <span class="mdc-list-item__text">Eventos Culinarios</span>
-          </a>      
-          <a class="mdc-list-item <?= activePage === 'eventosturisticos' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?eventosturisticos">
+          <a class="mdc-list-item <?= activePage === 'eventosturisticos' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?page=eventosturisticos">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">festival</i>
             <span class="mdc-list-item__text">Eventos Turísticos</span>
           </a>
-          <a class="mdc-list-item <?= activePage === 'carteles' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?carteles">
+          <a class="mdc-list-item <?= activePage === 'curiosidades' ? 'mdc-list-item--activated' : '' ?>" href="<?= baseUrl ?>?page=curiosidades">
             <span class="mdc-list-item__ripple"></span>
             <i class="material-icons mdc-list-item__graphic" aria-hidden="true">emoji_objects</i>
             <span class="mdc-list-item__text">Curiosidades</span>
@@ -458,63 +195,66 @@
         // Actualizar año en el footer
         document.getElementById('currentYear').textContent = new Date().getFullYear();
         
-        // --- Lógica para el desplazamiento suave (smooth scroll) ---
-        const topAppBarHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-app-bar-height').replace('px', '')) || 64;
+        // --- GESTOR DE CLICS UNIFICADO Y ROBUSTO CON DEPURACIÓN ---
+        const handleMenuClick = (event) => {
+            const linkElement = event.currentTarget;
+            const href = linkElement.getAttribute('href');
+            console.log('[DEBUG] Menu item clicked. Href:', href);
 
-        // Función para manejar el clic en enlaces de ancla
-        const handleAnchorClick = (event) => {
-            const anchorHref = event.currentTarget.getAttribute('href');
-            
-            // Si el enlace no es un ancla interna, no hacer nada especial
-            if (!anchorHref || !anchorHref.startsWith('#')) {
+            if (!href) {
+                console.log('[DEBUG] No href, exiting.');
                 return;
             }
+            event.preventDefault();
+            console.log('[DEBUG] Default action prevented for href:', href);
 
-            event.preventDefault(); // Prevenir el salto brusco por defecto
+            const navigateOrScroll = () => {
+                console.log('[DEBUG] Drawer closed event received. Processing Href:', href);
+                if (href.startsWith('#')) {
+                    console.log('[DEBUG] Scrolling to anchor:', href);
+                    const targetElement = document.querySelector(href);
+                    if (targetElement) {
+                        const topAppBarHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-app-bar-height').replace('px', '')) || 64;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - topAppBarHeight;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                         console.log('[DEBUG] Scrolled to:', href);
+                    } else {
+                        console.error('[DEBUG] Anchor target not found:', href);
+                    }
+                } else {
+                    console.log('[DEBUG] Navigating to page:', href);
+                    window.location.href = href;
+                }
+            };
+
+            // Escuchamos el evento de cierre UNA SOLA VEZ
+            drawer.listen('MDCDrawer:closed', navigateOrScroll, {once: true});
             
-            // Cerrar el menú lateral si está abierto
-            if (drawer.open) {
-                drawer.open = false;
-            }
-
-            const targetElement = document.querySelector(anchorHref);
-            if (targetElement) {
-                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - topAppBarHeight;
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
+            console.log('[DEBUG] Telling drawer to close for href:', href);
+            drawer.open = false;
         };
 
-        // Aplicar el listener a los enlaces del menú lateral
         const drawerListItems = document.querySelectorAll('.mdc-drawer .mdc-list-item');
         drawerListItems.forEach(item => {
-            item.addEventListener('click', handleAnchorClick);
+            item.addEventListener('click', handleMenuClick);
         });
-        
-        // Aplicar el listener a otros enlaces de ancla en la página (ej. botón del héroe, footer)
-        const pageAnchors = document.querySelectorAll('a[href^="#"]');
-        pageAnchors.forEach(anchor => {
-             // Asegurarnos de no añadir el listener dos veces a los elementos del drawer
-            if (!anchor.classList.contains('mdc-list-item')) {
-                 anchor.addEventListener('click', handleAnchorClick);
-            }
-        });
+        console.log('[DEBUG] Menu click listeners attached.');
 
-        // --- SCRIPT PARA APLICAR LA IMAGEN DE FONDO ---
-        (function() {
-          // Obtiene el elemento de la sección del héroe
-          const heroSection = document.getElementById('hero');
-          
-          // Crea una variable de JavaScript con la URL de la imagen que viene del servidor
-          const imageUrl = '<?= heroImageUrl ?>';
-          
-          // Aplica el estilo de la imagen de fondo directamente al elemento
-          if (heroSection && imageUrl) {
-            heroSection.style.backgroundImage = 'url(' + imageUrl + ')';
-          }
-        })();
+  // --- SCRIPT PARA APLICAR LA IMAGEN DE FONDO ---
+  /*(function() {
+    const heroSection = document.getElementById('hero');
+    const imageUrl = '<?= heroImageUrl ?>';
+      console.log('[DEBUG] Hero image script. Image URL from GAS:', imageUrl ? imageUrl.substring(0,50) + '...' : 'null'); // Loguea parte de la URL
+    if (heroSection && imageUrl) {
+      heroSection.style.backgroundImage = 'url(' + imageUrl + ')';
+      console.log('[DEBUG] Hero background image applied.');
+    } else {
+      console.log('[DEBUG] Hero section or image URL not found for background.');
+    }
+  })();*/
     </script>
   </body>
 </html>
