@@ -73,6 +73,9 @@ function doGet(e) {
   layout.baseUrl = baseUrl;
   layout.activePage = activePage
   layout.pageContent = pageContent;
+  layout.heroImageUrl = null; // Valor por defecto
+  layout.aboutUsImageUrl = null; // Valor por defecto
+  
   
   // Si es la página de inicio, pasa también la URL de la imagen del hero
   if (pageFile === 'Index.html') {
@@ -81,13 +84,23 @@ function doGet(e) {
     const idImagenAboutUs = '17yV5z7LQUheTWPq6Bx4-GqNrlwh5PxiE';
     layout.aboutUsImageUrl = getImageAsBase64(idImagenAboutUs);
   } else {
-    layout.heroImageUrl = ''; // Pasa una cadena vacía para otras páginas
+    layout.heroImageUrl = null; // O undefined, o no la definas
+    layout.aboutUsImageUrl = null; // Asegúrate de que también se maneje
   }
   // Esto permite que el JavaScript del cliente sepa qué datos pedir.
   //layout.sheetName = page === 'tapeo' ? 'Datos_Tapeo' : 
   //                   page === 'restaurantes' ? 'Datos_Restaurante' :
   //                   page === 'turismo' ? 'Datos_Turismo' : '';
 
+Logger.log('Revisando todas las propiedades de layout:');
+for (var key in layout) {
+  if (layout.hasOwnProperty(key)) {
+    var value = layout[key];
+    // Si el valor es una cadena larga (como Base64), loguea solo una parte
+    var logValue = (typeof value === 'string' && value.length > 100) ? value.substring(0,100) + '...' : value;
+    Logger.log(key + ': ' + logValue);
+  }
+}
   // Procesa y devuelve el HTML final y completo
   return layout.evaluate()
       .setTitle(title)
