@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>Restaurantes</title> <!-- El título se establecerá dinámicamente desde Codigo.gs -->
+  
+  <!-- Inyectar CSS Común y MDC -->
+  <?!= plantillaCSS ?>
+
+  <!-- Estilos específicos de la página de Tapeo (opcional) -->
+  <style>
+    /* .main-app-content h1 ya tiene un estilo base en PlantillaCSS.html */
+    .tapa-item {
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .tapa-item h3 {
+      margin-top: 0;
+      color: #d32f2f; /* Un rojo para los títulos de las tapas */
+    }
+    .tapa-item img {
+      max-width: 100px;
+      height: auto;
+      border-radius: 4px;
+      float: right; /* Imagen a la derecha */
+      margin-left: 15px;
+    }
+    .tapa-item p {
+        margin-bottom: 8px;
+    }
+    .tapa-item::after { /* Clearfix para el float de la imagen */
+        content: "";
+        clear: both;
+        display: table;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Drawer (Aside) - Viene de PlantillaAside.html -->
+  <?!= plantillaAside ?>
+
+  <!-- Contenedor principal de la aplicación para MDC -->
+  <div class="mdc-drawer-app-content">
+    
+    <!-- Header (Top App Bar) - Viene de PlantillaHeader.html -->
+    <?!= plantillaHeader ?>
+
+    <!-- Contenido principal específico de esta página -->
+    <main class="main-app-content" id="main-content-scroll-target"> 
+      <div class="mdc-top-app-bar--fixed-adjust">   
+        <h1>Restaurantes ANeKI</h1> 
+      </div>
+      <!-- Más contenido específico de la página de tapeo aquí -->
+    </main>
+
+    <!-- Footer Común - Viene de PlantillaFooter.html -->
+    <?!= plantillaFooter ?>
+
+  </div> <!-- Fin de mdc-drawer-app-content -->
+
+  <!-- Inyectar JavaScript Común y MDC - Viene de PlantillaJavaScript.html -->
+  <?!= plantillaJS ?>
+
+</body>
+</html>
