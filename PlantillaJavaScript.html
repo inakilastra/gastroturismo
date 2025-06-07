@@ -1,0 +1,96 @@
+<!-- PlantillaJavaScript.html -->
+<!-- Material Components Web JS -->
+<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('MDC Plantilla JavaScript cargada y DOM listo.');
+
+    const drawerElement = document.querySelector('.mdc-drawer');
+    let drawer; // Declarar drawer fuera para que sea accesible en el listener de anclajes
+    if (drawerElement) {
+      drawer = mdc.drawer.MDCDrawer.attachTo(drawerElement);
+    }
+
+    const topAppBarElement = document.getElementById('app-bar');
+    if (topAppBarElement) {
+      const topAppBar = mdc.topAppBar.MDCTopAppBar.attachTo(topAppBarElement);
+      
+      if (drawer) { // Solo añadir listener si el drawer existe
+        topAppBar.listen('MDCTopAppBar:nav', () => {
+          drawer.open = !drawer.open;
+        });
+      }
+    }
+
+    // Inicializar ripples para componentes MDC
+    const ripples = Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item, .mdc-card__primary-action'));
+    ripples.forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+
+
+    // --- INICIO: Script para scroll suave a anclajes internos ---
+    const scrollContainer = document.querySelector('.mdc-drawer-app-content'); // El contenedor que tiene el scroll
+    const links = document.querySelectorAll('a[href^="#"], a[href*="#"]'); // Enlaces que empiezan o contienen #
+
+    links.forEach(link => {
+      link.addEventListener('click', function(event) {
+        const href = this.getAttribute('href');
+        let targetId = null;
+
+        // Extraer el ID del anclaje. Funciona para URLs completas con # o solo #
+        if (href.includes('#')) {
+          targetId = href.substring(href.lastIndexOf('#') + 1);
+        }
+        
+        // Verificar si el anclaje es para la página actual y no es solo un "#" vacío
+        // Esto es importante si getWebAppUrl() está presente en el href.
+        // Comprobamos si el href base (sin el anclaje) es la URL actual o está vacío (para anclajes tipo "#section")
+        const baseUrlOfLink = href.includes('#') ? href.substring(0, href.lastIndexOf('#')) : href;
+        const currentBaseUrl = window.location.href.includes('#') ? window.location.href.substring(0, window.location.href.lastIndexOf('#')) : window.location.href;
+        
+        // Si el enlace es solo un anclaje (#section) o la URL base coincide con la actual
+        if (targetId && (baseUrlOfLink === "" || baseUrlOfLink === currentBaseUrl || href.startsWith("#"))) {
+          const targetElement = document.getElementById(targetId);
+
+          if (targetElement && scrollContainer) {
+            event.preventDefault(); // Prevenir el comportamiento de anclaje por defecto
+
+            // Obtener la altura de la top-app-bar para compensar
+            let topAppBarHeight = 0;
+            const appBar = document.getElementById('app-bar'); // El ID de tu top-app-bar
+            if (appBar) {
+              topAppBarHeight = appBar.offsetHeight;
+            }
+
+            // Calcular la posición del target dentro del scrollContainer
+            // targetElement.offsetTop es relativo a su offsetParent.
+            // Necesitamos la posición relativa al scrollContainer.
+            let targetPosition = 0;
+            let currentElement = targetElement;
+            while(currentElement && currentElement !== scrollContainer) {
+                targetPosition += currentElement.offsetTop;
+                currentElement = currentElement.offsetParent;
+            }
+            // Si el scrollContainer es el offsetParent, targetPosition es correcta.
+            // Si no, y el target está directamente en el scrollContainer, targetElement.offsetTop es relativo a este.
+            // Por simplicidad, asumimos que scrollContainer es el que tiene el scroll y los targets están dentro.
+
+            // Ajustar la posición para que el inicio de la sección quede justo debajo de la barra
+            const scrollToPosition = targetPosition - topAppBarHeight;
+            
+            scrollContainer.scrollTo({
+              top: scrollToPosition,
+              behavior: 'smooth' // Scroll suave
+            });
+
+            // Si tienes un drawer modal, ciérralo después de hacer clic en un anclaje
+            if (drawer && drawer.open && drawerElement.classList.contains('mdc-drawer--modal')) {
+              drawer.open = false;
+            }
+          }
+        }
+      });
+    });
+    // --- FIN: Script para scroll suave a anclajes internos ---
+
+  });
+</script>
