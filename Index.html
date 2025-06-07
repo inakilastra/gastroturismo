@@ -1,209 +1,314 @@
-  <section id="hero" class="hero-section">
-    <div class="hero-content">
-      <h1 class="hero-title">Gastronomía y turismo en tu bolsillo.</h1>
-      <p class="hero-subtitle">Compartimos nuestras experiencias gastronómicas y turísticas, por si te apetece probar alguna...</p>
-      <a href="#categories" class="mdc-button mdc-button--raised mdc-button--leading">
-        <span class="mdc-button__ripple"></span>
-        <span class="mdc-button__label">Pasa a ver nuestras recomendaciones</span>
-      </a>
-    </div>
-  </section>
-  <section id="about-us" class="section-padding" style="background-color: var(--mdc-theme-surface);">
-      <div class="page-container">
-            <div class="about-us-content">
-              <div>              
-                <? var imgSrc = typeof aboutUsImageUrl !== 'undefined' && aboutUsImageUrl ? aboutUsImageUrl : ''; ?>
-                <? if (imgSrc) { ?>
-                  <img src="<?= aboutUsImageUrl ?>" alt="Angels e Iñaki" class="about-us-image">
-                <? } ?>                  
-                  <!--<img src="https://drive.google.com/thumbnail?id=17yV5z7LQUheTWPq6Bx4-GqNrlwh5PxiE&sz=w600-h400" alt="Angels e Iñaki" class="about-us-image">-->
-                  <!--<img src="https://placehold.co/600x450/A7FFEB/004D40?text=Angels+e+Iñaki" alt="Angels e Iñaki" class="about-us-image">-->
-              </div>
-              <div>
-                  <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 16px; text-align: inherit;">¡Hola! Somos Angels e Iñaki</h2>
-                  <p class="mdc-typography--body1" style="font-size: 1.1rem; line-height: 1.7;">
-                      Este es nuestro rincón digital donde compartimos: la buena mesa, los viajes que marcan y esas curiosidades que encontramos por el camino. Nuestro objetivo es inspirarte y, quién sabe, ¡quizás darte alguna idea para tu próxima escapada!
-                  </p>
-              </div>
-          </div>
-      </div>
-  </section>
-  <section id="categories" class="section-padding">
-      <div class="page-container">
-          <h2 class="section-title">Sumérgete en Nuestros Mundos</h2>
-          <div class="grid-container">
-              <div id="tapear-target" class="mdc-card category-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="category-card__icon-container">
-                          <i class="material-icons">tapas</i>
-                      </div>
-                      <h3 class="category-card__title">Pintxos y Tapas</h3>
-                      <p class="mdc-typography--body2 category-card__description">Descubre sitios donde ofrecen buenos pintxos o buenas tapas. 😋</p>
-                  </div>
-                  <div class="mdc-card__actions">
-                      <a href="Tapeo.html" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Pintxos y Tapas</span>
-                      </a>
-                  </div>
-              </div>
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>Inicio</title> <!-- El título se establecerá dinámicamente desde Codigo.gs -->
+  
+  <!-- Inyectar CSS Común y MDC -->
+  <?!= plantillaCSS ?>
 
-              <div id="restaurantes-target" class="mdc-card category-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="category-card__icon-container">
-                          <i class="material-icons">restaurant</i>
-                      </div>
-                      <h3 class="category-card__title">Restaurantes</h3>
-                      <p class="mdc-typography--body2 category-card__description">Desde cocina casera, con soles e incluso hasta con estrellas. ¡Buen provecho!</p>
-                  </div>
-                  <div class="mdc-card__actions">
-                        <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Restaurantes</span>
-                      </a>
-                  </div>
-              </div>
-
-              <div id="eventos-culinarios-target" class="mdc-card category-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="category-card__icon-container">
-                          <i class="material-icons">local_dining</i>
-                      </div>
-                      <h3 class="category-card__title">Citas Culinarias Imperdibles</h3>
-                      <p class="mdc-typography--body2 category-card__description">Ferias gastronómicas, Menús temáticos, Maridajes... Revivid con nosotros los mejores momentos.</p>
-                  </div>
-                  <div class="mdc-card__actions">
-                        <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Ver Eventos Culinarios</span>
-                      </a>
-                  </div>
-              </div>
-
-              <div id="turismo-target" class="mdc-card category-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="category-card__icon-container">
-                          <i class="material-icons">explore</i>
-                      </div>
-                      <h3 class="category-card__title">Experiencias Turísticas</h3>
-                      <p class="mdc-typography--body2 category-card__description">Acompañadnos a explorar experiencias turísticas, pueblos con encanto y paisajes que os dejarán sin aliento.</p>
-                  </div>
-                  <div class="mdc-card__actions">
-                        <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Explorar Turismo</span>
-                      </a>
-                  </div>
-              </div>
-
-              <div id="eventos-turisticos-target" class="mdc-card category-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="category-card__icon-container">
-                          <i class="material-icons">festival</i>
-                      </div>
-                      <h3 class="category-card__title">Citas Turísticas Imperdibles</h3>
-                      <p class="mdc-typography--body2 category-card__description">Mercados medievales, festivales locales, eventos turísticos... Revivid con nosotros los mejores momentos.</p>
-                  </div>
-                  <div class="mdc-card__actions">
-                        <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Ver Eventos Turísticos</span>
-                      </a>
-                  </div>
-              </div>
-
-              <div id="curiosidades-target" class="mdc-card category-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="category-card__icon-container">
-                          <i class="material-icons">emoji_objects</i>
-                      </div>
-                      <h3 class="category-card__title">Carteles y Señales “diferentes”</h3>
-                      <p class="mdc-typography--body2 category-card__description">Porque la vida está llena de pequeñas sorpresas. Aquí coleccionamos esos carteles y detalles curiosos.</p>
-                  </div>
-                  <div class="mdc-card__actions">
-                        <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Ver Curiosidades</span>
-                      </a>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </section>
-
-  <section id="mapa-target" class="section-padding" style="background-color: var(--mdc-theme-primary); color: var(--mdc-theme-on-primary);">
-      <div class="page-container text-center">
-          <h2 class="section-title" style="color: var(--mdc-theme-on-primary);">Explora Nuestras Experiencias en el Mapa</h2>
-          <p class="mdc-typography--body1" style="font-size: 1.1rem; margin-bottom: 24px;">Visualiza todos nuestros descubrimientos en un mapa interactivo y planifica tu próxima aventura.</p>
-          <img src="https://placehold.co/800x400/E0F2F1/004D40?text=Previsualización+del+Mapa+Interactivo" alt="Mapa Interactivo" class="map-preview-image">
-          <a href="#" class="mdc-button mdc-button--raised" style="background-color: var(--mdc-theme-surface); color: var(--mdc-theme-primary);">
-              <span class="mdc-button__ripple"></span>
-              <span class="mdc-button__label">Ir al Mapa Interactivo</span>
-          </a>
-      </div>
-  </section>
-
-  <section id="latest-experiences" class="section-padding" style="background-color: var(--mdc-theme-surface);">
-      <div class="page-container">
-          <h2 class="section-title">Lo Último de ANeKI</h2>
-          <div class="grid-container">
-              <div class="mdc-card latest-experience-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/A7FFEB/004D40?text=Pintxos+en+Donosti');"></div>
-                      <div style="padding: 16px;">
-                          <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Pintxos Increíbles en Donosti</h3>
-                          <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Tapear</p>
-                          <p class="mdc-typography--body2">Una ruta por los mejores bares de pintxos de la Parte Vieja...</p>
-                      </div>
-                  </div>
-                  <div class="mdc-card__actions">
-                      <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Leer más</span>
-                          <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
-                      </a>
-                  </div>
-              </div>
-                <div class="mdc-card latest-experience-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/80CBC4/004D40?text=Ruta+Rioja+Alavesa');"></div>
-                      <div style="padding: 16px;">
-                          <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Ruta por la Rioja Alavesa</h3>
-                          <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Turismo</p>
-                          <p class="mdc-typography--body2">Descubriendo bodegas y paisajes de viñedos espectaculares...</p>
-                      </div>
-                  </div>
-                  <div class="mdc-card__actions">
-                        <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Leer más</span>
-                          <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
-                      </a>
-                  </div>
-              </div>
-                <div class="mdc-card latest-experience-card">
-                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
-                      <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/4DB6AC/FFFFFF?text=Feria+Medieval');"></div>
-                      <div style="padding: 16px;">
-                          <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Feria Medieval de Artziniega</h3>
-                          <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Eventos Turísticos</p>
-                          <p class="mdc-typography--body2">Un viaje al pasado en uno de los mercados medievales más auténticos...</p>
-                      </div>
-                  </div>
-                  <div class="mdc-card__actions">
-                        <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
-                          <span class="mdc-button__ripple"></span>
-                          <span class="mdc-button__label">Leer más</span>
-                          <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
-                      </a>
-                  </div>
-              </div>
-          </div>
-          <div style="text-align: center; margin-top: 40px;">
-              <a href="#" class="mdc-button mdc-button--raised">
-                  <span class="mdc-button__ripple"></span>
-                  <span class="mdc-button__label">Ver Todas las Experiencias</span>
+  <!-- Estilos específicos de la página de Inicio (opcional) -->
+  <style>
+    /* .custom-inicio-card h2 ya tiene un estilo base en PlantillaCSS.html */
+    /* Puedes añadir más estilos específicos para Index.html aquí si es necesario */
+    .custom-inicio-card {
+      background-color: #fff; /* Color de fondo para la tarjeta */
+      padding: 20px;
+      border-radius: 8px; /* Bordes redondeados para la tarjeta */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra sutil para la tarjeta */
+      margin-top: 20px;
+    }
+    .custom-inicio-card h2 {
+        margin-top: 0; /* Quitar margen superior del h2 dentro de la tarjeta */
+        color: #00796b; /* Un color distintivo para los títulos de las tarjetas */
+    }
+  </style>
+</head>
+<body>
+  <!-- Drawer (Aside) - Viene de PlantillaAside.html -->
+  <?!= plantillaAside ?>
+  <!-- Contenedor principal de la aplicación para MDC -->
+  <div class="mdc-drawer-app-content">
+    <!-- Header (Top App Bar) - Viene de PlantillaHeader.html -->
+    <?!= plantillaHeader ?>
+    <!-- Contenido principal específico de esta página -->
+    <main class="main-app-content" id="main-content-scroll-target"> 
+      <!-- El div .mdc-top-app-bar--fixed-adjust debe envolver el contenido principal 
+           que necesita ser ajustado debajo de la barra de aplicación fija.
+           El ID "main-content-wrapper" es opcional pero puede ayudar a organizar. -->
+      <div class="mdc-top-app-bar--fixed-adjust"> 
+        <div id="main-content-wrapper"> 
+          <section id="hero" class="hero-section">
+            <div class="hero-content">
+              <h1 class="hero-title">Gastronomía y turismo en tu bolsillo.</h1>
+              <p class="hero-subtitle">Compartimos nuestras experiencias gastronómicas y turísticas, por si te apetece probar alguna...</p>
+              <a href="#categories" class="mdc-button mdc-button--raised mdc-button--leading">
+                <span class="mdc-button__ripple"></span>
+                <span class="mdc-button__label">¡Pasa a ver nuestras recomendaciones! 👇</span>
               </a>
-          </div>
-      </div>
-  </section>
+            </div>
+          </section>
+          <section id="about-us" class="section-padding" style="background-color: var(--mdc-theme-surface);">
+            <div class="page-container">
+              <div class="about-us-content">
+                <div>
+                  <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w800-h500" alt="Angels e Iñaki" class="about-us-image">
+                </div>
+                <div>
+                  <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 16px; text-align: inherit;">¡Hola! Somos Angels e Iñaki 👋</h2>
+                  <p class="mdc-typography--body1" style="font-size: 1.1rem; line-height: 1.7;">
+                    Te abrimos las puertas a nuestro universo.
+                    <br>Tenemos de todo: desde bocados de pura felicidad 😋, hasta kilómetros de aventura ✨ y carteles que nos sacan una sonrisa 😂.
+                    <br>Si buscas un chute de inspiración, ¡estás en el sitio perfecto! 🎉
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="categories" class="section-padding">
+            <div class="page-container">
+              <h2 class="section-title">Descubre Nuestros Mundos</h2>
+              <div class="grid-container">
+                <div id="tapear-target" class="mdc-card category-card">
+                  <a href="<?= getWebAppUrl() ?>?page=tapeo">
+                    <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                      <div class="category-card__icon-container">
+                        <i class="material-icons">tapas</i>
+                      </div>
+                      <h3 class="category-card__title">Pintxos y Tapas 🍷🍢</h3>
+                      <p class="mdc-typography--body2 category-card__description">
+                        ¡A gozar! Descubre sitios donde ofrecen buenos pintxos o tapas, de los que te hacen salivar. 🍻🍡
+                      </p>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="<?= getWebAppUrl() ?>?page=tapeo" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Pintxos y Tapas</span>
+                      </a>
+                    </div>
+                  </a>
+                </div>
+                <div id="restaurantes-target" class="mdc-card category-card">
+                  <a href="<?= getWebAppUrl() ?>?page=restaurantes">
+                    <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                      <div class="category-card__icon-container">
+                        <i class="material-icons">restaurant</i>
+                      </div>
+                      <h3 class="category-card__title">Restaurantes 🍽️🌟</h3>
+                      <p class="mdc-typography--body2 category-card__description">
+                        Aquí hay para todos los gustos: desde la cocina casera de la abuela 👵🥘 hasta esos sitios con soles y hasta estrellas Michelin. ¡Buen provecho! 🥂
+                      </p>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="<?= getWebAppUrl() ?>?page=restaurantes" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Restaurantes</span>
+                      </a>
+                    </div>
+                  </a>
+                </div>
+                <div id="bodegas-target" class="mdc-card category-card">
+                  <a href="<?= getWebAppUrl() ?>?page=bodegas">
+                    <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                      <div class="category-card__icon-container">
+                        <i class="material-icons">wine_bar</i>
+                      </div>
+                      <h3 class="category-card__title">Bodegas 🍇🍷</h3>
+                      <p class="mdc-typography--body2 category-card__description">
+                        Descubre bodegas con encanto que nos han conquistado (y sus caldos también, claro). 😉
+                      </p>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="<?= getWebAppUrl() ?>?page=bodegas" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Bodegas</span>
+                      </a>
+                    </div>
+                  </a>
+                </div>
+                <div id="turismo-target" class="mdc-card category-card">
+                  <a href="<?= getWebAppUrl() ?>?page=turismo">
+                    <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                      <div class="category-card__icon-container">
+                        <i class="material-icons">explore</i>
+                      </div>
+                      <h3 class="category-card__title">Experiencias Turísticas 🏞️🚶‍♀️</h3>
+                      <p class="mdc-typography--body2 category-card__description">
+                        Acompáñanos a explorar experiencias turísticas que nos han marcado ✨. ¡Prepara la cámara! 📸
+                      </p>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="<?= getWebAppUrl() ?>?page=turismo" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Explorar Turismo</span>
+                      </a>
+                    </div>
+                  </a>
+                </div>
+                <div id="eventos-culinarios-target" class="mdc-card category-card">
+                  <a href="<?= getWebAppUrl() ?>?page=eventosculinarios">
+                    <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                      <div class="category-card__icon-container">
+                        <i class="material-icons">local_dining</i>
+                      </div>
+                      <h3 class="category-card__title">Eventos Culinarios 🎉 🧑‍🍳</h3>
+                      <p class="mdc-typography--body2 category-card__description">
+                        Ferias de las que huelen a gloria, menús temáticos que te hacen la boca agua, maridajes que son pura magia... ¡Revive con nosotros los mejores momentos culinarios! 🥳
+                      </p>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="<?= getWebAppUrl() ?>?page=eventosculinarios" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Ver Eventos Culinarios</span>
+                      </a>
+                    </div>
+                  </a>
+                </div>
+                <div id="eventos-turisticos-target" class="mdc-card category-card">
+                  <a href="<?= getWebAppUrl() ?>?page=eventosturisticos">
+                    <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                      <div class="category-card__icon-container">
+                        <i class="material-icons">festival</i>
+                      </div>
+                      <h3 class="category-card__title">Eventos Turísticos 🏰🎶</h3>
+                      <p class="mdc-typography--body2 category-card__description">
+                        Mercados medievales con su aquel, festivales y ferias locales que son pura fiesta, eventos que no te puedes perder... ¡Rememora con nosotros los momentos turísticos más top! 🚀
+                      </p>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="<?= getWebAppUrl() ?>?page=eventosturisticos" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Ver Eventos Turísticos</span>
+                      </a>
+                    </div>
+                  </a>
+                </div>
+                <div id="tiendas-target" class="mdc-card category-card">
+                  <a href="<?= getWebAppUrl() ?>?page=tiendas">
+                    <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                      <div class="category-card__icon-container">
+                        <i class="material-icons">emoji_objects</i>
+                      </div>
+                      <h3 class="category-card__title">Tiendas Gourmet 🛍️🎁</h3>
+                      <p class="mdc-typography--body2 category-card__description">
+                        ¡Para los paladares y gustos más finos! Descubre tiendas gourmet que nos encantan y donde siempre encontramos alguna joyita. 💎
+                      </p>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="<?= getWebAppUrl() ?>?page=tiendas" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Ver Tiendas Gourmet</span>
+                      </a>
+                    </div>
+                  </a>
+                </div>
+                <div id="curiosidades-target" class="mdc-card category-card">
+                  <a href="<?= getWebAppUrl() ?>?page=curiosidades">
+                    <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                      <div class="category-card__icon-container">
+                        <i class="material-icons">emoji_objects</i>
+                      </div>
+                      <h3 class="category-card__title">Carteles y Señales “Diferentes” 🤪🛑</h3>
+                      <p class="mdc-typography--body2 category-card__description">
+                        Porque la vida está llena de pequeñas sorpresas (y a veces, la risa está en la calle). Aquí coleccionamos esos carteles y señales curiosas que te alegran el paseo. 😄
+                      </p>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="<?= getWebAppUrl() ?>?page=curiosidades" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Ver Curiosidades</span>
+                      </a>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!--
+          <section id="mapa-target" class="section-padding" style="background-color: var(--mdc-theme-primary); color: var(--mdc-theme-on-primary);">
+            <div class="page-container text-center">
+              <h2 class="section-title" style="color: var(--mdc-theme-on-primary);">Explora Nuestras Experiencias en el Mapa</h2>
+              <p class="mdc-typography--body1" style="font-size: 1.1rem; margin-bottom: 24px;">Visualiza todos nuestros descubrimientos en un mapa interactivo y planifica tu próxima aventura.</p>
+              <img src="https://placehold.co/800x400/E0F2F1/004D40?text=Previsualización+del+Mapa+Interactivo" alt="Mapa Interactivo" class="map-preview-image">
+              <a href="#" class="mdc-button mdc-button--raised" style="background-color: var(--mdc-theme-surface); color: var(--mdc-theme-primary);">
+                <span class="mdc-button__ripple"></span>
+                <span class="mdc-button__label">Ir al Mapa Interactivo</span>
+              </a>
+            </div>
+          </section>
+          -->
+          <section id="latest-experiences" class="section-padding" style="background-color: var(--mdc-theme-surface);">
+            <div class="page-container">
+              <h2 class="section-title">Lo Último de ANeKI</h2>
+              Bloque Pendiente NO VALORAR
+              <div class="grid-container">
+                <div class="mdc-card latest-experience-card">
+                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                    <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/A7FFEB/004D40?text=Pintxos+en+Donosti');"></div>
+                    <div style="padding: 16px;">
+                      <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Pintxos Increíbles en Donosti</h3>
+                      <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Tapear</p>
+                      <p class="mdc-typography--body2">Una ruta por los mejores bares de pintxos de la Parte Vieja...</p>
+                    </div>
+                  </div>
+                  <div class="mdc-card__actions">
+                    <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                      <span class="mdc-button__ripple"></span>
+                      <span class="mdc-button__label">Leer más</span>
+                      <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
+                    </a>
+                  </div>
+                </div>
+                <div class="mdc-card latest-experience-card">
+                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                    <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/80CBC4/004D40?text=Ruta+Rioja+Alavesa');"></div>
+                      <div style="padding: 16px;">
+                        <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Ruta por la Rioja Alavesa</h3>
+                        <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Turismo</p>
+                        <p class="mdc-typography--body2">Descubriendo bodegas y paisajes de viñedos espectaculares...</p>
+                      </div>
+                  </div>
+                  <div class="mdc-card__actions">
+                    <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                      <span class="mdc-button__ripple"></span>
+                      <span class="mdc-button__label">Leer más</span>
+                      <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
+                    </a>
+                  </div>
+                </div>
+                <div class="mdc-card latest-experience-card">
+                  <div class="mdc-card__primary-action mdc-ripple-upgraded" tabindex="0">
+                    <div class="mdc-card__media" style="background-image: url('https://placehold.co/400x250/4DB6AC/FFFFFF?text=Feria+Medieval');"></div>
+                      <div style="padding: 16px;">
+                        <h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">Feria Medieval de Artziniega</h3>
+                        <p class="mdc-typography--caption" style="margin-bottom: 8px;">Categoría: Eventos Turísticos</p>
+                        <p class="mdc-typography--body2">Un viaje al pasado en uno de los mercados medievales más auténticos...</p>
+                      </div>
+                    </div>
+                    <div class="mdc-card__actions">
+                      <a href="#" class="mdc-button mdc-card__action mdc-card__action--button">
+                        <span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Leer más</span>
+                        <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_forward</i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div style="text-align: center; margin-top: 40px;">
+                  <a href="#" class="mdc-button mdc-button--raised">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="mdc-button__label">Ver Todas las Experiencias</span>
+                  </a>
+                </div>
+              </div>
+          </section>
+        </div> <!-- Fin de main-content-wrapper -->
+      </div> <!-- Fin de mdc-top-app-bar--fixed-adjust -->
+    </main>
+    <!-- Footer Común - Viene de PlantillaFooter.html -->
+    <?!= plantillaFooter ?>
+  </div> <!-- Fin de mdc-drawer-app-content -->
+  <!-- Inyectar JavaScript Común y MDC - Viene de PlantillaJavaScript.html -->
+  <?!= plantillaJS ?>
+</body>
+</html>
