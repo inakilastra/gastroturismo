@@ -2,58 +2,59 @@
 <aside class="mdc-drawer mdc-drawer--modal">
   <div class="mdc-drawer__header">
     <h3 class="mdc-drawer__title brand-font">ANeKI</h3>
+    <br>
     <h6 class="mdc-drawer__subtitle">Gastroturismo</h6>
   </div>
   <div class="mdc-drawer__content">
-    <nav class="mdc-list">
-      <!-- Se añade un estilo inline para el margen inferior o se podría hacer con una clase en PlantillaCSS.html -->
-      <a class="mdc-list-item <?= activePage === 'inicio' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>" target="_top"  style="margin-bottom: 8px;">
+    <!-- Se ha añadido un id="main-nav" para una selección más precisa en JS -->
+    <nav id="main-nav" class="mdc-list">
+      <!-- CORRECCIÓN: Se ha eliminado 'mdc-list-item--activated' de todos los elementos -->
+      <a class="mdc-list-item" onclick="loadPage('inicio', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
         <i class="material-icons mdc-list-item__graphic" aria-hidden="true">home</i>
-        <span class="mdc-list-item__text">&nbsp;Inicio</span>
+        <span class="mdc-list-item__text">Inicio</span>
       </a>
-      <a class="mdc-list-item <?= activePage === 'tapeo' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>?page=tapeo" target="_top"  style="margin-bottom: 8px;">
+      <a class="mdc-list-item" onclick="loadPage('tapeo', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
         <i class="material-icons mdc-list-item__graphic" aria-hidden="true">tapas</i>
-        <span class="mdc-list-item__text">&nbsp;Tapear</span>
+        <span class="mdc-list-item__text">Tapear</span>
       </a>
-      <a class="mdc-list-item <?= activePage === 'restaurantes' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>?page=restaurantes" style="margin-bottom: 8px;">
+      <a class="mdc-list-item" onclick="loadPage('restaurantes', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
         <i class="material-icons mdc-list-item__graphic" aria-hidden="true">restaurant</i>
-        <span class="mdc-list-item__text">&nbsp;Restaurantes</span>
+        <span class="mdc-list-item__text">Restaurantes</span>
       </a>
-      <a class="mdc-list-item <?= activePage === 'bodegas' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>?page=bodegas" style="margin-bottom: 8px;">
+      <a class="mdc-list-item" onclick="loadPage('bodegas', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
         <i class="material-icons mdc-list-item__graphic" aria-hidden="true">wine_bar</i>
-        <span class="mdc-list-item__text">&nbsp;Bodegas</span>
+        <span class="mdc-list-item__text">Bodegas</span>
       </a>
-      <a class="mdc-list-item <?= activePage === 'turismo' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>?page=turismo" style="margin-bottom: 8px;">
+      <a class="mdc-list-item" onclick="loadPage('turismo', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
-        <i class="material-icons mdc-list-item__graphic" aria-hidden="true">photo_camera</i>
-        <span class="mdc-list-item__text">&nbsp;Turismo</span>
+        <i class="material-icons mdc-list-item__graphic" aria-hidden="true">map</i>
+        <span class="mdc-list-item__text">Turismo</span>
       </a>
-      <a class="mdc-list-item <?= activePage === 'eventosculinarios' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>?page=eventosculinarios" style="margin-bottom: 8px;">
+      <a class="mdc-list-item" onclick="loadPage('eventosculinarios', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
         <i class="material-icons mdc-list-item__graphic" aria-hidden="true">local_dining</i>
-        <span class="mdc-list-item__text">&nbsp;Eventos Culinarios</span>
+        <span class="mdc-list-item__text">Eventos Culinarios</span>
       </a>
-      <a class="mdc-list-item <?= activePage === 'eventosturisticos' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>?page=eventosturisticos" style="margin-bottom: 8px;">
+      <a class="mdc-list-item" onclick="loadPage('eventosturisticos', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
         <i class="material-icons mdc-list-item__graphic" aria-hidden="true">event</i>
-        <span class="mdc-list-item__text">&nbsp;Eventos Turísticos</span>
+        <span class="mdc-list-item__text">Eventos Turísticos</span>
       </a>
-      <a class="mdc-list-item <?= activePage === 'tiendas' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>?page=tiendas" style="margin-bottom: 8px;">
+      <a class="mdc-list-item" onclick="loadPage('tiendas', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
         <i class="material-icons mdc-list-item__graphic" aria-hidden="true">storefront</i>
-        <span class="mdc-list-item__text">&nbsp;Tiendas Gourmet</span>
+        <span class="mdc-list-item__text">Tiendas</span>
       </a>
-      <a class="mdc-list-item <?= activePage === 'curiosidades' ? 'mdc-list-item--activated' : '' ?>" href="<?= url ?>?page=curiosidades"> <!-- Último elemento no necesita margen inferior si no hay más después -->
+      <a class="mdc-list-item" onclick="loadPage('curiosidades', this)" style="margin-bottom: 8px;">
         <span class="mdc-list-item__ripple"></span>
-        <i class="material-icons mdc-list-item__graphic" aria-hidden="true">photo</i>
-        <span class="mdc-list-item__text">&nbsp;Carteles y Señales</span>
+        <i class="material-icons mdc-list-item__graphic" aria-hidden="true">help_outline</i>
+        <span class="mdc-list-item__text">Curiosidades</span>
       </a>
     </nav>
   </div>
 </aside>
-<!-- Importante: El scrim para el drawer modal -->
 <div class="mdc-drawer-scrim"></div>
