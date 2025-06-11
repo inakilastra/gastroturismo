@@ -1,96 +1,137 @@
 <!-- PlantillaJavaScript.html -->
-<!-- Material Components Web JS -->
 <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('MDC Plantilla JavaScript cargada y DOM listo.');
+  // Variable global para guardar la instancia del drawer.
+  // Es crucial para que podamos abrir/cerrar el menú desde cualquier función.
+  let mdcDrawerInstance = null;
 
-    const drawerElement = document.querySelector('.mdc-drawer');
-    let drawer; // Declarar drawer fuera para que sea accesible en el listener de anclajes
-    if (drawerElement) {
-      drawer = mdc.drawer.MDCDrawer.attachTo(drawerElement);
-    }
+  /**
+   * Carga el contenido de una página dinámicamente.
+   * @param {string} pageName El nombre del fichero de contenido (ej. "inicio", "tapeo").
+   * @param {HTMLElement} clickedElement El elemento <a> en el que se hizo clic.
+   */
+  function loadPage(pageName, clickedElement) {
+    const contentArea = document.getElementById('main-content-area');
+    contentArea.innerHTML = '<div style="text-align:center; padding: 40px;">Cargando...</div>'; 
 
-    const topAppBarElement = document.getElementById('app-bar');
-    if (topAppBarElement) {
-      const topAppBar = mdc.topAppBar.MDCTopAppBar.attachTo(topAppBarElement);
-      
-      if (drawer) { // Solo añadir listener si el drawer existe
-        topAppBar.listen('MDCTopAppBar:nav', () => {
-          drawer.open = !drawer.open;
+    google.script.run
+      .withSuccessHandler(function(htmlContent) {
+        contentArea.innerHTML = htmlContent;
+        
+        // Resalta el elemento del menú que está activo.
+        document.querySelectorAll('#main-nav .mdc-list-item').forEach(item => {
+          item.classList.remove('mdc-list-item--activated');
         });
-      }
-    }
+        if (clickedElement) {
+          clickedElement.classList.add('mdc-list-item--activated');
+        }
 
-    // Inicializar ripples para componentes MDC
-    const ripples = Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item, .mdc-card__primary-action'));
+        // Cierra el menú si está abierto y es de tipo modal.
+        if (mdcDrawerInstance && mdcDrawerInstance.open) {
+          mdcDrawerInstance.open = false;
+        }
+      })
+      .withFailureHandler(function(error) {
+        contentArea.innerHTML = `<div style="text-align:center; padding: 40px; color: red;">Error al cargar la página: ${error.message}</div>`;
+      })
+      .getPageContent(pageName);
+  }
+
+  // Se ejecuta una sola vez cuando la página inicial está cargada.
+  document.addEventListener('DOMContentLoaded', function() {
+    const drawerElement = document.querySelector('.mdc-drawer');
+    const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
+    
+    // Inicializar los efectos "ripple" en los botones que ya existen.
+    const ripples = Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item'));
     ripples.forEach(el => mdc.ripple.MDCRipple.attachTo(el));
 
+    if (drawerElement && menuButton) {
+      // 1. Inicializa el componente del Drawer y lo guarda en nuestra variable global.
+      mdcDrawerInstance = mdc.drawer.MDCDrawer.attachTo(drawerElement);
 
-    // --- INICIO: Script para scroll suave a anclajes internos ---
-    const scrollContainer = document.querySelector('.mdc-drawer-app-content'); // El contenedor que tiene el scroll
-    const links = document.querySelectorAll('a[href^="#"], a[href*="#"]'); // Enlaces que empiezan o contienen #
-
-    links.forEach(link => {
-      link.addEventListener('click', function(event) {
-        const href = this.getAttribute('href');
-        let targetId = null;
-
-        // Extraer el ID del anclaje. Funciona para URLs completas con # o solo #
-        if (href.includes('#')) {
-          targetId = href.substring(href.lastIndexOf('#') + 1);
-        }
-        
-        // Verificar si el anclaje es para la página actual y no es solo un "#" vacío
-        // Esto es importante si getWebAppUrl() está presente en el href.
-        // Comprobamos si el href base (sin el anclaje) es la URL actual o está vacío (para anclajes tipo "#section")
-        const baseUrlOfLink = href.includes('#') ? href.substring(0, href.lastIndexOf('#')) : href;
-        const currentBaseUrl = window.location.href.includes('#') ? window.location.href.substring(0, window.location.href.lastIndexOf('#')) : window.location.href;
-        
-        // Si el enlace es solo un anclaje (#section) o la URL base coincide con la actual
-        if (targetId && (baseUrlOfLink === "" || baseUrlOfLink === currentBaseUrl || href.startsWith("#"))) {
-          const targetElement = document.getElementById(targetId);
-
-          if (targetElement && scrollContainer) {
-            event.preventDefault(); // Prevenir el comportamiento de anclaje por defecto
-
-            // Obtener la altura de la top-app-bar para compensar
-            let topAppBarHeight = 0;
-            const appBar = document.getElementById('app-bar'); // El ID de tu top-app-bar
-            if (appBar) {
-              topAppBarHeight = appBar.offsetHeight;
-            }
-
-            // Calcular la posición del target dentro del scrollContainer
-            // targetElement.offsetTop es relativo a su offsetParent.
-            // Necesitamos la posición relativa al scrollContainer.
-            let targetPosition = 0;
-            let currentElement = targetElement;
-            while(currentElement && currentElement !== scrollContainer) {
-                targetPosition += currentElement.offsetTop;
-                currentElement = currentElement.offsetParent;
-            }
-            // Si el scrollContainer es el offsetParent, targetPosition es correcta.
-            // Si no, y el target está directamente en el scrollContainer, targetElement.offsetTop es relativo a este.
-            // Por simplicidad, asumimos que scrollContainer es el que tiene el scroll y los targets están dentro.
-
-            // Ajustar la posición para que el inicio de la sección quede justo debajo de la barra
-            const scrollToPosition = targetPosition - topAppBarHeight;
-            
-            scrollContainer.scrollTo({
-              top: scrollToPosition,
-              behavior: 'smooth' // Scroll suave
-            });
-
-            // Si tienes un drawer modal, ciérralo después de hacer clic en un anclaje
-            if (drawer && drawer.open && drawerElement.classList.contains('mdc-drawer--modal')) {
-              drawer.open = false;
-            }
-          }
-        }
+      // 2. Añade un listener de clic directo al botón del menú.
+      menuButton.addEventListener('click', () => {
+        mdcDrawerInstance.open = !mdcDrawerInstance.open;
       });
-    });
-    // --- FIN: Script para scroll suave a anclajes internos ---
 
+      console.log("Menú y botón conectados correctamente.");
+
+    } else {
+      console.error("No se encontró el elemento .mdc-drawer o el botón del menú. El menú no funcionará.");
+    }
+
+    // Carga la página de inicio al arrancar la aplicación
+    const firstNavLink = document.querySelector('#main-nav a.mdc-list-item');
+    if (firstNavLink) {
+      loadPage('inicio', firstNavLink); 
+    } else {
+      loadPage('inicio', null);
+    }
   });
 </script>
+
+<!--
+<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+<script>
+  // Instancia global del drawer para acceso desde cualquier función
+  window.mdcDrawerInstance = null;
+
+  // Inicialización de los componentes MDC una sola vez
+  document.addEventListener('DOMContentLoaded', function() {
+    // Drawer
+    const drawerElement = document.querySelector('.mdc-drawer');
+    if (drawerElement) {
+      window.mdcDrawerInstance = mdc.drawer.MDCDrawer.attachTo(drawerElement);
+    }
+
+    // Top App Bar
+    const topAppBarElement = document.querySelector('.mdc-top-app-bar');
+    if (topAppBarElement) {
+      const topAppBar = mdc.topAppBar.MDCTopAppBar.attachTo(topAppBarElement);
+      topAppBar.setScrollTarget(document.querySelector('.main-app-content'));
+      topAppBar.listen('MDCTopAppBar:nav', () => {
+        if (window.mdcDrawerInstance) {
+          window.mdcDrawerInstance.open = !window.mdcDrawerInstance.open;
+        }
+      });
+    }
+
+    // Efecto ripple en botones y elementos interactivos
+    document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item')
+      .forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+  });
+
+  /**
+   * Carga el contenido de una página dinámicamente sin recargar.
+   * @param {string} pageName El nombre del fichero de contenido a cargar (ej. "Index", "Tapeo").
+   * @param {HTMLElement} clickedElement El elemento <a> en el que se hizo clic.
+   */
+  function loadPage(pageName, clickedElement) {
+    const contentArea = document.getElementById('main-content-area');
+    contentArea.innerHTML = '<div style="text-align:center; padding: 40px;">Cargando...</div>'; 
+
+    google.script.run
+      .withSuccessHandler(function(htmlContent) {
+        contentArea.innerHTML = htmlContent;
+
+        // Activar visualmente el menú seleccionado
+        document.querySelectorAll('#main-nav .mdc-list-item').forEach(item => {
+          item.classList.remove('mdc-list-item--activated');
+        });
+        if (clickedElement) {
+          clickedElement.classList.add('mdc-list-item--activated');
+        }
+
+        // Cerrar el drawer si está abierto (ideal para móviles)
+        if (window.mdcDrawerInstance && window.mdcDrawerInstance.open) {
+          window.mdcDrawerInstance.open = false;
+        }
+      })
+      .withFailureHandler(function(error) {
+        contentArea.innerHTML = `<div style="text-align:center; padding: 40px; color: red;">Error al cargar la página: ${error.message}</div>`;
+      })
+      .getPageContent(pageName);
+  }
+</script>
+-->
