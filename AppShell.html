@@ -3,28 +3,18 @@
 <html>
   <head>
     <title>ANeKI - Gastroturismo</title>
-    <!-- Inyectamos las plantillas de CSS y JavaScript directamente aquí -->
     <?!= HtmlService.createHtmlOutputFromFile('PlantillaCSS').getContent(); ?>
   </head>
   <body>
-    <!-- El menú lateral (Aside) ahora forma parte de la carcasa principal -->
     <?!= HtmlService.createHtmlOutputFromFile('PlantillaAside').getContent(); ?>
     <!-- Contenedor principal de la aplicación -->
     <div class="mdc-drawer-app-content">  
-      <!-- El Header ahora forma parte de la carcasa principal -->
       <?!= HtmlService.createHtmlOutputFromFile('PlantillaHeader').getContent(); ?>
       <!-- El contenido de las páginas se cargará aquí dinámicamente -->
       <main class="main-app-content" id="main-content-area">
-        <!-- El contenido inicial se cargará aquí con JavaScript -->
-      </main>
+        </main>
     </div>
-    <!-- Inyecto la plantillaJavaScript -->
+    <?!= HtmlService.createHtmlOutputFromFile('PlantillaFooter').getContent(); ?>
     <?!= HtmlService.createHtmlOutputFromFile('PlantillaJavaScript').getContent(); ?>
-    <script>
-      // Carga la página de inicio cuando el DOM esté listo
-      document.addEventListener('DOMContentLoaded', () => {
-        loadPage('inicio', document.querySelector('#main-nav a')); // Carga 'inicio' y marca el primer enlace como activo
-      });
-    </script>
   </body>
 </html>
