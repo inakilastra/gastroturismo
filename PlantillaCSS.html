@@ -9,6 +9,11 @@
 <style>
   /* Font import is now at the top with other links */
 
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
   :root {
     --md-ref-typeface-brand: 'Special Elite', cursive;
     --mdc-theme-primary: #009688; /* Teal 500 */
@@ -51,11 +56,17 @@
 
   /* Contenedor principal de la aplicación para MDC */
   .mdc-drawer-app-content {
-    flex: auto; 
-    overflow-y: auto; 
-    overflow-x: hidden; 
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     position: relative; 
-    height: 100vh; 
+    overflow-x: hidden; /* Prevenir scroll horizontal */
+    /* Se elimina el overflow-y: auto; para que el scroll lo gestione el contenido */
+  }
+
+  main.main-app-content {
+    flex: 1 0 auto; /* Permite que el contenido principal crezca */
+    overflow-y: auto; /* Añade scroll solo al contenido si se desborda */
   }
 
   /* MDC Component Overrides/Theming & Fixed Top Bar Logic */
@@ -231,6 +242,7 @@
     opacity: 0.8; 
     /* font-family: 'Roboto', sans-serif;  Considerar Roboto para descripciones largas */
     font-family: 'Special Elite';
+    font-size: 1.1rem;
   }
 
   .category-card .mdc-card__actions {
@@ -378,7 +390,8 @@
   footer.common-footer { 
     background-color: var(--mdc-theme-surface);
     color: var(--mdc-theme-on-surface); 
-    padding: 40px 20px;
+    font-size: 1.1rem;
+    padding: 4px 2px;
     text-align: center;
   }
 
@@ -483,11 +496,11 @@
     }
     /* Si 'category-card__description' es la que aplica el tamaño final y quieres asegurarte */
     .category-card__description {
-      font-size: 2.7vw; /* Asegúrate de que esta también sea del tamaño deseado */
+      font-size: 3.2vw; /* Asegúrate de que esta también sea del tamaño deseado */
       line-height: 1.6;
     }
   }
-  
+/* === NUEVO SPINNER SIMPLE A PRUEBA DE SANDBOX === */
 .simple-loader {
   border: 5px solid #E0F2F1; /* Color base del borde (Teal 50) */
   border-top: 5px solid var(--mdc-theme-primary); /* Color de la animación (Teal 500) */
