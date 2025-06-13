@@ -1,16 +1,25 @@
 <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 <script>
+<<<<<<< HEAD
   // Instancia global para poder acceder al menú desde cualquier función
   let mdcDrawerInstance = null;
 
   /**
    * Carga el contenido de una página dinámicamente, ejecuta sus scripts y cierra el menú.
+=======
+  let mdcDrawerInstance = null;
+
+  /**
+   * Carga el contenido de una página dinámicamente.
+   * ESTA VERSIÓN INCLUYE LA CORRECCIÓN PARA EJECUTAR SCRIPTS.
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
    */
   function loadPage(pageName, clickedElement) {
     const contentArea = document.getElementById('main-content-area');
     if (contentArea) {
       contentArea.innerHTML = '<div style="text-align:center; padding: 40px;">Cargando...</div>'; 
     }
+<<<<<<< HEAD
     google.script.run
       .withSuccessHandler(function(htmlContent) {
         if (contentArea) {
@@ -23,13 +32,49 @@
             document.body.appendChild(newScript).parentNode.removeChild(newScript);
             oldScript.parentNode.removeChild(oldScript);
           });
+=======
+
+    google.script.run
+      .withSuccessHandler(function(htmlContent) {
+        if (contentArea) {
+          // 1. Insertamos el HTML como antes.
+          contentArea.innerHTML = htmlContent;
+
+          // --- INICIO DE LA CORRECCIÓN ---
+          // 2. Buscamos todas las etiquetas <script> que acabamos de insertar.
+          const scripts = Array.from(contentArea.getElementsByTagName('script'));
+          
+          scripts.forEach(oldScript => {
+            // 3. Creamos una nueva etiqueta <script> y copiamos el contenido de la antigua.
+            const newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            
+            // 4. Añadimos la nueva etiqueta al final del body. El navegador la ejecutará.
+            document.body.appendChild(newScript);
+            
+            // 5. Eliminamos la etiqueta original que no se ejecutó.
+            oldScript.parentNode.removeChild(oldScript);
+          });
+          // --- FIN DE LA CORRECCIÓN ---
+        }
+        
+        // El resto de la lógica para activar el menú, etc.
+        document.querySelectorAll('#main-nav .mdc-list-item').forEach(item => {
+          item.classList.remove('mdc-list-item--activated');
+        });
+        if (clickedElement) {
+          clickedElement.classList.add('mdc-list-item--activated');
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
         }
         
         // Marca el enlace activo en el menú
         document.querySelectorAll('#main-nav .mdc-list-item').forEach(item => item.classList.remove('mdc-list-item--activated'));
         if (clickedElement) clickedElement.classList.add('mdc-list-item--activated');
 
+<<<<<<< HEAD
         // Cierra el menú lateral si está abierto
+=======
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
         if (mdcDrawerInstance && mdcDrawerInstance.open) {
           mdcDrawerInstance.open = false;
         }
@@ -37,29 +82,56 @@
 
       })
       .withFailureHandler(function(error) {
+<<<<<<< HEAD
         if (contentArea) contentArea.innerHTML = `<div style="text-align:center; padding: 40px; color: red;">Error: ${error.message}</div>`;
+=======
+        if (contentArea) {
+          contentArea.innerHTML = `<div style="text-align:center; padding: 40px; color: red;">Error al cargar la página: ${error.message}</div>`;
+        }
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
       })
       .getPageContent(pageName);
   }
 
   /**
+<<<<<<< HEAD
    * Se ejecuta una sola vez cuando la aplicación carga por primera vez.
+=======
+   * Se ejecuta una sola vez cuando el documento HTML inicial está listo.
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
    */
   document.addEventListener('DOMContentLoaded', function() {
     const drawerElement = document.querySelector('.mdc-drawer');
     const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
     
+<<<<<<< HEAD
     // Inicializa los efectos "ripple" de Material Design
     Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
     
+=======
+    const ripples = Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item'));
+    ripples.forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
     if (drawerElement && menuButton) {
       mdcDrawerInstance = mdc.drawer.MDCDrawer.attachTo(drawerElement);
       menuButton.addEventListener('click', () => { mdcDrawerInstance.open = !mdcDrawerInstance.open; });
       console.log("Menú y botón conectados correctamente.");
     }
 
+<<<<<<< HEAD
     // Carga la página de inicio al arrancar
     const firstNavLink = document.querySelector('#main-nav a[onclick*="inicio"]');
     loadPage('inicio', firstNavLink || null); 
   });
 </script>
+=======
+    const firstNavLink = document.querySelector('#main-nav a[onclick*="inicio"]');
+    if (firstNavLink) {
+      loadPage('inicio', firstNavLink); 
+    } else {
+      loadPage('inicio', null);
+    }
+  });
+</script>
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8

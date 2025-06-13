@@ -11,10 +11,17 @@
     <div class="mdc-drawer-app-content">  
       <?!= HtmlService.createHtmlOutputFromFile('PlantillaHeader').getContent(); ?>
       <!-- El contenido de las páginas se cargará aquí dinámicamente -->
+<<<<<<< HEAD
       <main class="main-app-content" id="main-content-area"></main>
       <?!= HtmlService.createHtmlOutputFromFile('PlantillaFooter').getContent(); ?>
     </div>
     
+=======
+      <main class="main-app-content" id="main-content-area">
+        </main>
+    </div>
+    <?!= HtmlService.createHtmlOutputFromFile('PlantillaFooter').getContent(); ?>
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
     <?!= HtmlService.createHtmlOutputFromFile('PlantillaJavaScript').getContent(); ?>
   </body>
 </html>

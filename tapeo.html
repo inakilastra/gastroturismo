@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- tapeo.html (VERSIÓN FINAL CON SPINNER CORREGIDO) -->
 <div class="mdc-top-app-bar--fixed-adjust">
   <div class="page-container section-padding">
@@ -42,10 +43,34 @@
     </div>
   </div>
 </div>
+=======
+<!-- tapeo.html -->
+<div class="mdc-top-app-bar--fixed-adjust">
+  <div class="page-container section-padding">
+    <div id="tapeo-selector">
+      <div id="tapeo-header" style="display: flex; align-items: center; margin-bottom: 40px;">
+        <button id="tapeo-back-button" class="mdc-button" style="display: none;" onclick="tapeo.goBack()">
+          <span class="mdc-button__ripple"></span>
+          <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
+          <span class="mdc-button__label">Atrás</span>
+        </button>
+        <h2 id="tapeo-title" class="section-title" style="text-align: left; margin-left: 16px; margin-bottom: 0;"></h2>
+      </div>
+      <div id="tapeo-grid" class="grid-container">
+        </div>
+      <div id="tapeo-loading" style="text-align: center; padding: 40px; display: none;">
+        <p>Cargando...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
 <script>
   window.INITIAL_TAPEODATA = <?!= initialData ?>;
 
   (function() {
+<<<<<<< HEAD
     // --- INICIO DE LA CORRECCIÓN DEL SPINNER ---
     // Envolvemos la inicialización del componente en un try...catch.
     // Si falla (por ejemplo, porque la librería MDC no está lista),
@@ -80,3 +105,134 @@
   })();
 </script>
 
+=======
+    const state = { level: 'autonomias', selection: {}, history: [] };
+    const elements = {
+      title: document.getElementById('tapeo-title'),
+      grid: document.getElementById('tapeo-grid'),
+      loading: document.getElementById('tapeo-loading'),
+      backButton: document.getElementById('tapeo-back-button'),
+    };
+    const levelsConfig = {
+      autonomias: { title: 'Donde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias' },
+      provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades' },
+      ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios' },
+      barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios' },
+      sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null },
+    };
+
+    function displayError(message) {
+      if (elements.grid) {
+        elements.grid.style.display = 'block';
+        elements.grid.innerHTML = `<div style="color: red; padding: 20px;"><h3>Error en la aplicación</h3><p>${message}</p></div>`;
+      }
+      if (elements.loading) elements.loading.style.display = 'none';
+      console.error("CLIENTE ERROR:", message);
+    }
+    
+    function initWithPreloadedData() {
+      if (!window.INITIAL_TAPEODATA || !Array.isArray(window.INITIAL_TAPEODATA)) {
+        displayError("No se recibieron los datos iniciales del servidor o el formato es incorrecto.");
+        return;
+      }
+      const data = window.INITIAL_TAPEODATA;
+      state.history.push({ level: state.level, selection: state.selection, skipped: false });
+      populateGrid(data);
+      delete window.INITIAL_TAPEODATA;
+    }
+    
+    function renderStep() {
+      showLoading(true);
+      elements.backButton.style.display = 'inline-flex';
+      google.script.run
+        .withSuccessHandler(handleDataSuccess)
+        .withFailureHandler(handleFailure)
+        .getTapeoData(state.level, state.selection);
+    }
+
+    function handleDataSuccess(data) {
+      showLoading(false);
+      if (!Array.isArray(data)) {
+        displayError(`Respuesta inesperada del servidor.`);
+        return;
+      }
+      
+      // Lógica de salto automático
+      if (data.length === 1 && state.level !== 'sitios') {
+        state.history.push({ level: state.level, selection: state.selection, skipped: true });
+        handleSelection(data[0]);
+      } else {
+        state.history.push({ level: state.level, selection: state.selection, skipped: false });
+        populateGrid(data);
+      }
+    }
+
+    function populateGrid(data) {
+      if (!elements.grid) { return; }
+      
+      // CORRECCIÓN: El título se establece aquí para que siempre coincida con el contenido mostrado
+      elements.title.textContent = levelsConfig[state.level].title;
+      
+      elements.grid.innerHTML = '';
+      const config = levelsConfig[state.level];
+      
+      data.forEach(item => {
+        let cardHtml = '';
+        if (state.level === 'sitios') {
+          cardHtml = `<div class="mdc-card latest-experience-card" style="grid-column: 1 / -1;"><div class="mdc-card__primary-action" tabindex="0"><div class="mdc-card__media" style="background-image: url('${item.imagen_url || 'https://placehold.co/400x250/E0F2F1/004D40?text=Sitio'}');"></div><div style="padding: 16px;"><h3 class="mdc-typography--headline6 brand-font" style="margin-bottom: 4px;">${item.nombre}</h3><p class="mdc-typography--body2" style="font-family: 'Special Elite';">${item.descripcion}</p></div></div></div>`;
+        } else {
+          cardHtml = `<div class="mdc-card category-card" onclick="tapeo.handleSelection('${item}')"><div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;"><div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div><h3 class="category-card__title">${item}</h3></div></div>`;
+        }
+        elements.grid.insertAdjacentHTML('beforeend', cardHtml);
+      });
+    }
+
+    function handleSelection(selectionName) {
+      state.selection[state.level.slice(0, -1)] = selectionName;
+      state.level = levelsConfig[state.level].next;
+      if (state.level) {
+        renderStep();
+      }
+    }
+
+    function handleFailure(error) {
+        displayError(`La llamada al servidor falló: ${error.message}`);
+        showLoading(false);
+    }
+
+    function showLoading(isLoading) {
+        if(elements.loading) elements.loading.style.display = 'block'; // Mostrar siempre el 'loading'
+        if(elements.grid) elements.grid.style.display = 'none'; // Ocultar siempre el grid al cargar
+        
+        if (!isLoading) {
+            elements.loading.style.display = 'none';
+            elements.grid.style.display = 'grid';
+        }
+    }
+
+    function goBack() {
+        state.history.pop();
+        let lastState = state.history.pop();
+        while (lastState && lastState.skipped && state.history.length > 0) {
+            lastState = state.history.pop();
+        }
+        if (lastState) {
+            state.level = lastState.level;
+            state.selection = lastState.selection;
+            renderStep();
+        } else {
+            // Si el historial está vacío, reinicia al primer paso
+            state.level = 'autonomias';
+            state.selection = {};
+            state.history = [];
+            elements.backButton.style.display = 'none';
+            renderStep();
+        }
+    }
+    
+    window.tapeo = { handleSelection, goBack };
+    
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initWithPreloadedData); } else { initWithPreloadedData(); }
+  })();
+</script>
+>>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8

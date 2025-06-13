@@ -6,6 +6,8 @@
 
 ## IMPORTANTE Las paginas las coloco en un iframe en Google Sites
 
+## IMPRTANTE: Por motivos de seguridad, cuando se inserta un bloque de HTML en una página usando la propiedad innerHTML, los navegadores intencionadamente no ejecutan las etiquetas <script> que vienen dentro de ese bloque de HTML.
+
 ## Codigo.gs 
  * Sirve la carcasa principal de la Aplicación de Página Única (SPA).
  * Esta es la única página que se carga desde el navegador.
