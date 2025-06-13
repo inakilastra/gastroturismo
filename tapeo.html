@@ -15,9 +15,7 @@
       <div id="tapeo-grid" class="grid-container" style="display: none;"></div>
       
       <div id="tapeo-loading" style="padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        
         <div class="simple-loader" role="progressbar" aria-label="Cargando"></div>
-        
         <p style="font-size: 1.5rem; color: var(--mdc-theme-primary); margin-top: 16px;">Cargando...</p>
       </div>
       
@@ -28,23 +26,54 @@
   window.INITIAL_TAPEODATA = <?!= initialData ?>;
 
   (function() {
-    // CAMBIO 2: Se ha eliminado el bloque try...catch que inicializaba el spinner anterior, ya no es necesario.
-  
     const state = { level: 'autonomias', selection: {}, history: [] };
     const elements = { title: document.getElementById('tapeo-title'), grid: document.getElementById('tapeo-grid'), loading: document.getElementById('tapeo-loading'), backButton: document.getElementById('tapeo-back-button'), breadcrumbs: document.getElementById('tapeo-breadcrumbs') };
     const levelsConfig = { autonomias: { title: 'Donde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias' }, provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades' }, ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios' }, barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios' }, sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null } };
 
-    // El resto del código de esta página permanece igual, ya que la lógica de mostrar/ocultar el div de carga es correcta.
     function renderBreadcrumbs() { if (!elements.breadcrumbs) return; const crumbs = []; if (state.selection.autonomia) crumbs.push(state.selection.autonomia); if (state.selection.provincia && state.selection.provincia !== state.selection.autonomia) crumbs.push(state.selection.provincia); if (state.selection.ciudad && state.selection.ciudad !== state.selection.provincia) crumbs.push(state.selection.ciudad); if (state.selection.barrio && state.selection.barrio !== state.selection.ciudad) crumbs.push(state.selection.barrio); elements.breadcrumbs.innerHTML = crumbs.join(' <span style="font-weight: bold;"> &gt; </span> '); }
     function populateGrid(data) { if (!elements.grid) return; renderBreadcrumbs(); elements.title.textContent = levelsConfig[state.level].title; elements.grid.innerHTML = ''; const config = levelsConfig[state.level]; data.forEach(item => { let cardHtml = ''; if (state.level === 'sitios') { cardHtml = `<div class="mdc-card latest-experience-card" style="grid-column: 1 / -1;"><div class="mdc-card__primary-action" tabindex="0"><div class="mdc-card__media" style="background-image: url('${item.imagen_url || 'https://placehold.co/400x250/E0F2F1/004D40?text=Sitio'}');"></div><div style="padding: 16px;"><h3 class="mdc-typography--headline6 brand-font">${item.nombre}</h3><p class="mdc-typography--body2" style="font-family: 'Special Elite';">${item.descripcion}</p></div></div></div>`; } else { cardHtml = `<div class="mdc-card category-card" onclick="tapeo.handleSelection('${item}')"><div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;"><div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div><h3 class="category-card__title">${item}</h3></div></div>`; } elements.grid.insertAdjacentHTML('beforeend', cardHtml); }); }
-    function handleDataSuccess(data) { showLoading(false); if (!Array.isArray(data)) { displayError('Respuesta inesperada del servidor.'); return; } const isSkipping = data.length === 1 && state.level !== 'sitios'; state.history.push({ level: state.level, selection: { ...state.selection }, skipped: isSkipping }); if (isSkipping) { handleSelection(data[0]); } else { populateGrid(data); } }
+    
+    function handleDataSuccess(data) {
+      // --- INICIO DE LA CORRECCIÓN ---
+      // Si el menú lateral está abierto, lo cerramos.
+      if (typeof mdcDrawerInstance !== 'undefined' && mdcDrawerInstance && mdcDrawerInstance.open) {
+        mdcDrawerInstance.open = false;
+      }
+      // --- FIN DE LA CORRECCIÓN ---
+
+      showLoading(false); 
+      if (!Array.isArray(data)) { 
+        displayError('Respuesta inesperada del servidor.'); 
+        return; 
+      } 
+      const isSkipping = data.length === 1 && state.level !== 'sitios'; 
+      state.history.push({ level: state.level, selection: { ...state.selection }, skipped: isSkipping }); 
+      if (isSkipping) { 
+        handleSelection(data[0]); 
+      } else { 
+        populateGrid(data); 
+      } 
+    }
+
+    function handleFailure(error) {
+      // --- INICIO DE LA CORRECCIÓN ---
+      // También cerramos el menú si la carga de datos falla.
+      if (typeof mdcDrawerInstance !== 'undefined' && mdcDrawerInstance && mdcDrawerInstance.open) {
+        mdcDrawerInstance.open = false;
+      }
+      // --- FIN DE LA CORRECCIÓN ---
+      
+      showLoading(false); 
+      displayError(`La llamada al servidor falló: ${error.message}`); 
+    }
+
     function handleSelection(selectionName) { let key = (state.level === 'ciudades') ? 'ciudad' : state.level.slice(0, -1); state.selection[key] = selectionName; state.level = levelsConfig[state.level].next; if (state.level) renderStep(); }
     function renderStep() { showLoading(true); elements.backButton.style.display = (state.history.length > 0) ? 'inline-flex' : 'none'; google.script.run.withSuccessHandler(handleDataSuccess).withFailureHandler(handleFailure).getTapeoData(state.level, state.selection); }
     function goBack() { state.history.pop(); let lastState = state.history.pop(); while (lastState && lastState.skipped) { lastState = state.history.pop(); } if (lastState) { state.level = lastState.level; state.selection = lastState.selection; renderStep(); } else { state.level = 'autonomias'; state.selection = {}; state.history = []; if (elements.breadcrumbs) elements.breadcrumbs.innerHTML = ''; renderStep(); } }
     function initWithPreloadedData() { if (!window.INITIAL_TAPEODATA) { displayError("No se recibieron los datos iniciales."); return; } if (elements.breadcrumbs) elements.breadcrumbs.innerHTML = ''; showLoading(false); handleDataSuccess(window.INITIAL_TAPEODATA); delete window.INITIAL_TAPEODATA; }
     function displayError(message) { if (elements.grid) { elements.grid.style.display = 'block'; elements.grid.innerHTML = `<div style="color: red; padding: 20px;"><h3>Error en la aplicación</h3><p>${message}</p></div>`; } if (elements.loading) elements.loading.style.display = 'none'; }
-    function handleFailure(error) { showLoading(false); displayError(`La llamada al servidor falló: ${error.message}`); }
     function showLoading(isLoading) { if(elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none'; if(elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid'; }
+    
     window.tapeo = { handleSelection, goBack };
     initWithPreloadedData();
   })();
