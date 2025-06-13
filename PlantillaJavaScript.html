@@ -1,137 +1,75 @@
 <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 <script>
-<<<<<<< HEAD
   // Instancia global para poder acceder al menú desde cualquier función
   let mdcDrawerInstance = null;
 
   /**
-   * Carga el contenido de una página dinámicamente, ejecuta sus scripts y cierra el menú.
-=======
-  let mdcDrawerInstance = null;
+   * HTML para el indicador de carga visual.
+   * AHORA USA EL NUEVO SPINNER SIMPLE (simple-loader).
+   */
+  const loadingSpinnerHtml = `
+    <div style="padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: calc(100vh - 128px);">
+      <div class="simple-loader" role="progressbar" aria-label="Cargando"></div>
+      <p style="font-size: 1.5rem; color: var(--mdc-theme-primary); margin-top: 16px;">Cargando...</p>
+    </div>
+  `;
 
   /**
    * Carga el contenido de una página dinámicamente.
-   * ESTA VERSIÓN INCLUYE LA CORRECCIÓN PARA EJECUTAR SCRIPTS.
->>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
+   * La lógica de inicialización del spinner ha sido eliminada porque ya no es necesaria.
    */
   function loadPage(pageName, clickedElement) {
+    console.log(`[DEBUG] Iniciando loadPage para: '${pageName}'`);
+
     const contentArea = document.getElementById('main-content-area');
     if (contentArea) {
-      contentArea.innerHTML = '<div style="text-align:center; padding: 40px;">Cargando...</div>'; 
+      contentArea.innerHTML = loadingSpinnerHtml;
+      console.log("[DEBUG] HTML del spinner simple inyectado.");
     }
-<<<<<<< HEAD
+    
     google.script.run
       .withSuccessHandler(function(htmlContent) {
+        console.log(`[DEBUG] Carga de '${pageName}' completada (SuccessHandler).`);
         if (contentArea) {
           contentArea.innerHTML = htmlContent;
-          // Ejecuta los scripts de la página cargada dinámicamente
           const scripts = Array.from(contentArea.getElementsByTagName('script'));
           scripts.forEach(oldScript => {
             const newScript = document.createElement('script');
             newScript.textContent = oldScript.textContent;
             document.body.appendChild(newScript).parentNode.removeChild(newScript);
-            oldScript.parentNode.removeChild(oldScript);
+            if (oldScript.parentNode) {
+              oldScript.parentNode.removeChild(oldScript);
+            }
           });
-=======
-
-    google.script.run
-      .withSuccessHandler(function(htmlContent) {
-        if (contentArea) {
-          // 1. Insertamos el HTML como antes.
-          contentArea.innerHTML = htmlContent;
-
-          // --- INICIO DE LA CORRECCIÓN ---
-          // 2. Buscamos todas las etiquetas <script> que acabamos de insertar.
-          const scripts = Array.from(contentArea.getElementsByTagName('script'));
-          
-          scripts.forEach(oldScript => {
-            // 3. Creamos una nueva etiqueta <script> y copiamos el contenido de la antigua.
-            const newScript = document.createElement('script');
-            newScript.textContent = oldScript.textContent;
-            
-            // 4. Añadimos la nueva etiqueta al final del body. El navegador la ejecutará.
-            document.body.appendChild(newScript);
-            
-            // 5. Eliminamos la etiqueta original que no se ejecutó.
-            oldScript.parentNode.removeChild(oldScript);
-          });
-          // --- FIN DE LA CORRECCIÓN ---
         }
         
-        // El resto de la lógica para activar el menú, etc.
-        document.querySelectorAll('#main-nav .mdc-list-item').forEach(item => {
-          item.classList.remove('mdc-list-item--activated');
-        });
-        if (clickedElement) {
-          clickedElement.classList.add('mdc-list-item--activated');
->>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
-        }
-        
-        // Marca el enlace activo en el menú
         document.querySelectorAll('#main-nav .mdc-list-item').forEach(item => item.classList.remove('mdc-list-item--activated'));
         if (clickedElement) clickedElement.classList.add('mdc-list-item--activated');
 
-<<<<<<< HEAD
-        // Cierra el menú lateral si está abierto
-=======
->>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
         if (mdcDrawerInstance && mdcDrawerInstance.open) {
           mdcDrawerInstance.open = false;
         }
-        // --- FIN DE LA CORRECCIÓN ---
-
       })
       .withFailureHandler(function(error) {
-<<<<<<< HEAD
+        console.error(`[DEBUG] Fallo al cargar '${pageName}':`, error);
         if (contentArea) contentArea.innerHTML = `<div style="text-align:center; padding: 40px; color: red;">Error: ${error.message}</div>`;
-=======
-        if (contentArea) {
-          contentArea.innerHTML = `<div style="text-align:center; padding: 40px; color: red;">Error al cargar la página: ${error.message}</div>`;
-        }
->>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
       })
       .getPageContent(pageName);
   }
 
-  /**
-<<<<<<< HEAD
-   * Se ejecuta una sola vez cuando la aplicación carga por primera vez.
-=======
-   * Se ejecuta una sola vez cuando el documento HTML inicial está listo.
->>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
-   */
   document.addEventListener('DOMContentLoaded', function() {
+    console.log("[DEBUG] DOMContentLoaded disparado. Inicializando componentes estáticos.");
     const drawerElement = document.querySelector('.mdc-drawer');
     const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
     
-<<<<<<< HEAD
-    // Inicializa los efectos "ripple" de Material Design
     Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
     
-=======
-    const ripples = Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item'));
-    ripples.forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-
->>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
     if (drawerElement && menuButton) {
       mdcDrawerInstance = mdc.drawer.MDCDrawer.attachTo(drawerElement);
       menuButton.addEventListener('click', () => { mdcDrawerInstance.open = !mdcDrawerInstance.open; });
-      console.log("Menú y botón conectados correctamente.");
     }
 
-<<<<<<< HEAD
-    // Carga la página de inicio al arrancar
     const firstNavLink = document.querySelector('#main-nav a[onclick*="inicio"]');
     loadPage('inicio', firstNavLink || null); 
   });
 </script>
-=======
-    const firstNavLink = document.querySelector('#main-nav a[onclick*="inicio"]');
-    if (firstNavLink) {
-      loadPage('inicio', firstNavLink); 
-    } else {
-      loadPage('inicio', null);
-    }
-  });
-</script>
->>>>>>> 8501441bb3fda3ac2312e340ce9ef9d05d35a3b8
