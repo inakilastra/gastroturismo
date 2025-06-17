@@ -14,4 +14,11 @@ Pâgina "inicio.html"
 ![image](https://github.com/user-attachments/assets/707bb627-56d5-42e7-9cc3-0354236b4988)
 
 Pagina "tapeo.html"
+![image](https://github.com/user-attachments/assets/9e3bb02e-175b-4c4d-90cc-af0f023ecc02)
+Elijo "Euskadi"
+![image](https://github.com/user-attachments/assets/0d6ef8a3-6c74-4d05-b390-48872b3ee28c)
+Elijo "Basauri"
+![image](https://github.com/user-attachments/assets/7d211975-e154-4ba6-b73b-b2e0741891d9)
 
+Si Elijo "Castilla y León" "León" como tiene más de un barrio muestra
+![image](https://github.com/user-attachments/assets/3041b09a-bf8b-41f7-ab90-1619598a374e)
