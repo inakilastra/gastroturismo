@@ -22,3 +22,9 @@ Elijo "Basauri"
 
 Si Elijo "Castilla y León" "León" como tiene más de un barrio muestra
 ![image](https://github.com/user-attachments/assets/3041b09a-bf8b-41f7-ab90-1619598a374e)
+
+
+Idea para mostrar el detalle del sitio de tapeo cuando se clicka "+ info"
+![image](https://github.com/user-attachments/assets/5054e4ea-509c-4593-870a-68cf7598dbb0)
+![image](https://github.com/user-attachments/assets/690cc2e4-c057-48d1-bd44-0d5ee9075902)
+IMPORTANTE que tenga la función de galeria
