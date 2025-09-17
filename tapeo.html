@@ -1,36 +1,44 @@
 <div class="mdc-top-app-bar--fixed-adjust">
-  <div class="page-container section-padding">
-    <div id="tapeo-selector">
-      <div id="tapeo-header" style="margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; min-height: 40px; margin-bottom: 16px;">
-          <button id="tapeo-back-button" class="mdc-button mdc-button--raised" style="display: none;" onclick="tapeo.goBack()">
-            <span class="mdc-button__ripple"></span>
-            <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
-            <span class="mdc-button__label">ATRÁS</span>
-          </button>
-          <div id="tapeo-breadcrumbs" style="margin-left: 16px; font-size: 1rem; opacity: 0.7;"></div>
-        </div>
-        <h2 id="tapeo-title" class="section-title" style="text-align: left; margin: 0;"></h2>
+  <div id="tapeo-selector" class="page-container section-padding">
+    <div id="tapeo-header" style="margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; min-height: 40px; margin-bottom: 16px;">
+        <button id="tapeo-back-button" class="mdc-button mdc-button--raised" style="display: none;" onclick="tapeo.goBack()">
+          <span class="mdc-button__ripple"></span>
+          <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
+          <span class="mdc-button__label">ATRÁS</span>
+        </button>
+        <div id="tapeo-breadcrumbs" style="margin-left: 16px; font-size: 1rem; opacity: 0.7;"></div>
       </div>
-      <div id="tapeo-grid" class="grid-container" style="display: none;"></div>
-      
-      <div id="tapeo-loading" style="padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <div class="simple-loader" role="progressbar" aria-label="Cargando"></div>
-        <p style="font-size: 1.5rem; color: var(--mdc-theme-primary); margin-top: 16px;">Cargando...</p>
-      </div>
-      
+      <h2 id="tapeo-title" class="section-title" style="text-align: left; margin: 0;"></h2>
+    </div>
+    <div id="tapeo-grid" class="grid-container" style="display: none;"></div>
+    
+    <div id="tapeo-loading" style="padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <div class="simple-loader" role="progressbar" aria-label="Cargando"></div>
+      <p style="font-size: 1.5rem; color: var(--mdc-theme-primary); margin-top: 16px;">Cargando...</p>
     </div>
   </div>
+
+  <div id="tapeo-detail-container" style="display: none;">
+    </div>
+
 </div>
 <script>
   window.INITIAL_TAPEODATA = <?!= initialData ?>;
 
   (function() {
     const state = { level: 'autonomias', selection: {}, history: [] };
-    const elements = { title: document.getElementById('tapeo-title'), grid: document.getElementById('tapeo-grid'), loading: document.getElementById('tapeo-loading'), backButton: document.getElementById('tapeo-back-button'), breadcrumbs: document.getElementById('tapeo-breadcrumbs') };
+    const elements = { 
+      title: document.getElementById('tapeo-title'), 
+      grid: document.getElementById('tapeo-grid'), 
+      loading: document.getElementById('tapeo-loading'), 
+      backButton: document.getElementById('tapeo-back-button'), 
+      breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
+      selectorView: document.getElementById('tapeo-selector'),
+      detailView: document.getElementById('tapeo-detail-container')
+    };
     const levelsConfig = { autonomias: { title: 'Donde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias' }, provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades' }, ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios' }, barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios' }, sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null } };
-
-    // La función generateRatingHearts se ha eliminado porque ya no es necesaria.
+    let currentSitesData = []; // Almacenará los datos de los sitios mostrados
 
     function renderBreadcrumbs() { if (!elements.breadcrumbs) return; const crumbs = []; if (state.selection.autonomia) crumbs.push(state.selection.autonomia); if (state.selection.provincia && state.selection.provincia !== state.selection.autonomia) crumbs.push(state.selection.provincia); if (state.selection.ciudad && state.selection.ciudad !== state.selection.provincia) crumbs.push(state.selection.ciudad); if (state.selection.barrio && state.selection.barrio !== state.selection.ciudad) crumbs.push(state.selection.barrio); elements.breadcrumbs.innerHTML = crumbs.join(' <span style="font-weight: bold;"> &gt; </span> '); }
     
@@ -40,21 +48,29 @@
       elements.title.textContent = levelsConfig[state.level].title; 
       elements.grid.innerHTML = ''; 
       const config = levelsConfig[state.level]; 
-      data.forEach(item => { 
+      
+      if (state.level === 'sitios') {
+        currentSitesData = data; // Guardamos los datos actuales
+      }
+
+      data.forEach((item, index) => { 
         let cardHtml = ''; 
         if (state.level === 'sitios') {
-          // Determina el enlace principal para el botón "+ INFO"
+          // --- ✅ INICIO DE LA OPTIMIZACIÓN ---
+          // Construimos la URL de la imagen a partir del ID recibido.
+          // Usamos el parámetro &sz=w600 para pedir una miniatura de 600px de ancho, optimizando la carga.
+          const imageUrl = item.foto1 ? `https://drive.google.com/thumbnail?id=${item.foto1}&sz=w600` : '';
+          
           const primaryLink = item.postnstagram || item.web || item.instagram || item.maps;
           
-          // Construye la tarjeta del sitio
           cardHtml = `
             <div class="sitio-card" style="grid-column: 1 / -1;">
-              ${item.foto1 ? `<div class="sitio-card-image" style="background-image: url('${item.foto1}');"></div>` : ''}
+              ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
               <div class="sitio-card-info">
                 <h3>${item.nombre || 'Nombre no disponible'}</h3>
                 <div class="sitio-card-rating">${item.valoracion || ''}</div>
                 <div class="sitio-card-description">${item.pintxo_tapa || ''}</div>
-                ${primaryLink ? `<button class="mdc-button mdc-button--raised" onclick="location.href='${primaryLink}'" type="button">
+                ${primaryLink ? `<button class="mdc-button mdc-button--raised" onclick="window.open('${primaryLink}', '_blank')" type="button">
                   <span class="mdc-button__ripple"></span>
                   <i class="material-icons mdc-button__icon" aria-hidden="true">info</i>
                   <span class="mdc-button__label">+ info</span>
@@ -62,24 +78,174 @@
               </div>
             </div>
           `;
+          // --- ✅ FIN DE LA OPTIMIZACIÓN ---          
+          /*cardHtml = `
+            <div class="sitio-card" style="grid-column: 1 / -1;">
+              ${item.foto1 ? `<div class="sitio-card-image" style="background-image: url('${item.foto1}');"></div>` : ''}
+              <div class="sitio-card-info">
+                <h3>${item.nombre || 'Nombre no disponible'}</h3>
+                <div class="sitio-card-rating">${item.valoracion || ''}</div>
+                <div class="sitio-card-description">${item.pintxo_tapa || ''}</div>
+                <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
+                  <span class="mdc-button__ripple"></span>
+                  <i class="material-icons mdc-button__icon" aria-hidden="true">info</i>
+                  <span class="mdc-button__label">+ INFORMACIÓN</span>
+                </button>
+              </div>
+            </div>
+          `;*/
         } else { 
           cardHtml = `<div class="mdc-card category-card" onclick="tapeo.handleSelection('${item}')"><div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;"><div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div><h3 class="category-card__title">${item}</h3></div></div>`; 
         } 
         elements.grid.insertAdjacentHTML('beforeend', cardHtml); 
       }); 
+      mdc.autoInit(elements.grid);
     }
     
-    // El resto de las funciones no necesitan cambios
+    // --- NUEVAS FUNCIONES PARA LA VISTA DE DETALLE ---
+    
+    function showDetail(index) {
+      const site = currentSitesData[index];
+      if (!site) return;
+
+      // 1. Recolectar todas las fotos disponibles
+      const photos = [];
+      for (let i = 1; i <= 20; i++) { // Busca hasta foto20
+        if (site['foto' + i]) {
+          photos.push(site['foto' + i]);
+        } else {
+          break;
+        }
+      }
+
+      // 2. Generar HTML para las miniaturas de la galería
+      let thumbnailsHtml = '';
+      if (photos.length > 1) {
+        thumbnailsHtml = photos.map((photo, i) => 
+          `<img src="${photo}" class="gallery-thumbnail ${i === 0 ? 'active' : ''}" onclick="tapeo.changeGalleryImage('${photo}', this)">`
+        ).join('');
+      }
+
+      // 3. Generar HTML para los botones de acción (enlaces)
+      let actionsHtml = '';    
+      if(site.instagram) actionsHtml += `<a href="${site.instagram}" target="_blank">
+                                            <button class="mdc-button mdc-button--raised" onclick="">
+                                              <span class="mdc-button__ripple"></span>
+                                              <i class="material-icons mdc-button__icon" aria-hidden="true">photo_camera</i>
+                                              <span class="mdc-button__label">INSTRAGRAM</span>
+                                            </button>
+                                          </a>`;
+      if(site.facebook) actionsHtml += `<a href="${site.facebook}" target="_blank">
+                                            <button class="mdc-button mdc-button--raised" onclick="">
+                                              <span class="mdc-button__ripple"></span>
+                                              <i class="material-icons mdc-button__icon" aria-hidden="true">group</i>
+                                              <span class="mdc-button__label">FACEBOOK</span>
+                                            </button>
+                                          </a>`;
+      if(site.web) actionsHtml += `<a href="${site.web}" target="_blank">
+                                      <button class="mdc-button mdc-button--raised" onclick="">
+                                        <span class="mdc-button__ripple"></span>
+                                        <i class="material-icons mdc-button__icon" aria-hidden="true">public</i>
+                                        <span class="mdc-button__label">WEB</span>
+                                      </button>
+                                    </a>`;
+      if(site.maps) actionsHtml += `<a href="${site.maps}" target="_blank">
+                                      <button class="mdc-button mdc-button--raised" onclick="">
+                                        <span class="mdc-button__ripple"></span>
+                                        <i class="material-icons mdc-button__icon" aria-hidden="true">place</i>
+                                        <span class="mdc-button__label">GOOGLE MAPS</span>
+                                      </button>
+                                    </a>`;
+
+      if(site.pintxo_tapa) {
+        const pintxoTapaConSaltos = site.pintxo_tapa.replace(/\n/g, '<br>');
+      }
+      
+      // 4. Construir el HTML completo de la tarjeta de detalle
+      const detailHtml = `
+        <div class="page-container section-padding">
+          <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+            <span class="mdc-button__ripple"></span>
+            <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
+            <span class="mdc-button__label">VOLVER AL LISTADO</span>
+          </button>
+          <div class="tapeo-detail-card">
+            <div class="tapeo-detail-header">
+              <h2>${site.nombre || ''}</h2>
+              <div class="tapeo-detail-rating">${site.valoracion || ''}</div>
+              <div class="tapeo-detail-description">${site.nota || ''}</div>
+            </div>
+
+            ${photos.length > 0 ? `
+            <div class="tapeo-detail-gallery">
+              <img id="main-gallery-image" src="${photos[0]}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
+              ${thumbnailsHtml ? `<div class="gallery-thumbnails">${thumbnailsHtml}</div>` : ''}
+            </div>
+            ` : ''}
+
+            <div class="tapeo-detail-body">
+              ${site.postinstagram || site.googleresenas ? `<div class="tapeo-detail-actions">` : ''}
+              ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank">
+                <button class="mdc-button mdc-button--raised" onclick="">
+                  <span class="mdc-button__ripple"></span>
+                  <i class="material-icons mdc-button__icon" aria-hidden="true">photo_camera</i>
+                  <span class="mdc-button__label">NUESTRA ULTIMA VISITA</span>
+                </button>
+              </a>` : ''}
+              ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank">
+                <button class="mdc-button mdc-button--raised" onclick="">
+                  <span class="mdc-button__ripple"></span>
+                  <i class="material-icons mdc-button__icon" aria-hidden="true">thumb_up</i>
+                  <span class="mdc-button__label">RESEÑAS GOOGLE</span>
+                </button>
+              </a>` : ''}
+              ${site.postinstagram || site.googleresenas ? `</div>` : ''}
+
+              <p class="tapeo-detail-description">${site.descripcion_larga || site.pintxo_tapa || ''}</p>
+              ${actionsHtml ? `<div class="tapeo-detail-actions">${actionsHtml}</div>` : ''}
+              ${site.direccion ? `<p class="tapeo-detail-description"><i class="material-icons mdc-button__icon" aria-hidden="true">place</i><span class="mdc-button__label"> Dirección: ${site.direccion}</span></p>` : ''}
+              ${site.horario ? `<p class="tapeo-detail-description"><i class="material-icons mdc-button__icon" aria-hidden="true">schedule</i><span class="mdc-button__label"> Horario:&emsp;&emsp;&emsp;<br>${site.horario.replace(/\n/g, '<br>')}</span></p>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+      // ${site.lo_ultimo ? `<p><span class="material-icons" style="vertical-align: bottom;">schedule</span>${site.lo_ultimo.replace(/\n/g, '<br>')}</p>` : ''}
+
+      // 5. Mostrar la vista de detalle y ocultar la lista
+      elements.detailView.innerHTML = detailHtml;
+      elements.detailView.style.display = 'block';
+      elements.selectorView.style.display = 'none';
+      window.scrollTo(0, 0); // Ir al inicio de la página
+      mdc.autoInit(elements.detailView); // Inicializar componentes MDC en la nueva vista
+    }
+
+    function hideDetail() {
+      elements.detailView.style.display = 'none';
+      elements.detailView.innerHTML = '';
+      elements.selectorView.style.display = 'block';
+    }
+    
+    function changeGalleryImage(newImageUrl, clickedThumbnail) {
+        document.getElementById('main-gallery-image').src = newImageUrl;
+        // Actualizar la clase 'active' en las miniaturas
+        const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        clickedThumbnail.classList.add('active');
+    }
+
+    // --- FIN DE NUEVAS FUNCIONES ---
+
     function handleDataSuccess(data) { if (typeof mdcDrawerInstance !== 'undefined' && mdcDrawerInstance && mdcDrawerInstance.open) { mdcDrawerInstance.open = false; } showLoading(false); if (!Array.isArray(data)) { displayError('Respuesta inesperada del servidor.'); return; } if (state.level === 'barrios' && data.length > 1) { data.unshift('Todos'); } const isSkipping = data.length === 1 && state.level !== 'sitios'; state.history.push({ level: state.level, selection: { ...state.selection }, skipped: isSkipping }); if (isSkipping) { handleSelection(data[0]); } else { populateGrid(data); } }
     function handleFailure(error) { if (typeof mdcDrawerInstance !== 'undefined' && mdcDrawerInstance && mdcDrawerInstance.open) { mdcDrawerInstance.open = false; } showLoading(false); displayError(`La llamada al servidor falló: ${error.message}`); }
     function handleSelection(selectionName) { let key = (state.level === 'ciudades') ? 'ciudad' : state.level.slice(0, -1); if (state.level === 'barrios' && selectionName === 'Todos') { /* No hacer nada */ } else { state.selection[key] = selectionName; } state.level = levelsConfig[state.level].next; if (state.level) { renderStep(); } }
     function renderStep() { showLoading(true); elements.backButton.style.display = (state.history.length > 0) ? 'inline-flex' : 'none'; google.script.run.withSuccessHandler(handleDataSuccess).withFailureHandler(handleFailure).getTapeoData(state.level, state.selection); }
-    function goBack() { state.history.pop(); let lastState = state.history.pop(); while (lastState && lastState.skipped) { lastState = state.history.pop(); } if (lastState) { state.level = lastState.level; state.selection = lastState.selection; renderStep(); } else { state.level = 'autonomias'; state.selection = {}; state.history = []; if (elements.breadcrumbs) elements.breadcrumbs.innerHTML = ''; renderStep(); } }
+    function goBack() { hideDetail(); state.history.pop(); let lastState = state.history.pop(); while (lastState && lastState.skipped) { lastState = state.history.pop(); } if (lastState) { state.level = lastState.level; state.selection = lastState.selection; renderStep(); } else { state.level = 'autonomias'; state.selection = {}; state.history = []; if (elements.breadcrumbs) elements.breadcrumbs.innerHTML = ''; renderStep(); } }
     function initWithPreloadedData() { if (!window.INITIAL_TAPEODATA) { displayError("No se recibieron los datos iniciales."); return; } if (elements.breadcrumbs) elements.breadcrumbs.innerHTML = ''; showLoading(false); handleDataSuccess(window.INITIAL_TAPEODATA); delete window.INITIAL_TAPEODATA; }
     function displayError(message) { if (elements.grid) { elements.grid.style.display = 'block'; elements.grid.innerHTML = `<div style="color: red; padding: 20px;"><h3>Error en la aplicación</h3><p>${message}</p></div>`; } if (elements.loading) elements.loading.style.display = 'none'; }
     function showLoading(isLoading) { if(elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none'; if(elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid'; }
     
-    window.tapeo = { handleSelection, goBack };
+    // Exporta las nuevas funciones para que sean accesibles desde el HTML
+    window.tapeo = { handleSelection, goBack, showDetail, hideDetail, changeGalleryImage };
     initWithPreloadedData();
   })();
 </script>
