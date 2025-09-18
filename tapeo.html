@@ -248,7 +248,7 @@
             if (state.level === 'barrios' && uniqueValues.length > 1) { uniqueValues.unshift('Todos'); }
             if (uniqueValues.length === 1 && state.level !== 'sitios') {
               state.history.push({ level: state.level, selection: { ...state.selection }, skipped: true });
-              handleSelection(uniqueValues[0]);
+              handleSelection(uniqueValues[0], true);
               return;
             }
             populateGridWithOptions(uniqueValues);
@@ -364,8 +364,10 @@
           elements.selector.style.display = 'block';
         }
     
-        function handleSelection(selectionName) {
-          state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
+        function handleSelection(selectionName, isAutoSelection = false) {
+          if (!isAutoSelection) { 
+            state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
+          }
           let key = state.level.slice(0, -1);
           if (state.level === 'ciudades') key = 'ciudad';
           state.selection[key] = selectionName;
