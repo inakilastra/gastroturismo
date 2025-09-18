@@ -4,181 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANeKI - Gastroturismo</title>
-
-    <link rel="stylesheet" href="./style.css">
+    
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+      .category-card a, .category-card a:hover {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+      }
+    </style>
 </head>
 <body>
-
+    
     <div id="aside-placeholder"></div>
-
+    
     <div class="mdc-drawer-app-content">
         <div id="header-placeholder"></div>
 
-        <main class="main-app-content" id="main-content-area"></main>
+        <main class="main-app-content">
+            <div class="mdc-top-app-bar--fixed-adjust">
+                <section class="hero-section">
+                    </section>
+                <section id="categories" class="section-padding">
+                    <div class="page-container">
+                        <h2 class="section-title">Descubre Nuestros Mundos</h2>
+                        <div class="grid-container">
 
-        <div id="footer-placeholder"></div>
-    </div>
-
-    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-    <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
-
-    <script>
-        // URLs de nuestros datos. Centralizamos las URLs aquí.
-        const DATA_URLS = {
-            tapeo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv",
-            restaurantes: "URL_PARA_RESTAURANTES"
-            // ... y el resto de tus URLs de CSV
-        };
-
-        // Contenedor principal donde se renderizará el contenido
-        const contentArea = document.getElementById('main-content-area');
-        let mdcDrawerInstance = null; // Para controlar el menú
-
-        /**
-         * Carga un componente HTML (como el header o el aside) en un contenedor.
-         * @param {string} url - La ruta al fichero HTML del componente.
-         * @param {string} elementId - El ID del div donde se inyectará el HTML.
-         */
-        async function loadComponent(url, elementId) {
-            const response = await fetch(url);
-            const text = await response.text();
-            document.getElementById(elementId).innerHTML = text;
-        }
-        
-        /**
-         * Muestra un estado de carga en el área de contenido principal.
-         */
-        function showLoading() {
-            contentArea.innerHTML = `
-                <div style="padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div class="simple-loader"></div>
-                    <p style="font-size: 1.5rem; margin-top: 16px;">Cargando...</p>
-                </div>`;
-        }
-
-        /**
-         * Renderiza la vista de la página de inicio.
-         */
-        function renderHomePage() {
-            // El HTML de tu página de inicio ahora vive aquí, como una plantilla.
-            contentArea.innerHTML = `
-                <div class="mdc-top-app-bar--fixed-adjust">
-                    <section id="categories" class="section-padding">
-                        <div class="page-container">
-                            <h2 class="section-title">Descubre Nuestros Mundos</h2>
-                            <div class="grid-container">
-                                <div class="mdc-card category-card" onclick="loadPage('tapeo', this)">
+                            <div class="mdc-card category-card">
+                                <a href="./tapeo.html">
                                     <div class="mdc-card__primary-action">
                                         <div class="category-card__icon-container"><i class="material-icons">tapas</i></div>
                                         <h3 class="category-card__title">Pintxos y Tapas</h3>
-                                        <p class="mdc-typography--body2 category-card__description">Descubre sitios donde ofrecen buenos pintxos o tapas.</p>
+                                        <p class="category-card__description">¡A gozar! Descubre sitios donde ofrecen buenos pintxos o tapas.</p>
                                     </div>
-                                </div>
-                                </div>
-                        </div>
-                    </section>
-                </div>`;
-            // Re-inicializamos los ripples para los nuevos elementos
-            Array.from(contentArea.querySelectorAll('.mdc-card__primary-action')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-        }
-
-        /**
-         * Carga los datos de un CSV y renderiza la vista correspondiente.
-         * @param {string} viewFile - El fichero HTML de la vista (ej: './tapeo.html').
-         * @param {string} csvUrl - La URL del fichero CSV con los datos.
-         */
-        async function renderDataView(viewFile, csvUrl) {
-            try {
-                // 1. Carga la plantilla HTML de la vista
-                const response = await fetch(viewFile);
-                const viewTemplate = await response.text();
-                
-                // 2. Carga y parsea los datos del CSV con PapaParse
-                Papa.parse(csvUrl, {
-                    download: true,
-                    header: true, // Convierte las filas en objetos usando la primera fila como cabecera
-                    dynamicTyping: true, // Convierte números y booleanos automáticamente
-                    complete: function(results) {
-                        const data = results.data;
-                        let contentHtml = '';
-
-                        // 3. Genera el HTML de las tarjetas a partir de los datos
-                        for (const sitio of data) {
-                            if (!sitio.nombre) continue; // Salta filas vacías
-                            const imageUrl = sitio.foto1 ? \`https://drive.google.com/thumbnail?id=\${sitio.foto1}&sz=w600\` : '';
-                            contentHtml += \`
-                                <div class="sitio-card" style="grid-column: 1 / -1;">
-                                    \${imageUrl ? \`<div class="sitio-card-image" style="background-image: url('\${imageUrl}');"></div>\` : ''}
-                                    <div class="sitio-card-info">
-                                        <h3>\${sitio.nombre || ''}</h3>
-                                        <p>\${sitio.pintxo_tapa || ''}</p>
+                                </a>
+                            </div>
+                            
+                            <div class="mdc-card category-card">
+                                <a href="./restaurantes.html">
+                                    <div class="mdc-card__primary-action">
+                                        <div class="category-card__icon-container"><i class="material-icons">restaurant</i></div>
+                                        <h3 class="category-card__title">Restaurantes</h3>
+                                        <p class="category-card__description">Aquí hay para todos los gustos: desde la cocina casera hasta estrellas Michelin.</p>
                                     </div>
-                                </div>\`;
-                        }
-
-                        // 4. Inserta la plantilla principal y rellena la cuadrícula
-                        contentArea.innerHTML = viewTemplate;
-                        document.getElementById('tapeo-grid').innerHTML = contentHtml;
-                    },
-                    error: function(error) {
-                        console.error("Error con PapaParse:", error);
-                        contentArea.innerHTML = "<p style='color:red;'>Error al procesar los datos.</p>";
-                    }
-                });
-            } catch (error) {
-                console.error("Error cargando la vista:", error);
-                contentArea.innerHTML = "<p style='color:red;'>Error al cargar la página.</p>";
-            }
-        }
+                                </a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                </section>
+            </div>
+        </main>
         
-        /**
-         * Función principal de navegación. Decide qué vista mostrar.
-         */
-        function loadPage(pageName, clickedElement) {
-            showLoading();
-            if (mdcDrawerInstance && mdcDrawerInstance.open) mdcDrawerInstance.open = false;
-            
-            // Actualiza el estado activo en el menú
-            document.querySelectorAll('#main-nav .mdc-list-item').forEach(item => item.classList.remove('mdc-list-item--activated'));
-            if (clickedElement) clickedElement.classList.add('mdc-list-item--activated');
+        <div id="footer-placeholder"></div>
+    </div>
+    
+<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script>
+      /**
+       * Esta es la función mágica. Carga el contenido de un fichero HTML
+       * y lo inyecta en un contenedor de la página.
+       * @param {string} file - La ruta al fichero de la plantilla (ej: './PlantillaAside.html').
+       * @param {string} elementId - El ID del div contenedor (ej: 'aside-placeholder').
+       */
+      async function includeHTML(file, elementId) {
+        try {
+          const response = await fetch(file);
+          if (!response.ok) throw new Error("No se encontró el fichero: " + file);
+          const text = await response.text();
+          document.getElementById(elementId).innerHTML = text;
+        } catch (error) {
+          console.error("Error al incluir el HTML:", error);
+          document.getElementById(elementId).innerHTML = `<p style="color:red;">Error al cargar componente: ${file}</p>`;
+        }
+      }
 
-            if (pageName === 'inicio') {
-                renderHomePage();
-            } else if (DATA_URLS[pageName]) {
-                // Para cualquier otra página que tenga datos, como 'tapeo'
-                renderDataView(\`./\${pageName}.html\`, DATA_URLS[pageName]);
-            } else {
-                contentArea.innerHTML = \`<p>Página '\${pageName}' no encontrada.</p>\`;
-            }
+      // Se ejecuta cuando la página está lista.
+      document.addEventListener('DOMContentLoaded', async function() {
+        // 3. Carga todas las plantillas en sus contenedores
+        await includeHTML('./aside.html', 'aside-placeholder');
+        await includeHTML('./header.html', 'header-placeholder');
+        await includeHTML('./footer.html', 'footer-placeholder');
+
+        // 4. Una vez que todo el HTML está cargado, inicializa el JavaScript
+        
+        // Inicializa los efectos de Material Design
+        Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item, .mdc-card__primary-action')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+        
+        // Controla el menú lateral
+        const drawerElement = document.querySelector('.mdc-drawer');
+        const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
+        if (drawerElement && menuButton) {
+          const drawer = mdc.drawer.MDCDrawer.attachTo(drawerElement);
+          menuButton.addEventListener('click', () => { drawer.open = !drawer.open; });
         }
 
-        // --- INICIALIZACIÓN DE LA APLICACIÓN ---
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Carga los componentes principales (header, aside, footer)
-            await loadComponent('./PlantillaAside.html', 'aside-placeholder');
-            await loadComponent('./PlantillaHeader.html', 'header-placeholder');
-            await loadComponent('./PlantillaFooter.html', 'footer-placeholder');
+        // Añade el año actual al footer
+        const yearSpan = document.querySelector('.footer-year');
+        if(yearSpan) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
 
-            // Una vez cargados los componentes, inicializa el JavaScript
-            Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-            const drawerElement = document.querySelector('.mdc-drawer');
-            const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
-            if (drawerElement && menuButton) {
-                mdcDrawerInstance = mdc.drawer.MDCDrawer.attachTo(drawerElement);
-                menuButton.addEventListener('click', () => { mdcDrawerInstance.open = !mdcDrawerInstance.open; });
-            }
-            
-            // Hacemos la función 'loadPage' accesible globalmente para los 'onclick'
-            window.loadPage = loadPage;
-            
-            // Cargamos la página de inicio por defecto
-            const firstNavLink = document.querySelector('#main-nav a[onclick*="inicio"]');
-            loadPage('inicio', firstNavLink);
-        });
-
+        // Marca el enlace 'Inicio' como activo
+        document.querySelector('a[href*="index.html"]').classList.add('mdc-list-item--activated');
+      });
     </script>
 </body>
 </html>
