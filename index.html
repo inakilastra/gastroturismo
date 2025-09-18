@@ -25,8 +25,14 @@
     <div id="aside-placeholder"></div>
     
     <div class="mdc-drawer-app-content">
-        <div id="header-placeholder"></div>
-
+        <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
+          <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+              <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+              <span class="mdc-top-app-bar__title brand-font">ANeKI</span>
+            </section>
+          </div>
+        </header>
         <main class="main-app-content">
             <div class="mdc-top-app-bar--fixed-adjust"> 
               <div id="main-content-wrapper"> 
@@ -113,7 +119,7 @@
       document.addEventListener('DOMContentLoaded', async function() {
         // 3. Carga todas las plantillas en sus contenedores
         await includeHTML('./aside.html', 'aside-placeholder');
-        await includeHTML('./header.html', 'header-placeholder');
+        //await includeHTML('./header.html', 'header-placeholder');
         await includeHTML('./footer.html', 'footer-placeholder');
 
         // 4. Una vez que todo el HTML está cargado, inicializa el JavaScript
