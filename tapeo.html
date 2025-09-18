@@ -105,100 +105,225 @@
         document.querySelector('a[href*="index.html"]').classList.add('mdc-list-item--activated');
       });
     </script>
-    <script>
+<script>
+      // =================================================================
+      // SCRIPT DE CARGA Y RENDERIZADO DE DATOS PARA LA RUTA DE TAPEO
+      // =================================================================
+
+      // 1. URL pública del fichero CSV de Google Sheets.
       const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
-      let allTapeoData = [];
+      
+      let allTapeoData = []; // Variable global para almacenar todos los datos una vez cargados.
+
+      // 2. Mapeo de columnas para un acceso fácil a los datos.
+      // Modifica estos números si el orden de tus columnas en el CSV cambia.
       const COLS = { autonomia: 0, provincia: 1, ciudad: 2, barrio: 3, nombre: 4, nota: 5, direccion: 6, horario: 7, pintxo_tapa: 8, googleresenas: 9, maps: 10, facebook: 11, instagram: 12, postnstagram: 13, web: 14, foto1: 15, foto2: 16, foto3: 17, foto4: 18, lo_ultimo: 19, tipo_lugar: 20, valoracion: 21 };
     
+      /**
+       * Parsea una fila de texto CSV, manejando correctamente las comillas y las comas internas.
+       * @param {string} rowString - La cadena de texto de una fila del CSV.
+       * @returns {string[]} Un array con los valores de cada celda.
+       */
       function parseCsvRow(rowString) {
-        const columns = []; let currentColumn = ''; let inQuotes = false;
+        const columns = [];
+        let currentColumn = '';
+        let inQuotes = false;
+
         for (let i = 0; i < rowString.length; i++) {
-          const char = rowString[i];
-          if (char === '"') {
-            if (inQuotes && rowString[i + 1] === '"') { currentColumn += '"'; i++; } else { inQuotes = !inQuotes; }
-          } else if (char === ',' && !inQuotes) { columns.push(currentColumn); currentColumn = '';
-          } else { currentColumn += char; }
+            const char = rowString[i];
+
+            if (char === '"') {
+                // Si encontramos una comilla doble, revisamos si es una comilla de escape ("")
+                if (inQuotes && i + 1 < rowString.length && rowString[i + 1] === '"') {
+                    // Es una comilla de escape, la añadimos al campo actual y saltamos la siguiente comilla.
+                    currentColumn += '"';
+                    i++;
+                } else {
+                    // Es una comilla de apertura o cierre, cambiamos el estado.
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === ',' && !inQuotes) {
+                // Si es una coma y no estamos dentro de comillas, es un separador.
+                columns.push(currentColumn);
+                currentColumn = '';
+            } else {
+                // Es un carácter normal, lo añadimos al campo actual.
+                currentColumn += char;
+            }
         }
-        columns.push(currentColumn); return columns;
+        // Añadimos la última columna y devolvemos el array, eliminando espacios en blanco.
+        columns.push(currentColumn);
+        return columns.map(col => col.trim());
       }
     
+      // 3. Lógica principal de la aplicación, encapsulada para no contaminar el scope global.
       (function() {
         const state = { level: 'autonomias', selection: {}, history: [] };
         const elements = { title: document.getElementById('tapeo-title'), grid: document.getElementById('tapeo-grid'), loading: document.getElementById('tapeo-loading'), backButton: document.getElementById('tapeo-back-button'), breadcrumbs: document.getElementById('tapeo-breadcrumbs') };
         const levelsConfig = { autonomias: { title: '¿Dónde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias', key: COLS.autonomia }, provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades', key: COLS.provincia }, ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios', key: COLS.ciudad }, barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios', key: COLS.barrio }, sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null } };
     
+        /**
+         * Función de inicialización: Carga los datos del CSV.
+         */
         async function init() {
           try {
-            console.log("Iniciando carga de datos desde:", CSV_URL);
-            if (!CSV_URL || CSV_URL === "URL_DE_TU_CSV_PUBLICADO") { throw new Error("La URL del CSV no se ha configurado en Code.gs."); }
-    
             const response = await fetch(CSV_URL);
-            console.log("Respuesta de Fetch recibida. Status:", response.status);
-            if (!response.ok) { throw new Error(`Error de red al cargar el CSV (código: ${response.status} ${response.statusText})`); }
-            
+            if (!response.ok) { throw new Error(`Error de red: ${response.status} ${response.statusText}`); }
             const csvText = await response.text();
-            console.log("CSV recibido, longitud:", csvText.length);
-            if (csvText.length < 50) { throw new Error("El fichero CSV parece estar vacío o no es válido."); }
-    
-            console.log("Procesando datos del CSV...");
+            if (csvText.length < 50) { throw new Error("El fichero CSV parece estar vacío."); }
+            
+            // Procesa el texto CSV y lo guarda en la variable global.
             allTapeoData = csvText.trim().split('\n').slice(1).map(row => parseCsvRow(row));
-            console.log("Datos procesados. Número de filas:", allTapeoData.length);
-    
-            renderStep();
-            console.log("Renderizado inicial completado.");
+            
+            renderStep(); // Llama al primer renderizado.
           } catch (error) {
-            console.error("Error fatal durante la inicialización:", error);
+            console.error("Error al inicializar:", error);
             displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
           }
         }
     
+        /**
+         * Renderiza el paso actual basado en el estado (autonomía, provincia, ciudad, etc.).
+         */
         function renderStep() {
           showLoading(true);
           let dataToProcess = allTapeoData;
+
+          // Filtra los datos basado en las selecciones previas del usuario.
           if (state.selection.autonomia) dataToProcess = dataToProcess.filter(row => row[COLS.autonomia] === state.selection.autonomia);
           if (state.selection.provincia) dataToProcess = dataToProcess.filter(row => row[COLS.provincia] === state.selection.provincia);
           if (state.selection.ciudad) dataToProcess = dataToProcess.filter(row => row[COLS.ciudad] === state.selection.ciudad);
           if (state.selection.barrio && state.selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[COLS.barrio] === state.selection.barrio);
+          
           elements.backButton.style.display = (state.history.length > 0) ? 'inline-flex' : 'none';
           renderBreadcrumbs();
-          if (state.level === 'sitios') { populateGridWithSitios(dataToProcess); } else {
+    
+          if (state.level === 'sitios') {
+            populateGridWithSitios(dataToProcess);
+          } else {
             const colKey = levelsConfig[state.level].key;
-            let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey] ? row[colKey].trim() : ''))].filter(Boolean).sort();
+            let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
+            
             if (state.level === 'barrios' && uniqueValues.length > 1) { uniqueValues.unshift('Todos'); }
-            if (uniqueValues.length === 1 && state.level !== 'sitios') { state.history.push({ level: state.level, selection: { ...state.selection }, skipped: true }); handleSelection(uniqueValues[0]); return; }
+
+            // Si solo hay una opción, la selecciona automáticamente para agilizar la navegación.
+            if (uniqueValues.length === 1 && state.level !== 'sitios') {
+              state.history.push({ level: state.level, selection: { ...state.selection }, skipped: true });
+              handleSelection(uniqueValues[0]);
+              return;
+            }
             populateGridWithOptions(uniqueValues);
           }
           showLoading(false);
         }
+
+        /**
+         * Crea y muestra las tarjetas de selección de categoría (ej. tarjetas de Provincias).
+         */
         function populateGridWithOptions(data) {
-          const config = levelsConfig[state.level]; elements.title.textContent = config.title; elements.grid.innerHTML = '';
-          data.forEach(item => { const cardHtml = `<div class="mdc-card category-card" onclick="tapeo.handleSelection('${item}')"><div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;"><div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div><h3 class="category-card__title">${item}</h3></div></div>`; elements.grid.insertAdjacentHTML('beforeend', cardHtml); });
-        }
-        function populateGridWithSitios(data) {
-          elements.title.textContent = levelsConfig.sitios.title; elements.grid.innerHTML = '';
-          data.forEach(row => {
-            const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
-            const primaryLink = row[COLS.postnstagram] || row[COLS.web] || row[COLS.instagram] || row[COLS.maps];
-            const cardHtml = `<div class="sitio-card" style="grid-column: 1 / -1;">${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}<div class="sitio-card-info"><h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3><div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div><div class="sitio-card-description">${row[COLS.pintxo_tapa] || ''}</div>${primaryLink ? `<button class="mdc-button mdc-button--raised" onclick="window.open('${primaryLink}', '_blank')" type="button"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon" aria-hidden="true">info</i><span class="mdc-button__label">+ info</span></button>` : ''}</div></div>`;
+          const config = levelsConfig[state.level];
+          elements.title.textContent = config.title;
+          elements.grid.innerHTML = '';
+          data.forEach(item => {
+            const cardHtml = `
+              <div class="mdc-card category-card" onclick="tapeo.handleSelection('${item.replace(/'/g, "\\'")}')">
+                <div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;">
+                  <div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div>
+                  <h3 class="category-card__title">${item}</h3>
+                </div>
+              </div>`;
             elements.grid.insertAdjacentHTML('beforeend', cardHtml);
           });
         }
+        
+        /**
+         * Crea y muestra las tarjetas finales con la información de cada sitio.
+         */
+        function populateGridWithSitios(data) {
+          elements.title.textContent = levelsConfig.sitios.title;
+          elements.grid.innerHTML = '';
+          data.sort((a, b) => (b[COLS.nota] || 0) - (a[COLS.nota] || 0)); // Ordena por nota descendente
+          data.forEach(row => {
+            const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
+            const primaryLink = row[COLS.postnstagram] || row[COLS.web] || row[COLS.instagram] || row[COLS.maps];
+            const cardHtml = `
+              <div class="sitio-card" style="grid-column: 1 / -1;">
+                ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
+                <div class="sitio-card-info">
+                  <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>
+                  <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
+                  <div class="sitio-card-description">${row[COLS.pintxo_tapa] || ''}</div>
+                  ${primaryLink ? `<button class="mdc-button mdc-button--raised" onclick="window.open('${primaryLink}', '_blank')" type="button"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon" aria-hidden="true">info</i><span class="mdc-button__label">+ info</span></button>` : ''}
+                </div>
+              </div>`;
+            elements.grid.insertAdjacentHTML('beforeend', cardHtml);
+          });
+        }
+    
+        /**
+         * Maneja la selección de una opción y avanza al siguiente nivel.
+         */
         function handleSelection(selectionName) {
           state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
-          let key = state.level.slice(0, -1); if (state.level === 'ciudades') key = 'ciudad';
-          state.selection[key] = selectionName; state.level = levelsConfig[state.level].next;
+          let key = state.level.slice(0, -1);
+          if (state.level === 'ciudades') key = 'ciudad';
+          state.selection[key] = selectionName;
+          state.level = levelsConfig[state.level].next;
           if (state.level) { renderStep(); }
         }
+    
+        /**
+         * Retrocede al paso anterior en la navegación.
+         */
         function goBack() {
-          let lastState = state.history.pop(); while (lastState && lastState.skipped) { lastState = state.history.pop(); }
-          if (lastState) { state.level = lastState.level; state.selection = lastState.selection; renderStep(); } else { state.level = 'autonomias'; state.selection = {}; state.history = []; renderStep(); }
+          let lastState = state.history.pop();
+          while (lastState && lastState.skipped) { lastState = state.history.pop(); }
+          if (lastState) {
+            state.level = lastState.level;
+            state.selection = lastState.selection;
+            renderStep();
+          } else { // Si no hay más historial, vuelve al inicio.
+            state.level = 'autonomias';
+            state.selection = {};
+            state.history = [];
+            renderStep();
+          }
         }
-        function renderBreadcrumbs() { if (!elements.breadcrumbs) return; const crumbs = []; if (state.selection.autonomia) crumbs.push(state.selection.autonomia); if (state.selection.provincia) crumbs.push(state.selection.provincia); if (state.selection.ciudad) crumbs.push(state.selection.ciudad); if (state.selection.barrio) crumbs.push(state.selection.barrio); elements.breadcrumbs.innerHTML = crumbs.join(' <span style="font-weight: bold;"> &gt; </span> '); }
-        function displayError(message) { if (elements.loading) { elements.loading.style.display = 'flex'; elements.loading.innerHTML = `<div style="color: #c62828; padding: 20px; border: 2px solid #ffcdd2; background-color: #ffebee; border-radius: 8px;"><h3>Ha ocurrido un error</h3><p>${message}</p></div>`; } }
-        function showLoading(isLoading) { if (elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none'; if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid'; }
+    
+        function renderBreadcrumbs() {
+          if (!elements.breadcrumbs) return;
+          const crumbs = [];
+          if (state.selection.autonomia) crumbs.push(state.selection.autonomia);
+          if (state.selection.provincia) crumbs.push(state.selection.provincia);
+          if (state.selection.ciudad) crumbs.push(state.selection.ciudad);
+          if (state.selection.barrio && state.selection.barrio !== 'Todos') crumbs.push(state.selection.barrio);
+          elements.breadcrumbs.innerHTML = crumbs.join(' <span style="font-weight: bold;"> &gt; </span> ');
+        }
+    
+        function displayError(message) {
+          if (elements.loading) {
+            elements.loading.style.display = 'flex';
+            elements.loading.innerHTML = `
+              <div style="color: #c62828; padding: 20px; border: 2px solid #ffcdd2; background-color: #ffebee; border-radius: 8px;">
+                <h3>Ha ocurrido un error</h3>
+                <p>${message}</p>
+              </div>`;
+          }
+        }
+    
+        function showLoading(isLoading) {
+          if (elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none';
+          if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid';
+        }
+        
+        // Expone las funciones necesarias al objeto global 'window' para que puedan ser llamadas desde los 'onclick'.
         window.tapeo = { handleSelection, goBack };
+    
+        // Inicia todo el proceso.
         init();
       })();
     </script>    
+</body>
+</html>
 </body>
 </html>
