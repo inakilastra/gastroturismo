@@ -308,7 +308,7 @@
 
           elements.selector.style.display = 'none';
 
-          const photos = [site.foto1, site.foto2, site.foto3, site.foto4].filter(Boolean).map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`);
+          const photos = [site.foto1, site.foto2, site.foto3, site.foto4, site.foto5, site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, site.foto16, site.foto17, site.foto18, site.foto19, site.foto20].filter(Boolean).map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`);
           let thumbnailsHtml = '';
           if (photos.length > 1) {
             thumbnailsHtml = photos.map((photo, i) => 
@@ -326,7 +326,7 @@
               <div class="tapeo-detail-header">
                 <h2>${site.nombre || ''}</h2>
                 <div class="tapeo-detail-rating">${site.valoracion || ''}</div>
-                ${site.valoracion}
+                <div class="tapeo-detail-rating">${site.precio || ''}</div>
               </div>
 
               ${photos.length > 0 ? `
