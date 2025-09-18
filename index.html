@@ -1,1 +1,91 @@
-Hola Mundo !
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANeKI - Gastroturismo</title>
+    
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <aside class="mdc-drawer mdc-drawer--modal">
+      <div class="mdc-drawer__header">
+        <h3 class="mdc-drawer__title brand-font">ANeKI</h3><h6 class="mdc-drawer__subtitle">Gastroturismo</h6>
+      </div>
+      <div class="mdc-drawer__content">
+        <nav id="main-nav" class="mdc-list">
+          <a class="mdc-list-item mdc-list-item--activated" href="./index.html"><i class="material-icons">home</i><span>Inicio</span></a>
+          <a class="mdc-list-item" href="./tapeo.html"><i class="material-icons">tapas</i><span>Tapear</span></a>
+          <a class="mdc-list-item" href="./restaurantes.html"><i class="material-icons">restaurant</i><span>Restaurantes</span></a>
+          <a class="mdc-list-item" href="./bodegas.html"><i class="material-icons">wine_bar</i><span>Bodegas</span></a>
+          </nav>
+      </div>
+    </aside>
+    <div class="mdc-drawer-scrim"></div>
+
+    <div class="mdc-drawer-app-content">
+        <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
+          <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+              <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+              <span class="mdc-top-app-bar__title brand-font">ANeKI</span>
+            </section>
+          </div>
+        </header>
+
+        <main class="main-app-content">
+            <div class="mdc-top-app-bar--fixed-adjust">
+                <section class="hero-section" style="background-image: url('https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200-h800');">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Gastronomía y turismo en tu bolsillo</h1>
+                        <p class="hero-subtitle">Compartimos nuestras experiencias gastronómicas y turísticas, por si te apetece probar alguna...</p>
+                    </div>
+                </section>
+                <section id="about-us" class="section-padding" style="background-color: var(--mdc-theme-surface);">
+                  </section>
+                <section id="categories" class="section-padding">
+                    <div class="page-container">
+                        <h2 class="section-title">Descubre Nuestros Mundos</h2>
+                        <div class="grid-container">
+                            <div class="mdc-card category-card">
+                                <a href="./tapeo.html">
+                                    <div class="mdc-card__primary-action"><div class="category-card__icon-container"><i class="material-icons">tapas</i></div><h3 class="category-card__title">Pintxos y Tapas</h3><p class="category-card__description">¡A gozar! Descubre sitios donde ofrecen buenos pintxos o tapas.</p></div>
+                                </a>
+                            </div>
+                            <div class="mdc-card category-card">
+                                <a href="./restaurantes.html">
+                                    <div class="mdc-card__primary-action"><div class="category-card__icon-container"><i class="material-icons">restaurant</i></div><h3 class="category-card__title">Restaurantes</h3><p class="category-card__description">Aquí hay para todos los gustos: desde la cocina casera hasta estrellas Michelin.</p></div>
+                                </a>
+                            </div>
+                            </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+        
+        <footer class="common-footer">
+          <?= new Date().getFullYear(); ?>  ANeKI  Gastroturismo.
+        </footer>
+    </div>
+    
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Inicializa los efectos de Material Design
+        Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item, .mdc-card__primary-action')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+        
+        // Controla el menú lateral
+        const drawerElement = document.querySelector('.mdc-drawer');
+        const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
+        if (drawerElement && menuButton) {
+          const drawer = mdc.drawer.MDCDrawer.attachTo(drawerElement);
+          menuButton.addEventListener('click', () => { drawer.open = !drawer.open; });
+        }
+      });
+    </script>
+</body>
+</html>
