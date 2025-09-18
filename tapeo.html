@@ -176,7 +176,7 @@
       let allTapeoData = []; // Variable global para almacenar todos los datos una vez cargados.
 
       // 2. Mapeo de columnas para un acceso fácil a los datos.
-      const COLS = { autonomia: 0, provincia: 1, ciudad: 2, barrio: 3, nombre: 4, nota: 5, direccion: 6, horario: 7, pintxo_tapa: 8, googleresenas: 9, maps: 10, facebook: 11, instagram: 12, postnstagram: 13, web: 14, foto1: 15, foto2: 16, foto3: 17, foto4: 18, foto5: 19, foto6: 20, foto7: 21, foto8: 22, foto9: 23, foto10: 24, foto11: 25, foto12: 26, foto13: 27, foto14: 28, foto15: 29, foto16: 30, foto17: 31, foto18: 32, foto19: 33,  foto20: 34, lo_ultimo: 35, tipo_lugar: 36, valoracion: 37, codprecio: 38, precio: 39 };
+      const COLS = { autonomia: 0, provincia: 1, ciudad: 2, barrio: 3, nombre: 4, nota: 5, direccion: 6, horario: 7, pintxo_tapa: 8, googleresenas: 9, maps: 10, facebook: 11, instagram: 12, postinstagram: 13, web: 14, foto1: 15, foto2: 16, foto3: 17, foto4: 18, foto5: 19, foto6: 20, foto7: 21, foto8: 22, foto9: 23, foto10: 24, foto11: 25, foto12: 26, foto13: 27, foto14: 28, foto15: 29, foto16: 30, foto17: 31, foto18: 32, foto19: 33,  foto20: 34, lo_ultimo: 35, tipo_lugar: 36, valoracion: 37, codprecio: 38, precio: 39 };
     
       /**
        * Parsea un texto completo en formato CSV.
@@ -325,7 +325,7 @@
             <div class="tapeo-detail-card">
               <div class="tapeo-detail-header">
                 <h2>${site.nombre || ''}</h2>
-                <div class="tapeo-detail-rating">${site.valoracion || ''}</div>
+                <div class="tapeo-detail-rating">${site.valoracion ? site.valoracion || ''}</div>
                 <div class="tapeo-detail-rating">${site.codprecio || ''}</div>
               </div>
 
@@ -340,7 +340,7 @@
                   <p class="tapeo-detail-description">${site.pintxo_tapa || ''}</p>
                   
                   <div class="tapeo-detail-actions">
-                    ${site.postnstagram ? `<a href="${site.postnstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Última Visita</span></a>` : ''}
+                    ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Última Visita</span></a>` : ''}
                     ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
                     ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
                     ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
@@ -350,7 +350,7 @@
                   ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
                   ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
               </div>
-            </div>
+            </div><br />
             <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
               <span class="mdc-button__ripple"></span>
               <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
@@ -690,7 +690,7 @@
           data.sort((a, b) => (b[COLS.nota] || 0) - (a[COLS.nota] || 0)); // Ordena por nota descendente
           data.forEach(row => {
             const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
-            const primaryLink = row[COLS.postnstagram] || row[COLS.web] || row[COLS.instagram] || row[COLS.maps];
+            const primaryLink = row[COLS.postinstagram] || row[COLS.web] || row[COLS.instagram] || row[COLS.maps];
             const cardHtml = `
               <div class="sitio-card" style="grid-column: 1 / -1;">
                 ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
