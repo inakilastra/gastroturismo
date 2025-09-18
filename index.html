@@ -65,9 +65,35 @@
         <div id="footer-placeholder"></div>
     </div>
     
-    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      /**
+       * Esta es la función mágica. Carga el contenido de un fichero HTML
+       * y lo inyecta en un contenedor de la página.
+       * @param {string} file - La ruta al fichero de la plantilla (ej: './PlantillaAside.html').
+       * @param {string} elementId - El ID del div contenedor (ej: 'aside-placeholder').
+       */
+      async function includeHTML(file, elementId) {
+        try {
+          const response = await fetch(file);
+          if (!response.ok) throw new Error("No se encontró el fichero: " + file);
+          const text = await response.text();
+          document.getElementById(elementId).innerHTML = text;
+        } catch (error) {
+          console.error("Error al incluir el HTML:", error);
+          document.getElementById(elementId).innerHTML = `<p style="color:red;">Error al cargar componente: ${file}</p>`;
+        }
+      }
+
+      // Se ejecuta cuando la página está lista.
+      document.addEventListener('DOMContentLoaded', async function() {
+        // 3. Carga todas las plantillas en sus contenedores
+        await includeHTML('./aside.html', 'aside-placeholder');
+        await includeHTML('./header.html', 'header-placeholder');
+        await includeHTML('./footer.html', 'footer-placeholder');
+
+        // 4. Una vez que todo el HTML está cargado, inicializa el JavaScript
+        
         // Inicializa los efectos de Material Design
         Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item, .mdc-card__primary-action')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
         
@@ -79,11 +105,14 @@
           menuButton.addEventListener('click', () => { drawer.open = !drawer.open; });
         }
 
-        // ✅ CORRECCIÓN: Añadimos el año actual al footer
+        // Añade el año actual al footer
         const yearSpan = document.querySelector('.footer-year');
         if(yearSpan) {
             yearSpan.textContent = new Date().getFullYear();
         }
+
+        // Marca el enlace 'Inicio' como activo
+        document.querySelector('a[href*="index.html"]').classList.add('mdc-list-item--activated');
       });
     </script>
 </body>
