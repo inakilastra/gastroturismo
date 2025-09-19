@@ -230,9 +230,9 @@
                 ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
                 <div class="sitio-card-info">
                   <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>
-                  <div class="site-card-description">Nuestra valoración: </div>
+                  <div class="sitio-card-description">Nuestra valoración: </div>
                   <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
-                  <div class="site-card-description" style="margin-bottom: 18px;">${priceText}</div>
+                  <div class="sitio-card-description" style="margin-bottom: 10px;">${priceText}</div>
                   <hr class="styled-hr">
                   <div class="sitio-card-description">${row[COLS.pintxo_tapa] || ''}</div>
                   <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
@@ -282,8 +282,9 @@
             <div class="full-detail-card">
               <div class="full-detail-header">
                 <h2>${site.nombre || ''}</h2>
+                <div class="full-card-description">Nuestra valoración: </div>
                 <div class="full-detail-rating">${site.valoracion || ''}</div>
-                <div class="tapeo-detail-description" style="margin-top: 8px;margin-bottom: 8px;">${priceText}</div>
+                <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
               </div>
 
               ${photos.length > 0 ? `
