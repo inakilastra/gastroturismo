@@ -152,6 +152,7 @@
           grid: document.getElementById('tapeo-grid'), 
           loading: document.getElementById('tapeo-loading'), 
           backButton: document.getElementById('tapeo-back-button'), 
+          backButton2: document.getElementById('tapeo-back-button2'), 
           breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
           selector: document.getElementById('tapeo-selector'),
           detailContainer: document.getElementById('tapeo-detail-container')
@@ -182,6 +183,7 @@
           if (state.selection.barrio && state.selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[COLS.barrio] === state.selection.barrio);
           
           elements.backButton.style.display = (state.history.length > 0) ? 'inline-flex' : 'none';
+          elements.backButton2.style.display = (state.history.length > 0) ? 'inline-flex' : 'none';
           renderBreadcrumbs();
     
           if (state.level === 'sitios') {
