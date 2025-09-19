@@ -233,11 +233,11 @@
                   <div class="site-card-description">Nuestra valoración: </div>
                   <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
                   <div class="site-card-description" style="margin-bottom: 18px;">${priceText}</div>
-                  <hr />
+                  <hr class="styled-hr">
                   <div class="sitio-card-description">${row[COLS.pintxo_tapa] || ''}</div>
                   <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
                     <span class="mdc-button__ripple"></span>
-                    <i class="material-icons mdc-button__icon" aria-hidden="true">eye</i>
+                    <i class="material-icons mdc-button__icon" aria-hidden="true">visibility</i>
                     <span class="mdc-button__label"> Ver toda la información</span>
                   </button>
                 </div>
