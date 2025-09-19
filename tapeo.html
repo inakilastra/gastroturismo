@@ -237,11 +237,11 @@
           sortedData.forEach((row, index) => {
             const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
             let priceText = '';
-              if (site.codprecio == 10) {
+              if (row[COLS.codprecio] == 10) {
                   priceText = 'El precio está muy bien';
-              } else if (site.codprecio == 11) {
+              } else if (row[COLS.codprecio] == 11) {
                   priceText = 'El precio es justo';
-              } else if (site.codprecio == 12) {
+              } else if (row[COLS.codprecio] == 12) {
                   priceText = 'El precio nos parece caro';
               }
               
