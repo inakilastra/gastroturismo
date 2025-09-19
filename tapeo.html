@@ -321,6 +321,15 @@
             ).join('');
           }
 
+          let priceText = '';
+          if (site.codprecio == 10) {
+              priceText = 'El precio está muy bien';
+          } else if (site.codprecio == 11) {
+              priceText = 'El precio es justo';
+          } else if (site.codprecio == 12) {
+              priceText = 'El precio nos parece caro';
+          }
+
           const detailHtml = `
             <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
               <span class="mdc-button__ripple"></span>
@@ -330,16 +339,8 @@
             <div class="tapeo-detail-card">
               <div class="tapeo-detail-header">
                 <h2>${site.nombre || ''}</h2>
-                <div class="tapeo-detail-rating">${site.valoracion || ''}
-                `if (site.codprecio = 10) {
-                    ` El precio esta muy bien`
-                else if (site.codprecio = 11) {
-                    `El precio es justo`
-               else if (site.codprecio = 12) {
-                    `El precio nos parece caro`
-                else {
-                   `''`
-                }`</div>
+                <div class="tapeo-detail-rating">${site.valoracion || ''}</div>
+                <div class="tapeo-detail-description" style="margin-top: 8px;">${priceText}</div>
               </div>
 
               ${photos.length > 0 ? `
