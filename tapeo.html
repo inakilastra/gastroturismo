@@ -254,7 +254,7 @@
           });
         }
 
-        function showDetail(index) {
+       /* function showDetail(index) {
           const siteRow = state.currentSitios[index];
           const site = Object.keys(COLS).reduce((obj, key) => {
             obj[key] = siteRow[COLS[key]];
@@ -316,6 +316,96 @@
                   <button class="gallery-scroll-button left" onclick="scrollGallery(-1)">&#10094;</button>
                   <div class="gallery-thumbnails" id="thumbnails-list">${thumbnailsHtml}</div>
                   <button class="gallery-scroll-button right" onclick="scrollGallery(1)">&#10095;</button>
+                </div>
+                ` : ''}
+              </div>
+              ` : ''}
+
+              <div class="full-detail-body">
+                  <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
+                  
+                  <div class="full-detail-actions">
+                    ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
+                    ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
+                    ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
+                    ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
+                  </div>
+
+                  ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
+                  ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
+              </div>
+            </div>`;
+          
+          elements.detailContainer.innerHTML = detailHtml;
+          elements.detailContainer.style.display = 'block';
+          
+          setupGalleryScroll();
+          
+          Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+        }*/
+
+        function showDetail(index) {
+          const siteRow = state.currentSitios[index];
+          const site = Object.keys(COLS).reduce((obj, key) => {
+            obj[key] = siteRow[COLS[key]];
+            return obj;
+          }, {});
+
+          elements.selector.style.display = 'none';
+
+          const photoIds = [
+            site.foto1, site.foto2, site.foto3, site.foto4, site.foto5, 
+            site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, 
+            site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, 
+            site.foto16, site.foto17, site.foto18, site.foto19, site.foto20
+          ].filter(Boolean);
+          
+          const photos = photoIds.map(id => ({
+            main: `https://drive.google.com/thumbnail?id=${id}&sz=w800`,
+            thumb: `https://drive.google.com/thumbnail?id=${id}&sz=w150`
+          }));
+          
+          let thumbnailsHtml = '';
+          if (photos.length > 1) {
+            thumbnailsHtml = photos.map((photo, i) => 
+              `<img src="${photo.thumb}" alt="Miniatura ${i+1}" onclick="document.getElementById('main-gallery-image').src='${photo.main}';" class="${i === 0 ? 'active' : ''}">`
+            ).join('');
+          }
+
+          let priceText = '';
+          if (site.codprecio == 10) {
+              priceText = 'El precio nos parece que está muy bien ✅';
+          } else if (site.codprecio == 11) {
+              priceText = 'El precio nos parece que es justo ⚖️';
+          } else if (site.codprecio == 12) {
+              priceText = 'El precio nos parece que es caro 💀';
+          }
+          
+          const detailHtml = `
+            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+              <span class="mdc-button__ripple"></span>
+              <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
+              <span class="mdc-button__label">VOLVER AL LISTADO</span>
+            </button>
+            <div class="full-detail-card">
+              <div class="full-detail-header">
+                <h2>${site.nombre || ''}</h2>
+                <div class="full-detail-rating">${site.valoracion || ''}</div>
+                <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
+              </div>
+              
+              <div class="full-detail-actions">
+                  ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
+              </div>
+              
+              ${photos.length > 0 ? `
+              <div class="full-detail-gallery">
+                <img id="main-gallery-image" src="${photos[0].main}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
+                ${thumbnailsHtml ? `
+                <div class="gallery-thumbnails-wrapper" id="gallery-wrapper">
+                  <button class="gallery-scroll-button left" onclick="tapeo.scrollGallery(-1)">&#10094;</button>
+                  <div class="gallery-thumbnails" id="thumbnails-list">${thumbnailsHtml}</div>
+                  <button class="gallery-scroll-button right" onclick="tapeo.scrollGallery(1)">&#10095;</button>
                 </div>
                 ` : ''}
               </div>
