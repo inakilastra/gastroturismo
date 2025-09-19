@@ -20,6 +20,9 @@
         padding: 24px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       }
+      .tapeo-detail-header, .tapeo-detail-body { 
+        text-align: center;
+      }        
       .tapeo-detail-header h2 {
         font-family: var(--md-ref-typeface-brand);
         color: var(--mdc-theme-primary);
@@ -46,6 +49,7 @@
         display: flex;
         gap: 12px;
         overflow-x: auto;
+        justify-content: center;
       }
       .gallery-thumbnails img {
         width: 100px;
@@ -59,6 +63,7 @@
       .gallery-thumbnails img:hover, .gallery-thumbnails img.active {
         opacity: 1;
         border: 2px solid var(--mdc-theme-primary);
+        justify-content: center;
       }
       .tapeo-detail-body p {
         font-family: 'Special Elite';
@@ -326,7 +331,15 @@
               <div class="tapeo-detail-header">
                 <h2>${site.nombre || ''}</h2>
                 <div class="tapeo-detail-rating">${site.valoracion || ''}</div>
-                <div class="tapeo-detail-rating">${site.codprecio || ''}</div>
+                `if (site.codprecio = 10) {
+                    ` El precio esta muy bien`
+                else if (site.codprecio = 11) {
+                    `El precio es justo`
+               else if (site.codprecio = 12) {
+                    `El precio nos parece caro`
+                else {
+                    ``
+                }`</div>
               </div>
 
               ${photos.length > 0 ? `
