@@ -574,4 +574,11 @@
         justify-content: center; /* Centra los botones */
       }
       /* === FIN: ESTILOS PARA LA VISTA DE DETALLE === */
+     hr.styled-hr {
+       border: 0;
+       height: 5px;
+       background-color: var(--mdc-theme-primary);
+       margin: 32px 0; /* Espacio vertical para que respire */
+       border-radius: 2.5px; /* Puntas redondeadas */
+     }
     </style>
