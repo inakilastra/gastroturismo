@@ -258,24 +258,24 @@
               <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
               <span class="mdc-button__label">VOLVER AL LISTADO</span>
             </button>
-            <div class="sitio-detail-card">
-              <div class="sitio-detail-header">
+            <div class="full-detail-card">
+              <div class="full-detail-header">
                 <h2>${site.nombre || ''}</h2>
-                <div class="sitio-detail-rating">${site.valoracion || ''}</div>
-                <div class="sitio-detail-rating">${site.codprecio || ''}</div>
+                <div class="full-detail-rating">${site.valoracion || ''}</div>
+                <div class="full-detail-rating">${site.codprecio || ''}</div>
               </div>
 
               ${photos.length > 0 ? `
-              <div class="sitio-detail-gallery">
+              <div class="full-detail-gallery">
                 <img id="main-gallery-image" src="${photos[0]}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
                 ${thumbnailsHtml ? `<div class="gallery-thumbnails">${thumbnailsHtml}</div>` : ''}
               </div>
               ` : ''}
 
-              <div class="sitio-detail-body">
-                  <p class="sitio-detail-description">${site.pintxo_tapa || ''}</p>
+              <div class="full-detail-body">
+                  <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
                   
-                  <div class="sitio-detail-actions">
+                  <div class="full-detail-actions">
                     ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Última Visita</span></a>` : ''}
                     ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
                     ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
