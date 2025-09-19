@@ -10,70 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="./style.css">
-    
-    <style>
-      /* === INICIO: ESTILOS PARA LA VISTA DE DETALLE === */
-      .tapeo-detail-card {
-        background-color: var(--mdc-theme-surface);
-        border-radius: 8px;
-        margin-top: 24px;
-        padding: 24px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      }
-      .tapeo-detail-header h2 {
-        font-family: var(--md-ref-typeface-brand);
-        color: var(--mdc-theme-primary);
-        font-size: 2.5rem;
-        margin: 0 0 8px 0;
-      }
-      .tapeo-detail-rating {
-        font-size: 1.8rem;
-        color: #ff4081; /* Pink for hearts */
-        margin-bottom: 16px;
-      }
-      .tapeo-detail-gallery {
-        margin: 24px 0;
-      }
-      .gallery-main-image {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 16 / 9;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 16px;
-      }
-      .gallery-thumbnails {
-        display: flex;
-        gap: 12px;
-        overflow-x: auto;
-      }
-      .gallery-thumbnails img {
-        width: 100px;
-        height: 75px;
-        object-fit: cover;
-        border-radius: 4px;
-        cursor: pointer;
-        opacity: 0.7;
-        transition: opacity 0.2s;
-      }
-      .gallery-thumbnails img:hover, .gallery-thumbnails img.active {
-        opacity: 1;
-        border: 2px solid var(--mdc-theme-primary);
-      }
-      .tapeo-detail-body p {
-        font-family: 'Special Elite';
-        line-height: 1.7;
-        white-space: pre-wrap;
-        margin-bottom: 16px;
-      }
-      .tapeo-detail-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin: 24px 0;
-      }
-      /* === FIN: ESTILOS PARA LA VISTA DE DETALLE === */
-    </style>
 
 </head>
 <body>
@@ -322,24 +258,24 @@
               <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
               <span class="mdc-button__label">VOLVER AL LISTADO</span>
             </button>
-            <div class="tapeo-detail-card">
-              <div class="tapeo-detail-header">
+            <div class="sitio-detail-card">
+              <div class="sitio-detail-header">
                 <h2>${site.nombre || ''}</h2>
-                <div class="tapeo-detail-rating">${site.valoracion || ''}</div>
-                <div class="tapeo-detail-rating">${site.codprecio || ''}</div>
+                <div class="sitio-detail-rating">${site.valoracion || ''}</div>
+                <div class="sitio-detail-rating">${site.codprecio || ''}</div>
               </div>
 
               ${photos.length > 0 ? `
-              <div class="tapeo-detail-gallery">
+              <div class="sitio-detail-gallery">
                 <img id="main-gallery-image" src="${photos[0]}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
                 ${thumbnailsHtml ? `<div class="gallery-thumbnails">${thumbnailsHtml}</div>` : ''}
               </div>
               ` : ''}
 
-              <div class="tapeo-detail-body">
-                  <p class="tapeo-detail-description">${site.pintxo_tapa || ''}</p>
+              <div class="sitio-detail-body">
+                  <p class="sitio-detail-description">${site.pintxo_tapa || ''}</p>
                   
-                  <div class="tapeo-detail-actions">
+                  <div class="sitio-detail-actions">
                     ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Última Visita</span></a>` : ''}
                     ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
                     ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
