@@ -539,7 +539,9 @@
       .gallery-thumbnails {
         display: flex;
         gap: 12px;
-        overflow-x: auto;
+        overflow-x: hidden; /* Ocultamos la barra de scroll */
+        white-space: nowrap; /* Evita que las imágenes salten de línea */
+        scroll-behavior: smooth; /* Hacemos el scroll suave */
       }
       .gallery-thumbnails img {
         width: 100px;
@@ -549,6 +551,9 @@
         cursor: pointer;
         opacity: 0.7;
         transition: opacity 0.2s;
+        .full-detail-actions {
+          justify-content: center; /* Centra los botones */
+        }
       }
       .gallery-thumbnails img:hover, .gallery-thumbnails img.active {
         opacity: 1;
