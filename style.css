@@ -1,5 +1,4 @@
- <style>
-      /* Font import is now at the top with other links */
+/* Font import is now at the top with other links */
       *,
       *::before,
       *::after {box-sizing: border-box;}
@@ -43,7 +42,6 @@
         min-height: 100vh;
         position: relative; 
         overflow-x: hidden; /* Prevenir scroll horizontal */
-        /* Se elimina el overflow-y: auto; para que el scroll lo gestione el contenido */
       }
 
       main.main-app-content {
@@ -66,7 +64,7 @@
       .mdc-top-app-bar__row {height: var(--top-app-bar-height);}
       .mdc-top-app-bar__title.brand-font {
         color: var(--mdc-theme-primary);
-        font-size: 1.75rem; /* Ajustar si la fuente Special Elite se ve muy grande aquí */
+        font-size: 1.75rem;
       }
       .mdc-top-app-bar__navigation-icon {color: var(--mdc-theme-on-surface) !important;}
       .mdc-top-app-bar--fixed-adjust {padding-top: var(--top-app-bar-height);}
@@ -75,7 +73,6 @@
       .hero-section {
         min-height: 70vh; 
         background-image: url('https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200-h800');
-        /*background-image: url('https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w1200-h800');*/
         background-size: cover;
         background-position: center;
         display: flex;
@@ -104,18 +101,17 @@
       }
 
       .hero-title {
-        font-family: var(--md-ref-typeface-brand); /* Ya usa Special Elite */
+        font-family: var(--md-ref-typeface-brand);
         font-size: 3.5rem;
         margin-bottom: 1rem;
         line-height: 1.2;
       }
 
       .hero-subtitle { 
-        font-size: 1.5rem; /* Considerar si esta fuente necesita ser Roboto para mejor legibilidad de párrafos */
+        font-size: 1.5rem;
         margin-bottom: 2rem;
-        /*font-family: 'Roboto', sans-serif;*/ /* Ejemplo de fallback a Roboto para este texto más largo */
         font-family: 'Special Elite';
-        font-weight: 400; /* Añadir peso si es necesario para Roboto */
+        font-weight: 400;
       }
 
       @media (max-width: 600px) {
@@ -138,7 +134,7 @@
       }
 
       .section-title {
-        font-family: var(--md-ref-typeface-brand); /* Ya usa Special Elite */
+        font-family: var(--md-ref-typeface-brand);
         font-size: 2.8rem;
         color: var(--mdc-theme-primary);
         text-align: center;
@@ -188,7 +184,7 @@
       .category-card__icon-container .material-icons {font-size: 36px;}
 
       .category-card__title {
-        font-family: var(--md-ref-typeface-brand); /* Ya usa Special Elite */
+        font-family: var(--md-ref-typeface-brand);
         font-size: 1.75rem;
         color: var(--mdc-theme-primary);
         margin-top: 0; 
@@ -201,7 +197,6 @@
         flex-grow: 1;
         color: var(--mdc-theme-on-surface);
         opacity: 0.8; 
-        /* font-family: 'Roboto', sans-serif;  Considerar Roboto para descripciones largas */
         font-family: 'Special Elite';
         font-size: 1.1rem;
       }
@@ -214,7 +209,6 @@
 
       .category-card .mdc-button {
         margin-top: auto; 
-        /* font-family: 'Roboto', sans-serif; Los botones MDC suelen usar Roboto por defecto, este cambio podría afectarlos */
         font-family: 'Special Elite';
       }
 
@@ -227,8 +221,7 @@
         max-width: 960px;
         margin: 0 auto;
       }
-      .about-us-content p { /* Párrafos en "About Us" */
-        /*font-family: 'Roboto', sans-serif;*/ /* Ejemplo de fallback a Roboto para legibilidad */
+      .about-us-content p {
         font-family: 'Special Elite';
         font-size: 1.1rem; 
         line-height: 1.7;
@@ -257,24 +250,6 @@
         text-align: inherit; 
       }
 
-      /* Map Preview Image & Text */
-      .map-preview-image {
-        width: 100%;
-        max-width: 700px;
-        height: auto;
-        border-radius: 16px;
-        margin: 24px auto;
-        display: block;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      #mapa-target p { /* Párrafo en la sección del mapa */
-        /*ont-family: 'Roboto', sans-serif;*/ /* Ejemplo de fallback a Roboto */
-        font-family: 'Special Elite';
-        font-size: 1.1rem;
-        margin-bottom: 24px;
-      }
-
-
       /* Latest Experience Card Styles */
       .latest-experience-card .mdc-card__media {
         height: 200px;
@@ -282,7 +257,7 @@
         background-position: center;
       }
       .latest-experience-card .mdc-typography--headline6.brand-font {color: var(--mdc-theme-primary);}
-      .latest-experience-card .mdc-typography--body2 {font-family: 'Special Elite';} /* Descripción en tarjeta de experiencia font-family: 'Roboto', sans-serif; Considerar Roboto */
+      .latest-experience-card .mdc-typography--body2 {font-family: 'Special Elite';}
 
       /* Grid Container for Cards */
       .grid-container {
@@ -325,7 +300,7 @@
       }
 
       .mdc-list-item__text {
-        font-family: var(--md-ref-typeface-brand), 'Special Elite'; /* Ya usa Special Elite */
+        font-family: var(--md-ref-typeface-brand), 'Special Elite';
         font-weight: 700; 
         margin-left: 12px;
       }
@@ -346,10 +321,8 @@
 
       footer.common-footer a:hover {color: var(--mdc-theme-secondary);}
       
-      /* Botones MDC - Usualmente usan Roboto. Si quieres que usen Special Elite, necesitas anularlo */
       .mdc-button .mdc-button__label {
-        font-family: var(--md-ref-typeface-brand); /*Descomentar si quieres Special Elite en todos los botones */
-        /* text-transform: none;  Special Elite puede necesitar esto si no quieres mayúsculas por defecto de MDC */
+        font-family: var(--md-ref-typeface-brand);
       }
 
       /* Portrait Mode Media Query (Touch Devices) */
@@ -379,13 +352,6 @@
           line-height: 1.2;
         }
         .mdc-top-app-bar__navigation-icon {
-          font-size: 0.75vw; /* Tamaño del icono (fuente) */
-          width: 13vw;    /* Ancho del botón contenedor del icono */
-          height: 13vw ;   /* Alto del botón contenedor del icono */
-          transform: translateY(-1.7vw); /* Para subirlo ligeramente */
-          /* display, align-items, justify-content ya están definidos globalmente para centrar el icono dentro del botón */
-        }    
-        .mdc-top-app-bar__navigation-icon {
           font-size: 5vw; 
           width: 52px; 
           height: 52px;
@@ -407,16 +373,15 @@
         .section-title {font-size: 6.5vw;}
         .category-card__title {font-size: 5.5vw;}
         .mdc-button .mdc-button__label {font-size: 3.3vw}
-        /* Si 'category-card__description' es la que aplica el tamaño final y quieres asegurarte */
         .category-card__description {
-          font-size: 3.2vw; /* Asegúrate de que esta también sea del tamaño deseado */
+          font-size: 3.2vw;
           line-height: 1.6;
         }
       }
-      /* === NUEVO SPINNER SIMPLE A PRUEBA DE SANDBOX === */
+      /* === SPINNER === */
       .simple-loader {
-        border: 5px solid #E0F2F1; /* Color base del borde (Teal 50) */
-        border-top: 5px solid var(--mdc-theme-primary); /* Color de la animación (Teal 500) */
+        border: 5px solid #E0F2F1;
+        border-top: 5px solid var(--mdc-theme-primary);
         border-radius: 50%;
         width: 48px;
         height: 48px;
@@ -427,8 +392,7 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-      /* === INICIO: ESTILOS PARA LAS TARJETAS DE SITIOS === */
-
+      /* === SITIOS LIST CARDS === */
       .sitio-card {
         display: flex;
         flex-direction: row;
@@ -443,8 +407,8 @@
 
       .sitio-card-image {
         flex-shrink: 0;
-        flex-basis: 35%; /* La imagen ocupará un 35% del ancho de la tarjeta */
-        aspect-ratio: 16 / 9; /* Mantiene la proporción 16:9 */
+        flex-basis: 35%;
+        aspect-ratio: 16 / 9;
         background-size: cover;
         background-position: center;
       }
@@ -468,51 +432,34 @@
       .sitio-card-rating {
         margin-bottom: 16px;
         font-size: 1.5rem;
-        color: #ff4081; /* Un color rosa para los corazones */
+        color: #ff4081;
       }
 
       .sitio-card-description {
         margin-bottom: 24px;
         font-family: 'Special Elite';
         line-height: 1.6;
-        white-space: pre-wrap; /* Respeta los saltos de línea de la hoja de cálculo */
+        white-space: pre-wrap;
       }
 
-      .sitio-card-info a {
-        margin-top: auto; /* Empuja el botón hacia abajo */
-        text-decoration: none;
-        color: var(--mdc-theme-primary);
-        font-weight: bold;
-        font-family: 'Roboto', sans-serif; /* Fuente más legible para el botón */
-        display: inline-block;
-        align-self: center; /* Centra el botón horizontalmente */
-        padding: 8px 16px;
-        border: 1px solid var(--mdc-theme-primary);
-        border-radius: 4px;
-        transition: background-color 0.2s, color 0.2s;
-      }
-
-      .sitio-card-info a:hover {
-        background-color: var(--mdc-theme-primary);
-        color: var(--mdc-theme-on-primary);
-      }
-
-      /* Adaptación para móviles */
       @media (max-width: 768px) {
         .sitio-card {flex-direction: column;}
         .sitio-card-image {
           width: 100%;
-          height: 200px; /* Altura fija para la imagen en móvil */
+          height: 200px;
         }
       }
-      /* === FIN: ESTILOS PARA LAS TARJETAS DE SITIOS === */
-      /* === INICIO: ESTILOS PARA LA VISTA DE DETALLE === */
+
+      /* === SITE DETAIL VIEW === */
       .full-detail-card {
         background-color: var(--mdc-theme-surface);
         border-radius: 8px;
         margin-top: 24px;
         padding: 24px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      .full-detail-header, .full-detail-body {
+        text-align: center;
       }
       .full-detail-header h2 {
         font-family: var(--md-ref-typeface-brand);
@@ -522,7 +469,7 @@
       }
       .full-detail-rating {
         font-size: 1.8rem;
-        color: #ff4081; /* Pink for hearts */
+        color: #ff4081;
         margin-bottom: 16px;
       }
       .full-detail-gallery {
@@ -539,9 +486,14 @@
       .gallery-thumbnails {
         display: flex;
         gap: 12px;
-        overflow-x: hidden; /* Ocultamos la barra de scroll */
-        white-space: nowrap; /* Evita que las imágenes salten de línea */
-        scroll-behavior: smooth; /* Hacemos el scroll suave */
+        overflow-x: auto;
+        white-space: nowrap;
+        scroll-behavior: smooth;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+      .gallery-thumbnails::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
       }
       .gallery-thumbnails img {
         width: 100px;
@@ -551,9 +503,6 @@
         cursor: pointer;
         opacity: 0.7;
         transition: opacity 0.2s;
-        .full-detail-actions {
-          justify-content: center; /* Centra los botones */
-        }
       }
       .gallery-thumbnails img:hover, .gallery-thumbnails img.active {
         opacity: 1;
@@ -570,30 +519,25 @@
         flex-wrap: wrap;
         gap: 16px;
         margin: 24px 0;
+        justify-content: center;
       }
 
-      .full-detail-header, .full-detail-body {
-        text-align: center;
-      }
-      .full-detail-actions {
-        justify-content: center; /* Centra los botones */
-      }
-      /* === FIN: ESTILOS PARA LA VISTA DE DETALLE === */
      hr.styled-hr {
        border: 0;
        height: 1px;
        background-color: var(--mdc-theme-primary);
-       margin: 2px 0; /* Espacio vertical para que respire */
-       border-radius: 2.5px; /* Puntas redondeadas */
+       margin: 2px 0;
+       border-radius: 2.5px;
      }
-    /* === INICIO: ESTILOS PARA LA GALERÍA CON FLECHAS === */
+
+    /* === GALLERY WITH ARROWS === */
     .gallery-thumbnails-wrapper {
       position: relative;
-      padding: 0 40px; /* Dejamos espacio para las flechas */
+      padding: 0 40px;
     }
     
     .gallery-thumbnails {
-      overflow-x: hidden; /* Ocultamos la barra de scroll nativa */
+      overflow-x: hidden;
       scroll-snap-type: x mandatory;
     }
     
@@ -602,28 +546,26 @@
       top: 50%;
       transform: translateY(-50%);
       z-index: 2;
-      background-color: rgba(0, 77, 64, 0.6); /* Teal 900 con transparencia */
+      background-color: rgba(0, 77, 64, 0.6);
       color: white;
       border: none;
       border-radius: 50%;
       width: 36px;
       height: 36px;
-      display: none; /* Oculto por defecto */
+      display: none;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: background-color 0.2s;
     }
     .gallery-scroll-button:hover {
-      background-color: var(--mdc-theme-on-surface); /* Teal 900 sólido */
+      background-color: var(--mdc-theme-on-surface);
     }
     
     .gallery-scroll-button.left { left: 0; }
     .gallery-scroll-button.right { right: 0; }
     
-    /* Esta clase se añade con JS para mostrar las flechas */
     .gallery-thumbnails-wrapper.is-scrollable .gallery-scroll-button {
       display: flex;
     }
-    /* === FIN: ESTILOS PARA LA GALERÍA CON FLECHAS === */
-    </style>
+
