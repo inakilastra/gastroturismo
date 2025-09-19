@@ -135,6 +135,26 @@
           if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
           return rows.map(row => row.map(field => field.trim()));
       }
+
+      function setupGalleryScroll() {
+        const wrapper = document.getElementById('gallery-wrapper');
+        const list = document.getElementById('thumbnails-list');
+        if (!wrapper || !list) return;
+
+        const isScrollable = list.scrollWidth > list.clientWidth;
+        if (isScrollable) {
+          wrapper.classList.add('is-scrollable');
+        } else {
+          wrapper.classList.remove('is-scrollable');
+        }
+      }
+
+      function scrollGallery(direction) {
+        const list = document.getElementById('thumbnails-list');
+        if (!list) return;
+        const scrollAmount = list.clientWidth * 0.8 * direction;
+        list.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
     
       // 3. Lógica principal de la aplicación.
       (function() {
@@ -286,7 +306,16 @@
               ${photos.length > 0 ? `
               <div class="site-detail-gallery">
                 <img id="main-gallery-image" src="${photos[0]}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
-                ${thumbnailsHtml ? `<div class="gallery-thumbnails">${thumbnailsHtml}</div>` : ''}
+                
+                ${thumbnailsHtml ? `
+                <div class="gallery-thumbnails-wrapper" id="gallery-wrapper">
+                  <button class="gallery-scroll-button left" onclick="tapeo.scrollGallery(-1)">&#10094;</button>
+                  <div class="gallery-thumbnails" id="thumbnails-list">
+                      ${thumbnailsHtml}
+                  </div>
+                  <button class="gallery-scroll-button right" onclick="tapeo.scrollGallery(1)">&#10095;</button>
+                </div>
+                ` : ''}
               </div>
               ` : ''}
 
