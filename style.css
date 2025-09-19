@@ -581,4 +581,44 @@
        margin: 2px 0; /* Espacio vertical para que respire */
        border-radius: 2.5px; /* Puntas redondeadas */
      }
+    /* === INICIO: ESTILOS PARA LA GALERÍA CON FLECHAS === */
+    .gallery-thumbnails-wrapper {
+      position: relative;
+      padding: 0 40px; /* Dejamos espacio para las flechas */
+    }
+    
+    .gallery-thumbnails {
+      overflow-x: hidden; /* Ocultamos la barra de scroll nativa */
+      scroll-snap-type: x mandatory;
+    }
+    
+    .gallery-scroll-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      background-color: rgba(0, 77, 64, 0.6); /* Teal 900 con transparencia */
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: none; /* Oculto por defecto */
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .gallery-scroll-button:hover {
+      background-color: var(--mdc-theme-on-surface); /* Teal 900 sólido */
+    }
+    
+    .gallery-scroll-button.left { left: 0; }
+    .gallery-scroll-button.right { right: 0; }
+    
+    /* Esta clase se añade con JS para mostrar las flechas */
+    .gallery-thumbnails-wrapper.is-scrollable .gallery-scroll-button {
+      display: flex;
+    }
+    /* === FIN: ESTILOS PARA LA GALERÍA CON FLECHAS === */
     </style>
