@@ -245,12 +245,17 @@
             site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, 
             site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, 
             site.foto16, site.foto17, site.foto18, site.foto19, site.foto20
-          ].filter(Boolean).map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`);
+          ].filter(Boolean);
+          
+          const photos = photoIds.map(id => ({
+            main: `https://drive.google.com/thumbnail?id=${id}&sz=w800`,
+            thumb: `https://drive.google.com/thumbnail?id=${id}&sz=w150`
+          }));
           
           let thumbnailsHtml = '';
           if (photos.length > 1) {
             thumbnailsHtml = photos.map((photo, i) => 
-              `<img src="${photo}" alt="Miniatura ${i+1}" onclick="document.getElementById('main-gallery-image').src='${photo}';" class="${i === 0 ? 'active' : ''}">`
+              `<img src="${photo.thumb}" alt="Miniatura ${i+1}" onclick="document.getElementById('main-gallery-image').src='${photo.main}';" class="${i === 0 ? 'active' : ''}">`
             ).join('');
           }
 
@@ -277,7 +282,7 @@
 
               ${photos.length > 0 ? `
               <div class="site-detail-gallery">
-                <img id="main-gallery-image" src="${photos[0]}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
+                <img id="main-gallery-image" src="${photos[0].main}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
                 ${thumbnailsHtml ? `<div class="gallery-thumbnails">${thumbnailsHtml}</div>` : ''}
               </div>
               ` : ''}
