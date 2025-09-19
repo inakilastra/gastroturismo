@@ -121,26 +121,6 @@
           if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
           return rows.map(row => row.map(field => field.trim()));
       }
-
-      function setupGalleryScroll() {
-        const wrapper = document.getElementById('gallery-wrapper');
-        const list = document.getElementById('thumbnails-list');
-        if (!wrapper || !list) return;
-
-        const isScrollable = list.scrollWidth > list.clientWidth;
-        if (isScrollable) {
-          wrapper.classList.add('is-scrollable');
-        } else {
-          wrapper.classList.remove('is-scrollable');
-        }
-      }
-
-      function scrollGallery(direction) {
-        const list = document.getElementById('thumbnails-list');
-        if (!list) return;
-        const scrollAmount = list.clientWidth * 0.8 * direction;
-        list.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
     
       (function() {
         const state = { level: 'autonomias', selection: {}, history: [], currentSitios: [] };
@@ -265,7 +245,7 @@
             site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, 
             site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, 
             site.foto16, site.foto17, site.foto18, site.foto19, site.foto20
-          ].filter(Boolean).map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`);
+          ].filter(Boolean).map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w600`);
           
           let thumbnailsHtml = '';
           if (photos.length > 1) {
