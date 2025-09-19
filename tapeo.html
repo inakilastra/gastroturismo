@@ -233,7 +233,7 @@
                   <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
                   <div class="sitio-card-description" style="margin-bottom: 10px;">${priceText}</div>
                   <hr class="styled-hr">
-                  <div class="sitio-card-description">¿Qué ofrencen?<br>${row[COLS.pintxo_tapa] || ''}</div>
+                  <div class="sitio-card-description">Qué se ofrece aquí:<br><br>${row[COLS.pintxo_tapa] || ''}</div>
                   <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
                     <span class="mdc-button__ripple"></span>
                     <i class="material-icons mdc-button__icon" aria-hidden="true">visibility</i>
@@ -284,7 +284,11 @@
                 <div class="full-detail-rating">${site.valoracion || ''}</div>
                 <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
               </div>
-
+              
+              <div class="full-detail-actions">
+                  ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Última Visita</span></a>` : ''}
+              </div>
+              
               ${photos.length > 0 ? `
               <div class="full-detail-gallery">
                 <img id="main-gallery-image" src="${photos[0]}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
@@ -296,7 +300,6 @@
                   <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
                   
                   <div class="full-detail-actions">
-                    ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Última Visita</span></a>` : ''}
                     ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
                     ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
                     ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
