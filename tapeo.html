@@ -256,7 +256,7 @@
         // Recopilamos todas las fotos que existen
         const photos = [site.foto1, site.foto2, site.foto3, site.foto4, site.foto5, site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, site.foto16, site.foto17, site.foto18, site.foto19, site.foto20]
             .filter(Boolean) // Quitamos los campos vacíos
-            .map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`); // Creamos la URL de la imagen grande
+            .map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w600`); // Creamos la URL de la imagen grande
 
         // GENERAMOS EL HTML DE LA NUEVA GALERÍA
         let galleryHtml = '';
