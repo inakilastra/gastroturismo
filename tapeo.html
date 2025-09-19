@@ -52,6 +52,8 @@
     <script>
       /**
        * Carga el contenido de un fichero HTML y lo inyecta en un contenedor de la página.
+       * @param {string} file - La ruta al fichero de la plantilla (ej: './aside.html').
+       * @param {string} elementId - El ID del div contenedor (ej: 'aside-placeholder').
        */
       async function includeHTML(file, elementId) {
         try {
@@ -67,12 +69,17 @@
     
       // Se ejecuta cuando la página está lista.
       document.addEventListener('DOMContentLoaded', async function() {
+        // Carga todas las plantillas en sus contenedores
         await includeHTML('./aside.html', 'aside-placeholder');
         await includeHTML('./header.html', 'header-placeholder');
         await includeHTML('./footer.html', 'footer-placeholder');
     
+        // Una vez que todo el HTML está cargado, inicializa el JavaScript
+        
+        // Inicializa los efectos de Material Design en los componentes comunes
         Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
         
+        // Controla el menú lateral
         const drawerElement = document.querySelector('.mdc-drawer');
         const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
         if (drawerElement && menuButton) {
@@ -80,12 +87,14 @@
           menuButton.addEventListener('click', () => { drawer.open = !drawer.open; });
         }
     
+        // Añade el año actual al footer
         const yearSpan = document.querySelector('.footer-year');
         if(yearSpan) {
             yearSpan.textContent = new Date().getFullYear();
         }
     
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        // Marca el enlace actual como activo en el menú lateral
+        const currentPage = window.location.pathname.split('/').pop();
         const activeLink = document.querySelector(`a[href*="${currentPage}"]`);
         if (activeLink) {
             activeLink.classList.add('mdc-list-item--activated');
@@ -97,12 +106,17 @@
       // SCRIPT DE CARGA Y RENDERIZADO DE DATOS PARA LA RUTA DE TAPEO
       // =================================================================
 
+      // 1. URL pública del fichero CSV de Google Sheets.
       const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
       
-      let allTapeoData = [];
+      let allTapeoData = []; // Variable global para almacenar todos los datos una vez cargados.
 
-      const COLS = { autonomia: 0, provincia: 1, ciudad: 2, barrio: 3, nombre: 4, nota: 5, direccion: 6, horario: 7, pintxo_tapa: 8, googleresenas: 9, maps: 10, facebook: 11, instagram: 12, postinstagram: 13, web: 14, foto1: 15, foto2: 16, foto3: 17, foto4: 18, foto5: 19, foto6: 20, foto7: 21, foto8: 22, foto9: 23, foto10: 24, foto11: 25, foto12: 26, foto13: 27, foto14: 28, foto15: 29, foto16: 30, foto17: 31, foto18: 32, foto19: 33, foto20: 34, lo_ultimo: 35, tipo_lugar: 36, valoracion: 37, codprecio: 38, precio: 39 };
+      // 2. Mapeo de columnas para un acceso fácil a los datos.
+      const COLS = { autonomia: 0, provincia: 1, ciudad: 2, barrio: 3, nombre: 4, nota: 5, direccion: 6, horario: 7, pintxo_tapa: 8, googleresenas: 9, maps: 10, facebook: 11, instagram: 12, postinstagram: 13, web: 14, foto1: 15, foto2: 16, foto3: 17, foto4: 18, foto5: 19, foto6: 20, foto7: 21, foto8: 22, foto9: 23, foto10: 24, foto11: 25, foto12: 26, foto13: 27, foto14: 28, foto15: 29, foto16: 30, foto17: 31, foto18: 32, foto19: 33,  foto20: 34, lo_ultimo: 35, tipo_lugar: 36, valoracion: 37, codprecio: 38, precio: 39 };
     
+      /**
+       * Parsea un texto completo en formato CSV.
+       */
       function parseCSV(csvText) {
           const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
           csvText = csvText.trim();
@@ -121,29 +135,8 @@
           if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
           return rows.map(row => row.map(field => field.trim()));
       }
-
-      function setupGalleryScroll() {
-        const wrapper = document.getElementById('gallery-wrapper');
-        const list = document.getElementById('thumbnails-list');
-        if (!wrapper || !list) return;
-
-        setTimeout(() => {
-          const isScrollable = list.scrollWidth > list.clientWidth;
-          if (isScrollable) {
-            wrapper.classList.add('is-scrollable');
-          } else {
-            wrapper.classList.remove('is-scrollable');
-          }
-        }, 100);
-      }
-
-      function scrollGallery(direction) {
-        const list = document.getElementById('thumbnails-list');
-        if (!list) return;
-        const scrollAmount = list.clientWidth * 0.8 * direction;
-        list.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
-
+    
+      // 3. Lógica principal de la aplicación.
       (function() {
         const state = { level: 'autonomias', selection: {}, history: [], currentSitios: [] };
         const elements = { 
@@ -219,11 +212,10 @@
           elements.title.textContent = levelsConfig.sitios.title;
           elements.grid.innerHTML = '';
           const sortedData = data.sort((a, b) => (b[COLS.nota] || 0) - (a[COLS.nota] || 0));
-          state.currentSitios = sortedData;
+          state.currentSitios = sortedData; // Guardamos la lista actual para la vista de detalle
           
           sortedData.forEach((row, index) => {
             const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
-            
             let priceText = '';
             const codprecio = row[COLS.codprecio];
             if (codprecio == 10) {
@@ -233,7 +225,6 @@
             } else if (codprecio == 12) {
                 priceText = 'El precio nos parece que es caro 💀';
             }
-            
             const cardHtml = `
               <div class="sitio-card" style="grid-column: 1 / -1;">
                 ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
@@ -254,98 +245,9 @@
           });
         }
 
-       /* function showDetail(index) {
-          const siteRow = state.currentSitios[index];
-          const site = Object.keys(COLS).reduce((obj, key) => {
-            obj[key] = siteRow[COLS[key]];
-            return obj;
-          }, {});
-
-          elements.selector.style.display = 'none';
-
-          const photoIds = [
-            site.foto1, site.foto2, site.foto3, site.foto4, site.foto5, 
-            site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, 
-            site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, 
-            site.foto16, site.foto17, site.foto18, site.foto19, site.foto20
-          ].filter(Boolean);
-          
-          const photos = photoIds.map(id => ({
-            main: `https://drive.google.com/thumbnail?id=${id}&sz=w600`,
-            thumb: `https://drive.google.com/thumbnail?id=${id}&sz=w150`
-          }));
-          
-          let thumbnailsHtml = '';
-          if (photos.length > 1) {
-            thumbnailsHtml = photos.map((photo, i) => 
-              `<img src="${photo.thumb}" alt="Miniatura ${i+1}" onclick="document.getElementById('main-gallery-image').src='${photo.main}';" class="${i === 0 ? 'active' : ''}">`
-            ).join('');
-          }
-
-          let priceText = '';
-          if (site.codprecio == 10) {
-              priceText = 'El precio nos parece que está muy bien ✅';
-          } else if (site.codprecio == 11) {
-              priceText = 'El precio nos parece que es justo ⚖️';
-          } else if (site.codprecio == 12) {
-              priceText = 'El precio nos parece que es caro 💀';
-          }
-          
-          const detailHtml = `
-            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-              <span class="mdc-button__ripple"></span>
-              <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
-              <span class="mdc-button__label">VOLVER AL LISTADO</span>
-            </button>
-            <div class="full-detail-card">
-              <div class="full-detail-header">
-                <h2>${site.nombre || ''}</h2>
-                <div class="full-detail-rating">${site.valoracion || ''}</div>
-                <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
-              </div>
-              
-              <div class="full-detail-actions">
-                  ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
-              </div>
-              
-              ${photos.length > 0 ? `
-              <div class="full-detail-gallery">
-                <img id="main-gallery-image" src="${photos[0].main}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
-                ${thumbnailsHtml ? `
-                <div class="gallery-thumbnails-wrapper" id="gallery-wrapper">
-                  <button class="gallery-scroll-button left" onclick="scrollGallery(-1)">&#10094;</button>
-                  <div class="gallery-thumbnails" id="thumbnails-list">${thumbnailsHtml}</div>
-                  <button class="gallery-scroll-button right" onclick="scrollGallery(1)">&#10095;</button>
-                </div>
-                ` : ''}
-              </div>
-              ` : ''}
-
-              <div class="full-detail-body">
-                  <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
-                  
-                  <div class="full-detail-actions">
-                    ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
-                    ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
-                    ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
-                    ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
-                  </div>
-
-                  ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
-                  ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
-              </div>
-            </div>`;
-          
-          elements.detailContainer.innerHTML = detailHtml;
-          elements.detailContainer.style.display = 'block';
-          
-          setupGalleryScroll();
-          
-          Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-        }*/
-
         function showDetail(index) {
           const siteRow = state.currentSitios[index];
+          // Convertimos la fila (array) a un objeto para un uso más fácil
           const site = Object.keys(COLS).reduce((obj, key) => {
             obj[key] = siteRow[COLS[key]];
             return obj;
@@ -353,22 +255,11 @@
 
           elements.selector.style.display = 'none';
 
-          const photoIds = [
-            site.foto1, site.foto2, site.foto3, site.foto4, site.foto5, 
-            site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, 
-            site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, 
-            site.foto16, site.foto17, site.foto18, site.foto19, site.foto20
-          ].filter(Boolean);
-          
-          const photos = photoIds.map(id => ({
-            main: `https://drive.google.com/thumbnail?id=${id}&sz=w800`,
-            thumb: `https://drive.google.com/thumbnail?id=${id}&sz=w150`
-          }));
-          
+          const photos = [site.foto1, site.foto2, site.foto3, site.foto4, site.foto5, site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, site.foto16, site.foto17, site.foto18, site.foto19, site.foto20].filter(Boolean).map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`);
           let thumbnailsHtml = '';
           if (photos.length > 1) {
             thumbnailsHtml = photos.map((photo, i) => 
-              `<img src="${photo.thumb}" alt="Miniatura ${i+1}" onclick="document.getElementById('main-gallery-image').src='${photo.main}';" class="${i === 0 ? 'active' : ''}">`
+              `<img src="${photo}" alt="Miniatura ${i+1}" onclick="document.getElementById('main-gallery-image').src='${photo}';" class="${i === 0 ? 'active' : ''}">`
             ).join('');
           }
 
@@ -380,7 +271,7 @@
           } else if (site.codprecio == 12) {
               priceText = 'El precio nos parece que es caro 💀';
           }
-          
+            
           const detailHtml = `
             <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
               <span class="mdc-button__ripple"></span>
@@ -400,14 +291,8 @@
               
               ${photos.length > 0 ? `
               <div class="full-detail-gallery">
-                <img id="main-gallery-image" src="${photos[0].main}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
-                ${thumbnailsHtml ? `
-                <div class="gallery-thumbnails-wrapper" id="gallery-wrapper">
-                  <button class="gallery-scroll-button left" onclick="tapeo.scrollGallery(-1)">&#10094;</button>
-                  <div class="gallery-thumbnails" id="thumbnails-list">${thumbnailsHtml}</div>
-                  <button class="gallery-scroll-button right" onclick="tapeo.scrollGallery(1)">&#10095;</button>
-                </div>
-                ` : ''}
+                <img id="main-gallery-image" src="${photos[0]}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
+                ${thumbnailsHtml ? `<div class="gallery-thumbnails">${thumbnailsHtml}</div>` : ''}
               </div>
               ` : ''}
 
@@ -424,13 +309,17 @@
                   ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
                   ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
               </div>
-            </div>`;
+            </div>
+            <br /><br />
+            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+              <span class="mdc-button__ripple"></span>
+              <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
+              <span class="mdc-button__label">VOLVER AL LISTADO</span>
+            </button>`;
           
           elements.detailContainer.innerHTML = detailHtml;
           elements.detailContainer.style.display = 'block';
-          
-          setupGalleryScroll();
-          
+          // Re-inicializar ripples para los nuevos botones
           Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
         }
 
@@ -440,8 +329,8 @@
           elements.selector.style.display = 'block';
         }
     
-        function handleSelection(selectionName, isAutoSelection = false) { 
-          if (!isAutoSelection) {
+        function handleSelection(selectionName, isAutoSelection = false) {
+          if (!isAutoSelection) { 
             state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
           }
           let key = state.level.slice(0, -1);
@@ -486,11 +375,10 @@
           if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid';
         }
         
-        window.tapeo = { handleSelection, goBack, showDetail, hideDetail, scrollGallery };
+        window.tapeo = { handleSelection, goBack, showDetail, hideDetail };
     
         init();
       })();
     </script>    
 </body>
 </html>
-
