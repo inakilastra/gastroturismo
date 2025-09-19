@@ -1,4 +1,4 @@
-<style>
+ <style>
       /* Font import is now at the top with other links */
       *,
       *::before,
@@ -506,109 +506,79 @@
         }
       }
       /* === FIN: ESTILOS PARA LAS TARJETAS DE SITIOS === */
-
-      /* === INICIO: ESTILOS PARA LA GALERÍA SLIDESHOW === */
-      .gallery-container {
-        max-width: 1000px;
-        position: relative;
-        margin: auto;
-        padding: 16px;
-      }
-
-      .mySlides {
-        display: none;
-        background-color: #f1f1f1;
-        border-radius: 8px;
-        overflow: hidden;
-      }
-      
-      .mySlides img {
-        vertical-align: middle;
-        width: 100%;
-      }
-
-      .cursor {
-        cursor: pointer;
-      }
-
-      .prev,
-      .next {
-        cursor: pointer;
-        position: absolute;
-        top: 50%;
-        width: auto;
-        padding: 16px;
-        margin-top: -30px;
-        color: white;
-        font-weight: bold;
-        font-size: 24px;
-        transition: 0.6s ease;
-        border-radius: 0 3px 3px 0;
-        user-select: none;
-        background-color: rgba(0, 0, 0, 0.3);
-      }
-
-      .next {
-        right: 16px;
-        border-radius: 3px 0 0 3px;
-      }
-      
-      .prev {
-        left: 16px;
-      }
-
-      .prev:hover,
-      .next:hover {
-        background-color: rgba(0, 0, 0, 0.8);
-      }
-
-      .numbertext {
-        color: #f2f2f2;
-        font-size: 12px;
-        padding: 8px 12px;
-        position: absolute;
-        top: 0;
-        background-color: rgba(0,0,0,0.5);
-        border-radius: 0 0 8px 0;
-      }
-      
-      .caption-container {
-        text-align: center;
+      /* === INICIO: ESTILOS PARA LA VISTA DE DETALLE === */
+      .full-detail-card {
         background-color: var(--mdc-theme-surface);
-        padding: 10px 16px;
-        color: var(--mdc-theme-on-surface);
         border-radius: 8px;
-        margin-top: 8px;
+        margin-top: 24px;
+        padding: 24px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       }
-      
-      #caption {
+      .full-detail-header h2 {
         font-family: var(--md-ref-typeface-brand);
-        font-size: 1.2rem;
+        color: var(--mdc-theme-primary);
+        font-size: 2.5rem;
+        margin: 0 0 8px 0;
       }
-
-      .row:after {
-        content: "";
-        display: table;
-        clear: both;
+      .full-detail-rating {
+        font-size: 1.8rem;
+        color: #ff4081; /* Pink for hearts */
+        margin-bottom: 16px;
       }
-
-      .column {
-        float: left;
-        width: 16.66%; /* 6 columnas */
+      .full-detail-gallery {
+        margin: 24px 0;
       }
-      
-      .column img {
+      .gallery-main-image {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+      .gallery-thumbnails {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+      }
+      .gallery-thumbnails img {
+        width: 100px;
+        height: 75px;
+        object-fit: cover;
         border-radius: 4px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
       }
-
-      .demo {
-        opacity: 0.6;
-        transition: opacity 0.2s ease-in-out;
-      }
-
-      .active,
-      .demo:hover {
+      .gallery-thumbnails img:hover, .gallery-thumbnails img.active {
         opacity: 1;
+        border: 2px solid var(--mdc-theme-primary);
       }
-      /* === FIN: ESTILOS PARA LA GALERÍA SLIDESHOW === */
+      .full-detail-body p {
+        font-family: 'Special Elite';
+        line-height: 1.7;
+        white-space: pre-wrap;
+        margin-bottom: 16px;
+      }
+      .full-detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin: 24px 0;
+      }
+
+      .full-detail-header, .full-detail-body {
+        text-align: center;
+      }
+      .full-detail-actions {
+        justify-content: center; /* Centra los botones */
+      }
+      /* === FIN: ESTILOS PARA LA VISTA DE DETALLE === */
+     hr.styled-hr {
+       border: 0;
+       height: 1px;
+       background-color: var(--mdc-theme-primary);
+       margin: 2px 0; /* Espacio vertical para que respire */
+       border-radius: 2.5px; /* Puntas redondeadas */
+     }
 </style>
