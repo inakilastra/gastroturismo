@@ -216,12 +216,22 @@
           
           sortedData.forEach((row, index) => {
             const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
+            let priceText = '';
+            const codprecio = row[COLS.codprecio];
+            if (codprecio == 10) {
+                priceText = 'El precio está muy bien';
+            } else if (codprecio == 11) {
+                priceText = 'El precio es justo';
+            } else if (codprecio == 12) {
+                priceText = 'El precio nos parece caro';
+            }
             const cardHtml = `
               <div class="sitio-card" style="grid-column: 1 / -1;">
                 ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
                 <div class="sitio-card-info">
                   <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>
                   <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
+                  <div class="site-card-description" style="margin-top: 8px;">${priceText}</div>
                   <div class="sitio-card-description">${row[COLS.pintxo_tapa] || ''}</div>
                   <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
                     <span class="mdc-button__ripple"></span>
@@ -252,6 +262,15 @@
             ).join('');
           }
 
+          let priceText = '';
+          if (site.codprecio == 10) {
+              priceText = 'El precio está muy bien';
+          } else if (site.codprecio == 11) {
+              priceText = 'El precio es justo';
+          } else if (site.codprecio == 12) {
+              priceText = 'El precio nos parece caro';
+          }
+            
           const detailHtml = `
             <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
               <span class="mdc-button__ripple"></span>
@@ -262,7 +281,7 @@
               <div class="full-detail-header">
                 <h2>${site.nombre || ''}</h2>
                 <div class="full-detail-rating">${site.valoracion || ''}</div>
-                <div class="full-detail-rating">${site.codprecio || ''}</div>
+                <div class="tapeo-detail-description" style="margin-top: 8px;">${priceText}</div>
               </div>
 
               ${photos.length > 0 ? `
