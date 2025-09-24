@@ -244,262 +244,88 @@
           });
         }
         function showDetail(index) {
-    const siteRow = state.currentSitios[index];
-    const site = Object.keys(COLS).reduce((obj, key) => {
-        obj[key] = siteRow[COLS[key]];
-        return obj;
-    }, {});
+            const siteRow = state.currentSitios[index];
+            const site = Object.keys(COLS).reduce((obj, key) => {
+                obj[key] = siteRow[COLS[key]];
+                return obj;
+            }, {});
 
-    elements.selector.style.display = 'none';
-
-    // --- MODIFICACIÓN 1: Crear un array de objetos (foto y texto) ---
-    // En lugar de un array simple de fotos, creamos uno más estructurado.
-    const galleryData = [];
-    // Iteramos por el número máximo de fotos que puedes tener (ajusta el 40 si es necesario).
-    for (let i = 1; i <= 40; i++) {
-        const photoId = site[`foto${i}`]; // Accedemos a site.foto1, site.foto2, etc.
-        const photoText = site[`text${i}`]; // Accedemos a site.text1, site.text2, etc.
-
-        // Si existe un ID para la foto, creamos el objeto y lo añadimos.
-        if (photoId) {
-            galleryData.push({
-                url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`,
-                text: photoText || `Foto de ${site.nombre}` // Usamos el texto específico o un texto por defecto.
-            });
-        }
-    }
-    // Ya no necesitamos el antiguo array 'photos'. Ahora usamos 'galleryData'.
-
-    // GENERAMOS EL HTML DE LA NUEVA GALERÍA
-    let galleryHtml = '';
-
-    // --- MODIFICACIÓN 2: Usar 'galleryData' para generar el HTML ---
-    if (galleryData.length > 0) {
-        const slidesHtml = galleryData.map((item, i) => `
-            <div class="mySlides">
-                <div class="numbertext">${i} / ${galleryData.length}</div>
-                <img src="${item.url}" style="width:100%" alt="${item.text}">
-            </div>
-        `).join('');
-
-        const thumbnailsHtml = galleryData.map((item, i) => `
-            <div class="column">
-                <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="currentSlide(${i + 1})" alt="${item.text}">
-            </div>
-        `).join('');
-
-        galleryHtml = `
-        <div class="gallery-container">
-            ${slidesHtml}
-            <a class="prev" onclick="plusSlides(-1)">❮</a>
-            <a class="next" onclick="plusSlides(1)">❯</a>
-            <div class="caption-container">
-                <p id="caption"></p>
-            </div>
-            <div class="row">
-                ${thumbnailsHtml}
-            </div>
-        </div>`;
-    }
-// Calculamos el texto del precio
-        let priceText = '';
-        if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
-        else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
-        else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
-            
-        const detailHtml = `
-          <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-            <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
-          </button>
-          <div class="full-detail-card">
-            <div class="full-detail-header">
-              <h2>${site.nombre || ''}</h2>
-              <div class="full-detail-rating">${site.valoracion || ''}</div>
-              <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
-            </div>
-            
-            <div class="full-detail-actions">
-              ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
-            </div>
-            
-            <!-- Aquí inyectamos la nueva galería -->
-            ${galleryHtml}
-
-            <div class="full-detail-body">
-              <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
-              
-              <div class="full-detail-actions">
-                ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
-                ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
-                ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
-                ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
-              </div>
-
-              ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
-              ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
-            </div>
-          </div>
-          <br /><br />
-          <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-            <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
-          </button>`;
+            elements.selector.style.display = 'none';
         
-        elements.detailContainer.innerHTML = detailHtml;
-        elements.detailContainer.style.display = 'block';
-        Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+            // --- MODIFICACIÓN 1: Crear un array de objetos (foto y texto) ---
+            // En lugar de un array simple de fotos, creamos uno más estructurado.
+            const galleryData = [];
+            // Iteramos por el número máximo de fotos que puedes tener (ajusta el 40 si es necesario).
+            for (let i = 1; i <= 40; i++) {
+                const photoId = site[`foto${i}`]; // Accedemos a site.foto1, site.foto2, etc.
+                const photoText = site[`text${i}`]; // Accedemos a site.text1, site.text2, etc.
         
-        // INICIAMOS LA GALERÍA MOSTRANDO LA PRIMERA IMAGEN
-        slideIndex = 1; // Reseteamos el índice por si acaso
-        showSlides(slideIndex);
-}
-        function showDetail_OLD(index) {
-        const siteRow = state.currentSitios[index];
-        const site = Object.keys(COLS).reduce((obj, key) => {
-          obj[key] = siteRow[COLS[key]];
-          return obj;
-        }, {});
-
-        elements.selector.style.display = 'none';
-
-        // Recopilamos todas las fotos que existen
-        const photos = [site.foto1, site.foto2, site.foto3, site.foto4, site.foto5, site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, site.foto16, site.foto17, site.foto18, site.foto19, site.foto20]
-            .filter(Boolean) // Quitamos los campos vacíos
-            .map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w600`); // Creamos la URL de la imagen grande
-
-        // GENERAMOS EL HTML DE LA NUEVA GALERÍA
-        let galleryHtml = '';
-        if (photos.length > 0) {
-            const slidesHtml = photos.map((photo, i) => `
-                <div class="mySlides">
-                    <div class="numbertext">${i + 1} / ${photos.length}</div>
-                    <img src="${photo}" style="width:100%" alt="Foto de ${site.nombre}">
+                // Si existe un ID para la foto, creamos el objeto y lo añadimos.
+                if (photoId) {
+                    galleryData.push({
+                        url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`,
+                        text: photoText || `Foto de ${site.nombre}` // Usamos el texto específico o un texto por defecto.
+                    });
+                }
+            }
+            // Ya no necesitamos el antiguo array 'photos'. Ahora usamos 'galleryData'.
+        
+            // GENERAMOS EL HTML DE LA NUEVA GALERÍA
+            let galleryHtml = '';
+        
+            // --- MODIFICACIÓN 2: Usar 'galleryData' para generar el HTML ---
+            if (galleryData.length > 0) {
+                const slidesHtml = galleryData.map((item, i) => `
+                    <div class="mySlides">
+                        <div class="numbertext">${i} / ${galleryData.length}</div>
+                        <img src="${item.url}" style="width:100%" alt="${item.text}">
+                    </div>
+                `).join('');
+        
+                const thumbnailsHtml = galleryData.map((item, i) => `
+                    <div class="column">
+                        <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="currentSlide(${i + 1})" alt="${item.text}">
+                    </div>
+                `).join('');
+        
+                galleryHtml = `
+                <div class="gallery-container">
+                    ${slidesHtml}
+                    <a class="prev" onclick="plusSlides(-1)">❮</a>
+                    <a class="next" onclick="plusSlides(1)">❯</a>
+                    <div class="caption-container">
+                        <p id="caption" style="color:#B2DFDB;"></p>
+                    </div>
+                    <div class="row">
+                        ${thumbnailsHtml}
+                    </div>
+                </div>`;
+            }
+            // Calculamos el texto del precio
+            let priceText = '';
+            if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
+            else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
+            else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
+                
+            const detailHtml = `
+              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
+              </button>
+              <div class="full-detail-card">
+                <div class="full-detail-header">
+                  <h2>${site.nombre || ''}</h2>
+                  <div class="full-detail-rating">${site.valoracion || ''}</div>
+                  <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
                 </div>
-            `).join('');
-
-            const thumbnailsHtml = photos.map((photo, i) => `
-                <div class="column">
-                    <img class="demo cursor" src="${photo.replace('w600', 'w200')}" style="width:100%" onclick="currentSlide(${i + 1})" alt="${site[COLS[`text${i + 1}`]]}">
-                </div>
-            `).join('');
-
-            galleryHtml = `
-            <div class="gallery-container">
-                ${slidesHtml}
-                <a class="prev" onclick="plusSlides(-1)">❮</a>
-                <a class="next" onclick="plusSlides(1)">❯</a>
-                <div class="caption-container">
-                    <p id="caption"></p>
-                </div>
-                <div class="row">
-                    ${thumbnailsHtml}
-                </div>
-            </div>`;
-        }
-        
-        // Calculamos el texto del precio
-        let priceText = '';
-        if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
-        else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
-        else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
-            
-        const detailHtml = `
-          <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-            <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
-          </button>
-          <div class="full-detail-card">
-            <div class="full-detail-header">
-              <h2>${site.nombre || ''}</h2>
-              <div class="full-detail-rating">${site.valoracion || ''}</div>
-              <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
-            </div>
-            
-            <div class="full-detail-actions">
-              ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
-            </div>
-            
-            <!-- Aquí inyectamos la nueva galería -->
-            ${galleryHtml}
-
-            <div class="full-detail-body">
-              <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
-              
-              <div class="full-detail-actions">
-                ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
-                ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
-                ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
-                ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
-              </div>
-
-              ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
-              ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
-            </div>
-          </div>
-          <br /><br />
-          <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-            <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
-          </button>`;
-        
-        elements.detailContainer.innerHTML = detailHtml;
-        elements.detailContainer.style.display = 'block';
-        Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-        
-        // INICIAMOS LA GALERÍA MOSTRANDO LA PRIMERA IMAGEN
-        slideIndex = 1; // Reseteamos el índice por si acaso
-        showSlides(slideIndex);
-      }
-/*
-        function showDetail(index) {
-          const siteRow = state.currentSitios[index];
-          // Convertimos la fila (array) a un objeto para un uso más fácil
-          const site = Object.keys(COLS).reduce((obj, key) => {
-            obj[key] = siteRow[COLS[key]];
-            return obj;
-          }, {});
-
-          elements.selector.style.display = 'none';
-
-          const photos = [site.foto1, site.foto2, site.foto3, site.foto4, site.foto5, site.foto6, site.foto7, site.foto8, site.foto9, site.foto10, site.foto11, site.foto12, site.foto13, site.foto14, site.foto15, site.foto16, site.foto17, site.foto18, site.foto19, site.foto20].filter(Boolean).map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`);
-          let thumbnailsHtml = '';
-          if (photos.length > 1) {
-            thumbnailsHtml = photos.map((photo, i) => 
-              `<img src="${photo}" alt="Miniatura ${i+1}" onclick="document.getElementById('main-gallery-image').src='${photo}';" class="${i === 0 ? 'active' : ''}">`
-            ).join('');
-          }
-
-          let priceText = '';
-          if (site.codprecio == 10) {
-              priceText = 'El precio nos parece que está muy bien ✅';
-          } else if (site.codprecio == 11) {
-              priceText = 'El precio nos parece que es justo ⚖️';
-          } else if (site.codprecio == 12) {
-              priceText = 'El precio nos parece que es caro 💀';
-          }
-            
-          const detailHtml = `
-            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-              <span class="mdc-button__ripple"></span>
-              <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
-              <span class="mdc-button__label">VOLVER AL LISTADO</span>
-            </button>
-            <div class="full-detail-card">
-              <div class="full-detail-header">
-                <h2>${site.nombre || ''}</h2>
-                <div class="full-detail-rating">${site.valoracion || ''}</div>
-                <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
-              </div>
-              
-              <div class="full-detail-actions">
+                
+                <div class="full-detail-actions">
                   ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
-              </div>
-              
-              ${photos.length > 0 ? `
-              <div class="full-detail-gallery">
-                <img id="main-gallery-image" src="${photos[0]}" alt="Foto principal de ${site.nombre}" class="gallery-main-image">
-                ${thumbnailsHtml ? `<div class="gallery-thumbnails">${thumbnailsHtml}</div>` : ''}
-              </div>
-              ` : ''}
-
-              <div class="full-detail-body">
+                </div>
+                
+                <!-- Aquí inyectamos la nueva galería -->
+                ${galleryHtml}
+    
+                <div class="full-detail-body">
                   <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
                   
                   <div class="full-detail-actions">
@@ -508,24 +334,25 @@
                     ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
                     ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
                   </div>
-
+    
                   ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
                   ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
               </div>
-            </div>
-            <br /><br />
-            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-              <span class="mdc-button__ripple"></span>
-              <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
-              <span class="mdc-button__label">VOLVER AL LISTADO</span>
-            </button>`;
-          
-          elements.detailContainer.innerHTML = detailHtml;
-          elements.detailContainer.style.display = 'block';
-          // Re-inicializar ripples para los nuevos botones
-          Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+              <br /><br />
+              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
+              </button>`;
+            
+            elements.detailContainer.innerHTML = detailHtml;
+            elements.detailContainer.style.display = 'block';
+            Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+            
+            // INICIAMOS LA GALERÍA MOSTRANDO LA PRIMERA IMAGEN
+            slideIndex = 1; // Reseteamos el índice por si acaso
+            showSlides(slideIndex);
         }
-*/
+        
         function hideDetail() {
           elements.detailContainer.style.display = 'none';
           elements.detailContainer.innerHTML = '';
