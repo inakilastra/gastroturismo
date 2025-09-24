@@ -277,7 +277,7 @@
     if (galleryData.length > 0) {
         const slidesHtml = galleryData.map((item, i) => `
             <div class="mySlides">
-                <div class="numbertext">${i + 1} / ${galleryData.length}</div>
+                <div class="numbertext">${i} / ${galleryData.length}</div>
                 <img src="${item.url}" style="width:100%" alt="${item.text}">
             </div>
         `).join('');
