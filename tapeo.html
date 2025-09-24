@@ -276,8 +276,8 @@
             // --- MODIFICACIÓN 2: Usar 'galleryData' para generar el HTML ---
             if (galleryData.length > 0) {
                 const slidesHtml = galleryData.map((item, i) => `
-                    <div class="mySlides" style="background-color:#B2DFDB;color:#004D40;">
-                        <div class="numbertext">${i + 1} / ${galleryData.length}</div>
+                    <div class="mySlides">
+                        <div class="numbertext" style="background-color:#B2DFDB;color:#004D40;">${i + 1} / ${galleryData.length}</div>
                         <img src="${item.url}" style="width:100%" alt="${item.text}">
                     </div>
                 `).join('');
