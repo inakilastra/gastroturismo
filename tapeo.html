@@ -278,14 +278,12 @@
         const slidesHtml = galleryData.map((item, i) => `
             <div class="mySlides">
                 <div class="numbertext">${i + 1} / ${galleryData.length}</div>
-                {/* Ahora el 'alt' text es específico para cada imagen */}
                 <img src="${item.url}" style="width:100%" alt="${item.text}">
             </div>
         `).join('');
 
         const thumbnailsHtml = galleryData.map((item, i) => `
             <div class="column">
-                {/* Y aquí también, usando la misma lógica limpia */}
                 <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="currentSlide(${i + 1})" alt="${item.text}">
             </div>
         `).join('');
