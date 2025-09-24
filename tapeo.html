@@ -258,7 +258,7 @@
     // Iteramos por el número máximo de fotos que puedes tener (ajusta el 40 si es necesario).
     for (let i = 1; i <= 40; i += 2) {
         const photoId = site[`foto${i}`]; // Accedemos a site.foto1, site.foto2, etc.
-        const photoText = site[`text${i + 1}`]; // Accedemos a site.text1, site.text2, etc.
+        const photoText = site[`text${i}`]; // Accedemos a site.text1, site.text2, etc.
 
         // Si existe un ID para la foto, creamos el objeto y lo añadimos.
         if (photoId) {
