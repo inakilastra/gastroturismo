@@ -107,7 +107,7 @@
 
       // 1. URL pública del fichero CSV de Google Sheets.
       const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
-      const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pubhtml?gid=584577480&single=true';
+      const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
         
       let allTapeoData = []; // Variable global para almacenar todos los datos una vez cargados.
       let allEventosData = []; // Para los datos de eventos.
@@ -280,7 +280,7 @@
             elements.grid.insertAdjacentHTML('beforeend', cardHtml);
           });
         }
-        function showDetail(index) {
+        function showDetail(index) {           
             const siteRow = state.currentSitios[index];
             const site = Object.keys(COLS).reduce((obj, key) => {
                 obj[key] = siteRow[COLS[key]];
