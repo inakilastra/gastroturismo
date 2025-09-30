@@ -384,9 +384,6 @@
     
                 <div class="full-detail-body">
                   <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
-                  <p class="full-detail-description">ZZZZZZZZZ</p>
-
-                  ${eventosHtml}
                   
                   <div class="full-detail-actions">
                     ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
@@ -396,7 +393,9 @@
                   </div>
     
                   ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
-                  ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
+                  ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''} 
+                  <p>${eventosHtml}</p>
+                  
                 </div>
               </div>
               <br /><br />
