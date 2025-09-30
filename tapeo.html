@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruta de Tapeo - ANeKI Gastroturismo</title>
+    
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    
+    <div id="aside-placeholder"></div>
+    
+    <div class="mdc-drawer-app-content">
+        <div id="header-placeholder"></div>
+
+        <main class="main-app-content">
+            <div class="mdc-top-app-bar--fixed-adjust page-container">
+              
+              <h1 class="section-title" style="margin-top: 24px;">Ruta de Tapeo</h1>
+              
+              <div id="card-container">
+                  <div class="simple-loader" style="margin: 80px auto;"></div>
+              </div>
+
+            </div>
+        </main>
+        
+        <div id="footer-placeholder"></div>
+    </div>
+    
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    
+    <script>
+      // --- URLs de las fuentes de datos (CSV de Google Sheets) ---
+      const TAPEO_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
+      
+      // ¡IMPORTANTE! Reemplaza esta URL con la URL del CSV de tus eventos.
+      const EVENTOS_CSV_URL = 'URL_DE_TU_CSV_DE_EVENTOS_AQUI'; 
+
+      // Mapeo de columnas para facilitar el acceso a los datos
+      const COLS = {
+        idSitio: 'idSitio',
+        nombre: 'nombre',
+        descripcion: 'descripcion',
+        gmapsUrl: 'gmaps',
+        fotoUrl: 'foto1'
+      };
+      
+      const EVENTO_COLS = {
+        idSitio: 'idSitio', // Columna D en tu imagen
+        nombreEvento: 'eventoCulinario' // Columna B en tu imagen
+      };
+
+      /**
+       * Parsea texto en formato CSV a un array de objetos JavaScript.
+       * La primera línea del CSV debe contener los nombres de las columnas.
+       * @param {string} csvText - El contenido del fichero CSV.
+       * @returns {Array<Object>} Un array de objetos, donde cada objeto representa una fila.
+       */
+      function parseCSV(csvText) {
+        const lines = csvText.trim().split(/\r?\n/);
+        if (lines.length < 2) return [];
+        
+        const headers = lines[0].split(',');
+        const data = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',');
+          const entry = {};
+          for (let j = 0; j < headers.length; j++) {
+            entry[headers[j]] = values[j] || '';
+          }
+          data.push(entry);
+        }
+        return data;
+      }
+
+      /**
+       * Agrupa los eventos por el 'idSitio' para una búsqueda ultra rápida.
+       * @param {Array<Object>} eventos - El array de todos los eventos parseados.
+       * @returns {Object} Un objeto donde cada clave es un 'idSitio' y su valor es un array de eventos relacionados.
+       */
+      function groupEventsBySitioId(eventos) {
+          const eventosMap = {};
+          for (const evento of eventos) {
+              const sitioId = evento[EVENTO_COLS.idSitio];
+              if (!sitioId) continue; // Si no tiene idSitio, lo ignoramos
+
+              if (!eventosMap[sitioId]) {
+                  eventosMap[sitioId] = []; // Creamos un array si es el primer evento para este sitio
+              }
+              eventosMap[sitioId].push(evento);
+          }
+          return eventosMap;
+      }
+
+      /**
+       * Renderiza las tarjetas de los sitios de tapeo en el contenedor.
+       * @param {Array<Object>} sitiosData - Los datos de los sitios de tapeo.
+       * @param {Object} eventosMap - El mapa de eventos agrupados por idSitio.
+       */
+      function renderCards(sitiosData, eventosMap) {
+        const container = document.getElementById('card-container');
+        if (!container) return;
+
+        // Si no hay datos, muestra un mensaje amigable.
+        if (!sitiosData || sitiosData.length === 0) {
+          container.innerHTML = '<p>No hay sitios de tapeo para mostrar en este momento.</p>';
+          return;
+        }
+
+        let cardsHtml = '';
+        for (const sitio of sitiosData) {
+          const sitioId = sitio[COLS.idSitio];
+          const relatedEvents = eventosMap[sitioId] || []; // Obtenemos los eventos o un array vacío
+
+          let eventosHtml = '';
+          if (relatedEvents.length > 0) {
+            eventosHtml = `
+              <div class="sitio-card-related-events">
+                <h4 style="margin-top:20px; margin-bottom:10px;">Eventos Relacionados:</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  ${relatedEvents.map(evento => `<li>- ${evento[EVENTO_COLS.nombreEvento]}</li>`).join('')}
+                </ul>
+              </div>
+            `;
+          }
+
+          // Creamos el HTML para cada tarjeta usando template literals.
+          cardsHtml += `
+            <div class="sitio-card">
+              <div class="sitio-card-image" style="background-image: url('${sitio[COLS.fotoUrl]}');"></div>
+              <div class="sitio-card-info">
+                <h3>${sitio[COLS.nombre]}</h3>
+                <p class="sitio-card-description">${sitio[COLS.descripcion].replace(/\\n/g, '<br>')}</p>
+                ${eventosHtml}
+                <a href="${sitio[COLS.gmapsUrl]}" target="_blank" rel="noopener noreferrer" class="mdc-button mdc-button--outlined">
+                  <span class="mdc-button__ripple"></span>
+                  <span class="mdc-button__label">Ver en Google Maps</span>
+                </a>
+              </div>
+            </div>
+          `;
+        }
+        
+        container.innerHTML = cardsHtml;
+      }
+
+      // --- Punto de entrada: Se ejecuta cuando la página está lista ---
+      document.addEventListener('DOMContentLoaded', async function() {
+        // Carga los componentes comunes (header, aside, footer)
+        await Promise.all([
+            includeHTML('./aside.html', 'aside-placeholder'),
+            includeHTML('./header.html', 'header-placeholder'),
+            includeHTML('./footer.html', 'footer-placeholder')
+        ]);
+        
+        // Inicializa el JavaScript para los componentes de Material Design
+        initializeMDC();
+        
+        try {
+            // 1. CARGA DE DATOS: Hacemos las dos peticiones a la vez
+            const [tapeoResponse, eventosResponse] = await Promise.all([
+              fetch(TAPEO_CSV_URL),
+              fetch(EVENTOS_CSV_URL)
+            ]);
+
+            const tapeoCsvText = await tapeoResponse.text();
+            const eventosCsvText = await eventosResponse.text();
+
+            // 2. PARSEO Y PROCESAMIENTO
+            const sitiosData = parseCSV(tapeoCsvText);
+            const eventosData = parseCSV(eventosCsvText);
+            const eventosMap = groupEventsBySitioId(eventosData);
+
+            // 3. RENDERIZADO
+            renderCards(sitiosData, eventosMap);
+
+        } catch (error) {
+            console.error("Error al cargar o procesar los datos:", error);
+            const container = document.getElementById('card-container');
+            if (container) {
+                container.innerHTML = `<p style="color:red;">Error al cargar las recomendaciones. Por favor, inténtalo de nuevo más tarde.</p>`;
+            }
+        }
+      });
+      
+      // --- Funciones de ayuda para la inicialización ---
+      
+      /** Carga un fichero HTML y lo inyecta en un contenedor. */
+      async function includeHTML(file, elementId) {
+        try {
+          const response = await fetch(file);
+          if (!response.ok) throw new Error("Fichero no encontrado: " + file);
+          document.getElementById(elementId).innerHTML = await response.text();
+        } catch (error) {
+          console.error("Error al incluir HTML:", error);
+        }
+      }
+      
+      /** Inicializa los componentes de Material Design y la navegación. */
+      function initializeMDC() {
+        Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item, .mdc-card__primary-action')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+        
+        const drawerElement = document.querySelector('.mdc-drawer');
+        const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
+        if (drawerElement && menuButton) {
+          const drawer = mdc.drawer.MDCDrawer.attachTo(drawerElement);
+          menuButton.addEventListener('click', () => { drawer.open = !drawer.open; });
+        }
+      }
+    </script>
+
+</body>
+</html>
