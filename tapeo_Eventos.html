@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruta de Tapeo - ANeKI Gastroturismo</title>
-    
+    <title>ANeKI - Gastroturismo</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="./style.css">
+
 </head>
 <body>
     
@@ -17,16 +18,29 @@
     
     <div class="mdc-drawer-app-content">
         <div id="header-placeholder"></div>
-
         <main class="main-app-content">
-            <div class="mdc-top-app-bar--fixed-adjust page-container">
-              
-              <h1 class="section-title" style="margin-top: 24px;">Ruta de Tapeo</h1>
-              
-              <div id="card-container">
-                  <div class="simple-loader" style="margin: 80px auto;"></div>
-              </div>
-
+            <div class="mdc-top-app-bar--fixed-adjust">
+              <div class="page-container section-padding">
+                <div id="tapeo-selector">
+                  <div id="tapeo-header" style="margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; min-height: 40px; margin-bottom: 16px;">
+                      <button id="tapeo-back-button" class="mdc-button mdc-button--raised" style="display: none;" onclick="tapeo.goBack()">
+                        <span class="mdc-button__ripple"></span>
+                        <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_back</i>
+                        <span class="mdc-button__label">ATRÁS</span>
+                      </button>
+                      <div id="tapeo-breadcrumbs" style="margin-left: 16px; font-size: 1rem; opacity: 0.7;"></div>
+                    </div>
+                    <h2 id="tapeo-title" class="section-title" style="text-align: left; margin: 0;"></h2>
+                  </div>
+                  <div id="tapeo-grid" class="grid-container" style="display: none;"></div>
+                  
+                  <div id="tapeo-loading" style="padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div class="simple-loader" role="progressbar" aria-label="Cargando"></div>
+                    <p style="font-size: 1.5rem; color: var(--mdc-theme-primary); margin-top: 16px;">Cargando datos...</p>
+                  </div>
+                </div>
+                <div id="tapeo-detail-container" style="display: none;"></div>
             </div>
         </main>
         
@@ -34,156 +48,401 @@
     </div>
     
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-    
     <script>
-      // --- URLs de las fuentes de datos (CSV de Google Sheets) ---
-      const TAPEO_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
-      
-      // ¡IMPORTANTE! Reemplaza esta URL con la URL del CSV de tus eventos.
-      const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv'; 
-
-     // Mapeo de columnas para facilitar el acceso a los datos
-      const COLS = {
-        idSitio: 'idSitio', nombre: 'nombre', descripcion: 'descripcion',
-        gmapsUrl: 'gmaps', fotoUrl: 'foto1'
-      };
-      const EVENTO_COLS = {
-        idSitio: 'idSitio', nombreEvento: 'eventoCulinario'
-      };
-
-      /** Parsea texto en formato CSV a un array de objetos JavaScript. */
-      function parseCSV(csvText) {
-        const lines = csvText.trim().split(/\r?\n/);
-        if (lines.length < 2) return [];
-        const headers = lines[0].split(',');
-        const data = [];
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',');
-          const entry = {};
-          for (let j = 0; j < headers.length; j++) {
-            entry[headers[j]] = values[j] || '';
-          }
-          data.push(entry);
-        }
-        return data;
-      }
-
-      /** Agrupa los eventos por el 'idSitio' para una búsqueda ultra rápida. */
-      function groupEventsBySitioId(eventos) {
-          const eventosMap = {};
-          for (const evento of eventos) {
-              const sitioId = evento[EVENTO_COLS.idSitio];
-              if (!sitioId) continue;
-              if (!eventosMap[sitioId]) {
-                  eventosMap[sitioId] = [];
-              }
-              eventosMap[sitioId].push(evento);
-          }
-          return eventosMap;
-      }
-
-      /** Renderiza las tarjetas de los sitios de tapeo en el contenedor. */
-      function renderCards(sitiosData, eventosMap) {
-        const container = document.getElementById('card-container');
-        if (!container) return;
-        if (!sitiosData || sitiosData.length === 0) {
-          container.innerHTML = '<p>No hay sitios de tapeo para mostrar en este momento.</p>';
-          return;
-        }
-        let cardsHtml = sitiosData.map(sitio => {
-          const sitioId = sitio[COLS.idSitio];
-          const relatedEvents = eventosMap[sitioId] || [];
-          let eventosHtml = '';
-          if (relatedEvents.length > 0) {
-            eventosHtml = `
-              <div class="sitio-card-related-events">
-                <h4 style="margin-top:20px; margin-bottom:10px;">Eventos Relacionados:</h4>
-                <ul style="list-style-type: none; padding-left: 0;">
-                  ${relatedEvents.map(evento => `<li>- ${evento[EVENTO_COLS.nombreEvento]}</li>`).join('')}
-                </ul>
-              </div>`;
-          }
-          return `
-            <div class="sitio-card">
-              <div class="sitio-card-image" style="background-image: url('${sitio[COLS.fotoUrl]}');"></div>
-              <div class="sitio-card-info">
-                <h3>${sitio[COLS.nombre]}</h3>
-                <p class="sitio-card-description">${sitio[COLS.descripcion].replace(/\\n/g, '<br>')}</p>
-                ${eventosHtml}
-                <a href="${sitio[COLS.gmapsUrl]}" target="_blank" rel="noopener noreferrer" class="mdc-button mdc-button--outlined">
-                  <span class="mdc-button__ripple"></span>
-                  <span class="mdc-button__label">Ver en Google Maps</span>
-                </a>
-              </div>
-            </div>`;
-        }).join('');
-        container.innerHTML = cardsHtml;
-      }
-
-      // --- Punto de entrada: Se ejecuta cuando la página está lista ---
-      document.addEventListener('DOMContentLoaded', async function() {
-        await Promise.all([
-            includeHTML('./aside.html', 'aside-placeholder'),
-            includeHTML('./header.html', 'header-placeholder'),
-            includeHTML('./footer.html', 'footer-placeholder')
-        ]);
-        initializeMDC();
-        
-        const container = document.getElementById('card-container');
-
-        try {
-            // 1. CARGA DE DATOS
-            const [tapeoResponse, eventosResponse] = await Promise.all([
-              fetch(TAPEO_CSV_URL).catch(e => ({error: true, url: TAPEO_CSV_URL})),
-              fetch(EVENTOS_CSV_URL).catch(e => ({error: true, url: EVENTOS_CSV_URL}))
-            ]);
-            
-            // Verificación individual de cada respuesta
-            if (!tapeoResponse.ok) throw new Error(`La URL de Tapeo no es válida o no se pudo acceder. Revisa esta URL: ${TAPEO_CSV_URL}`);
-            if (!eventosResponse.ok) throw new Error(`La URL de Eventos no es válida o no se pudo acceder. Revisa esta URL: ${EVENTOS_CSV_URL}`);
-
-            const tapeoCsvText = await tapeoResponse.text();
-            const eventosCsvText = await eventosResponse.text();
-
-            // 2. PARSEO Y PROCESAMIENTO
-            const sitiosData = parseCSV(tapeoCsvText);
-            const eventosData = parseCSV(eventosCsvText);
-            const eventosMap = groupEventsBySitioId(eventosData);
-
-            // 3. RENDERIZADO
-            renderCards(sitiosData, eventosMap);
-
-        } catch (error) {
-            console.error("Error detallado:", error);
-            if (container) {
-                // Muestra el mensaje de error específico en la página
-                container.innerHTML = `<p style="color:red; font-weight:bold;">${error.message}</p>`;
-            }
-        }
-      });
-      
-      /** Carga un fichero HTML y lo inyecta en un contenedor. */
+      /**
+       * Carga el contenido de un fichero HTML y lo inyecta en un contenedor de la página.
+       * @param {string} file - La ruta al fichero de la plantilla (ej: './aside.html').
+       * @param {string} elementId - El ID del div contenedor (ej: 'aside-placeholder').
+       */
       async function includeHTML(file, elementId) {
         try {
           const response = await fetch(file);
-          if (!response.ok) throw new Error("Fichero no encontrado: " + file);
-          document.getElementById(elementId).innerHTML = await response.text();
+          if (!response.ok) throw new Error("No se encontró el fichero: " + file);
+          const text = await response.text();
+          document.getElementById(elementId).innerHTML = text;
         } catch (error) {
-          console.error("Error al incluir HTML:", error);
+          console.error("Error al incluir el HTML:", error);
+          document.getElementById(elementId).innerHTML = `<p style="color:red;">Error al cargar componente: ${file}</p>`;
         }
       }
-      
-      /** Inicializa los componentes de Material Design y la navegación. */
-      function initializeMDC() {
-        mdc.autoInit();
+    
+      // Se ejecuta cuando la página está lista.
+      document.addEventListener('DOMContentLoaded', async function() {
+        // Carga todas las plantillas en sus contenedores
+        await includeHTML('./aside.html', 'aside-placeholder');
+        await includeHTML('./header.html', 'header-placeholder');
+        await includeHTML('./footer.html', 'footer-placeholder');
+    
+        // Una vez que todo el HTML está cargado, inicializa el JavaScript
+        
+        // Inicializa los efectos de Material Design en los componentes comunes
+        Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+        
+        // Controla el menú lateral
         const drawerElement = document.querySelector('.mdc-drawer');
         const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
         if (drawerElement && menuButton) {
           const drawer = mdc.drawer.MDCDrawer.attachTo(drawerElement);
           menuButton.addEventListener('click', () => { drawer.open = !drawer.open; });
         }
-      }
+    
+        // Añade el año actual al footer
+        const yearSpan = document.querySelector('.footer-year');
+        if(yearSpan) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
+    
+        // Marca el enlace actual como activo en el menú lateral
+        const currentPage = window.location.pathname.split('/').pop();
+        const activeLink = document.querySelector(`a[href*="${currentPage}"]`);
+        if (activeLink) {
+            activeLink.classList.add('mdc-list-item--activated');
+        }
+      });
     </script>
+    <script>
+      // =================================================================
+      // SCRIPT DE CARGA Y RENDERIZADO DE DATOS PARA LA RUTA DE TAPEO
+      // =================================================================
 
+      // 1. URL pública del fichero CSV de Google Sheets.
+      const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
+      
+      let allTapeoData = []; // Variable global para almacenar todos los datos una vez cargados.
+
+      // 2. Mapeo de columnas para un acceso fácil a los datos.
+      const COLS = { idsitio: 0, autonomia:	1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps:	12,	facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo:	17, tipo_lugar:	18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
+    
+      /**
+       * Parsea un texto completo en formato CSV.
+       */
+      function parseCSV(csvText) {
+          const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
+          csvText = csvText.trim();
+          for (let i = 0; i < csvText.length; i++) {
+              const char = csvText[i];
+              if (char === '"') {
+                  if (inQuotes && i + 1 < csvText.length && csvText[i + 1] === '"') { currentField += '"'; i++; } 
+                  else { inQuotes = !inQuotes; }
+              } else if (char === ',' && !inQuotes) {
+                  fields.push(currentField); currentField = '';
+              } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                  fields.push(currentField); rows.push(fields); fields = []; currentField = '';
+                  if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') { i++; }
+              } else { currentField += char; }
+          }
+          if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
+          return rows.map(row => row.map(field => field.trim()));
+      }
+    
+      // 3. Lógica principal de la aplicación.
+      (function() {
+        const state = { level: 'autonomias', selection: {}, history: [], currentSitios: [] };
+        const elements = { 
+          title: document.getElementById('tapeo-title'), 
+          grid: document.getElementById('tapeo-grid'), 
+          loading: document.getElementById('tapeo-loading'), 
+          backButton: document.getElementById('tapeo-back-button'), 
+          breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
+          selector: document.getElementById('tapeo-selector'),
+          detailContainer: document.getElementById('tapeo-detail-container')
+        };
+        const levelsConfig = { autonomias: { title: '¿Dónde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias', key: COLS.autonomia }, provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades', key: COLS.provincia }, ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios', key: COLS.ciudad }, barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios', key: COLS.barrio }, sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null } };
+    
+        async function init() {
+          try {
+            const response = await fetch(CSV_URL);
+            if (!response.ok) { throw new Error(`Error de red: ${response.status} ${response.statusText}`); }
+            const csvText = await response.text();
+            if (csvText.length < 50) { throw new Error("El fichero CSV parece estar vacío."); }
+            const allRows = parseCSV(csvText);
+            allTapeoData = allRows.slice(1);
+            renderStep();
+          } catch (error) {
+            console.error("Error al inicializar:", error);
+            displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
+          }
+        }
+    
+        function renderStep() {
+          showLoading(true);
+          let dataToProcess = allTapeoData;
+          if (state.selection.autonomia) dataToProcess = dataToProcess.filter(row => row[COLS.autonomia] === state.selection.autonomia);
+          if (state.selection.provincia) dataToProcess = dataToProcess.filter(row => row[COLS.provincia] === state.selection.provincia);
+          if (state.selection.ciudad) dataToProcess = dataToProcess.filter(row => row[COLS.ciudad] === state.selection.ciudad);
+          if (state.selection.barrio && state.selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[COLS.barrio] === state.selection.barrio);
+          
+          elements.backButton.style.display = (state.history.length > 0) ? 'inline-flex' : 'none';
+          renderBreadcrumbs();
+    
+          if (state.level === 'sitios') {
+            populateGridWithSitios(dataToProcess);
+          } else {
+            const colKey = levelsConfig[state.level].key;
+            let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
+            if (state.level === 'barrios' && uniqueValues.length > 1) { uniqueValues.unshift('Todos'); }
+            if (uniqueValues.length === 1 && state.level !== 'sitios') {
+              state.history.push({ level: state.level, selection: { ...state.selection }, skipped: true });
+              handleSelection(uniqueValues[0], true);
+              return;
+            }
+            populateGridWithOptions(uniqueValues);
+          }
+          showLoading(false);
+        }
+
+        function populateGridWithOptions(data) {
+          const config = levelsConfig[state.level];
+          elements.title.textContent = config.title;
+          elements.grid.innerHTML = '';
+          data.forEach(item => {
+            const cardHtml = `
+              <div class="mdc-card category-card" onclick="tapeo.handleSelection('${item.replace(/'/g, "\\'")}')">
+                <div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;">
+                  <div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div>
+                  <h3 class="category-card__title">${item}</h3>
+                </div>
+              </div>`;
+            elements.grid.insertAdjacentHTML('beforeend', cardHtml);
+          });
+        }
+        
+        function populateGridWithSitios(data) {
+          elements.title.textContent = levelsConfig.sitios.title;
+          elements.grid.innerHTML = '';
+          const sortedData = data.sort((a, b) => (b[COLS.nota] || 0) - (a[COLS.nota] || 0));
+          state.currentSitios = sortedData; // Guardamos la lista actual para la vista de detalle
+          
+          sortedData.forEach((row, index) => {
+            const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
+            let priceText = '';
+            const codprecio = row[COLS.codprecio];
+            if (codprecio == 10) {
+                priceText = 'El precio nos parece que está muy bien ✅';
+            } else if (codprecio == 11) {
+                priceText = 'El precio nos parece que es justo ⚖️';
+            } else if (codprecio == 12) {
+                priceText = 'El precio nos parece que es caro 💀';
+            }
+            const cardHtml = `
+              <div class="sitio-card" style="grid-column: 1 / -1;">
+                ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
+                <div class="sitio-card-info">
+                  <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>
+                  <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
+                  <div class="sitio-card-description" style="margin-bottom: 10px;">${priceText}</div>
+                  <hr class="styled-hr">
+                  <div class="sitio-card-description">Qué se ofrece aquí:<br><br>${row[COLS.pintxo_tapa] || ''}</div>
+                  <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
+                    <span class="mdc-button__ripple"></span>
+                    <i class="material-icons mdc-button__icon" aria-hidden="true">visibility</i>
+                    <span class="mdc-button__label"> Ver toda la información</span>
+                  </button>
+                </div>
+              </div>`;
+            elements.grid.insertAdjacentHTML('beforeend', cardHtml);
+          });
+        }
+        function showDetail(index) {
+            const siteRow = state.currentSitios[index];
+            const site = Object.keys(COLS).reduce((obj, key) => {
+                obj[key] = siteRow[COLS[key]];
+                return obj;
+            }, {});
+
+            elements.selector.style.display = 'none';
+        
+            // --- MODIFICACIÓN 1: Crear un array de objetos (foto y texto) ---
+            // En lugar de un array simple de fotos, creamos uno más estructurado.
+            const galleryData = [];
+            // Iteramos por el número máximo de fotos que puedes tener (ajusta el 40 si es necesario).
+            for (let i = 1; i <= 40; i++) {
+                const photoId = site[`foto${i}`]; // Accedemos a site.foto1, site.foto2, etc.
+                const photoText = site[`text${i}`]; // Accedemos a site.text1, site.text2, etc.
+        
+                // Si existe un ID para la foto, creamos el objeto y lo añadimos.
+                if (photoId) {
+                    galleryData.push({
+                        url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`,
+                        text: photoText || `Foto de ${site.nombre}` // Usamos el texto específico o un texto por defecto.
+                    });
+                }
+            }
+            // Ya no necesitamos el antiguo array 'photos'. Ahora usamos 'galleryData'.
+        
+            // GENERAMOS EL HTML DE LA NUEVA GALERÍA
+            let galleryHtml = '';
+        
+            // --- MODIFICACIÓN 2: Usar 'galleryData' para generar el HTML ---
+            if (galleryData.length > 0) {
+                const slidesHtml = galleryData.map((item, i) => `
+                    <div class="mySlides">
+                        <div class="numbertext" style="background-color:#B2DFDB;color:#004D40;">${i + 1} / ${galleryData.length}</div>
+                        <img src="${item.url}" style="width:100%" alt="${item.text}">
+                    </div>
+                `).join('');
+        
+                const thumbnailsHtml = galleryData.map((item, i) => `
+                    <div class="column">
+                        <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="currentSlide(${i + 1})" alt="${item.text}">
+                    </div>
+                `).join('');
+        
+                galleryHtml = `
+                <div class="gallery-container">
+                    ${slidesHtml}
+                    <a class="prev" onclick="plusSlides(-1)">❮</a>
+                    <a class="next" onclick="plusSlides(1)">❯</a>
+                    <div class="caption-container" style="background-color:#B2DFDB;color:#004D40;">
+                        <p id="caption" style="background-color:#B2DFDB;color:#004D40;"></p>
+                    </div>
+                    <div class="row">
+                        ${thumbnailsHtml}
+                    </div>
+                </div>`;
+            }
+            // Calculamos el texto del precio
+            let priceText = '';
+            if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
+            else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
+            else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
+                
+            const detailHtml = `
+              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
+              </button>
+              <div class="full-detail-card">
+                <div class="full-detail-header">
+                  <h2>${site.nombre || ''}</h2>
+                  <div class="full-detail-rating">${site.valoracion || ''}</div>
+                  <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
+                </div>
+                
+                <div class="full-detail-actions">
+                  ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
+                </div>
+                
+                <!-- Aquí inyectamos la nueva galería -->
+                ${galleryHtml}
+    
+                <div class="full-detail-body">
+                  <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
+                  
+                  <div class="full-detail-actions">
+                    ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
+                    ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
+                    ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
+                    ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
+                  </div>
+    
+                  ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
+                  ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
+                </div>
+              </div>
+              <br /><br />
+              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
+              </button>`;
+            
+            elements.detailContainer.innerHTML = detailHtml;
+            elements.detailContainer.style.display = 'block';
+            Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+            
+            // INICIAMOS LA GALERÍA MOSTRANDO LA PRIMERA IMAGEN
+            slideIndex = 1; // Reseteamos el índice por si acaso
+            showSlides(slideIndex);
+        }
+        
+        function hideDetail() {
+          elements.detailContainer.style.display = 'none';
+          elements.detailContainer.innerHTML = '';
+          elements.selector.style.display = 'block';
+        }
+    
+        function handleSelection(selectionName, isAutoSelection = false) {
+          if (!isAutoSelection) { 
+            state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
+          }
+          let key = state.level.slice(0, -1);
+          if (state.level === 'ciudades') key = 'ciudad';
+          state.selection[key] = selectionName;
+          state.level = levelsConfig[state.level].next;
+          if (state.level) { renderStep(); }
+        }
+    
+        function goBack() {
+          let lastState = state.history.pop();
+          while (lastState && lastState.skipped) { lastState = state.history.pop(); }
+          if (lastState) {
+            state.level = lastState.level;
+            state.selection = lastState.selection;
+            renderStep();
+          } else { 
+            state.level = 'autonomias'; state.selection = {}; state.history = [];
+            renderStep();
+          }
+        }
+    
+        function renderBreadcrumbs() {
+          if (!elements.breadcrumbs) return;
+          const crumbs = [];
+          if (state.selection.autonomia) crumbs.push(state.selection.autonomia);
+          if (state.selection.provincia) crumbs.push(state.selection.provincia);
+          if (state.selection.ciudad) crumbs.push(state.selection.ciudad);
+          if (state.selection.barrio && state.selection.barrio !== 'Todos') crumbs.push(state.selection.barrio);
+          elements.breadcrumbs.innerHTML = crumbs.join(' <span style="font-weight: bold;"> &gt; </span> ');
+        }
+    
+        function displayError(message) {
+          if (elements.loading) {
+            elements.loading.style.display = 'flex';
+            elements.loading.innerHTML = `<div style="color: #c62828; padding: 20px; border: 2px solid #ffcdd2; background-color: #ffebee; border-radius: 8px;"><h3>Ha ocurrido un error</h3><p>${message}</p></div>`;
+          }
+        }
+    
+        function showLoading(isLoading) {
+          if (elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none';
+          if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid';
+        }
+        
+        window.tapeo = { handleSelection, goBack, showDetail, hideDetail };
+    
+        init();
+      })();
+    </script> 
+    <script>
+      // ===============================================================
+      // SCRIPT PARA LA LÓGICA DE LA NUEVA SLIDESHOW GALLERY
+      // ===============================================================
+      let slideIndex = 1;
+
+      function plusSlides(n) {
+        showSlides(slideIndex += n);
+      }
+
+      function currentSlide(n) {
+        showSlides(slideIndex = n);
+      }
+
+      function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName("mySlides");
+        let dots = document.getElementsByClassName("demo");
+        let captionText = document.getElementById("caption");
+        if (slides.length === 0) return; // Salir si no hay galería en la página
+
+        if (n > slides.length) {slideIndex = 1}
+        if (n < 1) {slideIndex = slides.length}
+        for (i = 0; i < slides.length; i++) {
+          slides[i].style.display = "none";
+        }
+        for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[slideIndex-1].style.display = "block";
+        dots[slideIndex-1].className += " active";
+        captionText.innerHTML = dots[slideIndex-1].alt;
+      }
+    </script>        
 </body>
 </html>
