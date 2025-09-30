@@ -107,12 +107,20 @@
 
       // 1. URL pública del fichero CSV de Google Sheets.
       const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
-      
+      const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pubhtml?gid=584577480&single=true';
+        
       let allTapeoData = []; // Variable global para almacenar todos los datos una vez cargados.
-
+      let allEventosData = []; // Para los datos de eventos.
+      let eventosPorSitio = {};  // Objeto para acceso rápido a eventos por idSitio.
+        
       // 2. Mapeo de columnas para un acceso fácil a los datos.
       const COLS = { idsitio: 0, autonomia:	1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps:	12,	facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo:	17, tipo_lugar:	18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
-    
+      // Mapeo para el CSV de Eventos (basado en tu imagen: B=eventoCulinario, D=idSitio)
+      const COLS_EVENTOS = {
+        eventoCulinario: 1, // Columna B
+        idSitio: 3          // Columna D
+      };
+        
       /**
        * Parsea un texto completo en formato CSV.
        */
@@ -151,13 +159,42 @@
     
         async function init() {
           try {
-            const response = await fetch(CSV_URL);
-            if (!response.ok) { throw new Error(`Error de red: ${response.status} ${response.statusText}`); }
-            const csvText = await response.text();
-            if (csvText.length < 50) { throw new Error("El fichero CSV parece estar vacío."); }
-            const allRows = parseCSV(csvText);
-            allTapeoData = allRows.slice(1);
-            renderStep();
+            // Petición simultánea de ambos ficheros CSV
+            const responses = await Promise.all([
+              fetch(CSV_URL),
+              fetch(EVENTOS_CSV_URL)
+            ]);
+        
+            // Verificación de que ambas respuestas son correctas
+            if (!responses[0].ok) { throw new Error(`Error de red al cargar Tapeo: ${responses[0].statusText}`); }
+            if (!responses[1].ok) { throw new Error(`Error de red al cargar Eventos: ${responses[1].statusText}`); }
+        
+            const [tapeoCsvText, eventosCsvText] = await Promise.all(responses.map(r => r.text()));
+        
+            if (tapeoCsvText.length < 50) { throw new Error("El fichero CSV de Tapeo parece estar vacío."); }
+            if (eventosCsvText.length < 20) { console.warn("El fichero CSV de Eventos podría estar vacío."); }
+            
+            // Parsear ambos textos
+            const allTapeoRows = parseCSV(tapeoCsvText);
+            allTapeoData = allTapeoRows.slice(1);
+        
+            const allEventosRows = parseCSV(eventosCsvText);
+            allEventosData = allEventosRows.slice(1); // Asumimos que también tiene cabecera
+        
+            // Pre-procesar eventos para una búsqueda rápida
+            eventosPorSitio = {}; // Reseteamos el mapa
+            allEventosData.forEach(eventoRow => {
+              const sitioId = eventoRow[COLS_EVENTOS.idSitio];
+              if (sitioId) {
+                if (!eventosPorSitio[sitioId]) {
+                  eventosPorSitio[sitioId] = [];
+                }
+                eventosPorSitio[sitioId].push(eventoRow);
+              }
+            });
+            
+            renderStep(); // Renderizamos el primer paso como antes
+        
           } catch (error) {
             console.error("Error al inicializar:", error);
             displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
@@ -301,6 +338,25 @@
                     </div>
                 </div>`;
             }
+
+            let eventosHtml = '';
+            const sitioId = site.idsitio; // Obtenemos el ID del sitio actual
+            const relatedEvents = eventosPorSitio[sitioId] || []; // Buscamos en nuestro mapa
+        
+            if (relatedEvents.length > 0) {
+              const eventosList = relatedEvents.map(eventoRow => 
+                `<li>${eventoRow[COLS_EVENTOS.eventoCulinario]}</li>`
+              ).join('');
+        
+              eventosHtml = `
+                <div class="full-detail-section">
+                  <h3>Eventos Relacionados</h3>
+                  <ul class="related-events-list">
+                    ${eventosList}
+                  </ul>
+                </div>`;
+            }
+            
             // Calculamos el texto del precio
             let priceText = '';
             if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
@@ -327,6 +383,8 @@
     
                 <div class="full-detail-body">
                   <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
+
+                  ${eventosHtml}
                   
                   <div class="full-detail-actions">
                     ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
