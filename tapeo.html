@@ -42,33 +42,21 @@
       // ¡IMPORTANTE! Reemplaza esta URL con la URL del CSV de tus eventos.
       const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv'; 
 
-      // Mapeo de columnas para facilitar el acceso a los datos
+     // Mapeo de columnas para facilitar el acceso a los datos
       const COLS = {
-        idSitio: 'idSitio',
-        nombre: 'nombre',
-        descripcion: 'descripcion',
-        gmapsUrl: 'gmaps',
-        fotoUrl: 'foto1'
+        idSitio: 'idSitio', nombre: 'nombre', descripcion: 'descripcion',
+        gmapsUrl: 'gmaps', fotoUrl: 'foto1'
       };
-      
       const EVENTO_COLS = {
-        idSitio: 'idSitio', // Columna D en tu imagen
-        nombreEvento: 'eventoCulinario' // Columna B en tu imagen
+        idSitio: 'idSitio', nombreEvento: 'eventoCulinario'
       };
 
-      /**
-       * Parsea texto en formato CSV a un array de objetos JavaScript.
-       * La primera línea del CSV debe contener los nombres de las columnas.
-       * @param {string} csvText - El contenido del fichero CSV.
-       * @returns {Array<Object>} Un array de objetos, donde cada objeto representa una fila.
-       */
+      /** Parsea texto en formato CSV a un array de objetos JavaScript. */
       function parseCSV(csvText) {
         const lines = csvText.trim().split(/\r?\n/);
         if (lines.length < 2) return [];
-        
         const headers = lines[0].split(',');
         const data = [];
-
         for (let i = 1; i < lines.length; i++) {
           const values = lines[i].split(',');
           const entry = {};
@@ -80,45 +68,31 @@
         return data;
       }
 
-      /**
-       * Agrupa los eventos por el 'idSitio' para una búsqueda ultra rápida.
-       * @param {Array<Object>} eventos - El array de todos los eventos parseados.
-       * @returns {Object} Un objeto donde cada clave es un 'idSitio' y su valor es un array de eventos relacionados.
-       */
+      /** Agrupa los eventos por el 'idSitio' para una búsqueda ultra rápida. */
       function groupEventsBySitioId(eventos) {
           const eventosMap = {};
           for (const evento of eventos) {
               const sitioId = evento[EVENTO_COLS.idSitio];
-              if (!sitioId) continue; // Si no tiene idSitio, lo ignoramos
-
+              if (!sitioId) continue;
               if (!eventosMap[sitioId]) {
-                  eventosMap[sitioId] = []; // Creamos un array si es el primer evento para este sitio
+                  eventosMap[sitioId] = [];
               }
               eventosMap[sitioId].push(evento);
           }
           return eventosMap;
       }
 
-      /**
-       * Renderiza las tarjetas de los sitios de tapeo en el contenedor.
-       * @param {Array<Object>} sitiosData - Los datos de los sitios de tapeo.
-       * @param {Object} eventosMap - El mapa de eventos agrupados por idSitio.
-       */
+      /** Renderiza las tarjetas de los sitios de tapeo en el contenedor. */
       function renderCards(sitiosData, eventosMap) {
         const container = document.getElementById('card-container');
         if (!container) return;
-
-        // Si no hay datos, muestra un mensaje amigable.
         if (!sitiosData || sitiosData.length === 0) {
           container.innerHTML = '<p>No hay sitios de tapeo para mostrar en este momento.</p>';
           return;
         }
-
-        let cardsHtml = '';
-        for (const sitio of sitiosData) {
+        let cardsHtml = sitiosData.map(sitio => {
           const sitioId = sitio[COLS.idSitio];
-          const relatedEvents = eventosMap[sitioId] || []; // Obtenemos los eventos o un array vacío
-
+          const relatedEvents = eventosMap[sitioId] || [];
           let eventosHtml = '';
           if (relatedEvents.length > 0) {
             eventosHtml = `
@@ -127,12 +101,9 @@
                 <ul style="list-style-type: none; padding-left: 0;">
                   ${relatedEvents.map(evento => `<li>- ${evento[EVENTO_COLS.nombreEvento]}</li>`).join('')}
                 </ul>
-              </div>
-            `;
+              </div>`;
           }
-
-          // Creamos el HTML para cada tarjeta usando template literals.
-          cardsHtml += `
+          return `
             <div class="sitio-card">
               <div class="sitio-card-image" style="background-image: url('${sitio[COLS.fotoUrl]}');"></div>
               <div class="sitio-card-info">
@@ -144,26 +115,23 @@
                   <span class="mdc-button__label">Ver en Google Maps</span>
                 </a>
               </div>
-            </div>
-          `;
-        }
-        
+            </div>`;
+        }).join('');
         container.innerHTML = cardsHtml;
       }
 
       // --- Punto de entrada: Se ejecuta cuando la página está lista ---
       document.addEventListener('DOMContentLoaded', async function() {
-        // Carga los componentes comunes (header, aside, footer)
         await Promise.all([
             includeHTML('./aside.html', 'aside-placeholder'),
             includeHTML('./header.html', 'header-placeholder'),
             includeHTML('./footer.html', 'footer-placeholder')
         ]);
-        
-        // Inicializa el JavaScript para los componentes de Material Design
         initializeMDC();
         
-try {
+        const container = document.getElementById('card-container');
+
+        try {
             // 1. CARGA DE DATOS
             const [tapeoResponse, eventosResponse] = await Promise.all([
               fetch(TAPEO_CSV_URL).catch(e => ({error: true, url: TAPEO_CSV_URL})),
