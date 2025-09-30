@@ -347,16 +347,42 @@
             const relatedEvents = eventosPorSitio[sitioId] || []; // Buscamos en nuestro mapa
         
             if (relatedEvents.length > 0) {
-              const eventosList = relatedEvents.map(eventoRow => 
-                `<li>${eventoRow[COLS_EVENTOS.eventoCulinario]}</li>`
-              ).join('');
+              const eventosCards = relatedEvents.map(eventoRow => {
+                // Extraemos todos los datos del evento usando COLS_EVENTOS
+                const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
+                const hashtags = eventoRow[COLS_EVENTOS.eventoCulinarioHashtags];
+                const fotoId = eventoRow[COLS_EVENTOS.foto1];
+                const fotoTexto = eventoRow[COLS_EVENTOS.text1];
+
+                // Construimos el HTML para la imagen solo si existe un ID de foto
+                let imagenHtml = '';
+                if (fotoId) {
+                  const imageUrl = `https://drive.google.com/thumbnail?id=${fotoId}&sz=w600`;
+                  imagenHtml = `
+                    <div class="evento-card-image" style="background-image: url('${imageUrl}');">
+                      <div class="evento-card-image-caption">${fotoTexto || ''}</div>
+                    </div>
+                  `;
+                }
+
+                // Devolvemos la "tarjeta" completa para este evento
+                return `
+                  <div class="evento-card">
+                    ${imagenHtml}
+                    <div class="evento-card-info">
+                      <h4>${nombre || 'Evento sin nombre'}</h4>
+                      <p>${hashtags || ''}</p>
+                    </div>
+                  </div>
+                `;
+              }).join('');
         
               eventosHtml = `
                 <div class="full-detail-section">
                   <h3>Eventos Relacionados</h3>
-                  <ul class="related-events-list">
-                    ${eventosList}
-                  </ul>
+                  <div class="eventos-container">
+                    ${eventosCards}
+                  </div>
                 </div>`;
             }
             
