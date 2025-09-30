@@ -121,7 +121,11 @@
         eventoCulinarioHashtags: 2,
         idSitio: 3,          // Columna D
         foto1:  4,	
-        text1: 5
+        text1: 5,         
+        foto2:  6,	
+        text2: 7,          
+        foto3:  8,	
+        text3: 9
       };
         
       /**
@@ -351,8 +355,12 @@
                 // Extraemos todos los datos del evento usando COLS_EVENTOS
                 const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
                 const hashtags = eventoRow[COLS_EVENTOS.eventoCulinarioHashtags];
-                const fotoId = eventoRow[COLS_EVENTOS.foto1];
-                const fotoTexto = eventoRow[COLS_EVENTOS.text1];
+                const foto1 = eventoRow[COLS_EVENTOS.foto1];
+                const texto1 = eventoRow[COLS_EVENTOS.text1];
+                const foto2 = eventoRow[COLS_EVENTOS.foto2];
+                const texto2 = eventoRow[COLS_EVENTOS.text2];
+                const foto3 = eventoRow[COLS_EVENTOS.foto3];
+                const texto3 = eventoRow[COLS_EVENTOS.text3];
 
                 // Construimos el HTML para la imagen solo si existe un ID de foto
                 let imagenHtml = '';
