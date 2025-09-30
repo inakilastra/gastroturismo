@@ -685,3 +685,71 @@
 .demo:hover {
   opacity: 1;
 }
+
+/* === ESTILOS PARA TARJETAS DE EVENTOS RELACIONADOS === */
+
+.full-detail-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.full-detail-section h3 {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 1.75rem;
+  color: var(--mdc-theme-primary);
+  margin-bottom: 24px;
+}
+
+.eventos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.evento-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.evento-card-image {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.evento-card-image-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.evento-card-info {
+  padding: 16px;
+  text-align: center;
+}
+
+.evento-card-info h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+  font-family: 'Special Elite', cursive;
+}
+
+.evento-card-info p {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+}
