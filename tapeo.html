@@ -163,12 +163,16 @@
         // Inicializa el JavaScript para los componentes de Material Design
         initializeMDC();
         
-        try {
-            // 1. CARGA DE DATOS: Hacemos las dos peticiones a la vez
+try {
+            // 1. CARGA DE DATOS
             const [tapeoResponse, eventosResponse] = await Promise.all([
-              fetch(TAPEO_CSV_URL),
-              fetch(EVENTOS_CSV_URL)
+              fetch(TAPEO_CSV_URL).catch(e => ({error: true, url: TAPEO_CSV_URL})),
+              fetch(EVENTOS_CSV_URL).catch(e => ({error: true, url: EVENTOS_CSV_URL}))
             ]);
+            
+            // Verificación individual de cada respuesta
+            if (!tapeoResponse.ok) throw new Error(`La URL de Tapeo no es válida o no se pudo acceder. Revisa esta URL: ${TAPEO_CSV_URL}`);
+            if (!eventosResponse.ok) throw new Error(`La URL de Eventos no es válida o no se pudo acceder. Revisa esta URL: ${EVENTOS_CSV_URL}`);
 
             const tapeoCsvText = await tapeoResponse.text();
             const eventosCsvText = await eventosResponse.text();
@@ -182,15 +186,13 @@
             renderCards(sitiosData, eventosMap);
 
         } catch (error) {
-            console.error("Error al cargar o procesar los datos:", error);
-            const container = document.getElementById('card-container');
+            console.error("Error detallado:", error);
             if (container) {
-                container.innerHTML = `<p style="color:red;">Error al cargar las recomendaciones. Por favor, inténtalo de nuevo más tarde.</p>`;
+                // Muestra el mensaje de error específico en la página
+                container.innerHTML = `<p style="color:red; font-weight:bold;">${error.message}</p>`;
             }
         }
       });
-      
-      // --- Funciones de ayuda para la inicialización ---
       
       /** Carga un fichero HTML y lo inyecta en un contenedor. */
       async function includeHTML(file, elementId) {
@@ -205,8 +207,7 @@
       
       /** Inicializa los componentes de Material Design y la navegación. */
       function initializeMDC() {
-        Array.from(document.querySelectorAll('.mdc-button, .mdc-icon-button, .mdc-list-item, .mdc-card__primary-action')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-        
+        mdc.autoInit();
         const drawerElement = document.querySelector('.mdc-drawer');
         const menuButton = document.querySelector('.mdc-top-app-bar__navigation-icon');
         if (drawerElement && menuButton) {
