@@ -352,35 +352,43 @@
         
             if (relatedEvents.length > 0) {
               const eventosCards = relatedEvents.map(eventoRow => {
-                // Extraemos todos los datos del evento usando COLS_EVENTOS
+                // --- DATOS BÁSICOS DEL EVENTO ---
                 const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
                 const hashtags = eventoRow[COLS_EVENTOS.eventoCulinarioHashtags];
-                const foto1 = eventoRow[COLS_EVENTOS.foto1];
-                const texto1 = eventoRow[COLS_EVENTOS.text1];
-                const foto2 = eventoRow[COLS_EVENTOS.foto2];
-                const texto2 = eventoRow[COLS_EVENTOS.text2];
-                const foto3 = eventoRow[COLS_EVENTOS.foto3];
-                const texto3 = eventoRow[COLS_EVENTOS.text3];
 
-                // Construimos el HTML para la imagen solo si existe un ID de foto
-                let imagenHtml = '';
-                if (fotoId) {
-                  const imageUrl = `https://drive.google.com/thumbnail?id=${fotoId}&sz=w600`;
-                  imagenHtml = `
-                    <div class="evento-card-image" style="background-image: url('${imageUrl}');">
-                      <div class="evento-card-image-caption">${fotoTexto || ''}</div>
+                // --- LÓGICA PARA LA GALERÍA DE FOTOS DEL EVENTO ---
+                const eventoGalleryData = [];
+                // Buscamos hasta 10 fotos para cada evento (puedes aumentar este número si lo necesitas)
+                for (let i = 1; i <= 10; i++) {
+                  const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
+                  const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
+                  
+                  if (fotoId) { // Si encontramos un ID de foto, lo añadimos
+                    eventoGalleryData.push({
+                      url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w600`,
+                      text: fotoTexto || ''
+                    });
+                  }
+                }
+                
+                // Generamos el HTML para todas las imágenes encontradas
+                let galeriaHtml = '';
+                if (eventoGalleryData.length > 0) {
+                  galeriaHtml = eventoGalleryData.map(item => `
+                    <div class="evento-card-image" style="background-image: url('${item.url}');">
+                      <div class="evento-card-image-caption">${item.text}</div>
                     </div>
-                  `;
+                  `).join('');
                 }
 
-                // Devolvemos la "tarjeta" completa para este evento
+                // --- DEVOLVEMOS LA TARJETA COMPLETA PARA ESTE EVENTO ---
                 return `
                   <div class="evento-card">
-                    ${imagenHtml}
                     <div class="evento-card-info">
                       <h4>${nombre || 'Evento sin nombre'}</h4>
                       <p>${hashtags || ''}</p>
                     </div>
+                    ${galeriaHtml}
                   </div>
                 `;
               }).join('');
