@@ -686,7 +686,7 @@
   opacity: 1;
 }
 
-/* === ESTILOS PARA TARJETAS DE EVENTOS RELACIONADOS === */
+/* === ESTILOS PARA TARJETAS DE EVENTOS RELACIONADOS (VERSIÓN MEJORADA) === */
 
 .full-detail-section {
   margin-top: 32px;
@@ -701,44 +701,29 @@
   margin-bottom: 24px;
 }
 
+/* Contenedor principal para la CUADRÍCULA DE EVENTOS */
 .eventos-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* Crea columnas automáticas de 350px, responsive */
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 24px;
 }
 
+/* Tarjeta individual para cada evento */
 .evento-card {
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-}
-
-.evento-card-image {
-  height: 180px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-}
-
-.evento-card-image-caption {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 8px;
-  font-size: 0.9rem;
-  text-align: center;
 }
 
 .evento-card-info {
   padding: 16px;
   text-align: center;
+  border-bottom: 1px solid #eee;
 }
 
 .evento-card-info h4 {
@@ -752,4 +737,48 @@
   margin: 0;
   color: #666;
   font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Contenedor para la CUADRÍCULA DE FOTOS DENTRO de cada tarjeta de evento */
+.evento-image-grid {
+    display: grid;
+    /* Crea 2 columnas por defecto, y 1 en tarjetas más pequeñas */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 5px;
+    padding: 10px;
+}
+
+/* Cada una de las fotos del evento */
+.evento-card-image {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  border-radius: 4px;
+  /* Hace que las imágenes sean cuadradas */
+  aspect-ratio: 1 / 1; 
+  overflow: hidden;
+}
+
+.evento-card-image-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 6px;
+  font-size: 0.8rem;
+  text-align: center;
+  
+  /* Efecto de aparición */
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Muestra el texto de la foto al pasar el ratón por encima */
+.evento-card-image:hover .evento-card-image-caption {
+  opacity: 1;
+  transform: translateY(0);
 }
