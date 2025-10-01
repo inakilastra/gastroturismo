@@ -302,11 +302,23 @@
                     for (let i = 1; i <= 10; i++) {
                         const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
                         const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
-                        if (fotoId) eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
+                        if (fotoId) {
+                            eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
+                        }
                     }
                     let galeriaHtmlInterna = '';
                     if (eventoGalleryData.length > 0) {
-                        const imagenesHtml = eventoGalleryData.map(item => `<div class="evento-card-image" style="background-image: url('${item.url}');" title="${item.text}" onclick="tapeo.openModal('${item.url}')"><div class="evento-card-image-caption">${item.text}</div></div>`).join('');
+                        const imagenesHtml = eventoGalleryData.map(item => {
+                            // Preparamos el texto para pasarlo de forma segura en el onclick
+                            const safeText = item.text.replace(/'/g, "\\'");
+                            return `
+                                <div class="evento-card-image" 
+                                     style="background-image: url('${item.url}');" 
+                                     title="${item.text}" 
+                                     onclick="tapeo.openModal('${item.url}', '${safeText}')">
+                                    <div class="evento-card-image-caption">${item.text}</div>
+                                </div>`;
+                        }).join('');
                         galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
                     }
                     return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''}</h4><p>${hashtags || ''}</p></div>${galeriaHtmlInterna}</div>`;
@@ -343,11 +355,14 @@
             showSlides(slideIndex);
         }
         
-        function openModal(imageUrl) {
+        function openModal(imageUrl, imageText) {
           const modal = document.getElementById('photo-modal');
           const modalImg = document.getElementById('modal-image');
-          if (modal && modalImg) {
+          const modalCaption = document.getElementById('modal-caption');
+
+          if (modal && modalImg && modalCaption) {
             modalImg.src = imageUrl.replace('&sz=w400', '&sz=w1600');
+            modalCaption.innerHTML = imageText || ''; // Añadimos el texto al caption
             modal.style.display = "flex";
             setTimeout(() => modal.classList.add('visible'), 10);
           }
@@ -355,9 +370,13 @@
 
         function closeModal() {
           const modal = document.getElementById('photo-modal');
+          const modalCaption = document.getElementById('modal-caption');
           if (modal) {
             modal.classList.remove('visible');
-            setTimeout(() => modal.style.display = "none", 300);
+            setTimeout(() => {
+                modal.style.display = "none";
+                modalCaption.innerHTML = ''; // Limpiamos el texto al cerrar
+            }, 300);
           }
         }
         
@@ -433,6 +452,7 @@
     <div id="photo-modal" class="modal-overlay" onclick="tapeo.closeModal()">
       <span class="modal-close" onclick="event.stopPropagation(); tapeo.closeModal()">&times;</span>
       <img class="modal-content" id="modal-image" onclick="event.stopPropagation();">
+      <div id="modal-caption"></div>
     </div>
 
 </body>
