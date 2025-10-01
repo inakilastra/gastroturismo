@@ -100,12 +100,11 @@
         }
       });
     </script>
-   <script>
+  <script>
       // =================================================================
       // SCRIPT DE CARGA Y RENDERIZADO DE DATOS PARA LA RUTA DE TAPEO
       // =================================================================
 
-      // 1. URL pública del fichero CSV de Google Sheets.
       const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
       const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
       
@@ -136,6 +135,38 @@
       }
     
       (function() {
+        // Lógica de la galería que movimos aquí
+        let slideIndex = 1;
+        
+        function plusSlides(n) {
+          showSlides(slideIndex += n);
+        }
+
+        function currentSlide(n) {
+          showSlides(slideIndex = n);
+        }
+
+        function showSlides(n) {
+          let i;
+          let slides = document.getElementsByClassName("mySlides");
+          let dots = document.getElementsByClassName("demo");
+          let captionText = document.getElementById("caption");
+          if (slides.length === 0) return;
+
+          if (n > slides.length) {slideIndex = 1}
+          if (n < 1) {slideIndex = slides.length}
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+          }
+          slides[slideIndex-1].style.display = "block";
+          dots[slideIndex-1].className += " active";
+          captionText.innerHTML = dots[slideIndex-1].alt;
+        }
+
+        // Resto de la lógica de la aplicación
         const state = { level: 'autonomias', selection: {}, history: [], currentSitios: [] };
         const elements = { 
           title: document.getElementById('tapeo-title'), grid: document.getElementById('tapeo-grid'), loading: document.getElementById('tapeo-loading'), 
@@ -147,17 +178,12 @@
         async function init() {
           try {
             const responses = await Promise.all([ fetch(CSV_URL), fetch(EVENTOS_CSV_URL) ]);
-            if (!responses[0].ok) { throw new Error(`Error de red al cargar Tapeo: ${responses[0].statusText}`); }
-            if (!responses[1].ok) { throw new Error(`Error de red al cargar Eventos: ${responses[1].statusText}`); }
+            if (!responses[0].ok) throw new Error(`Error de red: ${responses[0].statusText}`);
+            if (!responses[1].ok) throw new Error(`Error de red: ${responses[1].statusText}`);
             const [tapeoCsvText, eventosCsvText] = await Promise.all(responses.map(r => r.text()));
-            if (tapeoCsvText.length < 50) { throw new Error("El fichero CSV de Tapeo parece estar vacío."); }
-            if (eventosCsvText.length < 20) { console.warn("El fichero CSV de Eventos podría estar vacío."); }
             
-            const allTapeoRows = parseCSV(tapeoCsvText);
-            allTapeoData = allTapeoRows.slice(1);
-        
-            const allEventosRows = parseCSV(eventosCsvText);
-            allEventosData = allEventosRows.slice(1);
+            allTapeoData = parseCSV(tapeoCsvText).slice(1);
+            allEventosData = parseCSV(eventosCsvText).slice(1);
         
             eventosPorSitio = {};
             allEventosData.forEach(eventoRow => {
@@ -175,16 +201,15 @@
         }
     
         function renderStep() {
+          // ... (esta función no cambia, la puedes dejar como está) ...
           showLoading(true);
           let dataToProcess = allTapeoData;
           if (state.selection.autonomia) dataToProcess = dataToProcess.filter(row => row[COLS.autonomia] === state.selection.autonomia);
           if (state.selection.provincia) dataToProcess = dataToProcess.filter(row => row[COLS.provincia] === state.selection.provincia);
           if (state.selection.ciudad) dataToProcess = dataToProcess.filter(row => row[COLS.ciudad] === state.selection.ciudad);
           if (state.selection.barrio && state.selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[COLS.barrio] === state.selection.barrio);
-          
           elements.backButton.style.display = (state.history.length > 0) ? 'inline-flex' : 'none';
           renderBreadcrumbs();
-    
           if (state.level === 'sitios') {
             populateGridWithSitios(dataToProcess);
           } else {
@@ -202,6 +227,7 @@
         }
 
         function populateGridWithOptions(data) {
+          // ... (esta función no cambia) ...
           const config = levelsConfig[state.level];
           elements.title.textContent = config.title;
           elements.grid.innerHTML = '';
@@ -218,11 +244,11 @@
         }
         
         function populateGridWithSitios(data) {
+          // ... (esta función no cambia) ...
           elements.title.textContent = levelsConfig.sitios.title;
           elements.grid.innerHTML = '';
           const sortedData = data.sort((a, b) => (b[COLS.nota] || 0) - (a[COLS.nota] || 0));
           state.currentSitios = sortedData;
-          
           sortedData.forEach((row, index) => {
             const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
             let priceText = '';
@@ -230,7 +256,6 @@
             if (codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
             else if (codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
             else if (codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
-            
             const cardHtml = `
               <div class="sitio-card" style="grid-column: 1 / -1;">
                 ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
@@ -241,9 +266,7 @@
                   <hr class="styled-hr">
                   <div class="sitio-card-description">Qué se ofrece aquí:<br><br>${row[COLS.pintxo_tapa] || ''}</div>
                   <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
-                    <span class="mdc-button__ripple"></span>
-                    <i class="material-icons mdc-button__icon" aria-hidden="true">visibility</i>
-                    <span class="mdc-button__label"> Ver toda la información</span>
+                    <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">visibility</i><span class="mdc-button__label"> Ver toda la información</span>
                   </button>
                 </div>
               </div>`;
@@ -253,24 +276,17 @@
         
         function showDetail(index) {
             const siteRow = state.currentSitios[index];
-            const site = Object.keys(COLS).reduce((obj, key) => {
-                obj[key] = siteRow[COLS[key]];
-                return obj;
-            }, {});
+            const site = Object.keys(COLS).reduce((obj, key) => (obj[key] = siteRow[COLS[key]], obj), {});
             elements.selector.style.display = 'none';
             const galleryData = [];
             for (let i = 1; i <= 40; i++) {
                 const photoId = site[`foto${i}`];
                 const photoText = site[`text${i}`];
-                if (photoId) {
-                    galleryData.push({
-                        url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`,
-                        text: photoText || `Foto de ${site.nombre}`
-                    });
-                }
+                if (photoId) galleryData.push({ url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`, text: photoText || `Foto de ${site.nombre}` });
             }
             let galleryHtml = '';
             if (galleryData.length > 0) {
+                // CORRECCIÓN: Añadimos 'tapeo.' a las llamadas onclick
                 const slidesHtml = galleryData.map((item, i) => `<div class="mySlides"><div class="numbertext">${i + 1} / ${galleryData.length}</div><img src="${item.url}" style="width:100%" alt="${item.text}"></div>`).join('');
                 const thumbnailsHtml = galleryData.map((item, i) => `<div class="column"><img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="tapeo.currentSlide(${i + 1})" alt="${item.text}"></div>`).join('');
                 galleryHtml = `<div class="gallery-container">${slidesHtml}<a class="prev" onclick="tapeo.plusSlides(-1)">❮</a><a class="next" onclick="tapeo.plusSlides(1)">❯</a><div class="caption-container"><p id="caption"></p></div><div class="row">${thumbnailsHtml}</div></div>`;
@@ -286,16 +302,14 @@
                     for (let i = 1; i <= 10; i++) {
                         const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
                         const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
-                        if (fotoId) {
-                            eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
-                        }
+                        if (fotoId) eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
                     }
                     let galeriaHtmlInterna = '';
                     if (eventoGalleryData.length > 0) {
                         const imagenesHtml = eventoGalleryData.map(item => `<div class="evento-card-image" style="background-image: url('${item.url}');" title="${item.text}" onclick="tapeo.openModal('${item.url}')"><div class="evento-card-image-caption">${item.text}</div></div>`).join('');
                         galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
                     }
-                    return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || 'Evento sin nombre'}</h4><p>${hashtags || ''}</p></div>${galeriaHtmlInterna}</div>`;
+                    return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''}</h4><p>${hashtags || ''}</p></div>${galeriaHtmlInterna}</div>`;
                 }).join('');
                 const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
                 eventosHtml = `<div class="full-detail-section"><h3>Eventos Relacionados</h3><div class="${containerClass}">${eventosCards}</div></div>`;
@@ -312,14 +326,9 @@
                 ${galleryHtml}
                 <div class="full-detail-body">
                   <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
-                  <div class="full-detail-actions">
-                    ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
-                    ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
-                    ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
-                    ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
-                  </div>
-                  ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
-                  ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
+                  <div class="full-detail-actions">${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas</span></a>` : ''}${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Mapa</span></a>` : ''}${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Web</span></a>` : ''}</div>
+                  ${site.direccion ? `<p><i class="material-icons v-align">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
+                  ${site.horario ? `<p><i class="material-icons v-align">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
                   ${eventosHtml}
                 </div>
               </div>
@@ -328,8 +337,10 @@
             elements.detailContainer.innerHTML = detailHtml;
             elements.detailContainer.style.display = 'block';
             Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-            tapeo.slideIndex = 1;
-            tapeo.showSlides(tapeo.slideIndex);
+            
+            // CORRECCIÓN: Reiniciamos y mostramos los slides
+            slideIndex = 1; 
+            showSlides(slideIndex);
         }
         
         function openModal(imageUrl) {
@@ -381,6 +392,7 @@
         }
     
         function renderBreadcrumbs() {
+          // ... (esta función no cambia) ...
           if (!elements.breadcrumbs) return;
           const crumbs = [];
           if (state.selection.autonomia) crumbs.push(state.selection.autonomia);
@@ -391,6 +403,7 @@
         }
     
         function displayError(message) {
+          // ... (esta función no cambia) ...
           if (elements.loading) {
             elements.loading.style.display = 'flex';
             elements.loading.innerHTML = `<div style="color: #c62828; padding: 20px; border: 2px solid #ffcdd2; background-color: #ffebee; border-radius: 8px;"><h3>Ha ocurrido un error</h3><p>${message}</p></div>`;
@@ -398,32 +411,24 @@
         }
     
         function showLoading(isLoading) {
+          // ... (esta función no cambia) ...
           if (elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none';
           if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid';
         }
         
-        // --- LA SOLUCIÓN ESTÁ AQUÍ ---
-        // Exponemos TODAS las funciones necesarias en el objeto `tapeo`
         window.tapeo = { 
             handleSelection, 
             goBack, 
             showDetail, 
             hideDetail, 
-            openModal,      // <-- AÑADIDA
-            closeModal,     // <-- AÑADIDA
-            // También necesitamos exponer las funciones de la galería principal
-            plusSlides: (n) => showSlides(slideIndex += n),
-            currentSlide: (n) => showSlides(slideIndex = n),
-            // Y la propia variable y función showSlides, pero dentro del objeto
-            slideIndex: 1,
-            showSlides
+            openModal,
+            closeModal,
+            plusSlides,
+            currentSlide,
         };
     
         init();
       })();
-
-      // --- HEMOS MOVIDO LA LÓGICA DE LA GALERÍA DENTRO DEL BLOQUE PRINCIPAL ---
-      // Por tanto, este tercer bloque <script> ya no es necesario y se puede eliminar.
     </script>       
     <div id="photo-modal" class="modal-overlay" onclick="closeModal()">
       <span class="modal-close" onclick="closeModal()">&times;</span>
