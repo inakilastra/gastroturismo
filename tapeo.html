@@ -350,39 +350,35 @@
             const sitioId = site.idsitio; // Obtenemos el ID del sitio actual
             const relatedEvents = eventosPorSitio[sitioId] || []; // Buscamos en nuestro mapa
         
-          if (relatedEvents.length > 0) {
+            if (relatedEvents.length > 0) {
               const eventosCards = relatedEvents.map(eventoRow => {
-                // --- DATOS BÁSICOS DEL EVENTO ---
                 const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
                 const hashtags = eventoRow[COLS_EVENTOS.eventoCulinarioHashtags];
-
-                // --- LÓGICA PARA LA GALERÍA DE FOTOS DEL EVENTO ---
                 const eventoGalleryData = [];
                 for (let i = 1; i <= 10; i++) {
                   const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
                   const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
                   if (fotoId) {
                     eventoGalleryData.push({
-                      url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, // Reducimos un poco el tamaño para la cuadrícula
+                      url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`,
                       text: fotoTexto || ''
                     });
                   }
                 }
                 
-                // Generamos el HTML para la cuadrícula de imágenes
                 let galeriaHtml = '';
                 if (eventoGalleryData.length > 0) {
                   const imagenesHtml = eventoGalleryData.map(item => `
-                    <div class="evento-card-image" style="background-image: url('${item.url}');" title="${item.text}">
+                    <div class="evento-card-image" 
+                         style="background-image: url('${item.url}');" 
+                         title="${item.text}"
+                         onclick="openModal('${item.url}')"> {/* <-- LÍNEA MODIFICADA */}
                       <div class="evento-card-image-caption">${item.text}</div>
                     </div>
                   `).join('');
-
-                  // Envolvemos las imágenes en el nuevo contenedor de la cuadrícula
                   galeriaHtml = `<div class="evento-image-grid">${imagenesHtml}</div>`;
                 }
 
-                // --- DEVOLVEMOS LA TARJETA COMPLETA PARA ESTE EVENTO ---
                 return `
                   <div class="evento-card">
                     <div class="evento-card-info">
@@ -392,7 +388,7 @@
                     ${galeriaHtml}
                   </div>
                 `;
-              }).join('');
+              }).join('')
         
               eventosHtml = `
                 <div class="full-detail-section">
