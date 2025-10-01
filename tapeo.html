@@ -287,7 +287,7 @@
             elements.grid.insertAdjacentHTML('beforeend', cardHtml);
           });
         }
-        function showDetail(index) {           
+        /*function showDetail(index) {           
             const siteRow = state.currentSitios[index];
             const site = Object.keys(COLS).reduce((obj, key) => {
                 obj[key] = siteRow[COLS[key]];
@@ -392,7 +392,7 @@
               eventosHtml = `
                 <div class="full-detail-section">
                   <h3>Eventos Relacionados</h3>
-                  <div class="${containerClass}"> {/* <-- USAMOS LA CLASE DINÁMICA */}
+                  <div class="${containerClass}">
                     ${eventosCards}
                   </div>
                 </div>`;
@@ -450,21 +450,149 @@
             // INICIAMOS LA GALERÍA MOSTRANDO LA PRIMERA IMAGEN
             slideIndex = 1; // Reseteamos el índice por si acaso
             showSlides(slideIndex);
-        }
-        
-        function hideDetail() {
-          elements.detailContainer.style.display = 'none';
-          elements.detailContainer.innerHTML = '';
-          elements.selector.style.display = 'block';
+        }*/
+function showDetail(index) {
+            const siteRow = state.currentSitios[index];
+            const site = Object.keys(COLS).reduce((obj, key) => {
+                obj[key] = siteRow[COLS[key]];
+                return obj;
+            }, {});
+            elements.selector.style.display = 'none';
+            const galleryData = [];
+            for (let i = 1; i <= 40; i++) {
+                const photoId = site[`foto${i}`];
+                const photoText = site[`text${i}`];
+                if (photoId) {
+                    galleryData.push({
+                        url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`,
+                        text: photoText || `Foto de ${site.nombre}`
+                    });
+                }
+            }
+            let galleryHtml = '';
+            if (galleryData.length > 0) {
+                const slidesHtml = galleryData.map((item, i) => `
+                    <div class="mySlides">
+                        <div class="numbertext" style="background-color:#B2DFDB;color:#004D40;">${i + 1} / ${galleryData.length}</div>
+                        <img src="${item.url}" style="width:100%" alt="${item.text}">
+                    </div>
+                `).join('');
+                const thumbnailsHtml = galleryData.map((item, i) => `
+                    <div class="column">
+                        <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="currentSlide(${i + 1})" alt="${item.text}">
+                    </div>
+                `).join('');
+                galleryHtml = `
+                <div class="gallery-container">
+                    ${slidesHtml}
+                    <a class="prev" onclick="plusSlides(-1)">❮</a>
+                    <a class="next" onclick="plusSlides(1)">❯</a>
+                    <div class="caption-container" style="background-color:#B2DFDB;color:#004D40;">
+                        <p id="caption" style="background-color:#B2DFDB;color:#004D40;"></p>
+                    </div>
+                    <div class="row">
+                        ${thumbnailsHtml}
+                    </div>
+                </div>`;
+            }
+            let eventosHtml = '';
+            const sitioId = site.idsitio;
+            const relatedEvents = eventosPorSitio[sitioId] || [];
+            if (relatedEvents.length > 0) {
+                const eventosCards = relatedEvents.map(eventoRow => {
+                    const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
+                    const hashtags = eventoRow[COLS_EVENTOS.eventoCulinarioHashtags];
+                    const eventoGalleryData = [];
+                    for (let i = 1; i <= 10; i++) {
+                        const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
+                        const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
+                        if (fotoId) {
+                            eventoGalleryData.push({
+                                url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`,
+                                text: fotoTexto || ''
+                            });
+                        }
+                    }
+                    let galeriaHtmlInterna = '';
+                    if (eventoGalleryData.length > 0) {
+                        const imagenesHtml = eventoGalleryData.map(item => `
+                            <div class="evento-card-image" 
+                                 style="background-image: url('${item.url}');" 
+                                 title="${item.text}"
+                                 onclick="openModal('${item.url}')">
+                                <div class="evento-card-image-caption">${item.text}</div>
+                            </div>
+                        `).join('');
+                        galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
+                    }
+                    return `
+                        <div class="evento-card">
+                            <div class="evento-card-info">
+                                <h4>${nombre || 'Evento sin nombre'}</h4>
+                                <p>${hashtags || ''}</p>
+                            </div>
+                            ${galeriaHtmlInterna}
+                        </div>
+                    `;
+                }).join('');
+                const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
+                eventosHtml = `
+                    <div class="full-detail-section">
+                        <h3>Eventos Relacionados</h3>
+                        <div class="${containerClass}">
+                            ${eventosCards}
+                        </div>
+                    </div>`;
+            }
+            let priceText = '';
+            if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
+            else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
+            else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
+            const detailHtml = `
+              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
+              </button>
+              <div class="full-detail-card">
+                <div class="full-detail-header">
+                  <h2>${site.nombre || ''}</h2>
+                  <div class="full-detail-rating">${site.valoracion || ''}</div>
+                  <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
+                </div>
+                <div class="full-detail-actions">
+                  ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
+                </div>
+                ${galleryHtml}
+                <div class="full-detail-body">
+                  <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
+                  <div class="full-detail-actions">
+                    ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
+                    ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
+                    ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
+                    ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
+                  </div>
+                  ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
+                  ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
+                  ${eventosHtml}
+                </div>
+              </div>
+              <br /><br />
+              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
+              </button>`;
+            elements.detailContainer.innerHTML = detailHtml;
+            elements.detailContainer.style.display = 'block';
+            Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+            slideIndex = 1;
+            showSlides(slideIndex);
         }
 
         function openModal(imageUrl) {
           const modal = document.getElementById('photo-modal');
           const modalImg = document.getElementById('modal-image');
           if (modal && modalImg) {
-            // Usamos una versión de alta resolución de la imagen para el visor
             modalImg.src = imageUrl.replace('&sz=w400', '&sz=w1600');
-            modal.classList.add('visible');
+            modal.style.display = "flex"; // Usamos flex para centrar
+            setTimeout(() => modal.classList.add('visible'), 10);
           }
         }
 
@@ -472,7 +600,14 @@
           const modal = document.getElementById('photo-modal');
           if (modal) {
             modal.classList.remove('visible');
+            setTimeout(() => modal.style.display = "none", 300); // Espera a que termine la transición
           }
+        }          
+        
+        function hideDetail() {
+          elements.detailContainer.style.display = 'none';
+          elements.detailContainer.innerHTML = '';
+          elements.selector.style.display = 'block';
         }
           
         function handleSelection(selectionName, isAutoSelection = false) {
