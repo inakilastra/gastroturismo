@@ -758,6 +758,7 @@
   /* Hace que las imágenes sean cuadradas */
   aspect-ratio: 1 / 1; 
   overflow: hidden;
+  cursor: pointer; /* Añadimos el cursor para indicar que es clicable */
 }
 
 .evento-card-image-caption {
