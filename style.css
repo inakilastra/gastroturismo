@@ -846,3 +846,34 @@
   display: flex;
   justify-content: center;
 }
+
+/* === ESTILOS PARA EL TEXTO (CAPTION) DEL VISOR MODAL === */
+
+#modal-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  max-width: 70%;
+  padding: 15px 20px;
+  
+  text-align: center;
+  font-family: 'Special Elite', cursive;
+  font-size: 1.2rem;
+  color: white;
+  
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  
+  /* Animación para que aparezca suavemente */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
+}
+
+/* Cuando el modal es visible, el caption también lo es */
+.modal-overlay.visible #modal-caption {
+    opacity: 1;
+    transform: translateY(0);
+}
