@@ -462,7 +462,24 @@
           elements.detailContainer.innerHTML = '';
           elements.selector.style.display = 'block';
         }
-    
+
+        function openModal(imageUrl) {
+          const modal = document.getElementById('photo-modal');
+          const modalImg = document.getElementById('modal-image');
+          if (modal && modalImg) {
+            // Usamos una versión de alta resolución de la imagen para el visor
+            modalImg.src = imageUrl.replace('&sz=w400', '&sz=w1600');
+            modal.classList.add('visible');
+          }
+        }
+
+        function closeModal() {
+          const modal = document.getElementById('photo-modal');
+          if (modal) {
+            modal.classList.remove('visible');
+          }
+        }
+          
         function handleSelection(selectionName, isAutoSelection = false) {
           if (!isAutoSelection) { 
             state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
