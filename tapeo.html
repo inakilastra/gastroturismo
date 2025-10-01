@@ -100,7 +100,7 @@
         }
       });
     </script>
-    <script>
+   <script>
       // =================================================================
       // SCRIPT DE CARGA Y RENDERIZADO DE DATOS PARA LA RUTA DE TAPEO
       // =================================================================
@@ -108,29 +108,14 @@
       // 1. URL pública del fichero CSV de Google Sheets.
       const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
       const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
-        
-      let allTapeoData = []; // Variable global para almacenar todos los datos una vez cargados.
-      let allEventosData = []; // Para los datos de eventos.
-      let eventosPorSitio = {};  // Objeto para acceso rápido a eventos por idSitio.
-        
-      // 2. Mapeo de columnas para un acceso fácil a los datos.
+      
+      let allTapeoData = [];
+      let allEventosData = [];
+      let eventosPorSitio = {};
+      
       const COLS = { idsitio: 0, autonomia:	1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps:	12,	facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo:	17, tipo_lugar:	18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
-      // Mapeo para el CSV de Eventos (basado en tu imagen: B=eventoCulinario, D=idSitio)
-      const COLS_EVENTOS = {
-        eventoCulinario: 1, // Columna B
-        eventoCulinarioHashtags: 2,
-        idSitio: 3,          // Columna D
-        foto1:  4,	
-        text1: 5,         
-        foto2:  6,	
-        text2: 7,          
-        foto3:  8,	
-        text3: 9
-      };
-        
-      /**
-       * Parsea un texto completo en formato CSV.
-       */
+      const COLS_EVENTOS = { eventoCulinario: 1, eventoCulinarioHashtags: 2, idSitio: 3, foto1: 4, text1: 5, foto2: 6, text2: 7, foto3: 8, text3: 9 };
+      
       function parseCSV(csvText) {
           const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
           csvText = csvText.trim();
@@ -150,58 +135,39 @@
           return rows.map(row => row.map(field => field.trim()));
       }
     
-      // 3. Lógica principal de la aplicación.
       (function() {
         const state = { level: 'autonomias', selection: {}, history: [], currentSitios: [] };
         const elements = { 
-          title: document.getElementById('tapeo-title'), 
-          grid: document.getElementById('tapeo-grid'), 
-          loading: document.getElementById('tapeo-loading'), 
-          backButton: document.getElementById('tapeo-back-button'), 
-          breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
-          selector: document.getElementById('tapeo-selector'),
-          detailContainer: document.getElementById('tapeo-detail-container')
+          title: document.getElementById('tapeo-title'), grid: document.getElementById('tapeo-grid'), loading: document.getElementById('tapeo-loading'), 
+          backButton: document.getElementById('tapeo-back-button'), breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
+          selector: document.getElementById('tapeo-selector'), detailContainer: document.getElementById('tapeo-detail-container')
         };
         const levelsConfig = { autonomias: { title: '¿Dónde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias', key: COLS.autonomia }, provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades', key: COLS.provincia }, ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios', key: COLS.ciudad }, barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios', key: COLS.barrio }, sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null } };
     
         async function init() {
           try {
-            // Petición simultánea de ambos ficheros CSV
-            const responses = await Promise.all([
-              fetch(CSV_URL),
-              fetch(EVENTOS_CSV_URL)
-            ]);
-        
-            // Verificación de que ambas respuestas son correctas
+            const responses = await Promise.all([ fetch(CSV_URL), fetch(EVENTOS_CSV_URL) ]);
             if (!responses[0].ok) { throw new Error(`Error de red al cargar Tapeo: ${responses[0].statusText}`); }
             if (!responses[1].ok) { throw new Error(`Error de red al cargar Eventos: ${responses[1].statusText}`); }
-        
             const [tapeoCsvText, eventosCsvText] = await Promise.all(responses.map(r => r.text()));
-        
             if (tapeoCsvText.length < 50) { throw new Error("El fichero CSV de Tapeo parece estar vacío."); }
             if (eventosCsvText.length < 20) { console.warn("El fichero CSV de Eventos podría estar vacío."); }
             
-            // Parsear ambos textos
             const allTapeoRows = parseCSV(tapeoCsvText);
             allTapeoData = allTapeoRows.slice(1);
         
             const allEventosRows = parseCSV(eventosCsvText);
-            allEventosData = allEventosRows.slice(1); // Asumimos que también tiene cabecera
+            allEventosData = allEventosRows.slice(1);
         
-            // Pre-procesar eventos para una búsqueda rápida
-            eventosPorSitio = {}; // Reseteamos el mapa
+            eventosPorSitio = {};
             allEventosData.forEach(eventoRow => {
               const sitioId = eventoRow[COLS_EVENTOS.idSitio];
               if (sitioId) {
-                if (!eventosPorSitio[sitioId]) {
-                  eventosPorSitio[sitioId] = [];
-                }
+                if (!eventosPorSitio[sitioId]) { eventosPorSitio[sitioId] = []; }
                 eventosPorSitio[sitioId].push(eventoRow);
               }
             });
-            
-            renderStep(); // Renderizamos el primer paso como antes
-        
+            renderStep();
           } catch (error) {
             console.error("Error al inicializar:", error);
             displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
@@ -255,19 +221,16 @@
           elements.title.textContent = levelsConfig.sitios.title;
           elements.grid.innerHTML = '';
           const sortedData = data.sort((a, b) => (b[COLS.nota] || 0) - (a[COLS.nota] || 0));
-          state.currentSitios = sortedData; // Guardamos la lista actual para la vista de detalle
+          state.currentSitios = sortedData;
           
           sortedData.forEach((row, index) => {
             const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
             let priceText = '';
             const codprecio = row[COLS.codprecio];
-            if (codprecio == 10) {
-                priceText = 'El precio nos parece que está muy bien ✅';
-            } else if (codprecio == 11) {
-                priceText = 'El precio nos parece que es justo ⚖️';
-            } else if (codprecio == 12) {
-                priceText = 'El precio nos parece que es caro 💀';
-            }
+            if (codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
+            else if (codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
+            else if (codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
+            
             const cardHtml = `
               <div class="sitio-card" style="grid-column: 1 / -1;">
                 ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
@@ -287,171 +250,8 @@
             elements.grid.insertAdjacentHTML('beforeend', cardHtml);
           });
         }
-        /*function showDetail(index) {           
-            const siteRow = state.currentSitios[index];
-            const site = Object.keys(COLS).reduce((obj, key) => {
-                obj[key] = siteRow[COLS[key]];
-                return obj;
-            }, {});
-
-            elements.selector.style.display = 'none';
         
-            // --- MODIFICACIÓN 1: Crear un array de objetos (foto y texto) ---
-            // En lugar de un array simple de fotos, creamos uno más estructurado.
-            const galleryData = [];
-            // Iteramos por el número máximo de fotos que puedes tener (ajusta el 40 si es necesario).
-            for (let i = 1; i <= 40; i++) {
-                const photoId = site[`foto${i}`]; // Accedemos a site.foto1, site.foto2, etc.
-                const photoText = site[`text${i}`]; // Accedemos a site.text1, site.text2, etc.
-        
-                // Si existe un ID para la foto, creamos el objeto y lo añadimos.
-                if (photoId) {
-                    galleryData.push({
-                        url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`,
-                        text: photoText || `Foto de ${site.nombre}` // Usamos el texto específico o un texto por defecto.
-                    });
-                }
-            }
-            // Ya no necesitamos el antiguo array 'photos'. Ahora usamos 'galleryData'.
-        
-            // GENERAMOS EL HTML DE LA NUEVA GALERÍA
-            let galleryHtml = '';
-        
-            // --- MODIFICACIÓN 2: Usar 'galleryData' para generar el HTML ---
-            if (galleryData.length > 0) {
-                const slidesHtml = galleryData.map((item, i) => `
-                    <div class="mySlides">
-                        <div class="numbertext" style="background-color:#B2DFDB;color:#004D40;">${i + 1} / ${galleryData.length}</div>
-                        <img src="${item.url}" style="width:100%" alt="${item.text}">
-                    </div>
-                `).join('');
-        
-                const thumbnailsHtml = galleryData.map((item, i) => `
-                    <div class="column">
-                        <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="currentSlide(${i + 1})" alt="${item.text}">
-                    </div>
-                `).join('');
-        
-                galleryHtml = `
-                <div class="gallery-container">
-                    ${slidesHtml}
-                    <a class="prev" onclick="plusSlides(-1)">❮</a>
-                    <a class="next" onclick="plusSlides(1)">❯</a>
-                    <div class="caption-container" style="background-color:#B2DFDB;color:#004D40;">
-                        <p id="caption" style="background-color:#B2DFDB;color:#004D40;"></p>
-                    </div>
-                    <div class="row">
-                        ${thumbnailsHtml}
-                    </div>
-                </div>`;
-            }
-
-            let eventosHtml = '';
-            const sitioId = site.idsitio; // Obtenemos el ID del sitio actual
-            const relatedEvents = eventosPorSitio[sitioId] || []; // Buscamos en nuestro mapa
-        
-                        if (relatedEvents.length > 0) {
-              const eventosCards = relatedEvents.map(eventoRow => {
-                const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
-                const hashtags = eventoRow[COLS_EVENTOS.eventoCulinarioHashtags];
-                const eventoGalleryData = [];
-                for (let i = 1; i <= 10; i++) {
-                  const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
-                  const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
-                  if (fotoId) {
-                    eventoGalleryData.push({
-                      url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`,
-                      text: fotoTexto || ''
-                    });
-                  }
-                }
-                let galeriaHtml = '';
-                if (eventoGalleryData.length > 0) {
-                  const imagenesHtml = eventoGalleryData.map(item => `
-                    <div class="evento-card-image" style="background-image: url('${item.url}');" title="${item.text}" onclick="openModal('${item.url}')">
-                      <div class="evento-card-image-caption">${item.text}</div>
-                    </div>
-                  `).join('');
-                  galeriaHtml = `<div class="evento-image-grid">${imagenesHtml}</div>`;
-                }
-                return `
-                  <div class="evento-card">
-                    <div class="evento-card-info">
-                      <h4>${nombre || 'Evento sin nombre'}</h4>
-                      <p>${hashtags || ''}</p>
-                    </div>
-                    ${galeriaHtml}
-                  </div>
-                `;
-              }).join('');
-        
-              // --- LÓGICA DE CENTRADO ---
-              // Si hay más de un evento, usamos la clase normal. Si solo hay uno, añadimos 'single-event'.
-              const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
-
-              eventosHtml = `
-                <div class="full-detail-section">
-                  <h3>Eventos Relacionados</h3>
-                  <div class="${containerClass}">
-                    ${eventosCards}
-                  </div>
-                </div>`;
-            }
-            
-            // Calculamos el texto del precio
-            let priceText = '';
-            if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
-            else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
-            else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
-                
-            const detailHtml = `
-              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
-              </button>
-              <div class="full-detail-card">
-                <div class="full-detail-header">
-                  <h2>${site.nombre || ''}</h2>
-                  <div class="full-detail-rating">${site.valoracion || ''}</div>
-                  <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
-                </div>
-                
-                <div class="full-detail-actions">
-                  ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
-                </div>
-                
-                <!-- Aquí inyectamos la nueva galería -->
-                ${galleryHtml}
-    
-                <div class="full-detail-body">
-                  <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
-                  
-                  <div class="full-detail-actions">
-                    ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas Google</span></a>` : ''}
-                    ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Ver en Mapa</span></a>` : ''}
-                    ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}
-                    ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Página Web</span></a>` : ''}
-                  </div>
-    
-                  ${site.direccion ? `<p><i class="material-icons" style="vertical-align: middle;">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
-                  ${site.horario ? `<p><i class="material-icons" style="vertical-align: middle;">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''} 
-                  ${eventosHtml}
-                  
-                </div>
-              </div>
-              <br /><br />
-              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
-              </button>`;
-            
-            elements.detailContainer.innerHTML = detailHtml;
-            elements.detailContainer.style.display = 'block';
-            Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-            
-            // INICIAMOS LA GALERÍA MOSTRANDO LA PRIMERA IMAGEN
-            slideIndex = 1; // Reseteamos el índice por si acaso
-            showSlides(slideIndex);
-        }*/
-function showDetail(index) {
+        function showDetail(index) {
             const siteRow = state.currentSitios[index];
             const site = Object.keys(COLS).reduce((obj, key) => {
                 obj[key] = siteRow[COLS[key]];
@@ -471,29 +271,9 @@ function showDetail(index) {
             }
             let galleryHtml = '';
             if (galleryData.length > 0) {
-                const slidesHtml = galleryData.map((item, i) => `
-                    <div class="mySlides">
-                        <div class="numbertext" style="background-color:#B2DFDB;color:#004D40;">${i + 1} / ${galleryData.length}</div>
-                        <img src="${item.url}" style="width:100%" alt="${item.text}">
-                    </div>
-                `).join('');
-                const thumbnailsHtml = galleryData.map((item, i) => `
-                    <div class="column">
-                        <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="currentSlide(${i + 1})" alt="${item.text}">
-                    </div>
-                `).join('');
-                galleryHtml = `
-                <div class="gallery-container">
-                    ${slidesHtml}
-                    <a class="prev" onclick="plusSlides(-1)">❮</a>
-                    <a class="next" onclick="plusSlides(1)">❯</a>
-                    <div class="caption-container" style="background-color:#B2DFDB;color:#004D40;">
-                        <p id="caption" style="background-color:#B2DFDB;color:#004D40;"></p>
-                    </div>
-                    <div class="row">
-                        ${thumbnailsHtml}
-                    </div>
-                </div>`;
+                const slidesHtml = galleryData.map((item, i) => `<div class="mySlides"><div class="numbertext">${i + 1} / ${galleryData.length}</div><img src="${item.url}" style="width:100%" alt="${item.text}"></div>`).join('');
+                const thumbnailsHtml = galleryData.map((item, i) => `<div class="column"><img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="tapeo.currentSlide(${i + 1})" alt="${item.text}"></div>`).join('');
+                galleryHtml = `<div class="gallery-container">${slidesHtml}<a class="prev" onclick="tapeo.plusSlides(-1)">❮</a><a class="next" onclick="tapeo.plusSlides(1)">❯</a><div class="caption-container"><p id="caption"></p></div><div class="row">${thumbnailsHtml}</div></div>`;
             }
             let eventosHtml = '';
             const sitioId = site.idsitio;
@@ -507,60 +287,28 @@ function showDetail(index) {
                         const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
                         const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
                         if (fotoId) {
-                            eventoGalleryData.push({
-                                url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`,
-                                text: fotoTexto || ''
-                            });
+                            eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
                         }
                     }
                     let galeriaHtmlInterna = '';
                     if (eventoGalleryData.length > 0) {
-                        const imagenesHtml = eventoGalleryData.map(item => `
-                            <div class="evento-card-image" 
-                                 style="background-image: url('${item.url}');" 
-                                 title="${item.text}"
-                                 onclick="openModal('${item.url}')">
-                                <div class="evento-card-image-caption">${item.text}</div>
-                            </div>
-                        `).join('');
+                        const imagenesHtml = eventoGalleryData.map(item => `<div class="evento-card-image" style="background-image: url('${item.url}');" title="${item.text}" onclick="tapeo.openModal('${item.url}')"><div class="evento-card-image-caption">${item.text}</div></div>`).join('');
                         galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
                     }
-                    return `
-                        <div class="evento-card">
-                            <div class="evento-card-info">
-                                <h4>${nombre || 'Evento sin nombre'}</h4>
-                                <p>${hashtags || ''}</p>
-                            </div>
-                            ${galeriaHtmlInterna}
-                        </div>
-                    `;
+                    return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || 'Evento sin nombre'}</h4><p>${hashtags || ''}</p></div>${galeriaHtmlInterna}</div>`;
                 }).join('');
                 const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
-                eventosHtml = `
-                    <div class="full-detail-section">
-                        <h3>Eventos Relacionados</h3>
-                        <div class="${containerClass}">
-                            ${eventosCards}
-                        </div>
-                    </div>`;
+                eventosHtml = `<div class="full-detail-section"><h3>Eventos Relacionados</h3><div class="${containerClass}">${eventosCards}</div></div>`;
             }
             let priceText = '';
             if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
             else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
             else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
             const detailHtml = `
-              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
-              </button>
+              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span></button>
               <div class="full-detail-card">
-                <div class="full-detail-header">
-                  <h2>${site.nombre || ''}</h2>
-                  <div class="full-detail-rating">${site.valoracion || ''}</div>
-                  <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
-                </div>
-                <div class="full-detail-actions">
-                  ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}
-                </div>
+                <div class="full-detail-header"><h2>${site.nombre || ''}</h2><div class="full-detail-rating">${site.valoracion || ''}</div><div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div></div>
+                <div class="full-detail-actions">${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}</div>
                 ${galleryHtml}
                 <div class="full-detail-body">
                   <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
@@ -576,22 +324,20 @@ function showDetail(index) {
                 </div>
               </div>
               <br /><br />
-              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
-                <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span>
-              </button>`;
+              <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span></button>`;
             elements.detailContainer.innerHTML = detailHtml;
             elements.detailContainer.style.display = 'block';
             Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-            slideIndex = 1;
-            showSlides(slideIndex);
+            tapeo.slideIndex = 1;
+            tapeo.showSlides(tapeo.slideIndex);
         }
-
+        
         function openModal(imageUrl) {
           const modal = document.getElementById('photo-modal');
           const modalImg = document.getElementById('modal-image');
           if (modal && modalImg) {
             modalImg.src = imageUrl.replace('&sz=w400', '&sz=w1600');
-            modal.style.display = "flex"; // Usamos flex para centrar
+            modal.style.display = "flex";
             setTimeout(() => modal.classList.add('visible'), 10);
           }
         }
@@ -600,37 +346,16 @@ function showDetail(index) {
           const modal = document.getElementById('photo-modal');
           if (modal) {
             modal.classList.remove('visible');
-            setTimeout(() => modal.style.display = "none", 300); // Espera a que termine la transición
+            setTimeout(() => modal.style.display = "none", 300);
           }
-        }          
+        }
         
         function hideDetail() {
           elements.detailContainer.style.display = 'none';
           elements.detailContainer.innerHTML = '';
           elements.selector.style.display = 'block';
         }
-
-        function openModal(imageUrl) {
-          const modal = document.getElementById('photo-modal');
-          const modalImg = document.getElementById('modal-image');
-          if (modal && modalImg) {
-            // Usamos una versión de alta resolución de la imagen para el visor
-            modalImg.src = imageUrl.replace('&sz=w400', '&sz=w1600');
-            modal.style.display = "flex"; // Usamos flex para centrar
-            // Pequeño retardo para que la transición CSS funcione al añadir la clase
-            setTimeout(() => modal.classList.add('visible'), 10);
-          }
-        }
-
-        function closeModal() {
-          const modal = document.getElementById('photo-modal');
-          if (modal) {
-            modal.classList.remove('visible');
-            // Esperamos a que termine la animación de fade-out antes de ocultarlo
-            setTimeout(() => modal.style.display = "none", 300); 
-          }
-        }
-          
+        
         function handleSelection(selectionName, isAutoSelection = false) {
           if (!isAutoSelection) { 
             state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
@@ -677,45 +402,29 @@ function showDetail(index) {
           if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid';
         }
         
-        window.tapeo = { handleSelection, goBack, showDetail, hideDetail };
+        // --- LA SOLUCIÓN ESTÁ AQUÍ ---
+        // Exponemos TODAS las funciones necesarias en el objeto `tapeo`
+        window.tapeo = { 
+            handleSelection, 
+            goBack, 
+            showDetail, 
+            hideDetail, 
+            openModal,      // <-- AÑADIDA
+            closeModal,     // <-- AÑADIDA
+            // También necesitamos exponer las funciones de la galería principal
+            plusSlides: (n) => showSlides(slideIndex += n),
+            currentSlide: (n) => showSlides(slideIndex = n),
+            // Y la propia variable y función showSlides, pero dentro del objeto
+            slideIndex: 1,
+            showSlides
+        };
     
         init();
       })();
-    </script> 
-    <script>
-      // ===============================================================
-      // SCRIPT PARA LA LÓGICA DE LA NUEVA SLIDESHOW GALLERY
-      // ===============================================================
-      let slideIndex = 1;
 
-      function plusSlides(n) {
-        showSlides(slideIndex += n);
-      }
-
-      function currentSlide(n) {
-        showSlides(slideIndex = n);
-      }
-
-      function showSlides(n) {
-        let i;
-        let slides = document.getElementsByClassName("mySlides");
-        let dots = document.getElementsByClassName("demo");
-        let captionText = document.getElementById("caption");
-        if (slides.length === 0) return; // Salir si no hay galería en la página
-
-        if (n > slides.length) {slideIndex = 1}
-        if (n < 1) {slideIndex = slides.length}
-        for (i = 0; i < slides.length; i++) {
-          slides[i].style.display = "none";
-        }
-        for (i = 0; i < dots.length; i++) {
-          dots[i].className = dots[i].className.replace(" active", "");
-        }
-        slides[slideIndex-1].style.display = "block";
-        dots[slideIndex-1].className += " active";
-        captionText.innerHTML = dots[slideIndex-1].alt;
-      }
-    </script>        
+      // --- HEMOS MOVIDO LA LÓGICA DE LA GALERÍA DENTRO DEL BLOQUE PRINCIPAL ---
+      // Por tanto, este tercer bloque <script> ya no es necesario y se puede eliminar.
+    </script>       
     <div id="photo-modal" class="modal-overlay" onclick="closeModal()">
       <span class="modal-close" onclick="closeModal()">&times;</span>
       <img class="modal-content" id="modal-image">
