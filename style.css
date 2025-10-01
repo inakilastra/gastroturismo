@@ -770,17 +770,6 @@
   padding: 6px;
   font-size: 0.8rem;
   text-align: center;
-  
-  /* Efecto de aparición */
-  opacity: 0;
-  transform: translateY(100%);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* Muestra el texto de la foto al pasar el ratón por encima */
-.evento-card-image:hover .evento-card-image-caption {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* === ESTILOS PARA EL VISOR DE FOTOS MODAL (LIGHTBOX) === */
