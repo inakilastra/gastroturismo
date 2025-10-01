@@ -840,3 +840,9 @@
   color: #bbb;
   text-decoration: none;
 }
+
+/* Centra el contenedor si solo hay una tarjeta de evento */
+.eventos-container.single-event {
+  display: flex;
+  justify-content: center;
+}
