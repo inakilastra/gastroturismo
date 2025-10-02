@@ -297,6 +297,7 @@
             if (relatedEvents.length > 0) {
                 const eventosCards = relatedEvents.map(eventoRow => {
                     const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
+                    const anyo = eventoRow[COLS_EVENTOS.anyo];
                     const hashtags = eventoRow[COLS_EVENTOS.eventoCulinarioHashtags];
                     const eventoGalleryData = [];
                     for (let i = 1; i <= 10; i++) {
@@ -321,7 +322,7 @@
                         }).join('');
                         galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
                     }
-                    return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''}</h4><p>${hashtags || ''}</p></div>${galeriaHtmlInterna}</div>`;
+                    return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${hashtags || ''}</p></div>${galeriaHtmlInterna}</div>`;
                 }).join('');
                 const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
                 eventosHtml = `<div class="full-detail-section"><h3>Eventos Relacionados</h3><div class="${containerClass}">${eventosCards}</div></div>`;
