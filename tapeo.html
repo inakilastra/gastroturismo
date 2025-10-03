@@ -114,7 +114,7 @@
       let eventosPorSitio = {};
       
       const COLS = { idsitio: 0, autonomia:	1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps:	12,	facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo:	17, tipo_lugar:	18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
-      const COLS_EVENTOS = { eventoCulinario: 1, eventoCulinarioHashtags: 4, idSitio: 5, anyo: 6, foto1: 7, text1: 8, foto2: 9, text2: 10, foto3: 11, text3: 12, foto4: 13, text4: 14, foto5: 15, text5: 16, foto6: 17, text6: 18, foto7: 19, text7: 20, foto8: 21, text8: 22, foto9: 23, text9: 24, foto10: 25, text10: 26, foto11: 27, text11: 28, foto12: 29, text12: 30, foto13: 31, text13: 32, foto14: 33, text14: 34, foto15: 35, text15: 36, foto16: 37, text16: 38, foto17: 39, text17: 40, foto18: 41, text18: 42, foto19:43, text19: 44, foto20: 45, text20:46 };
+      const COLS_EVENTOS = { eventoCulinario: 1, eventoCulinarioDescripcion: 4, idSitio: 5, anyo: 6, foto1: 7, text1: 8, foto2: 9, text2: 10, foto3: 11, text3: 12, foto4: 13, text4: 14, foto5: 15, text5: 16, foto6: 17, text6: 18, foto7: 19, text7: 20, foto8: 21, text8: 22, foto9: 23, text9: 24, foto10: 25, text10: 26, foto11: 27, text11: 28, foto12: 29, text12: 30, foto13: 31, text13: 32, foto14: 33, text14: 34, foto15: 35, text15: 36, foto16: 37, text16: 38, foto17: 39, text17: 40, foto18: 41, text18: 42, foto19:43, text19: 44, foto20: 45, text20:46 };
 
       function parseCSV(csvText) {
           const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
@@ -299,7 +299,7 @@
                 const eventosCards = relatedEvents.map(eventoRow => {
                     const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
                     const anyo = eventoRow[COLS_EVENTOS.anyo];
-                    const hashtags = eventoRow[COLS_EVENTOS.eventoCulinarioHashtags];
+                    const descripcion = eventoRow[COLS_EVENTOS.eventoCulinarioDescripcion];
                     const eventoGalleryData = [];
                     for (let i = 1; i <= 20; i++) {
                         const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
@@ -323,7 +323,7 @@
                         }).join('');
                         galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
                     }
-                    return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''}<br>${anyo || ''}</h4><p>${hashtags || ''}</p></div>${galeriaHtmlInterna}</div>`;
+                    return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''}<br>${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;
                 }).join('');
                 const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
                 eventosHtml = `<div class="full-detail-section"><h3>Eventos Habituales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
