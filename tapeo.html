@@ -181,13 +181,14 @@
     
         async function init() {
           try {
-            const responses = await Promise.all([ fetch(CSV_URL), fetch(EVENTOS_CSV_URL) ]);
+            const responses = await Promise.all([ fetch(CSV_URL), fetch(EVENTOS_CSV_URL), fetch(EVENTOSPUNTUALES_CSV_URL) ]);
             if (!responses[0].ok) throw new Error(`Error de red: ${responses[0].statusText}`);
             if (!responses[1].ok) throw new Error(`Error de red: ${responses[1].statusText}`);
-            const [tapeoCsvText, eventosCsvText] = await Promise.all(responses.map(r => r.text()));
+            const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all(responses.map(r => r.text()));
             
             allTapeoData = parseCSV(tapeoCsvText).slice(1);
             allEventosData = parseCSV(eventosCsvText).slice(1);
+            allEventosPuntualesData = parseCSV(eventosPuntualesCsvText).slice(1);
         
             eventosPorSitio = {};
             allEventosData.forEach(eventoRow => {
@@ -197,6 +198,14 @@
                 eventosPorSitio[sitioId].push(eventoRow);
               }
             });
+            eventosPuntualesPorSitio = {};
+            allEventosPuntualesData.forEach(eventoPuntualesRow => {
+              const sitioId = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.idSitio];
+              if (sitioId) {
+                if (!eventosPuntualesPorSitio[sitioId]) { eventosPuntualesPorSitio[sitioId] = []; }
+                eventosPuntualesPorSitio[sitioId].push(eventoPuntualesRow);
+              }
+            }); 
             renderStep();
           } catch (error) {
             console.error("Error al inicializar:", error);
