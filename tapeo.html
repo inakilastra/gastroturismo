@@ -342,7 +342,7 @@
             }
             let eventosPuntualesHtml = '';
             const sitioIdPuntuales = site.idsitio;
-            const relatedEventsPuntuales = eventosPuntualesPorSitio[sitioId] || [];
+            const relatedEventsPuntuales = eventosPuntualesPorSitio[sitioIdPuntuales] || [];
             if (relatedEventsPuntuales.length > 0) {
                 const eventosCards = relatedEventsPuntuales.map(eventoPuntualesRow => {
                     const nombre = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinario];
