@@ -346,12 +346,12 @@
             if (relatedEventsPuntuales.length > 0) {
                 const eventosCards = relatedEventsPuntuales.map(eventoPuntualesRow => {
                     const nombre = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.eventoCulinario];
-                    const anyo = eventoRow[COLS_EVENTOSPUNTUALES.anyo];
-                    const descripcion = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];
+                    const anyo = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.anyo];
+                    const descripcion = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];
                     const eventoGalleryData = [];
                     for (let i = 1; i <= 20; i++) {
-                        const fotoId = eventoRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];
-                        const fotoTexto = eventoRow[COLS_EVENTOSPUNTUALES[`text${i}`]];
+                        const fotoId = eventoPuntualesRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];
+                        const fotoTexto = eventoPuntualesRow[COLS_EVENTOSPUNTUALES[`text${i}`]];
                         if (fotoId) {
                             eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
                         }
