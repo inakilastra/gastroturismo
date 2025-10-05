@@ -340,6 +340,42 @@
                 const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
                 eventosHtml = `<div class="full-detail-section"><h3>Eventos Habituales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
             }
+            let eventosPuntualesHtml = '';
+            const sitioId = site.idsitio;
+            const relatedEventsPuntuales = eventosPuntualesPorSitio[sitioId] || [];
+            if (relatedEventsPuntuales.length > 0) {
+                const eventosCards = relatedEventsPuntuales.map(eventoPuntualesRow => {
+                    const nombre = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinario];
+                    const anyo = eventoRow[COLS_EVENTOSPUNTUALES.anyo];
+                    const descripcion = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];
+                    const eventoGalleryData = [];
+                    for (let i = 1; i <= 20; i++) {
+                        const fotoId = eventoRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];
+                        const fotoTexto = eventoRow[COLS_EVENTOSPUNTUALES[`text${i}`]];
+                        if (fotoId) {
+                            eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
+                        }
+                    }
+                    let galeriaHtmlInterna = '';
+                    if (eventoGalleryData.length > 0) {
+                        const imagenesHtml = eventoGalleryData.map(item => {
+                            // Preparamos el texto para pasarlo de forma segura en el onclick
+                            const safeText = item.text.replace(/'/g, "\\'");
+                            return `
+                                <div class="evento-card-image" 
+                                     style="background-image: url('${item.url}');" 
+                                     title="${item.text}" 
+                                     onclick="tapeo.openModal('${item.url}', '${safeText}')">
+                                    <div class="evento-card-image-caption">${item.text}</div>
+                                </div>`;
+                        }).join('');
+                        galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
+                    }
+                    return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;
+                }).join('');
+                const containerClass = relatedEventsPuntuales.length > 1 ? 'eventos-container' : 'eventos-container single-event';
+                eventosuntualesHtml = `<div class="full-detail-section"><h3>Eventos Habituales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
+            }
             let priceText = '';
             if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
             else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
@@ -356,6 +392,7 @@
                   ${site.direccion ? `<p><i class="material-icons v-align">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
                   ${site.horario ? `<p><i class="material-icons v-align">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
                   ${eventosHtml}
+                  ${eventosuntualesHtml}
                 </div>
               </div>
               <br /><br />
