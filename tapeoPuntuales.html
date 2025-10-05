@@ -182,8 +182,10 @@
         async function init() {
           try {
             const responses = await Promise.all([ fetch(CSV_URL), fetch(EVENTOS_CSV_URL), fetch(EVENTOSPUNTUALES_CSV_URL) ]);
-            if (!responses[0].ok) throw new Error(`Error de red: ${responses[0].statusText}`);
-            if (!responses[1].ok) throw new Error(`Error de red: ${responses[1].statusText}`);
+            for (const response of responses) {
+                if (!response.ok) throw new Error(`Error de red: ${response.statusText} en ${response.url}`);
+            }
+            
             const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all(responses.map(r => r.text()));
             
             allTapeoData = parseCSV(tapeoCsvText).slice(1);
@@ -341,17 +343,16 @@
                 eventosHtml = `<div class="full-detail-section"><h3>Eventos Habituales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
             }
             let eventosPuntualesHtml = '';
-            const sitioIdPuntuales = site.idsitio;
-            const relatedEventsPuntuales = eventosPuntualesPorSitio[sitioIdPuntuales] || [];
+            const relatedEventsPuntuales = eventosPuntualesPorSitio[sitioId] || [];
             if (relatedEventsPuntuales.length > 0) {
-                const eventosCards = relatedEventsPuntuales.map(eventoPuntualesRow => {
-                    const nombre = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.eventoCulinario];
-                    const anyo = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.anyo];
-                    const descripcion = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];
+                const eventosCards = relatedEventsPuntuales.map(eventoRow => {
+                    const nombre = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinario];
+                    const anyo = eventoRow[COLS_EVENTOSPUNTUALES.anyo];
+                    const descripcion = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];
                     const eventoGalleryData = [];
                     for (let i = 1; i <= 20; i++) {
-                        const fotoId = eventoPuntualesRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];
-                        const fotoTexto = eventoPuntualesRow[COLS_EVENTOSPUNTUALES[`text${i}`]];
+                        const fotoId = eventoRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];
+                        const fotoTexto = eventoRow[COLS_EVENTOSPUNTUALES[`text${i}`]];
                         if (fotoId) {
                             eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
                         }
