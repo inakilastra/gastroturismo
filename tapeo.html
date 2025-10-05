@@ -374,7 +374,7 @@
                     return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;
                 }).join('');
                 const containerClass = relatedEventsPuntuales.length > 1 ? 'eventos-container' : 'eventos-container single-event';
-                eventosuntualesHtml = `<div class="full-detail-section"><h3>Eventos Puntuales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
+                eventosPuntualesHtml = `<div class="full-detail-section"><h3>Eventos Puntuales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
             }
             let priceText = '';
             if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
