@@ -155,246 +155,418 @@
                         slides[i].style.display = "none";
                     }
                     for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
-  }
-  slides[slideIndex-1].style.display = "block";
-  dots[slideIndex-1].className += " active";
-  captionText.innerHTML = dots[slideIndex-1].alt;
-}
+                        dots[i].className = dots[i].className.replace(" active", "");
+                    }
+                    slides[slideIndex-1].style.display = "block";
+                    dots[slideIndex-1].className += " active";
+                    captionText.innerHTML = dots[slideIndex-1].alt;
+                }
+                // Resto de la lógica de la aplicación
+                const state = { level: 'autonomias', selection: {}, history: [], currentSitios: [] };
+                const elements = {
+                    title: document.getElementById('tapeo-title'), grid: document.getElementById('tapeo-grid'), loading: document.getElementById('tapeo-loading'),
+                    backButton: document.getElementById('tapeo-back-button'), breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
+                    selector: document.getElementById('tapeo-selector'), detailContainer: document.getElementById('tapeo-detail-container')
+                };
+                const levelsConfig = { autonomias: { title: '¿Dónde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias', key: COLS.autonomia }, provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades', key: COLS.provincia }, ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios', key: COLS.ciudad }, barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios', key: COLS.barrio }, sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null } };
 
+                async function init() {
+                    try {
+                        const responses = await Promise.all([ fetch(CSV_URL), fetch(EVENTOS_CSV_URL), fetch(EVENTOSPUNTUALES_CSV_URL) ]);
+                        for (const response of responses) {
+                            if (!response.ok) throw new Error(`Error de red: ${response.statusText} en ${response.url}`);
+                        }
+                        const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all(responses.map(r => r.text()));
+                        allTapeoData = parseCSV(tapeoCsvText).slice(1);
+                        allEventosData = parseCSV(eventosCsvText).slice(1);
+                        allEventosPuntualesData = parseCSV(eventosPuntualesCsvText).slice(1);
+                        eventosPorSitio = {};
+                        allEventosData.forEach(eventoRow => {
+                            const sitioId = eventoRow[COLS_EVENTOS.idSitio];
+                            if (sitioId) {
+                                if (!eventosPorSitio[sitioId]) { eventosPorSitio[sitioId] = []; }
+                                eventosPorSitio[sitioId].push(eventoRow);
+                            }
+                        });
+                        eventosPuntualesPorSitio = {};
+                        allEventosPuntualesData.forEach(eventoPuntualesRow => {
+                            const sitioId = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.idSitio];
+                            if (sitioId) {
+                                if (!eventosPuntualesPorSitio[sitioId]) { eventosPuntualesPorSitio[sitioId] = []; }
+                                eventosPuntualesPorSitio[sitioId].push(eventoPuntualesRow);
+                            }
+                        });
+                        renderStep();
+                    } catch (error) {
+                        console.error("Error al inicializar:", error);
+                        displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
+                    }
+                }
 
-// Resto de la lógica de la aplicación
-const state = { level: 'autonomias', selection: {}, history: [], currentSitios: [] };
-const elements = { 
-  title: document.getElementById('tapeo-title'), grid: document.getElementById('tapeo-grid'), loading: document.getElementById('tapeo-loading'), 
-  backButton: document.getElementById('tapeo-back-button'), breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
-  selector: document.getElementById('tapeo-selector'), detailContainer: document.getElementById('tapeo-detail-container')
-};
-const levelsConfig = { autonomias: { title: '¿Dónde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias', key: COLS.autonomia }, provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades', key: COLS.provincia }, ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios', key: COLS.ciudad }, barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios', key: COLS.barrio }, sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null } };
+                function renderStep() {
+                    showLoading(true);
+                    let dataToProcess = allTapeoData;
+                    if (state.selection.autonomia) dataToProcess = dataToProcess.filter(row => row[COLS.autonomia] === state.selection.autonomia);
+                    if (state.selection.provincia) dataToProcess = dataToProcess.filter(row => row[COLS.provincia] === state.selection.provincia);
+                    if (state.selection.ciudad) dataToProcess = dataToProcess.filter(row => row[COLS.ciudad] === state.selection.ciudad);
+                    if (state.selection.barrio && state.selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[COLS.barrio] === state.selection.barrio);
+                    elements.backButton.style.display = (state.history.length > 0) ? 'inline-flex' : 'none';
+                    renderBreadcrumbs();
+                    if (state.level === 'sitios') {
+                        populateGridWithSitios(dataToProcess);
+                    } else {
+                        const colKey = levelsConfig[state.level].key;
+                        let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
+                        if (state.level === 'barrios' && uniqueValues.length > 1) { uniqueValues.unshift('Todos'); }
+                        if (uniqueValues.length === 1 && state.level !== 'sitios') {
+                            state.history.push({ level: state.level, selection: { ...state.selection }, skipped: true });
+                            handleSelection(uniqueValues[0], true);
+                            return;
+                        }
+                        populateGridWithOptions(uniqueValues);
+                    }
+                    showLoading(false);
+                }
 
-    
-async function init() {
-  try {
-    const responses = await Promise.all([ fetch(CSV_URL), fetch(EVENTOS_CSV_URL), fetch(EVENTOSPUNTUALES_CSV_URL) ]);
-    for (const response of responses) {              if (!response.ok) throw new Error(`Error de red: ${response.statusText} en ${response.url}`);
-    }
-    
-    const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all(responses.map(r => r.text()));
-    
-    allTapeoData = parseCSV(tapeoCsvText).slice(1);
-    allEventosData = parseCSV(eventosCsvText).slice(1);
-    allEventosPuntualesData = parseCSV(eventosPuntualesCsvText).slice(1);
-              
-    eventosPorSitio = {};
-    allEventosData.forEach(eventoRow => {            const sitioId = eventoRow[COLS_EVENTOS.idSitio];            if (sitioId) {              if (!eventosPorSitio[sitioId]) { eventosPorSitio[sitioId] = []; }              eventosPorSitio[sitioId].push(eventoRow);            }
-    });
-    eventosPuntualesPorSitio = {};
-    allEventosPuntualesData.forEach(eventoPuntualesRow => {            const sitioId = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.idSitio];            if (sitioId) {              if (!eventosPuntualesPorSitio[sitioId]) { eventosPuntualesPorSitio[sitioId] = []; }              eventosPuntualesPorSitio[sitioId].push(eventoPuntualesRow);            }
-    }); 
-    renderStep();
-  } catch (error) {
-    console.error("Error al inicializar:", error);
-    displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
-  }
-}
+                function populateGridWithOptions(data) {
+                    const config = levelsConfig[state.level];
+                    elements.title.textContent = config.title;
+                    elements.grid.innerHTML = '';
+                    data.forEach(item => {
+                        const cardHtml = `
+                            <div class="mdc-card category-card" onclick="tapeo.handleSelection('${item.replace(/'/g, "\\'")}')">
+                                <div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;">
+                                    <div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div>
+                                    <h3 class="category-card__title">${item}</h3>
+                                </div>
+                            </div>`;
+                        elements.grid.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                }
+            
+                function populateGridWithSitios(data) {
+                    elements.title.textContent = levelsConfig.sitios.title;
+                    elements.grid.innerHTML = '';
+                    const sortedData = data.sort((a, b) => (b[COLS.nota] || 0) - (a[COLS.nota] || 0));
+                    state.currentSitios = sortedData;
+                    sortedData.forEach((row, index) => {
+                        const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
+                        let priceText = '';
+                        const codprecio = row[COLS.codprecio];
+                        if (codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
+                        else if (codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
+                        else if (codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
+                        const cardHtml = `
+                            <div class="sitio-card" style="grid-column: 1 / -1;">
+                                ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
+                                <div class="sitio-card-info">
+                                    <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>
+                                    <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
+                                    <div class="sitio-card-description" style="margin-bottom: 10px;">${priceText}</div>
+                                    <hr class="styled-hr">
+                                    <div class="sitio-card-description">Qué se ofrece aquí:<br><br>${row[COLS.pintxo_tapa] || ''}</div>
+                                    <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
+                                        <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">visibility</i><span class="mdc-button__label"> Ver toda la información</span>
+                                    </button>
+                                </div>
+                            </div>`;
+                        elements.grid.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                }
+            
+                function showDetail(index) {
+                    const siteRow = state.currentSitios[index];
+                    const site = Object.keys(COLS).reduce((obj, key) => (obj[key] = siteRow[COLS[key]], obj), {});
+                    elements.selector.style.display = 'none';
+                    const galleryData = [];
+                    for (let i = 1; i <= 40; i++) {
+                        const photoId = site[`foto${i}`];
+                        const photoText = site[`text${i}`];
+                        if (photoId) galleryData.push({ url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`, text: photoText || `Foto de ${site.nombre}` });
+                    }
+                    let galleryHtml = '';
+                    if (galleryData.length > 0) {
+                        // CORRECCIÓN: Añadimos 'tapeo.' a las llamadas onclick
+                        const slidesHtml = galleryData.map((item, i) => `
+                            <div class="mySlides">
+                                <div class="numbertext">${i + 1} / ${galleryData.length}</div>
+                                <img src="${item.url}" style="width:100%" alt="${item.text}">
+                            </div>`
+                        ).join('');
+                        const thumbnailsHtml = galleryData.map((item, i) => `
+                            <div class="column">
+                                <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="tapeo.currentSlide(${i + 1})" alt="${item.text}">
+                            </div>`
+                        ).join('');
+                        galleryHtml = `
+                            <div class="gallery-container">
+                                ${slidesHtml}<a class="prev" onclick="tapeo.plusSlides(-1)">❮</a><a class="next" onclick="tapeo.plusSlides(1)">❯</a>
+                                <div class="caption-container">
+                                    <p id="caption"></p>
+                                </div>
+                                <div class="row">${thumbnailsHtml}</div>
+                            </div>`;
+                    }
+                    let eventosHtml = '';
+                    const sitioId = site.idsitio;
+                    const relatedEvents = eventosPorSitio[sitioId] || [];
+                    if (relatedEvents.length > 0) {
+                        const eventosCards = relatedEvents.map(eventoRow => {
+                            const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
+                            const anyo = eventoRow[COLS_EVENTOS.anyo];
+                            const descripcion = eventoRow[COLS_EVENTOS.eventoCulinarioDescripcion];
+                            const eventoGalleryData = [];
+                            for (let i = 1; i <= 20; i++) {
+                                const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
+                                const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
+                                if (fotoId) {
+                                    eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
+                                }
+                            }
+                            let galeriaHtmlInterna = '';
+                            if (eventoGalleryData.length > 0) {
+                                const imagenesHtml = eventoGalleryData.map(item => {
+                                    // Preparamos el texto para pasarlo de forma segura en el onclick
+                                    const safeText = item.text.replace(/'/g, "\\'");
+                                    return `
+                                        <div class="evento-card-image"
+                                        style="background-image: url('${item.url}');"
+                                        title="${item.text}"
+                                        onclick="tapeo.openModal('${item.url}', '${safeText}')">
+                                        <div class="evento-card-image-caption">${item.text}</div>
+                                        </div>`;
+                                }).join('');
+                                galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
+                            }
+                            return `
+                                <div class="evento-card">
+                                    <div class="evento-card-info">
+                                        <h4>${nombre || ''} ${anyo || ''}</h4>
+                                        <p>${descripcion || ''}</p>
+                                    </div>
+                                    ${galeriaHtmlInterna}
+                                </div>`;
+                        }).join('');
+                        const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
+                        eventosHtml = `
+                            <div class="full-detail-section">
+                                <h3>Eventos Habituales</h3>
+                                <div class="${containerClass}">${eventosCards}</div>
+                            </div>`;
+                    }
+                    let eventosPuntualesHtml = '';
+                    const relatedEventsPuntuales = eventosPuntualesPorSitio[sitioId] || [];
+                    if (relatedEventsPuntuales.length > 0) {
+                        const eventosCards = relatedEventsPuntuales.map(eventoRow => {
+                            const nombre = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinario];
+                            const anyo = eventoRow[COLS_EVENTOSPUNTUALES.anyo];
+                            const descripcion = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];
+                            const eventoGalleryData = [];
+                            for (let i = 1; i <= 20; i++) {
+                                const fotoId = eventoRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];
+                                const fotoTexto = eventoRow[COLS_EVENTOSPUNTUALES[`text${i}`]];
+                                if (fotoId) {
+                                    eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
+                                }
+                            }
+                            let galeriaHtmlInterna = '';
+                            if (eventoGalleryData.length > 0) {
+                                const imagenesHtml = eventoGalleryData.map(item => {
+                                    // Preparamos el texto para pasarlo de forma segura en el onclick
+                                    const safeText = item.text.replace(/'/g, "\\'");
+                                    return `
+                                        <div class="evento-card-image"
+                                            style="background-image: url('${item.url}');"
+                                            title="${item.text}"
+                                            onclick="tapeo.openModal('${item.url}', '${safeText}')">
+                                            <div class="evento-card-image-caption">${item.text}</div>
+                                        </div>`;
+                                }).join('');
+                                galeriaHtmlInterna = `
+                                    <div class="evento-image-grid">${imagenesHtml}</div>`;
+                            }
+                            return `
+                                <div class="evento-card">
+                                    <div class="evento-card-info">
+                                        <h4>${nombre || ''} ${anyo || ''}</h4>
+                                        <p>${descripcion || ''}</p>
+                                    </div>
+                                    ${galeriaHtmlInterna}
+                                </div>`;
+                        }).join('');
+                        const containerClass = relatedEventsPuntuales.length > 1 ? 'eventos-container' : 'eventos-container single-event';
+                        eventosPuntualesHtml = `
+                            <div class="full-detail-section">
+                                <h3>Eventos Puntuales</h3>
+                                <div class="${containerClass}">${eventosCards}</div>
+                            </div>`;
+                    }
+                    let priceText = '';
+                    if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
+                    else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
+                    else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
+                    const detailHtml = `
+                        <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+                            <span class="mdc-button__ripple"></span>
+                            <i class="material-icons mdc-button__icon">arrow_back</i>
+                            <span class="mdc-button__label">VOLVER AL LISTADO</span>
+                        </button>
+                        <div class="full-detail-card">
+                            <div class="full-detail-header">
+                                <h2>${site.nombre || ''}</h2>
+                                <div class="full-detail-rating">${site.valoracion || ''}</div>
+                                <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
+                            </div>
+                            <div class="full-detail-actions">
+                                ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised">
+                                    <span class="mdc-button__ripple"></span>
+                                    <i class="material-icons mdc-button__icon">photo_camera</i>
+                                    <span class="mdc-button__label">Nuestra Última Visita</span>
+                                </a>` : ''}
+                            </div>
+                            ${galleryHtml}
+                            <div class="full-detail-body">
+                                <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
+                                <div class="full-detail-actions">
+                                    ${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised">
+                                        <span class="mdc-button__ripple"></span>
+                                        <i class="material-icons mdc-button__icon">rate_review</i>
+                                        <span class="mdc-button__label">Reseñas</span>
+                                    </a>` : ''}
+                                    ${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised">
+                                        <span class="mdc-button__ripple"></span>
+                                        <i class="material-icons mdc-button__icon">place</i>
+                                        <span class="mdc-button__label">Mapa</span>
+                                    </a>` : ''}
+                                    ${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised">
+                                        <span class="mdc-button__ripple"></span>
+                                        <i class="material-icons mdc-button__icon">camera_alt</i>
+                                        <span class="mdc-button__label">Instagram</span>
+                                    </a>` : ''}
+                                    ${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised">
+                                        <span class="mdc-button__ripple"></span>
+                                        <i class="material-icons mdc-button__icon">language</i>
+                                        <span class="mdc-button__label">Web</span>
+                                    </a>` : ''}
+                                </div>
+                                ${site.direccion ? `<p><i class="material-icons v-align">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
+                                ${site.horario ? `<p><i class="material-icons v-align">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
+                                ${eventosHtml}
+                                ${eventosPuntualesHtml}
+                            </div>
+                        </div>
+                        <br /><br />
+                        <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()">
+                            <span class="mdc-button__ripple"></span>
+                            <i class="material-icons mdc-button__icon">arrow_back</i>
+                            <span class="mdc-button__label">VOLVER AL LISTADO</span>
+                        </button>`;
+                        elements.detailContainer.innerHTML = detailHtml;
+                        elements.detailContainer.style.display = 'block';
+                        Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
+                        // CORRECCIÓN: Reiniciamos y mostramos los slides
+                        slideIndex = 1;
+                        showSlides(slideIndex);
+                    }
+            
+                function openModal(imageUrl, imageText) {
+                    const modal = document.getElementById('photo-modal');
+                    const modalImg = document.getElementById('modal-image');
+                    const modalCaption = document.getElementById('modal-caption');
 
-    
-function renderStep() {
-  // ... (esta función no cambia, la puedes dejar como está) ...
-  showLoading(true);
-  let dataToProcess = allTapeoData;
-  if (state.selection.autonomia) dataToProcess = dataToProcess.filter(row => row[COLS.autonomia] === state.selection.autonomia);
-  if (state.selection.provincia) dataToProcess = dataToProcess.filter(row => row[COLS.provincia] === state.selection.provincia);
-  if (state.selection.ciudad) dataToProcess = dataToProcess.filter(row => row[COLS.ciudad] === state.selection.ciudad);
-  if (state.selection.barrio && state.selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[COLS.barrio] === state.selection.barrio);
-  elements.backButton.style.display = (state.history.length > 0) ? 'inline-flex' : 'none';
-  renderBreadcrumbs();
-  if (state.level === 'sitios') {
-    populateGridWithSitios(dataToProcess);
-  } else {
-    const colKey = levelsConfig[state.level].key;
-    let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
-    if (state.level === 'barrios' && uniqueValues.length > 1) { uniqueValues.unshift('Todos'); }
-    if (uniqueValues.length === 1 && state.level !== 'sitios') {            state.history.push({ level: state.level, selection: { ...state.selection }, skipped: true });            handleSelection(uniqueValues[0], true);            return;
-    }
-    populateGridWithOptions(uniqueValues);
-  }
-  showLoading(false);
-}
+                    if (modal && modalImg && modalCaption) {
+                        modalImg.src = imageUrl.replace('&sz=w400', '&sz=w1600');
+                        modalCaption.innerHTML = imageText || ''; // Añadimos el texto al caption
+                        modal.style.display = "flex";
+                        setTimeout(() => modal.classList.add('visible'), 10);
+                    }
+                }
 
+                function closeModal() {
+                    const modal = document.getElementById('photo-modal');
+                    const modalCaption = document.getElementById('modal-caption');
+                    if (modal) {
+                        modal.classList.remove('visible');
+                        setTimeout(() => {
+                            modal.style.display = "none";
+                            modalCaption.innerHTML = ''; // Limpiamos el texto al cerrar
+                        }, 300);
+                    }
+                }
+            
+                function hideDetail() {
+                    elements.detailContainer.style.display = 'none';
+                    elements.detailContainer.innerHTML = '';
+                    elements.selector.style.display = 'block';
+                }
+            
+                function handleSelection(selectionName, isAutoSelection = false) {
+                    if (!isAutoSelection) {
+                        state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
+                    }
+                    let key = state.level.slice(0, -1);
+                    if (state.level === 'ciudades') key = 'ciudad';
+                    state.selection[key] = selectionName;
+                    state.level = levelsConfig[state.level].next;
+                    if (state.level) { renderStep(); }
+                }
 
-function populateGridWithOptions(data) {
-  // ... (esta función no cambia) ...
-  const config = levelsConfig[state.level];
-  elements.title.textContent = config.title;
-  elements.grid.innerHTML = '';
-  data.forEach(item => {
-    const cardHtml = `            <div class="mdc-card category-card" onclick="tapeo.handleSelection('${item.replace(/'/g, "\\'")}')">              <div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;">                <div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div>                <h3 class="category-card__title">${item}</h3>              </div>            </div>`;
-    elements.grid.insertAdjacentHTML('beforeend', cardHtml);
-  });
-}
-              
-function populateGridWithSitios(data) {
-  // ... (esta función no cambia) ...
-  elements.title.textContent = levelsConfig.sitios.title;
-  elements.grid.innerHTML = '';
-  const sortedData = data.sort((a, b) => (b[COLS.nota] || 0) - (a[COLS.nota] || 0));
-  state.currentSitios = sortedData;
-  sortedData.forEach((row, index) => {
-    const imageUrl = row[COLS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS.foto1]}&sz=w600` : '';
-    let priceText = '';
-    const codprecio = row[COLS.codprecio];
-    if (codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
-    else if (codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
-    else if (codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
-    const cardHtml = `            <div class="sitio-card" style="grid-column: 1 / -1;">              ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}              <div class="sitio-card-info">                <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>                <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>                <div class="sitio-card-description" style="margin-bottom: 10px;">${priceText}</div>                <hr class="styled-hr">                <div class="sitio-card-description">Qué se ofrece aquí:<br><br>${row[COLS.pintxo_tapa] || ''}</div>                <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">                  <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">visibility</i><span class="mdc-button__label"> Ver toda la información</span>                </button>              </div>            </div>`;
-    elements.grid.insertAdjacentHTML('beforeend', cardHtml);
-  });
-}
-              
-function showDetail(index) {
-    const siteRow = state.currentSitios[index];
-    const site = Object.keys(COLS).reduce((obj, key) => (obj[key] = siteRow[COLS[key]], obj), {});
-    elements.selector.style.display = 'none';
-    const galleryData = [];
-    for (let i = 1; i <= 40; i++) {              const photoId = site[`foto${i}`];              const photoText = site[`text${i}`];              if (photoId) galleryData.push({ url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`, text: photoText || `Foto de ${site.nombre}` });
-    }
-    let galleryHtml = '';
-    if (galleryData.length > 0) {              // CORRECCIÓN: Añadimos 'tapeo.' a las llamadas onclick              const slidesHtml = galleryData.map((item, i) => `<div class="mySlides"><div class="numbertext">${i + 1} / ${galleryData.length}</div><img src="${item.url}" style="width:100%" alt="${item.text}"></div>`).join('');              const thumbnailsHtml = galleryData.map((item, i) => `<div class="column"><img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="tapeo.currentSlide(${i + 1})" alt="${item.text}"></div>`).join('');              galleryHtml = `<div class="gallery-container">${slidesHtml}<a class="prev" onclick="tapeo.plusSlides(-1)">❮</a><a class="next" onclick="tapeo.plusSlides(1)">❯</a><div class="caption-container"><p id="caption"></p></div><div class="row">${thumbnailsHtml}</div></div>`;
-    }
-    let eventosHtml = '';
-    const sitioId = site.idsitio;
-    const relatedEvents = eventosPorSitio[sitioId] || [];
-    if (relatedEvents.length > 0) {              const eventosCards = relatedEvents.map(eventoRow => {                  const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];                  const anyo = eventoRow[COLS_EVENTOS.anyo];                  const descripcion = eventoRow[COLS_EVENTOS.eventoCulinarioDescripcion];                  const eventoGalleryData = [];                  for (let i = 1; i <= 20; i++) {                      const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];                      const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];                      if (fotoId) {                          eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });                      }                  }                  let galeriaHtmlInterna = '';                  if (eventoGalleryData.length > 0) {                      const imagenesHtml = eventoGalleryData.map(item => {                          // Preparamos el texto para pasarlo de forma segura en el onclick                          const safeText = item.text.replace(/'/g, "\\'");                          return `                              <div class="evento-card-image"                                    style="background-image: url('${item.url}');"                                    title="${item.text}"                                    onclick="tapeo.openModal('${item.url}', '${safeText}')">                                  <div class="evento-card-image-caption">${item.text}</div>                              </div>`;                      }).join('');                      galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;                  }                  return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;              }).join('');              const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';              eventosHtml = `<div class="full-detail-section"><h3>Eventos Habituales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
-    }
-    let eventosPuntualesHtml = '';
-    const relatedEventsPuntuales = eventosPuntualesPorSitio[sitioId] || [];
-    if (relatedEventsPuntuales.length > 0) {              const eventosCards = relatedEventsPuntuales.map(eventoRow => {                  const nombre = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinario];                  const anyo = eventoRow[COLS_EVENTOSPUNTUALES.anyo];                  const descripcion = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];                  const eventoGalleryData = [];                  for (let i = 1; i <= 20; i++) {                      const fotoId = eventoRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];                      const fotoTexto = eventoRow[COLS_EVENTOSPUNTUALES[`text${i}`]];                      if (fotoId) {                          eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });                      }                  }                  let galeriaHtmlInterna = '';                  if (eventoGalleryData.length > 0) {                      const imagenesHtml = eventoGalleryData.map(item => {                          // Preparamos el texto para pasarlo de forma segura en el onclick                          const safeText = item.text.replace(/'/g, "\\'");                          return `                              <div class="evento-card-image"                                    style="background-image: url('${item.url}');"                                    title="${item.text}"                                    onclick="tapeo.openModal('${item.url}', '${safeText}')">                                  <div class="evento-card-image-caption">${item.text}</div>                              </div>`;                      }).join('');                      galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;                  }                  return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;              }).join('');              const containerClass = relatedEventsPuntuales.length > 1 ? 'eventos-container' : 'eventos-container single-event';              eventosPuntualesHtml = `<div class="full-detail-section"><h3>Eventos Puntuales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
-    }
-    let priceText = '';
-    if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
-    else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
-    else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
-    const detailHtml = `            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span></button>            <div class="full-detail-card">              <div class="full-detail-header"><h2>${site.nombre || ''}</h2><div class="full-detail-rating">${site.valoracion || ''}</div><div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div></div>              <div class="full-detail-actions">${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}</div>              ${galleryHtml}              <div class="full-detail-body">                <p class="full-detail-description">${site.pintxo_tapa || ''}</p>                <div class="full-detail-actions">${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas</span></a>` : ''}${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Mapa</span></a>` : ''}${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Web</span></a>` : ''}</div>                ${site.direccion ? `<p><i class="material-icons v-align">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}                ${site.horario ? `<p><i class="material-icons v-align">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}                ${eventosHtml}                ${eventosPuntualesHtml}              </div>            </div>            <br /><br />            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span></button>`;
-    elements.detailContainer.innerHTML = detailHtml;
-    elements.detailContainer.style.display = 'block';
-    Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
-    
-    // CORRECCIÓN: Reiniciamos y mostramos los slides
-    slideIndex = 1; 
-    showSlides(slideIndex);
-}
-              
-function openModal(imageUrl, imageText) {
-  const modal = document.getElementById('photo-modal');
-  const modalImg = document.getElementById('modal-image');
-  const modalCaption = document.getElementById('modal-caption');
+                function goBack() {
+                    let lastState = state.history.pop();
+                    while (lastState && lastState.skipped) { lastState = state.history.pop(); }
+                    if (lastState) {
+                        state.level = lastState.level;
+                        state.selection = lastState.selection;
+                        renderStep();
+                    } else {
+                        state.level = 'autonomias'; state.selection = {}; state.history = [];
+                        renderStep();
+                    }
+                }
 
+                function renderBreadcrumbs() {
+                    // ... (esta función no cambia) ...
+                    if (!elements.breadcrumbs) return;
+                    const crumbs = [];
+                    if (state.selection.autonomia) crumbs.push(state.selection.autonomia);
+                    if (state.selection.provincia) crumbs.push(state.selection.provincia);
+                    if (state.selection.ciudad) crumbs.push(state.selection.ciudad);
+                    if (state.selection.barrio && state.selection.barrio !== 'Todos') crumbs.push(state.selection.barrio);
+                    elements.breadcrumbs.innerHTML = crumbs.join(' <span style="font-weight: bold;"> &gt; </span> ');
+                }
 
-  if (modal && modalImg && modalCaption) {
-    modalImg.src = imageUrl.replace('&sz=w400', '&sz=w1600');
-    modalCaption.innerHTML = imageText || ''; // Añadimos el texto al caption
-    modal.style.display = "flex";
-    setTimeout(() => modal.classList.add('visible'), 10);
-  }
-}
+                function displayError(message) {
+                    // ... (esta función no cambia) ...
+                    if (elements.loading) {
+                        elements.loading.style.display = 'flex';
+                        elements.loading.innerHTML = `<div style="color: #c62828; padding: 20px; border: 2px solid #ffcdd2; background-color: #ffebee; border-radius: 8px;"><h3>Ha ocurrido un error</h3><p>${message}</p></div>`;
+                    }
+                }
 
-
-function closeModal() {
-  const modal = document.getElementById('photo-modal');
-  const modalCaption = document.getElementById('modal-caption');
-  if (modal) {
-    modal.classList.remove('visible');
-    setTimeout(() => {              modal.style.display = "none";              modalCaption.innerHTML = ''; // Limpiamos el texto al cerrar
-    }, 300);
-  }
-}
-              
-function hideDetail() {
-  elements.detailContainer.style.display = 'none';
-  elements.detailContainer.innerHTML = '';
-  elements.selector.style.display = 'block';
-}
-              
-function handleSelection(selectionName, isAutoSelection = false) {
-  if (!isAutoSelection) { 
-    state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
-  }
-  let key = state.level.slice(0, -1);
-  if (state.level === 'ciudades') key = 'ciudad';
-  state.selection[key] = selectionName;
-  state.level = levelsConfig[state.level].next;
-  if (state.level) { renderStep(); }
-}
-
-    
-function goBack() {
-  let lastState = state.history.pop();
-  while (lastState && lastState.skipped) { lastState = state.history.pop(); }
-  if (lastState) {
-    state.level = lastState.level;
-    state.selection = lastState.selection;
-    renderStep();
-  } else { 
-    state.level = 'autonomias'; state.selection = {}; state.history = [];
-    renderStep();
-  }
-}
-
-    
-function renderBreadcrumbs() {
-  // ... (esta función no cambia) ...
-  if (!elements.breadcrumbs) return;
-  const crumbs = [];
-  if (state.selection.autonomia) crumbs.push(state.selection.autonomia);
-  if (state.selection.provincia) crumbs.push(state.selection.provincia);
-  if (state.selection.ciudad) crumbs.push(state.selection.ciudad);
-  if (state.selection.barrio && state.selection.barrio !== 'Todos') crumbs.push(state.selection.barrio);
-  elements.breadcrumbs.innerHTML = crumbs.join(' <span style="font-weight: bold;"> &gt; </span> ');
-}
-
-    
-function displayError(message) {
-  // ... (esta función no cambia) ...
-  if (elements.loading) {
-    elements.loading.style.display = 'flex';
-    elements.loading.innerHTML = `<div style="color: #c62828; padding: 20px; border: 2px solid #ffcdd2; background-color: #ffebee; border-radius: 8px;"><h3>Ha ocurrido un error</h3><p>${message}</p></div>`;
-  }
-}
-
-    
-function showLoading(isLoading) {
-  // ... (esta función no cambia) ...
-  if (elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none';
-  if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid';
-}
-              
-window.tapeo = { 
-    handleSelection, 
-    goBack, 
-    showDetail, 
-    hideDetail, 
-    openModal,
-    closeModal,
-    plusSlides,
-    currentSlide,
-};
-
-    
-init();
+                function showLoading(isLoading) {
+                    // ... (esta función no cambia) ...
+                    if (elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none';
+                    if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid';
+                }
+            
+                window.tapeo = {
+                    handleSelection,
+                    goBack,
+                    showDetail,
+                    hideDetail,
+                    openModal,
+                    closeModal,
+                    plusSlides,
+                    currentSlide,
+                };
+                init();
             })();
+        </script>   
 
-    </script>       
-
-    <div id="photo-modal" class="modal-overlay" onclick="tapeo.closeModal()">
+        <div id="photo-modal" class="modal-overlay" onclick="tapeo.closeModal()">
             <span class="modal-close" onclick="event.stopPropagation(); tapeo.closeModal()">&times;</span>
             <img class="modal-content" id="modal-image" onclick="event.stopPropagation();">
             <div id="modal-caption"></div>
-
-    </div>
-
-
-
-</body>
-
+        </div>
+    </body>
 </html>
