@@ -90,89 +90,71 @@
             });
         </script>
         <script>
+            // =================================================================
+            // SCRIPT DE CARGA Y RENDERIZADO DE DATOS PARA LA RUTA DE TAPEO
+            // =================================================================
+            const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
+            const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
+            const EVENTOSPUNTUALES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=1883625439&single=true&output=csv';
 
-      // =================================================================
+            let allTapeoData = [];
+            let allEventosData = [];
+            let eventosPorSitio = {};
+            let allEventosPuntualesData = [];
+            let eventosPuntualesPorSitio = {};
 
-      // SCRIPT DE CARGA Y RENDERIZADO DE DATOS PARA LA RUTA DE TAPEO
+            const COLS = { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
+            const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6, text1: 7, foto2: 8, text2: 9, foto3: 10, text3: 11, foto4:12, text4: 13, foto5: 14, text5: 15, foto6: 16, text6: 17, foto7: 18, text7: 19, foto8: 20, text8: 21, foto9: 22, text9: 23, foto10: 24, text10: 25, foto11:26, text11: 27, foto12: 28, text12: 29, foto13: 30, text13: 31, foto14: 32, text14: 33, foto15: 34, text15: 35, foto16: 36, text16: 37, foto17: 38, text17: 39, foto18: 40, text18: 41, foto19:42, text19: 43, foto20: 44, text20:45 };
+            const COLS_EVENTOSPUNTUALES = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6, text1: 7, foto2: 8, text2: 9, foto3: 10, text3: 11, foto4:12, text4: 13, foto5: 14, text5: 15, foto6: 16, text6: 17, foto7: 18, text7: 19, foto8: 20, text8: 21, foto9: 22, text9: 23, foto10: 24, text10: 25, foto11:26, text11: 27, foto12: 28, text12: 29, foto13: 30, text13: 31, foto14: 32, text14: 33, foto15: 34, text15: 35, foto16: 36, text16: 37, foto17: 38, text17: 39, foto18: 40, text18: 41, foto19:42, text19: 43, foto20: 44, text20:45 };
 
-      // =================================================================
+            function parseCSV(csvText) {
+                const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
+                csvText = csvText.trim();
+                for (let i = 0; i < csvText.length; i++) {
+                    const char = csvText[i];
+                        if (char === '"') {
+                            if (inQuotes && i + 1 < csvText.length && csvText[i + 1] === '"') {
+                                currentField += '"'; i++; 
+                            } else {
+                                inQuotes = !inQuotes;
+                            }
+                        } else if (char === ',' && !inQuotes) {
+                            fields.push(currentField); currentField = ''; 
+                        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                            fields.push(currentField);
+                            rows.push(fields);
+                            fields = [];
+                            currentField = '';
+                            if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') { i++; }
+                        } else { 
+                            currentField += char;
+                        }
+                }
+                if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
+                return rows.map(row => row.map(field => field.trim()));
+            }
 
-
-
-      const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
-
-      const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
-
-      const EVENTOSPUNTUALES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=1883625439&single=true&output=csv';
-
-      
-
-      let allTapeoData = [];
-
-      let allEventosData = [];
-
-      let eventosPorSitio = {};
-
-      let allEventosPuntualesData = [];
-
-      let eventosPuntualesPorSitio = {};
-
-      
-
-      const COLS = { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
-
-      const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6, text1: 7, foto2: 8, text2: 9, foto3: 10, text3: 11, foto4:12, text4: 13, foto5: 14, text5: 15, foto6: 16, text6: 17, foto7: 18, text7: 19, foto8: 20, text8: 21, foto9: 22, text9: 23, foto10: 24, text10: 25, foto11:26, text11: 27, foto12: 28, text12: 29, foto13: 30, text13: 31, foto14: 32, text14: 33, foto15: 34, text15: 35, foto16: 36, text16: 37, foto17: 38, text17: 39, foto18: 40, text18: 41, foto19:42, text19: 43, foto20: 44, text20:45 };
-
-      const COLS_EVENTOSPUNTUALES = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6, text1: 7, foto2: 8, text2: 9, foto3: 10, text3: 11, foto4:12, text4: 13, foto5: 14, text5: 15, foto6: 16, text6: 17, foto7: 18, text7: 19, foto8: 20, text8: 21, foto9: 22, text9: 23, foto10: 24, text10: 25, foto11:26, text11: 27, foto12: 28, text12: 29, foto13: 30, text13: 31, foto14: 32, text14: 33, foto15: 34, text15: 35, foto16: 36, text16: 37, foto17: 38, text17: 39, foto18: 40, text18: 41, foto19:42, text19: 43, foto20: 44, text20:45 };
-
-      
-
-      function parseCSV(csvText) {
-  const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
-  csvText = csvText.trim();
-  for (let i = 0; i < csvText.length; i++) {
-      const char = csvText[i];
-      if (char === '"') {  if (inQuotes && i + 1 < csvText.length && csvText[i + 1] === '"') { currentField += '"'; i++; }   else { inQuotes = !inQuotes; }
-      } else if (char === ',' && !inQuotes) {  fields.push(currentField); currentField = '';
-      } else if ((char === '\n' || char === '\r') && !inQuotes) {  fields.push(currentField); rows.push(fields); fields = []; currentField = '';  if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') { i++; }
-      } else { currentField += char; }
-  }
-  if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
-  return rows.map(row => row.map(field => field.trim()));
-
-      }
-
-    
-
-      (function() {
-// Lógica de la galería que movimos aquí
-let slideIndex = 1;
-
-        
-function plusSlides(n) {
-  showSlides(slideIndex += n);
-}
-
-
-function currentSlide(n) {
-  showSlides(slideIndex = n);
-}
-
-
-function showSlides(n) {
-  let i;
-  let slides = document.getElementsByClassName("mySlides");
-  let dots = document.getElementsByClassName("demo");
-  let captionText = document.getElementById("caption");
-  if (slides.length === 0) return;
-
-
-  if (n > slides.length) {slideIndex = 1}
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";
-  }
-  for (i = 0; i < dots.length; i++) {
+            (function() {
+                // Lógica de la galería que movimos aquí
+                let slideIndex = 1;
+                function plusSlides(n) {
+                    showSlides(slideIndex += n);
+                }
+                function currentSlide(n) {
+                    showSlides(slideIndex = n);
+                }
+                function showSlides(n) {
+                    let i;
+                    let slides = document.getElementsByClassName("mySlides");
+                    let dots = document.getElementsByClassName("demo");
+                    let captionText = document.getElementById("caption");
+                    if (slides.length === 0) return;
+                    if (n > slides.length) {slideIndex = 1}
+                    if (n < 1) {slideIndex = slides.length}
+                    for (i = 0; i < slides.length; i++) {
+                        slides[i].style.display = "none";
+                    }
+                    for (i = 0; i < dots.length; i++) {
     dots[i].className = dots[i].className.replace(" active", "");
   }
   slides[slideIndex-1].style.display = "block";
@@ -194,8 +176,7 @@ const levelsConfig = { autonomias: { title: '¿Dónde quieres ir de pintxos o ta
 async function init() {
   try {
     const responses = await Promise.all([ fetch(CSV_URL), fetch(EVENTOS_CSV_URL), fetch(EVENTOSPUNTUALES_CSV_URL) ]);
-    for (const response of responses) {
-        if (!response.ok) throw new Error(`Error de red: ${response.statusText} en ${response.url}`);
+    for (const response of responses) {              if (!response.ok) throw new Error(`Error de red: ${response.statusText} en ${response.url}`);
     }
     
     const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all(responses.map(r => r.text()));
@@ -203,23 +184,12 @@ async function init() {
     allTapeoData = parseCSV(tapeoCsvText).slice(1);
     allEventosData = parseCSV(eventosCsvText).slice(1);
     allEventosPuntualesData = parseCSV(eventosPuntualesCsvText).slice(1);
-
-        
+              
     eventosPorSitio = {};
-    allEventosData.forEach(eventoRow => {
-      const sitioId = eventoRow[COLS_EVENTOS.idSitio];
-      if (sitioId) {
-        if (!eventosPorSitio[sitioId]) { eventosPorSitio[sitioId] = []; }
-        eventosPorSitio[sitioId].push(eventoRow);
-      }
+    allEventosData.forEach(eventoRow => {            const sitioId = eventoRow[COLS_EVENTOS.idSitio];            if (sitioId) {              if (!eventosPorSitio[sitioId]) { eventosPorSitio[sitioId] = []; }              eventosPorSitio[sitioId].push(eventoRow);            }
     });
     eventosPuntualesPorSitio = {};
-    allEventosPuntualesData.forEach(eventoPuntualesRow => {
-      const sitioId = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.idSitio];
-      if (sitioId) {
-        if (!eventosPuntualesPorSitio[sitioId]) { eventosPuntualesPorSitio[sitioId] = []; }
-        eventosPuntualesPorSitio[sitioId].push(eventoPuntualesRow);
-      }
+    allEventosPuntualesData.forEach(eventoPuntualesRow => {            const sitioId = eventoPuntualesRow[COLS_EVENTOSPUNTUALES.idSitio];            if (sitioId) {              if (!eventosPuntualesPorSitio[sitioId]) { eventosPuntualesPorSitio[sitioId] = []; }              eventosPuntualesPorSitio[sitioId].push(eventoPuntualesRow);            }
     }); 
     renderStep();
   } catch (error) {
@@ -245,10 +215,7 @@ function renderStep() {
     const colKey = levelsConfig[state.level].key;
     let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
     if (state.level === 'barrios' && uniqueValues.length > 1) { uniqueValues.unshift('Todos'); }
-    if (uniqueValues.length === 1 && state.level !== 'sitios') {
-      state.history.push({ level: state.level, selection: { ...state.selection }, skipped: true });
-      handleSelection(uniqueValues[0], true);
-      return;
+    if (uniqueValues.length === 1 && state.level !== 'sitios') {            state.history.push({ level: state.level, selection: { ...state.selection }, skipped: true });            handleSelection(uniqueValues[0], true);            return;
     }
     populateGridWithOptions(uniqueValues);
   }
@@ -262,18 +229,11 @@ function populateGridWithOptions(data) {
   elements.title.textContent = config.title;
   elements.grid.innerHTML = '';
   data.forEach(item => {
-    const cardHtml = `
-      <div class="mdc-card category-card" onclick="tapeo.handleSelection('${item.replace(/'/g, "\\'")}')">
-        <div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;">
-          <div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div>
-          <h3 class="category-card__title">${item}</h3>
-        </div>
-      </div>`;
+    const cardHtml = `            <div class="mdc-card category-card" onclick="tapeo.handleSelection('${item.replace(/'/g, "\\'")}')">              <div class="mdc-card__primary-action mdc-ripple-upgraded" style="cursor: pointer;">                <div class="category-card__icon-container"><i class="material-icons">${config.icon}</i></div>                <h3 class="category-card__title">${item}</h3>              </div>            </div>`;
     elements.grid.insertAdjacentHTML('beforeend', cardHtml);
   });
 }
-
-        
+              
 function populateGridWithSitios(data) {
   // ... (esta función no cambia) ...
   elements.title.textContent = levelsConfig.sitios.title;
@@ -287,134 +247,35 @@ function populateGridWithSitios(data) {
     if (codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
     else if (codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
     else if (codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
-    const cardHtml = `
-      <div class="sitio-card" style="grid-column: 1 / -1;">
-        ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
-        <div class="sitio-card-info">
-          <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>
-          <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
-          <div class="sitio-card-description" style="margin-bottom: 10px;">${priceText}</div>
-          <hr class="styled-hr">
-          <div class="sitio-card-description">Qué se ofrece aquí:<br><br>${row[COLS.pintxo_tapa] || ''}</div>
-          <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
-            <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">visibility</i><span class="mdc-button__label"> Ver toda la información</span>
-          </button>
-        </div>
-      </div>`;
+    const cardHtml = `            <div class="sitio-card" style="grid-column: 1 / -1;">              ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}              <div class="sitio-card-info">                <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>                <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>                <div class="sitio-card-description" style="margin-bottom: 10px;">${priceText}</div>                <hr class="styled-hr">                <div class="sitio-card-description">Qué se ofrece aquí:<br><br>${row[COLS.pintxo_tapa] || ''}</div>                <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">                  <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">visibility</i><span class="mdc-button__label"> Ver toda la información</span>                </button>              </div>            </div>`;
     elements.grid.insertAdjacentHTML('beforeend', cardHtml);
   });
 }
-
-        
+              
 function showDetail(index) {
     const siteRow = state.currentSitios[index];
     const site = Object.keys(COLS).reduce((obj, key) => (obj[key] = siteRow[COLS[key]], obj), {});
     elements.selector.style.display = 'none';
     const galleryData = [];
-    for (let i = 1; i <= 40; i++) {
-        const photoId = site[`foto${i}`];
-        const photoText = site[`text${i}`];
-        if (photoId) galleryData.push({ url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`, text: photoText || `Foto de ${site.nombre}` });
+    for (let i = 1; i <= 40; i++) {              const photoId = site[`foto${i}`];              const photoText = site[`text${i}`];              if (photoId) galleryData.push({ url: `https://drive.google.com/thumbnail?id=${photoId}&sz=w600`, text: photoText || `Foto de ${site.nombre}` });
     }
     let galleryHtml = '';
-    if (galleryData.length > 0) {
-        // CORRECCIÓN: Añadimos 'tapeo.' a las llamadas onclick
-        const slidesHtml = galleryData.map((item, i) => `<div class="mySlides"><div class="numbertext">${i + 1} / ${galleryData.length}</div><img src="${item.url}" style="width:100%" alt="${item.text}"></div>`).join('');
-        const thumbnailsHtml = galleryData.map((item, i) => `<div class="column"><img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="tapeo.currentSlide(${i + 1})" alt="${item.text}"></div>`).join('');
-        galleryHtml = `<div class="gallery-container">${slidesHtml}<a class="prev" onclick="tapeo.plusSlides(-1)">❮</a><a class="next" onclick="tapeo.plusSlides(1)">❯</a><div class="caption-container"><p id="caption"></p></div><div class="row">${thumbnailsHtml}</div></div>`;
+    if (galleryData.length > 0) {              // CORRECCIÓN: Añadimos 'tapeo.' a las llamadas onclick              const slidesHtml = galleryData.map((item, i) => `<div class="mySlides"><div class="numbertext">${i + 1} / ${galleryData.length}</div><img src="${item.url}" style="width:100%" alt="${item.text}"></div>`).join('');              const thumbnailsHtml = galleryData.map((item, i) => `<div class="column"><img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="tapeo.currentSlide(${i + 1})" alt="${item.text}"></div>`).join('');              galleryHtml = `<div class="gallery-container">${slidesHtml}<a class="prev" onclick="tapeo.plusSlides(-1)">❮</a><a class="next" onclick="tapeo.plusSlides(1)">❯</a><div class="caption-container"><p id="caption"></p></div><div class="row">${thumbnailsHtml}</div></div>`;
     }
     let eventosHtml = '';
     const sitioId = site.idsitio;
     const relatedEvents = eventosPorSitio[sitioId] || [];
-    if (relatedEvents.length > 0) {
-        const eventosCards = relatedEvents.map(eventoRow => {
-            const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];
-            const anyo = eventoRow[COLS_EVENTOS.anyo];
-            const descripcion = eventoRow[COLS_EVENTOS.eventoCulinarioDescripcion];
-            const eventoGalleryData = [];
-            for (let i = 1; i <= 20; i++) {
-                const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];
-                const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];
-                if (fotoId) {
-                    eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
-                }
-            }
-            let galeriaHtmlInterna = '';
-            if (eventoGalleryData.length > 0) {
-                const imagenesHtml = eventoGalleryData.map(item => {
-                    // Preparamos el texto para pasarlo de forma segura en el onclick
-                    const safeText = item.text.replace(/'/g, "\\'");
-                    return `
-                        <div class="evento-card-image" 
-                             style="background-image: url('${item.url}');" 
-                             title="${item.text}" 
-                             onclick="tapeo.openModal('${item.url}', '${safeText}')">
-                            <div class="evento-card-image-caption">${item.text}</div>
-                        </div>`;
-                }).join('');
-                galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
-            }
-            return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;
-        }).join('');
-        const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';
-        eventosHtml = `<div class="full-detail-section"><h3>Eventos Habituales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
+    if (relatedEvents.length > 0) {              const eventosCards = relatedEvents.map(eventoRow => {                  const nombre = eventoRow[COLS_EVENTOS.eventoCulinario];                  const anyo = eventoRow[COLS_EVENTOS.anyo];                  const descripcion = eventoRow[COLS_EVENTOS.eventoCulinarioDescripcion];                  const eventoGalleryData = [];                  for (let i = 1; i <= 20; i++) {                      const fotoId = eventoRow[COLS_EVENTOS[`foto${i}`]];                      const fotoTexto = eventoRow[COLS_EVENTOS[`text${i}`]];                      if (fotoId) {                          eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });                      }                  }                  let galeriaHtmlInterna = '';                  if (eventoGalleryData.length > 0) {                      const imagenesHtml = eventoGalleryData.map(item => {                          // Preparamos el texto para pasarlo de forma segura en el onclick                          const safeText = item.text.replace(/'/g, "\\'");                          return `                              <div class="evento-card-image"                                    style="background-image: url('${item.url}');"                                    title="${item.text}"                                    onclick="tapeo.openModal('${item.url}', '${safeText}')">                                  <div class="evento-card-image-caption">${item.text}</div>                              </div>`;                      }).join('');                      galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;                  }                  return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;              }).join('');              const containerClass = relatedEvents.length > 1 ? 'eventos-container' : 'eventos-container single-event';              eventosHtml = `<div class="full-detail-section"><h3>Eventos Habituales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
     }
     let eventosPuntualesHtml = '';
     const relatedEventsPuntuales = eventosPuntualesPorSitio[sitioId] || [];
-    if (relatedEventsPuntuales.length > 0) {
-        const eventosCards = relatedEventsPuntuales.map(eventoRow => {
-            const nombre = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinario];
-            const anyo = eventoRow[COLS_EVENTOSPUNTUALES.anyo];
-            const descripcion = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];
-            const eventoGalleryData = [];
-            for (let i = 1; i <= 20; i++) {
-                const fotoId = eventoRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];
-                const fotoTexto = eventoRow[COLS_EVENTOSPUNTUALES[`text${i}`]];
-                if (fotoId) {
-                    eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });
-                }
-            }
-            let galeriaHtmlInterna = '';
-            if (eventoGalleryData.length > 0) {
-                const imagenesHtml = eventoGalleryData.map(item => {
-                    // Preparamos el texto para pasarlo de forma segura en el onclick
-                    const safeText = item.text.replace(/'/g, "\\'");
-                    return `
-                        <div class="evento-card-image" 
-                             style="background-image: url('${item.url}');" 
-                             title="${item.text}" 
-                             onclick="tapeo.openModal('${item.url}', '${safeText}')">
-                            <div class="evento-card-image-caption">${item.text}</div>
-                        </div>`;
-                }).join('');
-                galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
-            }
-            return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;
-        }).join('');
-        const containerClass = relatedEventsPuntuales.length > 1 ? 'eventos-container' : 'eventos-container single-event';
-        eventosPuntualesHtml = `<div class="full-detail-section"><h3>Eventos Puntuales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
+    if (relatedEventsPuntuales.length > 0) {              const eventosCards = relatedEventsPuntuales.map(eventoRow => {                  const nombre = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinario];                  const anyo = eventoRow[COLS_EVENTOSPUNTUALES.anyo];                  const descripcion = eventoRow[COLS_EVENTOSPUNTUALES.eventoCulinarioDescripcion];                  const eventoGalleryData = [];                  for (let i = 1; i <= 20; i++) {                      const fotoId = eventoRow[COLS_EVENTOSPUNTUALES[`foto${i}`]];                      const fotoTexto = eventoRow[COLS_EVENTOSPUNTUALES[`text${i}`]];                      if (fotoId) {                          eventoGalleryData.push({ url: `https://drive.google.com/thumbnail?id=${fotoId}&sz=w400`, text: fotoTexto || '' });                      }                  }                  let galeriaHtmlInterna = '';                  if (eventoGalleryData.length > 0) {                      const imagenesHtml = eventoGalleryData.map(item => {                          // Preparamos el texto para pasarlo de forma segura en el onclick                          const safeText = item.text.replace(/'/g, "\\'");                          return `                              <div class="evento-card-image"                                    style="background-image: url('${item.url}');"                                    title="${item.text}"                                    onclick="tapeo.openModal('${item.url}', '${safeText}')">                                  <div class="evento-card-image-caption">${item.text}</div>                              </div>`;                      }).join('');                      galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;                  }                  return `<div class="evento-card"><div class="evento-card-info"><h4>${nombre || ''} ${anyo || ''}</h4><p>${descripcion || ''}</p></div>${galeriaHtmlInterna}</div>`;              }).join('');              const containerClass = relatedEventsPuntuales.length > 1 ? 'eventos-container' : 'eventos-container single-event';              eventosPuntualesHtml = `<div class="full-detail-section"><h3>Eventos Puntuales</h3><div class="${containerClass}">${eventosCards}</div></div>`;
     }
     let priceText = '';
     if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
     else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
     else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
-    const detailHtml = `
-      <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span></button>
-      <div class="full-detail-card">
-        <div class="full-detail-header"><h2>${site.nombre || ''}</h2><div class="full-detail-rating">${site.valoracion || ''}</div><div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div></div>
-        <div class="full-detail-actions">${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}</div>
-        ${galleryHtml}
-        <div class="full-detail-body">
-          <p class="full-detail-description">${site.pintxo_tapa || ''}</p>
-          <div class="full-detail-actions">${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas</span></a>` : ''}${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Mapa</span></a>` : ''}${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Web</span></a>` : ''}</div>
-          ${site.direccion ? `<p><i class="material-icons v-align">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}
-          ${site.horario ? `<p><i class="material-icons v-align">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}
-          ${eventosHtml}
-          ${eventosPuntualesHtml}
-        </div>
-      </div>
-      <br /><br />
-      <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span></button>`;
+    const detailHtml = `            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span></button>            <div class="full-detail-card">              <div class="full-detail-header"><h2>${site.nombre || ''}</h2><div class="full-detail-rating">${site.valoracion || ''}</div><div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div></div>              <div class="full-detail-actions">${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">photo_camera</i><span class="mdc-button__label">Nuestra Última Visita</span></a>` : ''}</div>              ${galleryHtml}              <div class="full-detail-body">                <p class="full-detail-description">${site.pintxo_tapa || ''}</p>                <div class="full-detail-actions">${site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">rate_review</i><span class="mdc-button__label">Reseñas</span></a>` : ''}${site.maps ? `<a href="${site.maps}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">place</i><span class="mdc-button__label">Mapa</span></a>` : ''}${site.instagram ? `<a href="${site.instagram}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">camera_alt</i><span class="mdc-button__label">Instagram</span></a>` : ''}${site.web ? `<a href="${site.web}" target="_blank" class="mdc-button mdc-button--raised"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">language</i><span class="mdc-button__label">Web</span></a>` : ''}</div>                ${site.direccion ? `<p><i class="material-icons v-align">place</i> <b>Dirección:</b> ${site.direccion}</p>` : ''}                ${site.horario ? `<p><i class="material-icons v-align">schedule</i> <b>Horario:</b><br>${site.horario.replace(/\n/g, '<br>')}</p>` : ''}                ${eventosHtml}                ${eventosPuntualesHtml}              </div>            </div>            <br /><br />            <button class="mdc-button mdc-button--raised" onclick="tapeo.hideDetail()"><span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">arrow_back</i><span class="mdc-button__label">VOLVER AL LISTADO</span></button>`;
     elements.detailContainer.innerHTML = detailHtml;
     elements.detailContainer.style.display = 'block';
     Array.from(elements.detailContainer.querySelectorAll('.mdc-button')).forEach(el => mdc.ripple.MDCRipple.attachTo(el));
@@ -423,8 +284,7 @@ function showDetail(index) {
     slideIndex = 1; 
     showSlides(slideIndex);
 }
-
-        
+              
 function openModal(imageUrl, imageText) {
   const modal = document.getElementById('photo-modal');
   const modalImg = document.getElementById('modal-image');
@@ -445,21 +305,17 @@ function closeModal() {
   const modalCaption = document.getElementById('modal-caption');
   if (modal) {
     modal.classList.remove('visible');
-    setTimeout(() => {
-        modal.style.display = "none";
-        modalCaption.innerHTML = ''; // Limpiamos el texto al cerrar
+    setTimeout(() => {              modal.style.display = "none";              modalCaption.innerHTML = ''; // Limpiamos el texto al cerrar
     }, 300);
   }
 }
-
-        
+              
 function hideDetail() {
   elements.detailContainer.style.display = 'none';
   elements.detailContainer.innerHTML = '';
   elements.selector.style.display = 'block';
 }
-
-        
+              
 function handleSelection(selectionName, isAutoSelection = false) {
   if (!isAutoSelection) { 
     state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
@@ -512,8 +368,7 @@ function showLoading(isLoading) {
   if (elements.loading) elements.loading.style.display = isLoading ? 'flex' : 'none';
   if (elements.grid) elements.grid.style.display = isLoading ? 'none' : 'grid';
 }
-
-        
+              
 window.tapeo = { 
     handleSelection, 
     goBack, 
@@ -527,18 +382,14 @@ window.tapeo = { 
 
     
 init();
-
-      })();
+            })();
 
     </script>       
 
     <div id="photo-modal" class="modal-overlay" onclick="tapeo.closeModal()">
-
-      <span class="modal-close" onclick="event.stopPropagation(); tapeo.closeModal()">&times;</span>
-
-      <img class="modal-content" id="modal-image" onclick="event.stopPropagation();">
-
-      <div id="modal-caption"></div>
+            <span class="modal-close" onclick="event.stopPropagation(); tapeo.closeModal()">&times;</span>
+            <img class="modal-content" id="modal-image" onclick="event.stopPropagation();">
+            <div id="modal-caption"></div>
 
     </div>
 
