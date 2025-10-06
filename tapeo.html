@@ -325,14 +325,14 @@
                     let galeriaHtmlInterna = '';
                     if (eventoGalleryData.length > 0) {
                         const imagenesHtml = eventoGalleryData.map(item => {
+                            // Preparamos el texto para pasarlo de forma segura en el onclick
+                            const safeText = item.text.replace(/'/g, "\\'");
                             return `
                                 <div class="evento-card-image" 
                                      style="background-image: url('${item.url}');" 
-                                     title="${item.text}"
-                                     data-url="${item.url}"
-                                     data-text="${item.text.replace(/"/g, '&quot;')}"
-                                     onclick="tapeo.handleEventClick(this)">
-                                     <div class="evento-card-image-caption">${item.text}</div>
+                                     title="${item.text}" 
+                                     onclick="tapeo.openModal('${item.url}', '${safeText}')">
+                                    <div class="evento-card-image-caption">${item.text}</div>
                                 </div>`;
                         }).join('');
                         galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
@@ -360,14 +360,14 @@
                     let galeriaHtmlInterna = '';
                     if (eventoGalleryData.length > 0) {
                         const imagenesHtml = eventoGalleryData.map(item => {
+                            // Preparamos el texto para pasarlo de forma segura en el onclick
+                            const safeText = item.text.replace(/'/g, "\\'");
                             return `
                                 <div class="evento-card-image" 
                                      style="background-image: url('${item.url}');" 
-                                     title="${item.text}"
-                                     data-url="${item.url}"
-                                     data-text="${item.text.replace(/"/g, '&quot;')}"
-                                     onclick="tapeo.handleEventClick(this)">
-                                     <div class="evento-card-image-caption">${item.text}</div>
+                                     title="${item.text}" 
+                                     onclick="tapeo.openModal('${item.url}', '${safeText}')">
+                                    <div class="evento-card-image-caption">${item.text}</div>
                                 </div>`;
                         }).join('');
                         galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
