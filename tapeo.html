@@ -476,8 +476,7 @@
 
                     if (modal && modalImg && modalCaption) {
                         modalImg.src = imageUrl.replace('&sz=w400', '&sz=w1600');
-                        //modalCaption.innerHTML = imageText || ''; // Añadimos el texto al caption
-                        modalCaption.innerHTML = imageText ? imageText.replace(/\n/g, '<br>') : ''; 
+                        modalCaption.innerHTML = imageText || ''; // Añadimos el texto al caption
                         modal.style.display = "flex";
                         setTimeout(() => modal.classList.add('visible'), 10);
                     }
