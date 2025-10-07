@@ -436,7 +436,10 @@
                             <div class="full-detail-header">
                                 <h2>${site.nombre || ''}</h2>
                                 <div class="full-detail-rating">${site.valoracion || ''}</div>
-                                <div class="full-detail-description" style="margin-bottom: 10px;">${priceText}</div>
+                                <div class="full-detail-description" style="margin-bottom: 10px;">
+                                    ${site.direccion ? `${site.nomta}<br>` : ''}
+                                    ${priceText}
+                                </div>
                             </div>
                             <div class="full-detail-actions">
                                 ${site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" class="mdc-button mdc-button--raised">
