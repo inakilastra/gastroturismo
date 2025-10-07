@@ -471,7 +471,7 @@
       }
 
       .sitio-card-description {
-        margin-bottom: 24px;
+        /*margin-bottom: 24px;*/
         font-family: 'Special Elite';
         line-height: 1.6;
         white-space: pre-wrap; /* Respeta los saltos de línea de la hoja de cálculo */
