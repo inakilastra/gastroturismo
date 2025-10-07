@@ -473,6 +473,7 @@
       .sitio-card-description {
         /*margin-bottom: 24px;*/
         font-family: 'Special Elite';
+        text-align: left;
         line-height: 1.6;
         white-space: pre-wrap; /* Respeta los saltos de línea de la hoja de cálculo */
       }
