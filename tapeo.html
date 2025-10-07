@@ -327,13 +327,27 @@
                             if (eventoGalleryData.length > 0) {
                                 const imagenesHtml = eventoGalleryData.map(item => {
                                     // Preparamos el texto para pasarlo de forma segura en el onclick
-                                    const safeText = item.text.replace(/'/g, "\\'");
+                                    /*const safeText = item.text.replace(/'/g, "\\'");
                                     return `
                                         <div class="evento-card-image"
                                         style="background-image: url('${item.url}');"
                                         title="${item.text}"
                                         onclick="tapeo.openModal('${item.url}', '${safeText}')">
                                             <div class="evento-card-image-caption">${item.text}</div>
+                                        </div>`;*/
+                                    const partes = item.text.split('\n');
+                                    const linea1 = partes[0] || '';
+                                    const linea2 = partes[1] || '';
+                                    return `
+                                        <div class="evento-card-image"
+                                            style="background-image: url('${item.url}');"
+                                            title="${linea2}"
+                                            onclick="tapeo.openModal('${item.url}', '${linea2}')">
+                                                <div class="evento-card-image-caption">
+                                                    ${linea1}
+                                                    <br>
+                                                    ${linea2}
+                                                </div>
                                         </div>`;
                                 }).join('');
                                 galeriaHtmlInterna = `<div class="evento-image-grid">${imagenesHtml}</div>`;
@@ -373,7 +387,7 @@
                             if (eventoGalleryData.length > 0) {
                                 const imagenesHtml = eventoGalleryData.map(item => {
                                     // Preparamos el texto para pasarlo de forma segura en el onclick
-                                    const safeText = item.text.replace(/'/g, "\\'");
+                                    //const safeText = item.text.replace(/'/g, "\\'");
                                     const partes = item.text.split('\n');
                                     const linea1 = partes[0] || '';
                                     const linea2 = partes[1] || '';
