@@ -574,7 +574,7 @@
         justify-content: center; /* Centra los botones */
       }
       /* === FIN: ESTILOS PARA LA VISTA DE DETALLE === */
-     hr.styled-hr {
+     .styled-hr {
        border: 0;
        height: 2px;
        background-color: var(--mdc-theme-primary);
