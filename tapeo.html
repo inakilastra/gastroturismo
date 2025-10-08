@@ -263,7 +263,9 @@
                                     <h3>${row[COLS.nombre] || 'Nombre no disponible'}</h3>
                                     <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
                                     ${row[COLS.nota] ? `<div class="sitio-card-description">${row[COLS.nota]}</div>` : ''}
+                                    <hr class="styled-hr">
                                     <div class="sitio-card-description">${priceText}</div>
+                                    <hr class="styled-hr">
                                     ${row[COLS.pintxo_tapa] ? `<div class="sitio-card-description">${row[COLS.pintxo_tapa]}</div>` : ''}
                                     <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
                                         <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">visibility</i><span class="mdc-button__label"> Ver toda la información</span>
