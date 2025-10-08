@@ -576,9 +576,9 @@
       /* === FIN: ESTILOS PARA LA VISTA DE DETALLE === */
      hr.styled-hr {
        border: 0;
-       height: 1px;
+       height: 2px;
        background-color: var(--mdc-theme-primary);
-       margin: 2px 0; /* Espacio vertical para que respire */
+       margin: 1px 0; /* Espacio vertical para que respire */
        border-radius: 2.5px; /* Puntas redondeadas */
      }
 /* =================================================================
