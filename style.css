@@ -939,7 +939,8 @@
   --bs-popover-header-color: var(--mdc-theme-on-primary); /* Texto de la cabecera (White) */
   --bs-popover-body-color: var(--mdc-theme-on-surface); /* Texto del cuerpo (Teal 900) */
 
-      background-color: var(--mdc-theme-background);
+      background-color: var(--mdc-theme-primary);
+            color: var(--mdc-theme-background);
   /* Usamos tu fuente principal */
   --bs-popover-font-family: 'Special Elite', cursive;
   --bs-popover-header-font-size: 1.25rem;
