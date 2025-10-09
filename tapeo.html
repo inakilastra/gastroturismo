@@ -256,6 +256,10 @@
                         if (codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
                         else if (codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
                         else if (codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
+                        let tipolugar = '';
+                        if (site.tipo_lugar == 'Bar y Restaurante') {
+                            tipolugar = `Ademas de tapear, puedes comer en nuestra sección de restaurantes te lo contamos.<hr class="styled-hr">`;
+                        }
                         const cardHtml = `
                             <div class="sitio-card" style="grid-column: 1 / -1;">
                                 ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
@@ -266,6 +270,7 @@
                                     <hr class="styled-hr">
                                     <div class="sitio-card-description" style="text-align:center">${priceText}</div>
                                     <hr class="styled-hr">
+                                    ${tipolugar}
                                     ${row[COLS.pintxo_tapa] ? `<div class="sitio-card-description">${row[COLS.pintxo_tapa]}</div>` : ''}
                                     <button class="mdc-button mdc-button--raised" onclick="tapeo.showDetail(${index})" type="button">
                                         <span class="mdc-button__ripple"></span><i class="material-icons mdc-button__icon">visibility</i><span class="mdc-button__label"> Ver toda la información</span>
