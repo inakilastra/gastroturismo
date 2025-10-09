@@ -257,7 +257,7 @@
                         else if (codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
                         else if (codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
                         let tipolugar = '';
-                        if (site.tipo_lugar == 'Bar y Restaurante') {
+                        if (row[COLS.tipo_lugar] == 'Bar y Restaurante') {
                             tipolugar = `Ademas de tapear, puedes comer en nuestra sección de restaurantes te lo contamos.`;
                         }
                         const cardHtml = `
