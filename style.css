@@ -923,18 +923,52 @@
   white-space: nowrap;
   border: 0;
 }
-
-/* Estilos personalizados para el Popover del Chatbot */
-.custom-popover {
-    --bs-popover-border-color: #0d6efd; /* Color del borde (azul primario de Bootstrap) */
-    --bs-popover-header-bg: #0d6efd; /* Color de fondo de la cabecera */
-    --bs-popover-header-color: white; /* Color del texto de la cabecera */
-    max-width: 250px; /* Ancho máximo para que no sea muy grande en escritorio */
-}
-
-.custom-popover .popover-body {
-    font-size: 0.9rem; /* Texto un poco más pequeño */
-}
 /* =================================================================== */
 /* FIN: ESTILOS PARA EL BOTÓN DE ACCIÓN FLOTANTE (FAB) Y ACCESIBILIDAD   */
 /* =================================================================== */
+/* =================================================================== */
+/* INICIO: ESTILOS PARA EL POPOVER DEL BOTÓN FLOTANTE (FAB)      */
+/* ADAPTADO A LA PALETA DE COLORES Y FUENTE DEL SITIO              */
+/* =================================================================== */
+
+.custom-popover {
+  /* Usamos tus variables de color para la coherencia */
+  --bs-popover-bg: var(--mdc-theme-surface); /* Fondo del popover (Teal 50) */
+  --bs-popover-border-color: var(--mdc-theme-primary); /* Color del borde (Teal 500) */
+  --bs-popover-header-bg: var(--mdc-theme-primary); /* Fondo de la cabecera (Teal 500) */
+  --bs-popover-header-color: var(--mdc-theme-on-primary); /* Texto de la cabecera (White) */
+  --bs-popover-body-color: var(--mdc-theme-on-surface); /* Texto del cuerpo (Teal 900) */
+  
+  /* Usamos tu fuente principal */
+  --bs-popover-font-family: 'Special Elite', cursive;
+  --bs-popover-header-font-size: 1.25rem;
+  
+  /* Ajustes visuales consistentes con tus tarjetas */
+  border-radius: 8px; /* Mismo radio de borde que .sitio-card */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra similar a tus otros elementos */
+  max-width: 280px;
+  border-width: 1.5px;
+}
+
+.custom-popover .popover-body {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Estilo para el botón "Continuar al Chatbot" DENTRO del popover,
+  para que no use el azul por defecto de Bootstrap.
+*/
+.custom-popover .popover-body .btn-primary {
+  background-color: var(--mdc-theme-secondary); /* Un color secundario para el botón (Teal 300) */
+  border-color: var(--mdc-theme-secondary);
+  color: var(--mdc-theme-on-secondary);
+  font-family: 'Special Elite', cursive;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  transition: background-color 0.2s ease;
+}
+
+.custom-popover .popover-body .btn-primary:hover {
+  background-color: var(--mdc-theme-primary); /* Color primario al pasar el ratón */
+  border-color: var(--mdc-theme-primary);
+}
