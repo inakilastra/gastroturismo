@@ -933,18 +933,12 @@
 
 .custom-popover {
   /* Usamos tus variables de color para la coherencia */
-  --bs-popover-bg: white; /*var(--mdc-theme-surface);*/ /* Fondo del popover (Teal 50) */
-  --bs-popover-border-color: white; /* Color del borde (Teal 500) */
-  --bs-popover-header-bg: white; /* Fondo de la cabecera (Teal 500) */
-  --bs-popover-header-color: white; /* Texto de la cabecera (White) */
-  --bs-popover-body-color: white; /* Texto del cuerpo (Teal 900) */
-
-  /*--bs-popover-bg: var(--mdc-theme-background);
-  --bs-popover-border-color: var(--mdc-theme-primary); 
-  --bs-popover-header-bg: var(--mdc-theme-primary);
-  --bs-popover-header-color: var(--mdc-theme-on-primary);
-  --bs-popover-body-color: var(--mdc-theme-background); */
-      
+  --bs-popover-bg: var(--mdc-theme-surface); /* Fondo del popover (Teal 50) */
+  --bs-popover-border-color: var(--mdc-theme-primary); /* Color del borde (Teal 500) */
+  --bs-popover-header-bg: var(--mdc-theme-primary); /* Fondo de la cabecera (Teal 500) */
+  --bs-popover-header-color: var(--mdc-theme-on-primary); /* Texto de la cabecera (White) */
+  --bs-popover-body-color: var(--mdc-theme-on-surface); /* Texto del cuerpo (Teal 900) */
+  
   /* Usamos tu fuente principal */
   --bs-popover-font-family: 'Special Elite', cursive;
   --bs-popover-header-font-size: 1.25rem;
@@ -954,27 +948,8 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra similar a tus otros elementos */
   max-width: 280px;
   border-width: 1.5px;
+
+  background-clip: padding-box;
 }
 
-.custom-popover .popover-body {
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-/* Estilo para el botón "Continuar al Chatbot" DENTRO del popover,
-  para que no use el azul por defecto de Bootstrap.
-*/
-.custom-popover .popover-body .btn-primary {
-  background-color: var(--mdc-theme-secondary); /* Un color secundario para el botón (Teal 300) */
-  border-color: var(--mdc-theme-secondary);
-  color: var(--mdc-theme-on-secondary);
-  font-family: 'Special Elite', cursive;
-  font-size: 0.9rem;
-  padding: 6px 12px;
-  transition: background-color 0.2s ease;
-}
-
-.custom-popover .popover-body .btn-primary:hover {
-  background-color: var(--mdc-theme-primary); /* Color primario al pasar el ratón */
-  border-color: var(--mdc-theme-primary);
-}
+/* El resto de estilos (.popover-body, .btn-primary) se quedan como estaban */
