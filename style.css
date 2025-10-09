@@ -900,7 +900,7 @@
 
 /* Efecto visual cuando el usuario pasa el ratón por encima */
 .fab:hover {
-  background-color: #a02b15; /* Un tono ligeramente más oscuro al pasar el ratón */
+  background-color: var(--mdc-theme-primary) /*#a02b15;*/ /* Un tono ligeramente más oscuro al pasar el ratón */
   box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.35);
   transform: scale(1.1); /* Aumenta ligeramente su tamaño para dar feedback */
 }
