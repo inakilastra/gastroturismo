@@ -933,11 +933,11 @@
 
 .custom-popover {
   /* Usamos tus variables de color para la coherencia */
-  --bs-popover-bg: var(--mdc-theme-secondary); /*var(--mdc-theme-surface);*/ /* Fondo del popover (Teal 50) */
+  --bs-popover-bg: var(--mdc-theme-background); /*var(--mdc-theme-surface);*/ /* Fondo del popover (Teal 50) */
   --bs-popover-border-color: var(--mdc-theme-primary); /* Color del borde (Teal 500) */
   --bs-popover-header-bg: var(--mdc-theme-primary); /* Fondo de la cabecera (Teal 500) */
   --bs-popover-header-color: var(--mdc-theme-on-primary); /* Texto de la cabecera (White) */
-  --bs-popover-body-color: var(--mdc-theme-on-surface); /* Texto del cuerpo (Teal 900) */
+  --bs-popover-body-color: var(--mdc-theme-background); /* Texto del cuerpo (Teal 900) */
   
   /* Usamos tu fuente principal */
   --bs-popover-font-family: 'Special Elite', cursive;
