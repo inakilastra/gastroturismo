@@ -890,8 +890,8 @@
   width: 60px;
   height: 60px;
   /* Personaliza este color para que encaje con tu web */
-  background-color: var(--mdc-theme-background);
-  color: var(--mdc-theme-primary); /* Color del icono SVG */
+  background-color: var(--mdc-theme-primary);
+  color:  var(--mdc-theme-background);/* Color del icono SVG */
   border-radius: 50%; /* Lo convierte en un círculo perfecto */
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25); /* Sombra para darle profundidad */
   text-decoration: none; /* Elimina el subrayado del enlace */
@@ -900,7 +900,7 @@
 
 /* Efecto visual cuando el usuario pasa el ratón por encima */
 .fab:hover {
-  background-color: var(--mdc-theme-primary); /*#a02b15;*/ /* Un tono ligeramente más oscuro al pasar el ratón */
+  background-color: var(--mdc-theme-background); /*#a02b15;*/ /* Un tono ligeramente más oscuro al pasar el ratón */
   box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.35);
   transform: scale(1.1); /* Aumenta ligeramente su tamaño para dar feedback */
 }
