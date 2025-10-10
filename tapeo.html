@@ -263,11 +263,11 @@
                         }
                         let lo_ultimo = '';
                         const loultimo = row[COLS.lo_ultimo];
-                        const sitioLastPrecio = row[COLS.sitioLastPrecio];
+                        const precioultimo = row[COLS.precioultimo];
                         if (loultimo != '') {
                             lo_ultimo = `<br>Última vez: ${loultimo}`;
                             if (precio != '') {
-                                lo_ultimo += `<br>${sitioLastPrecio}`;
+                                lo_ultimo += `<br>${precioultimo}`;
                             }
                         }
                         const cardHtml = `
