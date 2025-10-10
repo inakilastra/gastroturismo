@@ -263,8 +263,12 @@
                         }
                         let lo_ultimo = '';
                         const loultimo = row[COLS.lo_ultimo];
+                        const precio = row[COLS.precio];
                         if (loultimo != '') {
-                            lo_ultimo = ` Última vez: ${loultimo}`;
+                            lo_ultimo = `<br>Última vez: ${loultimo}`;
+                            if (precio != '') {
+                                lo_ultimo = `<br>${precio}`;
+                            }
                         }
                         const cardHtml = `
                             <div class="sitio-card" style="grid-column: 1 / -1;">
