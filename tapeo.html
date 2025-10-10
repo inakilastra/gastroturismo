@@ -264,7 +264,7 @@
                         let lo_ultimo = '';
                         const loultimo = row[COLS.lo_ultimo];
                         if (loultimo != '') {
-                            lo_ultimo = row[COLS.lo_ultimo];
+                            lo_ultimo = ` Última vez: ${loultimo}`;
                         }
                         const cardHtml = `
                             <div class="sitio-card" style="grid-column: 1 / -1;">
@@ -274,7 +274,7 @@
                                     <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
                                     ${row[COLS.nota] ? `<div class="sitio-card-description">${row[COLS.nota]}</div>` : ''}
                                     <hr class="styled-hr">
-                                    <div class="sitio-card-description" style="text-align:center">${priceText} Última vez: ${lo_ultimo}</div>
+                                    <div class="sitio-card-description" style="text-align:center">${priceText}${lo_ultimo}</div>
                                     <hr class="styled-hr">
                                     ${tipolugar ? `<div class="sitio-card-description" style="text-align:center">${tipolugar}</div><hr class="styled-hr">` : ''}
                                     ${row[COLS.pintxo_tapa] ? `<div class="sitio-card-description">${row[COLS.pintxo_tapa]}</div>` : ''}
