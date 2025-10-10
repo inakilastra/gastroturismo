@@ -265,9 +265,9 @@
                         const loultimo = row[COLS.lo_ultimo];
                         const precioultimo = row[COLS.precioultimo];
                         if (loultimo != '') {
-                            lo_ultimo = `<br>Última vez: ${loultimo}`;
+                            lo_ultimo = `<br>${loultimo}`;
                             if (precioultimo > 0) {
-                                lo_ultimo += `<br>${precioultimo}`;
+                                lo_ultimo += ` ${precioultimo} €`;
                             }
                         }
                         const cardHtml = `
