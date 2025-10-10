@@ -261,6 +261,10 @@
                         if (tipo_lugar == 'Bar y Restaurante') {
                             tipolugar = `Ademas de tapear, puedes comer en nuestra sección de restaurantes te lo contamos.`;
                         }
+                        const lo_ultimo = '';
+                        if (row[COLS.lo_ultimo] != '') {
+                            lo_ultimo = row[COLS.lo_ultimo];
+                        }
                         const cardHtml = `
                             <div class="sitio-card" style="grid-column: 1 / -1;">
                                 ${imageUrl ? `<div class="sitio-card-image" style="background-image: url('${imageUrl}');"></div>` : ''}
@@ -269,7 +273,7 @@
                                     <div class="sitio-card-rating">${row[COLS.valoracion] || ''}</div>
                                     ${row[COLS.nota] ? `<div class="sitio-card-description">${row[COLS.nota]}</div>` : ''}
                                     <hr class="styled-hr">
-                                    <div class="sitio-card-description" style="text-align:center">${priceText}</div>
+                                    <div class="sitio-card-description" style="text-align:center">${priceText} Última vez: ${lo_ultimo}</div>
                                     <hr class="styled-hr">
                                     ${tipolugar ? `<div class="sitio-card-description" style="text-align:center">${tipolugar}</div><hr class="styled-hr">` : ''}
                                     ${row[COLS.pintxo_tapa] ? `<div class="sitio-card-description">${row[COLS.pintxo_tapa]}</div>` : ''}
