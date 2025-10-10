@@ -262,7 +262,8 @@
                             tipolugar = `Ademas de tapear, puedes comer en nuestra sección de restaurantes te lo contamos.`;
                         }
                         let lo_ultimo = '';
-                        if (row[COLS.lo_ultimo] != '') {
+                        const loultimo = row[COLS.lo_ultimo];
+                        if (loultimo != '') {
                             lo_ultimo = row[COLS.lo_ultimo];
                         }
                         const cardHtml = `
