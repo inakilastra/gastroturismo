@@ -266,7 +266,7 @@
                         const precioultimo = row[COLS.precioultimo];
                         if (loultimo != '') {
                             lo_ultimo = `<br>Última vez: ${loultimo}`;
-                            if (precioultimo != '') {
+                            if (precioultimo > 0) {
                                 lo_ultimo += `<br>${precioultimo}`;
                             }
                         }
