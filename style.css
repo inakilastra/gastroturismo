@@ -471,6 +471,9 @@
         flex-direction: column;
         text-align: center;
       }
+      .sitio-card-info .mdc-button {
+        margin-top: 24px; /* Añade un espacio por encima del botón */
+      }
 
       .sitio-card-info h3 {
         font-family: var(--md-ref-typeface-brand);
