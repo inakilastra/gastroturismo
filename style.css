@@ -472,7 +472,8 @@
         text-align: center;
       }
       .sitio-card-info .mdc-button {
-        margin-top: 24px; /* Añade un espacio por encima del botón */
+        margin-top: auto; /* Magia de Flexbox: empuja el botón a la parte inferior */
+        padding-top: 16px; /* Añade un espacio por encima del botón para que no se pegue al texto */
       }
 
       .sitio-card-info h3 {
