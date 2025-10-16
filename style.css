@@ -1,0 +1,561 @@
+/* =================================================================== */
+/* ESTILOS GLOBALES Y PALETA DE COLORES */
+/* =================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --md-ref-typeface-brand: 'Special Elite', cursive;
+  --mdc-theme-primary: #009688; /* Teal 500 */
+  --mdc-theme-on-primary: #FFFFFF;
+  --mdc-theme-secondary: #4DB6AC; /* Teal 300 */
+  --mdc-theme-on-secondary: #FFFFFF;
+  --mdc-theme-surface: #E0F2F1; /* Teal 50 */
+  --mdc-theme-on-surface: #004D40; /* Teal 900 */
+  --mdc-theme-background: #B2DFDB; /* Teal 100 */
+  --mdc-theme-primary-container: #A7FFEB; /* Teal A100 */
+  --mdc-theme-on-primary-container: #004D40; /* Teal 900 */
+  --top-app-bar-height: 60px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Special Elite', cursive;
+  color: var(--mdc-theme-on-surface);
+  background-color: var(--mdc-theme-background);
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+}
+
+.mdc-drawer-app-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+main.main-app-content {
+  flex: 1 0 auto;
+  overflow-y: auto;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.section-padding {
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+.section-title {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 2.8rem;
+  color: var(--mdc-theme-primary);
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.grid-container {
+  display: grid;
+  gap: 24px;
+}
+
+.simple-loader {
+  border: 5px solid #E0F2F1;
+  border-top: 5px solid var(--mdc-theme-primary);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.styled-hr {
+  border: 0;
+  height: 1px;
+  background-color: var(--mdc-theme-primary);
+  margin: 16px 0;
+  border-radius: 2.5px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =================================================================== */
+/* COMPONENTES MDC (Header, Drawer, Footer) */
+/* =================================================================== */
+
+.mdc-top-app-bar {
+  background-color: var(--mdc-theme-surface);
+  color: var(--mdc-theme-on-surface);
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 4;
+  height: var(--top-app-bar-height);
+}
+.mdc-top-app-bar__row { height: var(--top-app-bar-height); }
+.mdc-top-app-bar__title.brand-font { color: var(--mdc-theme-primary); font-size: 1.75rem; }
+.mdc-top-app-bar__navigation-icon { color: var(--mdc-theme-on-surface) !important; }
+.mdc-top-app-bar--fixed-adjust { padding-top: var(--top-app-bar-height); }
+
+.mdc-drawer { background-color: var(--mdc-theme-surface); }
+.mdc-drawer .mdc-drawer__header {
+  background-color: var(--mdc-theme-primary-container);
+  padding: 16px;
+}
+.mdc-drawer__title, .mdc-drawer__subtitle {
+  font-family: var(--md-ref-typeface-brand), 'Special Elite';
+  font-weight: 700;
+  color: var(--mdc-theme-on-primary-container) !important;
+}
+.mdc-list .mdc-list-item { color: var(--mdc-theme-on-surface); }
+.mdc-list .mdc-list-item--activated .mdc-list-item__text,
+.mdc-list .mdc-list-item--activated .mdc-list-item__graphic {
+  color: var(--mdc-theme-primary) !important;
+}
+.mdc-list-item__text {
+  font-family: var(--md-ref-typeface-brand), 'Special Elite';
+  font-weight: 700;
+  margin-left: 12px;
+}
+
+footer.common-footer {
+  background-color: var(--mdc-theme-surface);
+  color: var(--mdc-theme-on-surface);
+  font-size: 1.1rem;
+  padding: 12px 6px;
+  text-align: center;
+}
+.mdc-button .mdc-button__label {
+  font-family: var(--md-ref-typeface-brand);
+}
+
+/* =================================================================== */
+/* TARJETAS DE CATEGORÍA (PÁGINA DE INICIO) */
+/* =================================================================== */
+
+.category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: var(--mdc-theme-surface);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+.category-card .mdc-card__primary-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    width: 100%;
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+.category-card__icon-container {
+    background-color: var(--mdc-theme-primary-container);
+    color: var(--mdc-theme-on-primary-container);
+    border-radius: 50%;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: inline-flex;
+}
+.category-card__icon-container .material-icons { font-size: 36px; }
+.category-card__title {
+    font-family: var(--md-ref-typeface-brand);
+    font-size: 1.75rem;
+    color: var(--mdc-theme-primary);
+    margin: 0 0 8px 0;
+}
+.category-card__description {
+    margin-bottom: 16px;
+    min-height: 60px;
+    flex-grow: 1;
+    color: var(--mdc-theme-on-surface);
+    opacity: 0.8;
+    font-size: 1.1rem;
+}
+
+/* =================================================================== */
+/* NUEVO ENFOQUE "TARJETA ACORDEÓN" (LISTA DE SITIOS) */
+/* =================================================================== */
+
+.sitio-card-vertical {
+    background-color: var(--mdc-theme-surface);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: box-shadow 0.3s ease;
+}
+.sitio-card-vertical:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.sitio-card-vertical .sitio-card-image {
+    width: 100%;
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+}
+.sitio-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+}
+.sitio-card-header-text h3 {
+    font-family: var(--md-ref-typeface-brand);
+    font-size: 1.75rem;
+    color: var(--mdc-theme-primary);
+    margin: 0;
+}
+.sitio-card-header-text .sitio-card-rating {
+    font-size: 1.2rem;
+    color: #ff4081;
+    margin-top: 4px;
+}
+.sitio-card-header .mdc-button .material-icons {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sitio-card-collapsible {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sitio-card-collapsible-content {
+    padding: 0 20px 20px 20px;
+    text-align: center;
+}
+.sitio-card-collapsible .sitio-card-description {
+    text-align: left;
+    margin-bottom: 12px;
+    white-space: pre-wrap;
+}
+
+
+/* =================================================================== */
+/* VISTA DE DETALLE COMPLETA */
+/* =================================================================== */
+.full-detail-card {
+  background-color: var(--mdc-theme-surface);
+  border-radius: 8px;
+  margin-top: 24px;
+  padding: 24px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+.full-detail-header h2 {
+  font-family: var(--md-ref-typeface-brand);
+  color: var(--mdc-theme-primary);
+  font-size: 2.5rem;
+  margin: 0 0 8px 0;
+}
+.full-detail-rating {
+  font-size: 1.8rem;
+  color: #ff4081;
+  margin-bottom: 16px;
+}
+.full-detail-body p {
+  line-height: 1.7;
+  white-space: pre-wrap;
+  margin-bottom: 16px;
+}
+.full-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+  justify-content: center;
+}
+.full-detail-actions .mdc-button__icon {
+    font-size: 1.2em;
+    margin-right: 8px;
+}
+.v-align { vertical-align: middle; }
+
+/* =================================================================== */
+/* GALERÍA DE FOTOS PRINCIPAL (SLIDESHOW) */
+/* =================================================================== */
+.gallery-container {
+  position: relative;
+  max-width: 900px;
+  margin: 20px auto;
+}
+.mySlides { display: none; }
+.mySlides img { vertical-align: middle; }
+.cursor { cursor: pointer; }
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -50px;
+  color: #004D40;
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  background-color: #B2DFDB;
+  transition: background-color 0.6s ease;
+}
+.next { right: 0; border-radius: 3px 0 0 3px; }
+.prev:hover, .next:hover {
+  background-color: #009688;
+  color: white;
+}
+.numbertext {
+  color: #004D40;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+  background-color: #B2DFDB;
+  border-radius: 0 0 5px 0;
+}
+.caption-container {
+  text-align: center;
+  background-color: #222;
+  padding: 2px 16px;
+  color: white;
+  margin-top: -4px;
+}
+.row:after { content: ""; display: table; clear: both; }
+.column { float: left; width: 16.66%; padding: 5px; }
+.demo { opacity: 0.6; transition: opacity 0.3s ease; }
+.active, .demo:hover { opacity: 1; }
+
+/* =================================================================== */
+/* ESTILOS PARA TARJETAS DE EVENTOS */
+/* =================================================================== */
+
+.full-detail-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.full-detail-section h3 {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 1.75rem;
+  color: var(--mdc-theme-primary);
+  margin-bottom: 24px;
+}
+.eventos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+}
+.evento-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+.evento-card-info {
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+.evento-card-info h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+}
+.evento-card-info p {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+.evento-image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 5px;
+    padding: 10px;
+}
+.evento-card-image {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  border-radius: 4px;
+  aspect-ratio: 1 / 1; 
+  overflow: hidden;
+  cursor: pointer;
+}
+.evento-card-image-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 6px;
+  font-size: 0.8rem;
+  text-align: center;
+}
+.eventos-container.single-event {
+  display: flex;
+  justify-content: center;
+}
+.evento-anyo {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* =================================================================== */
+/* VISOR DE FOTOS MODAL (LIGHTBOX) */
+/* =================================================================== */
+
+.modal-overlay {
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+.modal-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
+}
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90%;
+  animation: zoomIn 0.3s ease;
+}
+@keyframes zoomIn {
+  from {transform: scale(0.8);}
+  to {transform: scale(1);}
+}
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 80px;
+  font-weight: 100;
+  line-height: 0.6;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.modal-close:hover, .modal-close:focus { color: #bbb; }
+#modal-caption {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  max-width: 70%;
+  padding: 15px 20px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
+}
+.modal-overlay.visible #modal-caption {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* =================================================================== */
+/* BOTÓN FLOTANTE (FAB) */
+/* =================================================================== */
+.fab-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+}
+.fab {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  background-color: var(--mdc-theme-primary);
+  color: var(--mdc-theme-background);
+  border-radius: 50%;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+.fab:hover {
+  background-color: var(--mdc-theme-background);
+  color: var(--mdc-theme-primary);
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.35);
+  transform: scale(1.1);
+}
+
+/* =================================================================== */
+/* ESTILOS RESPONSIVE PARA MÓVILES */
+/* =================================================================== */
+@media (max-width: 960px) {
+    .grid-container {grid-template-columns: repeat(2, 1fr);}
+}
+@media (max-width: 600px) {
+    .grid-container {grid-template-columns: 1fr;}
+    .section-title { font-size: 2.2rem; }
+    .hero-title { font-size: 2.5rem; }
+    .hero-subtitle { font-size: 1.2rem; }
+    .full-detail-header h2 { font-size: 2rem; }
+    .column { width: 33.33%; }
+}
+
