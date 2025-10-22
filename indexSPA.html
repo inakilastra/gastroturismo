@@ -348,7 +348,7 @@
                  });
                 app.elements.tapeo.backButton.addEventListener('click', app.tapeo.goBack);
                 
-                // Moved scroll listener attachment here!
+                // *** CORRECTION: Moved scroll listener attachment HERE, inside init ***
                 window.addEventListener('scroll', app.handleHeaderTransparency);
 
                 app.showPage(app.state.currentPage, true);
@@ -377,13 +377,13 @@
 
                 if (app.state.isMenuOpen) app.toggleMenu();
                 
-                // *** CORRECTION: Reset tapeo state ONLY when navigating TO tapeo ***
+                // Reset tapeo state ONLY when navigating TO tapeo
                 if (pageName === 'tapeo') {
                      console.log("Resetting tapeo state because navigating to tapeo");
                      app.state.tapeoState = {
                          level: 'autonomias', selection: {}, history: [], currentSitios: []
                      };
-                     app.tapeo.hideDetail(); // Ensure detail view is hidden
+                     app.tapeo.hideDetail(); 
                 }
                 
                 app.state.currentPage = pageName;
@@ -615,3 +615,4 @@
     </script>
 </body>
 </html>
+
