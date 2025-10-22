@@ -101,7 +101,7 @@
                 font-family: 'Special Elite', cursive;
             }
             .row:after { content: ""; display: table; clear: both; }
-            .column { float: left; width: 16.66%; padding: 5px; }
+            .column { float: left; /* width será ajustado por JS */ padding: 5px; } /* Quitado width fijo */
             .demo { opacity: 0.6; transition: opacity 0.3s ease; }
             .active, .demo:hover { opacity: 1; }
 
@@ -168,7 +168,7 @@
         </header>
 
         <!-- Drawer (Menú Lateral) (Portado de aside.html) -->
-        <aside id="drawer" class="fixed top-0 left-0 z-20 h-full w-72 bg-surface shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out pt-16">
+        <aside id="drawer" class="fixed top-0 left-0 z-40 h-full w-72 bg-surface shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out pt-16"> <!-- Aumentado z-index -->
             <div class="flex flex-col h-full">
                 <!-- Cabecera del Drawer -->
                 <div class="bg-primary-container p-4">
@@ -219,7 +219,7 @@
             </div>
         </aside>
         <!-- Scrim (fondo oscuro para el menú) -->
-        <div id="drawer-scrim" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden transition-opacity duration-300"></div>
+        <div id="drawer-scrim" class="fixed inset-0 bg-black bg-opacity-50 z-35 hidden transition-opacity duration-300"></div> <!-- Aumentado z-index -->
 
         <!-- Contenido Principal (Aquí se "cargan" las páginas) -->
         <main class="pt-16 flex-grow"> <!-- flex-grow añadido -->
@@ -472,7 +472,7 @@
     </div>
 
     <!-- Modal para Fotos (portado de tapeo.html) -->
-    <div id="photo-modal" class="modal-overlay hidden fixed inset-0 z-40 bg-black bg-opacity-80 items-center justify-center p-4" onclick="app.gallery.closeModal()">
+    <div id="photo-modal" class="modal-overlay hidden fixed inset-0 z-50 bg-black bg-opacity-80 items-center justify-center p-4" onclick="app.gallery.closeModal()"> <!-- Aumentado z-index -->
         <span class="modal-close absolute top-2 right-4 text-white text-6xl font-light cursor-pointer" onclick="event.stopPropagation(); app.gallery.closeModal()">&times;</span>
         <img class="modal-content max-w-[90%] max-h-[80%] object-contain" id="modal-image" onclick="event.stopPropagation();">
         <div id="modal-caption" class="absolute bottom-10 left-0 right-0 mx-auto w-auto max-w-[70%] text-center text-white text-lg p-4 bg-black bg-opacity-70 rounded-md opacity-0 -translate-y-5"></div>
@@ -502,8 +502,7 @@
                 isMenuOpen: false,
                 currentPage: 'home',
                 isDataLoaded: false,
-                 isLoadingData: false, // Nueva bandera para evitar cargas múltiples
-                // Almacén para los datos de los CSV
+                 isLoadingData: false, 
                 data: {
                     tapeo: [],
                     eventos: [],
@@ -511,14 +510,12 @@
                     eventosLookup: {},
                     eventosPuntualesLookup: {}
                 },
-                // Estado específico de la sección "Tapeo"
                 tapeoState: {
                     level: 'autonomias',
                     selection: {},
                     history: [],
                     currentSitios: []
                 },
-                // Estado de la galería
                 galleryState: {
                     slideIndex: 1
                 }
@@ -529,7 +526,6 @@
 
             // --- Inicialización de la App ---
             init() {
-                // Cachear elementos del DOM
                 app.elements = {
                     header: document.getElementById('app-header'),
                     headerTitle: document.getElementById('header-title'),
@@ -568,12 +564,12 @@
                 app.elements.menuBtn.addEventListener('click', app.toggleMenu);
                 app.elements.drawerScrim.addEventListener('click', app.toggleMenu);
 
-                // Event listener delegado para navegación
+                // Event listener delegado para navegación (CORREGIDO)
                  document.body.addEventListener('click', (e) => {
-                    const navLink = e.target.closest('.nav-link');
-                    // Comprobar que existe el link y tiene el atributo data-page
+                    // Busca el elemento A.nav-link más cercano al click
+                    const navLink = e.target.closest('a.nav-link'); 
                     if (navLink && navLink.dataset.page) { 
-                         console.log("Navigating to:", navLink.dataset.page); // Log para depuración
+                         console.log("Navigating via body listener to:", navLink.dataset.page); // Log
                          e.preventDefault(); 
                          app.navigateTo(navLink.dataset.page);
                     }
@@ -583,7 +579,6 @@
 
                 app.showPage(app.state.currentPage, true);
                 app.updateActiveLink(app.state.currentPage);
-                 // Listener para estilo del header en scroll
                  window.addEventListener('scroll', app.handleHeaderTransparency);
             },
 
@@ -593,7 +588,7 @@
                 if (app.state.isMenuOpen) {
                     app.elements.drawer.classList.remove('-translate-x-full');
                     app.elements.drawerScrim.classList.remove('hidden');
-                    requestAnimationFrame(() => { // Asegurar que no está hidden antes de la transición
+                    requestAnimationFrame(() => { 
                        app.elements.drawerScrim.classList.add('opacity-100');
                     });
                 } else {
@@ -608,8 +603,8 @@
             },
 
             navigateTo(pageName) {
+                console.log(`MapsTo called with: ${pageName}`); // Log
                 if (!pageName || pageName === app.state.currentPage) {
-                    // Si ya estamos en la página y el menú está abierto, cerrarlo
                     if (app.state.isMenuOpen) app.toggleMenu();
                     return;
                 }
@@ -617,24 +612,36 @@
                 if (app.state.isMenuOpen) {
                     app.toggleMenu();
                 }
-                app.state.currentPage = pageName;
-                app.showPage(pageName);
-                app.updateActiveLink(pageName); 
-
-                if (pageName === 'tapeo' && !app.state.isDataLoaded && !app.state.isLoadingData) { 
-                    app.loadTapeoData();
-                } else if (pageName === 'tapeo' && app.state.isDataLoaded) {
-                     app.tapeo.hideDetail(); 
-                     // Reiniciar el estado de tapeo si volvemos a la sección
+                
+                // Reiniciar estado de Tapeo SIEMPRE al navegar A tapeo desde OTRA página
+                if (pageName === 'tapeo' && app.state.currentPage !== 'tapeo') {
+                     console.log("Resetting tapeo state because navigating to tapeo"); // Log
                      app.state.tapeoState = {
                          level: 'autonomias',
                          selection: {},
                          history: [],
                          currentSitios: []
                      };
-                     app.tapeo.renderStep();
+                     app.tapeo.hideDetail(); // Asegurar que el detalle está oculto al reiniciar
+                }
+                
+                app.state.currentPage = pageName;
+                app.showPage(pageName);
+                app.updateActiveLink(pageName); 
+
+                // Lógica de carga/renderizado para Tapeo
+                if (pageName === 'tapeo') {
+                    if (!app.state.isDataLoaded && !app.state.isLoadingData) { 
+                        app.loadTapeoData();
+                    } else if (app.state.isDataLoaded) {
+                         // Si los datos ya están cargados (y el estado se reinició arriba si era necesario)
+                         console.log("Data loaded, rendering tapeo step"); // Log
+                         app.tapeo.renderStep(); 
+                    }
+                     // Si isLoadingData es true, loadTapeoData se encargará de llamar a renderStep al terminar
                 }
             },
+
 
             showPage(pageName, isInitialLoad = false) {
                  if (!pageName) return; 
@@ -654,25 +661,23 @@
                 }
 
                 // Actualizar título del header y estilo
-                 let title = 'ANeKI'; // Default title
+                 let title = 'ANeKI'; 
                  if (pageName !== 'home') {
                      const link = document.querySelector(`.nav-link[data-page="${pageName}"]`);
                      if (link) {
                          const titleSpan = link.querySelector('span.font-brand');
-                         const titleH3 = link.querySelector('h3'); // Para las tarjetas de categoría
+                         const titleH3 = link.querySelector('h3'); 
                          if (titleSpan) {
                              title = titleSpan.textContent;
                          } else if (titleH3) {
-                             // Extraer título principal de H3 (ej: "Pintxos y Tapas")
                              title = titleH3.textContent.split(' ')[0];
                          } else {
-                              // Fallback general basado en pageName
-                              title = pageName.charAt(0).toUpperCase() + pageName.slice(1).replace(/-/g, ' '); // Reemplazar guiones
+                              title = pageName.charAt(0).toUpperCase() + pageName.slice(1).replace(/-/g, ' '); 
                          }
                      }
                  }
                  app.elements.headerTitle.textContent = title;
-                 app.handleHeaderTransparency(); // Actualizar estilo header aquí
+                 app.handleHeaderTransparency(); 
 
                 if (!isInitialLoad) {
                     window.scrollTo(0, 0); 
@@ -684,6 +689,7 @@
                  app.elements.mainNav.querySelectorAll('.nav-link').forEach(link => {
                      link.classList.remove('active-link');
                  });
+                 // Buscar por data-page DENTRO del mainNav
                  const activeLink = app.elements.mainNav.querySelector(`.nav-link[data-page="${pageName}"]`);
                  if (activeLink) {
                      activeLink.classList.add('active-link');
@@ -707,18 +713,21 @@
                 if (app.state.isDataLoaded || app.state.isLoadingData) return; 
                 
                 app.state.isLoadingData = true; 
-                if(app.state.currentPage === 'tapeo') app.tapeo.showLoading(true); // Mostrar solo si estamos en tapeo
+                if(app.state.currentPage === 'tapeo') app.tapeo.showLoading(true); 
 
                 try {
+                    console.log("Fetching CSV data..."); // Log
                     const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all([
                         fetch(app.config.CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status} en CSV_URL`))),
                         fetch(app.config.EVENTOS_CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status} en EVENTOS_CSV_URL`))),
                         fetch(app.config.EVENTOSPUNTUALES_CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status} en EVENTOSPUNTUALES_CSV_URL`)))
                     ]);
+                    console.log("CSV data fetched."); // Log
 
                     app.state.data.tapeo = app.utils.parseCSV(tapeoCsvText).slice(1);
                     app.state.data.eventos = app.utils.parseCSV(eventosCsvText).slice(1);
                     app.state.data.eventosPuntuales = app.utils.parseCSV(eventosPuntualesCsvText).slice(1);
+                    console.log("CSV data parsed. Tapeo rows:", app.state.data.tapeo.length); // Log
 
                     // Pre-procesar lookups
                     app.state.data.eventosLookup = app.state.data.eventos.reduce((acc, row) => {
@@ -737,11 +746,12 @@
                         }
                         return acc;
                     }, {});
-
+                    console.log("Event lookups created."); // Log
 
                     app.state.isDataLoaded = true;
                     if(app.state.currentPage === 'tapeo') {
-                         app.tapeo.renderStep(); // Renderizar AHORA que los datos están listos
+                         console.log("Calling renderStep after successful data load."); // Log
+                         app.tapeo.renderStep(); 
                     }
 
                 } catch (error) {
@@ -751,7 +761,6 @@
                     }
                 } finally {
                      app.state.isLoadingData = false; 
-                     // Asegurarse de ocultar el spinner si falló la carga o si ya no estamos en tapeo
                      if(app.state.currentPage !== 'tapeo' || !app.state.isDataLoaded) {
                          app.tapeo.showLoading(false);
                      }
@@ -781,8 +790,8 @@
                     console.log("Rendering step for level:", app.state.tapeoState.level); // Log
                     app.tapeo.showLoading(true); 
                     
-                    requestAnimationFrame(() => { // Usar rAF para mejor rendimiento percibido
-                        try { // Añadir try-catch para depuración
+                    requestAnimationFrame(() => { 
+                        try { 
                             let dataToProcess = app.state.data.tapeo;
                             const { selection } = app.state.tapeoState;
 
@@ -797,7 +806,7 @@
                             app.elements.tapeo.backButton.classList.toggle('inline-flex', app.state.tapeoState.history.length > 0);
                             app.tapeo.renderBreadcrumbs();
 
-                            let uniqueValues = []; // Declarar fuera para el chequeo final
+                            let uniqueValues = []; 
 
                             // Renderizar grid o saltar nivel
                             if (app.state.tapeoState.level === 'sitios') {
@@ -815,7 +824,7 @@
                                 }
                                 
                                 if (uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios') {
-                                    if (!uniqueValues[0]) { // Si el único valor es nulo/vacío
+                                    if (!uniqueValues[0]) { 
                                         console.log("Único valor vacío, mostrando grid vacío."); // Log
                                         app.tapeo.populateGridWithOptions([]); 
                                         app.tapeo.showLoading(false);
@@ -827,36 +836,40 @@
                                         selection: { ...app.state.tapeoState.selection }, 
                                         skipped: true 
                                     });
-                                    app.tapeo.handleSelection(uniqueValues[0], true);
-                                    return; // Salir de rAF, handleSelection llamará a renderStep de nuevo
+                                    // Delay ligeramente handleSelection para asegurar que el estado se actualiza antes del próximo render
+                                    setTimeout(() => app.tapeo.handleSelection(uniqueValues[0], true), 0); 
+                                    return; 
                                 }
                                 
                                 app.tapeo.populateGridWithOptions(uniqueValues);
                             }
                             
                             // Ocultar spinner después de renderizar (solo si no se saltó nivel)
-                            if (!(uniqueValues && uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios')) {
-                                setTimeout(() => app.tapeo.showLoading(false), 50); 
-                            }
+                            // Asegurarse de que uniqueValues esté definido antes de usarlo
+                            const shouldHideLoading = !(uniqueValues && uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios');
+                             if (shouldHideLoading) {
+                                 // Usar setTimeout para asegurar que se oculte después del render
+                                 setTimeout(() => app.tapeo.showLoading(false), 50); 
+                             }
                         } catch(error) {
                              console.error("Error during renderStep:", error);
                              app.tapeo.displayError(`Error al renderizar: ${error.message}`);
-                             app.tapeo.showLoading(false); // Asegurar que el spinner se oculta
+                             app.tapeo.showLoading(false); 
                         }
-                    }); // Fin requestAnimationFrame
+                    }); 
                 },
 
 
                 populateGridWithOptions(data) {
                     const config = app.tapeo.levelsConfig[app.state.tapeoState.level];
-                     if (!config) { // Comprobación añadida
+                     if (!config) { 
                          console.error("Configuración no encontrada para el nivel:", app.state.tapeoState.level);
                          return;
                      }
                     app.elements.tapeo.title.textContent = config.title;
                     const grid = app.elements.tapeo.grid;
                     grid.innerHTML = ''; 
-                    grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'; // Responsive grid
+                    grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'; 
 
                     if (data.length === 0) {
                         grid.innerHTML = `<p class="font-brand text-xl text-center sm:col-span-2 md:col-span-3">No hay opciones disponibles.</p>`;
@@ -912,10 +925,10 @@
                                     <h3 class="text-3xl mb-2">${row[C.nombre] || 'Nombre no disponible'}</h3>
                                     <div class="text-2xl mb-4" style="color: #ff4081;">${row[C.valoracion] || ''}</div>
                                     ${row[C.nota] ? `<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap">${row[C.nota]}</p>` : ''}
-                                    <hr class="border-t-2 border-primary/50 my-2"> <!-- Ligeramente más suave -->
+                                    <hr class="border-t-2 border-primary/50 my-2"> 
                                     <p class="font-brand text-on-surface text-lg my-2">${priceText}</p>
                                     <hr class="border-t-2 border-primary/50 my-2">
-                                    ${row[C.pintxo_tapa] ? `<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap flex-grow">${row[C.pintxo_tapa]}</p>` : '<div class="flex-grow"></div>'} <!-- Placeholder si no hay descripción -->
+                                    ${row[C.pintxo_tapa] ? `<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap flex-grow">${row[C.pintxo_tapa]}</p>` : '<div class="flex-grow"></div>'} 
                                     
                                     <button class="mt-4 bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center justify-center self-center" onclick="app.tapeo.showDetail(${index})">
                                         <span class="material-icons mr-2">visibility</span>
@@ -963,25 +976,26 @@
                                 <div class="numbertext">${i + 1} / ${galleryData.length}</div>
                                 <img src="${item.url}" class="w-full rounded-lg shadow" alt="${item.text}">
                             </div>`).join('');
-                        // Calcular ancho de columna dinámicamente (máx 6 columnas)
                         const numThumbnails = galleryData.length;
-                        const columnWidthClass = numThumbnails >= 6 ? 'w-1/6' : 
+                        // Ajustar clases de ancho basadas en número de thumbnails
+                         const columnWidthClass = numThumbnails >= 6 ? 'w-1/6' : 
                                                  numThumbnails === 5 ? 'w-1/5' :
                                                  numThumbnails === 4 ? 'w-1/4' :
                                                  numThumbnails === 3 ? 'w-1/3' :
                                                  numThumbnails === 2 ? 'w-1/2' : 'w-full';
 
+
                         const thumbnailsHtml = galleryData.map((item, i) => `
-                            <div class="column ${columnWidthClass} p-1"> {/* Añadido padding */}
-                                <img class="demo cursor rounded block w-full h-auto" src="${item.url.replace('w600', 'w200')}" onclick="app.gallery.currentSlide(${i + 1})" alt="${item.text}">
+                            <div class="column ${columnWidthClass} p-1"> 
+                                <img class="demo cursor rounded block w-full h-auto aspect-[4/3] object-cover" src="${item.url.replace('&sz=w600', '&sz=w200')}" onclick="app.gallery.currentSlide(${i + 1})" alt="${item.text}">
                             </div>`).join('');
                         galleryHtml = `
-                            <div class="gallery-container mb-6"> {/* Añadido margen inferior */}
+                            <div class="gallery-container mb-6"> 
                                 ${slidesHtml}
                                 <a class="prev" onclick="app.gallery.plusSlides(-1)">❮</a>
                                 <a class="next" onclick="app.gallery.plusSlides(1)">❯</a>
                                 <div class="caption-container rounded-b-lg"><p id="caption"></p></div>
-                                <div class="row mt-2 flex flex-wrap justify-center">${thumbnailsHtml}</div> {/* Usar flexbox para thumbnails */}
+                                <div class="row mt-2 flex flex-wrap justify-center">${thumbnailsHtml}</div> 
                             </div>`;
                     }
 
@@ -1005,7 +1019,7 @@
                                      const linea1 = partes[0] || '';
                                      const linea2 = partes[1] || '';
                                      const safeText = (linea2 || linea1).replace(/'/g, "\\'");
-                                     const imageUrl = item.url.includes('thumbnail?id=') ? item.url : 'https://placehold.co/400x400/E0F2F1/004D40?text=Error'; // Placeholder corto
+                                     const imageUrl = item.url.includes('thumbnail?id=') ? item.url : 'https://placehold.co/400x400/E0F2F1/004D40?text=Error'; 
                                      return `
                                          <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group shadow hover:shadow-lg transition-shadow" 
                                               style="background-image: url('${imageUrl}');"
@@ -1091,8 +1105,8 @@
                             <div class="mt-8 text-center">
                                 <p class="font-brand text-lg text-on-surface opacity-90 whitespace-pre-wrap mb-6">${site.pintxo_tapa || ''}</p>
                                 
-                                ${site.direccion ? `<p class="font-brand text-lg mt-6 flex items-center justify-center text-left"><span class="material-icons align-middle -mt-1 mr-2 flex-shrink-0">place</span> <span><b>Dirección:</b> ${site.direccion}</span></p>` : ''} <!-- Alineado a la izquierda -->
-                                ${site.horario ? `<p class="font-brand text-lg mt-4 whitespace-pre-wrap text-left"><span class="material-icons align-top -mt-0 mr-2">schedule</span> <b>Horario:</b><br><span class="ml-8">${site.horario.replace(/\n/g, '<br class="ml-8">')}</span></p>` : ''} <!-- Alineado a la izquierda con sangría -->
+                                ${site.direccion ? `<p class="font-brand text-lg mt-6 flex items-center justify-center text-left"><span class="material-icons align-middle -mt-1 mr-2 flex-shrink-0">place</span> <span><b>Dirección:</b> ${site.direccion}</span></p>` : ''} 
+                                ${site.horario ? `<p class="font-brand text-lg mt-4 whitespace-pre-wrap text-left"><span class="material-icons align-top -mt-0 mr-2">schedule</span> <b>Horario:</b><br><span class="ml-8">${site.horario.replace(/\n/g, '<br class="ml-8">')}</span></p>` : ''} 
                                 
                                 <!-- Eventos -->
                                 ${eventosHtml}
@@ -1181,15 +1195,14 @@
                 },
 
                 showLoading(isLoading) {
-                     // Solo mostrar/ocultar si estamos en la página de tapeo
                      if (app.state.currentPage === 'tapeo') {
                         app.elements.tapeo.loading.classList.toggle('hidden', !isLoading);
                         app.elements.tapeo.loading.classList.toggle('flex', isLoading);
                         app.elements.tapeo.grid.classList.toggle('hidden', isLoading);
-                        app.elements.tapeo.grid.classList.toggle('grid', !isLoading);
-                        if(isLoading) app.elements.tapeo.error.classList.add('hidden'); // Ocultar error si empezamos a cargar
+                        // Asegurar que grid es grid solo si no está cargando
+                        app.elements.tapeo.grid.classList.toggle('grid', !isLoading); 
+                        if(isLoading) app.elements.tapeo.error.classList.add('hidden'); 
                      } else {
-                          // Asegurarse de que esté oculto si no estamos en tapeo
                           app.elements.tapeo.loading.classList.add('hidden');
                           app.elements.tapeo.loading.classList.remove('flex');
                      }
@@ -1323,12 +1336,6 @@
         // Iniciar la aplicación cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', app.init);
         
-        // Manejar el estilo del header al hacer scroll
-        window.addEventListener('scroll', () => {
-             if (!app.elements || !app.elements.header) return; 
-             app.handleHeaderTransparency(); 
-        });
-
     </script>
 </body>
 </html>
