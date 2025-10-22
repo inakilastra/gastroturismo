@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANeKI - Gastroturismo</title>
+    <!-- Favicon (Asegúrate de tener este archivo en la misma carpeta o usa una URL) -->
+    <!-- <link rel="icon" type="image/x-icon" href="./favicon.ico"> -->
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Iconos de Material Design -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Fuentes de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
+
+    <style type="text/tailwindcss">
+        @layer base {
+            /* Aplicamos la fuente principal al cuerpo */
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: theme('colors.background');
+                color: theme('colors.on-surface');
+            }
+            /* Aplicamos la fuente de marca a elementos específicos */
+            .font-brand {
+                font-family: 'Special Elite', cursive;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                @apply font-brand text-primary;
+            }
+        }
+        @layer components {
+            /* Estilos del Spinner (portados del style.css original) */
+            .simple-loader {
+                border: 5px solid theme('colors.surface');
+                border-top: 5px solid theme('colors.primary');
+                border-radius: 50%;
+                width: 48px;
+                height: 48px;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            /* Estilos de la Galería (portados del style.css original) */
+            .gallery-container {
+                position: relative;
+                max-width: 900px;
+                margin: 20px auto;
+            }
+            .mySlides { display: none; }
+            .mySlides img { vertical-align: middle; }
+            .cursor { cursor: pointer; }
+            .prev, .next {
+                cursor: pointer;
+                position: absolute;
+                top: 50%;
+                width: auto;
+                padding: 16px;
+                margin-top: -50px;
+                color: theme('colors.on-surface');
+                font-weight: bold;
+                font-size: 20px;
+                border-radius: 0 3px 3px 0;
+                user-select: none;
+                background-color: theme('colors.background');
+                transition: background-color 0.6s ease;
+            }
+            .next { right: 0; border-radius: 3px 0 0 3px; }
+            .prev:hover, .next:hover {
+                background-color: theme('colors.primary');
+                color: white;
+            }
+            .numbertext {
+                color: theme('colors.on-surface');
+                font-size: 12px;
+                font-weight: bold;
+                padding: 8px 12px;
+                position: absolute;
+                top: 0;
+                background-color: theme('colors.background');
+                border-radius: 0 0 5px 0;
+            }
+            .caption-container {
+                text-align: center;
+                background-color: #222;
+                padding: 2px 16px;
+                color: white;
+                margin-top: -4px;
+                font-family: 'Special Elite', cursive;
+            }
+            .row:after { content: ""; display: table; clear: both; }
+            .column { float: left; width: 16.66%; padding: 5px; }
+            .demo { opacity: 0.6; transition: opacity 0.3s ease; }
+            .active, .demo:hover { opacity: 1; }
+
+            /* Estilos del Modal (portados y adaptados a Tailwind) */
+            .modal-overlay {
+                transition: opacity 0.3s ease;
+            }
+            .modal-content {
+                animation: zoomIn 0.3s ease;
+            }
+            @keyframes zoomIn {
+                from {transform: scale(0.8);}
+                to {transform: scale(1);}
+            }
+            #modal-caption {
+                font-family: 'Special Elite', cursive;
+                transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
+            }
+        }
+    </style>
+
+    <script>
+        // Configuración de Tailwind para usar la paleta de colores y fuentes del CSS original
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        brand: ['Special Elite', 'cursive'],
+                    },
+                    colors: {
+                        primary: '#009688', // Teal 500
+                        'on-primary': '#FFFFFF',
+                        secondary: '#4DB6AC', // Teal 300
+                        'on-secondary': '#FFFFFF',
+                        surface: '#E0F2F1', // Teal 50
+                        'on-surface': '#004D40', // Teal 900
+                        background: '#B2DFDB', // Teal 100
+                        'primary-container': '#A7FFEB', // Teal A100
+                        'on-primary-container': '#004D40', // Teal 900
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+
+    <!-- Contenedor principal de la App -->
+    <div class="min-h-screen">
+
+        <!-- Header (Portado de header.html) -->
+        <header id="app-header" class="fixed top-0 left-0 right-0 bg-surface text-on-surface shadow-md z-30 h-16 transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <button id="menu-btn" aria-label="Abrir menú" class="p-2 rounded-md text-on-surface hover:bg-background focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
+                            <span class="material-icons">menu</span>
+                        </button>
+                        <span id="header-title" class="font-brand text-2xl text-primary ml-3">ANeKI</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Drawer (Menú Lateral) (Portado de aside.html) -->
+        <aside id="drawer" class="fixed top-0 left-0 z-20 h-full w-72 bg-surface shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out pt-16">
+            <div class="flex flex-col h-full">
+                <!-- Cabecera del Drawer -->
+                <div class="bg-primary-container p-4">
+                    <a href="#" class="nav-link" data-page="home">
+                        <h3 class="font-brand text-2xl text-on-primary-container">ANeKI</h3>
+                        <h6 class="font-brand text-lg text-on-primary-container opacity-80">Gastroturismo</h6>
+                    </a>
+                </div>
+                <!-- Contenido del Drawer (Navegación) -->
+                <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="home">
+                        <span class="material-icons mr-3">home</span>
+                        <span class="font-brand text-lg">Inicio</span>
+                    </a>
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="tapeo">
+                        <span class="material-icons mr-3">tapas</span>
+                        <span class="font-brand text-lg">Tapear</span>
+                    </a>
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="restaurantes">
+                        <span class="material-icons mr-3">restaurant</span>
+                        <span class="font-brand text-lg">Restaurantes</span>
+                    </a>
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="bodegas">
+                        <span class="material-icons mr-3">wine_bar</span>
+                        <span class="font-brand text-lg">Bodegas</span>
+                    </a>
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="turismo">
+                        <span class="material-icons mr-3">map</span>
+                        <span class="font-brand text-lg">Turismo</span>
+                    </a>
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="eventos-culinarios">
+                        <span class="material-icons mr-3">local_dining</span>
+                        <span class="font-brand text-lg">Eventos Culinarios</span>
+                    </a>
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="eventos-turisticos">
+                        <span class="material-icons mr-3">event</span>
+                        <span class="font-brand text-lg">Eventos Turísticos</span>
+                    </a>
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="tiendas">
+                        <span class="material-icons mr-3">storefront</span>
+                        <span class="font-brand text-lg">Tiendas</span>
+                    </a>
+                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="curiosidades">
+                        <span class="material-icons mr-3">help_outline</span>
+                        <span class="font-brand text-lg">Curiosidades</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        <!-- Scrim (fondo oscuro para el menú) -->
+        <div id="drawer-scrim" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden transition-opacity duration-300"></div>
+
+        <!-- Contenido Principal (Aquí se "cargan" las páginas) -->
+        <main class="pt-16">
+            
+            <!-- Página: INICIO (portada de index.html) -->
+            <div id="page-home" class="page-content">
+                <!-- Hero Section -->
+                <section class="min-h-[70vh] bg-cover bg-center flex items-center justify-center text-center text-white relative" style="background-image: url('https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200-h800');">
+                    <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+                    <div class="relative z-10 p-5 max-w-3xl">
+                        <h1 class="font-brand text-5xl md:text-6xl text-white mb-4">Gastronomía y turismo en tu bolsillo</h1>
+                        <p class="text-xl md:text-2xl mb-8 font-brand">Compartimos nuestras experiencias gastronómicas y turísticas, por si te apetece probar alguna...</p>
+                        <a href="#categories" class="inline-block bg-primary text-on-primary font-brand text-lg px-6 py-3 rounded-lg shadow-lg hover:bg-secondary transition-colors">
+                            ¡Pasa a ver nuestras recomendaciones! 👇
+                        </a>
+                    </div>
+                </section>
+
+                <!-- About Us Section -->
+                <section class="py-12 md:py-16 bg-surface">
+                    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
+                            <div class="md:col-span-2">
+                                <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w800-h500" alt="Angels e Iñaki" class="w-full h-auto rounded-2xl shadow-lg object-cover">
+                            </div>
+                            <div class="md:col-span-3 text-center md:text-left">
+                                <h2 class="text-3xl md:text-4xl mb-4">¡Hola! Somos Angels e Iñaki 👋</h2>
+                                <p class="text-lg md:text-xl font-brand leading-relaxed">
+                                    Te abrimos las puertas a nuestro universo.
+                                    <br>Tenemos de todo: desde bocados de pura felicidad 😋, hasta kilómetros de aventura ✨ y carteles que nos sacan una sonrisa 😂.
+                                    <br>Si buscas un chute de inspiración, ¡estás en el sitio perfecto! 🎉
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Categories Section -->
+                <section id="categories" class="py-12 md:py-16">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-4xl md:text-5xl text-center mb-12">Descubre Nuestros Mundos</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- Tarjeta de Categoría -->
+                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="tapeo">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">tapas</span>
+                                    </div>
+                                    <h3 class="text-2xl mb-2">Pintxos y Tapas 🍷🍢</h3>
+                                    <p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">¡A gozar! Descubre sitios donde ofrecen buenos pintxos o tapas, de los que te hacen salivar. 🍻🍡</p>
+                                    <span class="font-brand text-primary font-bold">Explorar Tapeo</span>
+                                </div>
+                            </a>
+                            <!-- Tarjeta de Categoría -->
+                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="restaurantes">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">restaurant</span>
+                                    </div>
+                                    <h3 class="text-2xl mb-2">Restaurantes 🍽️🌟</h3>
+                                    <p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Desde la cocina casera 👵🥘 hasta esos sitios con soles y estrellas Michelin. ¡Buen provecho! 🥂</p>
+                                    <span class="font-brand text-primary font-bold">Ver Restaurantes</span>
+                                </div>
+                            </a>
+                            <!-- Tarjeta de Categoría -->
+                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="bodegas">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">wine_bar</span>
+                                    </div>
+                                    <h3 class="text-2xl mb-2">Bodegas 🍇🍷</h3>
+                                    <p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Descubre bodegas con encanto que nos han conquistado (y sus caldos también, claro). 😉</p>
+                                    <span class="font-brand text-primary font-bold">Visitar Bodegas</span>
+                                </div>
+                            </a>
+                            <!-- Tarjeta de Categoría -->
+                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="turismo">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">explore</span>
+                                    </div>
+                                    <h3 class="text-2xl mb-2">Turismo 🏞️🚶‍♀️</h3>
+                                    <p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Acompáñanos a explorar experiencias turísticas que nos han marcado ✨. ¡Prepara la cámara! 📸</p>
+                                    <span class="font-brand text-primary font-bold">Explorar Turismo</span>
+                                </div>
+                            </a>
+                            <!-- Añade más tarjetas para las otras categorías si lo deseas -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Página: TAPEO (lógica de tapeo.html) -->
+            <div id="page-tapeo" class="page-content hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    
+                    <!-- Contenedor del Selector (Grid o Detalle) -->
+                    <div id="tapeo-selector">
+                        <div class="mb-5">
+                            <!-- Controles de Navegación (Atrás y Breadcrumbs) -->
+                            <div class="flex items-center min-h-[40px] mb-4">
+                                <button id="tapeo-back-button" class="hidden bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors items-center">
+                                    <span class="material-icons mr-2">arrow_back</span>
+                                    ATRÁS
+                                </button>
+                                <div id="tapeo-breadcrumbs" class="ml-4 font-brand text-lg text-primary opacity-70"></div>
+                            </div>
+                            <h2 id="tapeo-title" class="text-3xl md:text-4xl text-left m-0"></h2>
+                        </div>
+
+                        <!-- Grid para Opciones o Sitios -->
+                        <div id="tapeo-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- El contenido se genera por JS -->
+                        </div>
+                        
+                        <!-- Estado de Carga -->
+                        <div id="tapeo-loading" class_="flex flex-col items-center justify-center p-10">
+                            <div class="simple-loader" role="progressbar" aria-label="Cargando"></div>
+                            <p class="font-brand text-2xl text-primary mt-4">Cargando datos...</p>
+                        </div>
+
+                         <!-- Estado de Error -->
+                        <div id="tapeo-error" class="hidden p-10">
+                            <!-- El contenido se genera por JS -->
+                        </div>
+                    </div>
+
+                    <!-- Contenedor del Detalle del Sitio -->
+                    <div id="tapeo-detail-container" class="hidden">
+                        <!-- El contenido se genera por JS -->
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Página: RESTAURANTES (Placeholder) -->
+            <div id="page-restaurantes" class="page-content hidden">
+                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <h2 class="text-4xl text-center">Restaurantes</h2>
+                    <p class="font-brand text-xl text-center mt-4">Contenido de Restaurantes próximamente...</p>
+                 </div>
+            </div>
+
+            <!-- Página: BODEGAS (Placeholder) -->
+            <div id="page-bodegas" class="page-content hidden">
+                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <h2 class="text-4xl text-center">Bodegas</h2>
+                    <p class="font-brand text-xl text-center mt-4">Contenido de Bodegas próximamente...</p>
+                 </div>
+            </div>
+
+            <!-- Página: TURISMO (Placeholder) -->
+            <div id="page-turismo" class="page-content hidden">
+                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <h2 class="text-4xl text-center">Turismo</h2>
+                    <p class="font-brand text-xl text-center mt-4">Contenido de Turismo próximamente...</p>
+                 </div>
+            </div>
+
+            <!-- Página: EVENTOS CULINARIOS (Placeholder) -->
+            <div id="page-eventos-culinarios" class="page-content hidden">
+                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <h2 class="text-4xl text-center">Eventos Culinarios</h2>
+                    <p class="font-brand text-xl text-center mt-4">Contenido de Eventos Culinarios próximamente...</p>
+                 </div>
+            </div>
+
+            <!-- Página: EVENTOS TURISTICOS (Placeholder) -->
+            <div id="page-eventos-turisticos" class="page-content hidden">
+                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <h2 class="text-4xl text-center">Eventos Turísticos</h2>
+                    <p class="font-brand text-xl text-center mt-4">Contenido de Eventos Turísticos próximamente...</p>
+                 </div>
+            </div>
+
+            <!-- Página: TIENDAS (Placeholder) -->
+            <div id="page-tiendas" class="page-content hidden">
+                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <h2 class="text-4xl text-center">Tiendas</h2>
+                    <p class="font-brand text-xl text-center mt-4">Contenido de Tiendas próximamente...</p>
+                 </div>
+            </div>
+
+            <!-- Página: CURIOSIDADES (Placeholder) -->
+            <div id="page-curiosidades" class="page-content hidden">
+                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <h2 class="text-4xl text-center">Curiosidades</h2>
+                    <p class="font-brand text-xl text-center mt-4">Contenido de Curiosidades próximamente...</p>
+                 </div>
+            </div>
+
+        </main>
+
+        <!-- Footer (Portado de footer.html) -->
+        <footer class="bg-surface text-on-surface text-center p-3 mt-auto">
+            <span id="footer-year"></span> ANeKI Gastroturismo.
+        </footer>
+
+    </div>
+
+    <!-- FAB (Chatbot) (Portado de chatbot.html) -->
+    <div class="fixed bottom-6 right-6 z-20">
+        <a href="https://notebooklm.google.com/notebook/6b38dfab-ba8b-449f-a4f3-48154aaa29e4" target="_blank" rel="noopener noreferrer" title="Habla con tu Colega del Tapeo 😉" class="flex items-center justify-center w-14 h-14 bg-primary text-background rounded-full shadow-lg transform hover:scale-110 hover:bg-background hover:text-primary transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor" aria-hidden="true">
+                <g><rect fill="none" height="24" width="24"/></g>
+                <g><g><path d="M20,2H4C2.9,2,2,2.9,2,4v18l4-4h14c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2z M20,16H5.17L4,17.17V4h16V16z"/><circle cx="12" cy="10" r="1.5"/><circle cx="16" cy="10" r="1.5"/><circle cx="8" cy="10" r="1.5"/></g></g>
+            </svg>
+            <span class="sr-only">Habla con tu Colega del Tapeo (abre en una nueva pestaña)</span>
+        </a>
+    </div>
+
+    <!-- Modal para Fotos (portado de tapeo.html) -->
+    <div id="photo-modal" class="modal-overlay hidden fixed inset-0 z-40 bg-black bg-opacity-80 items-center justify-center p-4" onclick="app.gallery.closeModal()">
+        <span class="modal-close absolute top-2 right-4 text-white text-6xl font-light cursor-pointer" onclick="event.stopPropagation(); app.gallery.closeModal()">&times;</span>
+        <img class="modal-content max-w-[90%] max-h-[80%] object-contain" id="modal-image" onclick="event.stopPropagation();">
+        <div id="modal-caption" class="absolute bottom-10 left-0 right-0 mx-auto w-auto max-w-[70%] text-center text-white text-lg p-4 bg-black bg-opacity-70 rounded-md opacity-0 -translate-y-5"></div>
+    </div>
+
+
+    <!-- Lógica Principal de la Aplicación -->
+    <script>
+        // =================================================================
+        // LÓGICA DE LA APLICACIÓN DE PÁGINA ÚNICA (SPA)
+        // =================================================================
+        const app = {
+            // --- Configuración y URLs de Datos ---
+            config: {
+                CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv',
+                EVENTOS_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv',
+                EVENTOSPUNTUALES_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=1883625439&single=true&output=csv',
+                
+                // Definición de columnas (portado 1:1 de tapeo.html)
+                COLS: { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 },
+                COLS_EVENTOS: { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6, text1: 7, foto2: 8, text2: 9, foto3: 10, text3: 11, foto4:12, text4: 13, foto5: 14, text5: 15, foto6: 16, text6: 17, foto7: 18, text7: 19, foto8: 20, text8: 21, foto9: 22, text9: 23, foto10: 24, text10: 25, foto11:26, text11: 27, foto12: 28, text12: 29, foto13: 30, text13: 31, foto14: 32, text14: 33, foto15: 34, text15: 35, foto16: 36, text16: 37, foto17: 38, text17: 39, foto18: 40, text18: 41, foto19:42, text19: 43, foto20: 44, text20:45 },
+                COLS_EVENTOSPUNTUALES: { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6, text1: 7, foto2: 8, text2: 9, foto3: 10, text3: 11, foto4:12, text4: 13, foto5: 14, text5: 15, foto6: 16, text6: 17, foto7: 18, text7: 19, foto8: 20, text8: 21, foto9: 22, text9: 23, foto10: 24, text10: 25, foto11:26, text11: 27, foto12: 28, text12: 29, foto13: 30, text13: 31, foto14: 32, text14: 33, foto15: 34, text15: 35, foto16: 36, text16: 37, foto17: 38, text17: 39, foto18: 40, text18: 41, foto19:42, text19: 43, foto20: 44, text20:45 }
+            },
+
+            // --- Estado de la Aplicación ---
+            state: {
+                isMenuOpen: false,
+                currentPage: 'home',
+                isDataLoaded: false,
+                // Almacén para los datos de los CSV
+                data: {
+                    tapeo: [],
+                    eventos: [],
+                    eventosPuntuales: [],
+                    eventosLookup: {},
+                    eventosPuntualesLookup: {}
+                },
+                // Estado específico de la sección "Tapeo"
+                tapeoState: {
+                    level: 'autonomias',
+                    selection: {},
+                    history: [],
+                    currentSitios: []
+                },
+                // Estado de la galería
+                galleryState: {
+                    slideIndex: 1
+                }
+            },
+
+            // --- Elementos del DOM cacheados ---
+            elements: {},
+
+            // --- Inicialización de la App ---
+            init() {
+                // Cachear elementos del DOM
+                app.elements = {
+                    header: document.getElementById('app-header'),
+                    headerTitle: document.getElementById('header-title'),
+                    drawer: document.getElementById('drawer'),
+                    drawerScrim: document.getElementById('drawer-scrim'),
+                    menuBtn: document.getElementById('menu-btn'),
+                    navLinks: document.querySelectorAll('.nav-link'),
+                    pages: document.querySelectorAll('.page-content'),
+                    footerYear: document.getElementById('footer-year'),
+                    
+                    // Elementos de la página de Tapeo
+                    pageTapeo: document.getElementById('page-tapeo'),
+                    tapeo: {
+                        selector: document.getElementById('tapeo-selector'),
+                        detailContainer: document.getElementById('tapeo-detail-container'),
+                        backButton: document.getElementById('tapeo-back-button'),
+                        breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
+                        title: document.getElementById('tapeo-title'),
+                        grid: document.getElementById('tapeo-grid'),
+                        loading: document.getElementById('tapeo-loading'),
+                        error: document.getElementById('tapeo-error'),
+                    },
+
+                    // Elementos de la Galería/Modal
+                    modal: {
+                        overlay: document.getElementById('photo-modal'),
+                        image: document.getElementById('modal-image'),
+                        caption: document.getElementById('modal-caption')
+                    }
+                };
+
+                // Añadir año al footer
+                if (app.elements.footerYear) {
+                    app.elements.footerYear.textContent = new Date().getFullYear();
+                }
+
+                // --- Añadir Event Listeners ---
+                // Botón de menú
+                app.elements.menuBtn.addEventListener('click', app.toggleMenu);
+                app.elements.drawerScrim.addEventListener('click', app.toggleMenu);
+
+                // Enlaces de navegación
+                app.elements.navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const pageName = e.currentTarget.dataset.page;
+                        app.navigateTo(pageName);
+                    });
+                });
+
+                // Botón "Atrás" de Tapeo
+                app.elements.tapeo.backButton.addEventListener('click', app.tapeo.goBack);
+
+                // Mostrar página inicial
+                app.showPage(app.state.currentPage, true);
+            },
+
+            // --- Lógica de Navegación y Menú ---
+            toggleMenu() {
+                app.state.isMenuOpen = !app.state.isMenuOpen;
+                if (app.state.isMenuOpen) {
+                    app.elements.drawer.classList.remove('-translate-x-full');
+                    app.elements.drawerScrim.classList.remove('hidden');
+                    app.elements.drawerScrim.classList.add('opacity-100');
+                } else {
+                    app.elements.drawer.classList.add('-translate-x-full');
+                    app.elements.drawerScrim.classList.remove('opacity-100');
+                    app.elements.drawerScrim.classList.add('hidden');
+                }
+            },
+
+            navigateTo(pageName) {
+                if (app.state.isMenuOpen) {
+                    app.toggleMenu();
+                }
+                app.state.currentPage = pageName;
+                app.showPage(pageName);
+
+                // Si navegamos a "tapeo" y los datos no están cargados, cargarlos.
+                if (pageName === 'tapeo' && !app.state.isDataLoaded) {
+                    app.loadTapeoData();
+                }
+            },
+
+            showPage(pageName, isInitialLoad = false) {
+                // Ocultar todas las páginas
+                app.elements.pages.forEach(page => page.classList.add('hidden'));
+                
+                // Mostrar la página solicitada
+                const newPage = document.getElementById(`page-${pageName}`);
+                if (newPage) {
+                    newPage.classList.remove('hidden');
+                }
+
+                // Actualizar título del header
+                if (pageName === 'home') {
+                    app.elements.headerTitle.textContent = 'ANeKI';
+                    app.elements.header.classList.remove('bg-surface', 'shadow-md');
+                    app.elements.header.classList.add('bg-transparent');
+                } else {
+                    app.elements.header.classList.add('bg-surface', 'shadow-md');
+                    app.elements.header.classList.remove('bg-transparent');
+                    // Encontrar el texto del enlace para usarlo como título
+                    const link = document.querySelector(`.nav-link[data-page="${pageName}"]`);
+                    if (link) {
+                        app.elements.headerTitle.textContent = link.querySelector('span:last-child').textContent;
+                    }
+                }
+
+                if (!isInitialLoad) {
+                    window.scrollTo(0, 0); // Scroll al principio al cambiar de página
+                }
+            },
+
+            // --- Lógica de Carga de Datos ---
+            async loadTapeoData() {
+                if (app.state.isDataLoaded) return;
+                
+                app.tapeo.showLoading(true);
+
+                try {
+                    const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all([
+                        fetch(app.config.CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status} en CSV_URL`))),
+                        fetch(app.config.EVENTOS_CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status} en EVENTOS_CSV_URL`))),
+                        fetch(app.config.EVENTOSPUNTUALES_CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status} en EVENTOSPUNTUALES_CSV_URL`)))
+                    ]);
+
+                    // Parsear y almacenar datos
+                    app.state.data.tapeo = app.utils.parseCSV(tapeoCsvText).slice(1);
+                    app.state.data.eventos = app.utils.parseCSV(eventosCsvText).slice(1);
+                    app.state.data.eventosPuntuales = app.utils.parseCSV(eventosPuntualesCsvText).slice(1);
+
+                    // Pre-procesar eventos en un mapa para búsqueda rápida (lookup)
+                    app.state.data.eventosLookup = {};
+                    app.state.data.eventos.forEach(eventoRow => {
+                        const sitioId = eventoRow[app.config.COLS_EVENTOS.idSitio];
+                        if (sitioId) {
+                            if (!app.state.data.eventosLookup[sitioId]) {
+                                app.state.data.eventosLookup[sitioId] = [];
+                            }
+                            app.state.data.eventosLookup[sitioId].push(eventoRow);
+                        }
+                    });
+
+                    app.state.data.eventosPuntualesLookup = {};
+                    app.state.data.eventosPuntuales.forEach(eventoRow => {
+                        const sitioId = eventoRow[app.config.COLS_EVENTOSPUNTUALES.idSitio];
+                        if (sitioId) {
+                            if (!app.state.data.eventosPuntualesLookup[sitioId]) {
+                                app.state.data.eventosPuntualesLookup[sitioId] = [];
+                            }
+                            app.state.data.eventosPuntualesLookup[sitioId].push(eventoRow);
+                        }
+                    });
+
+                    app.state.isDataLoaded = true;
+                    // Iniciar el renderizado de la app de tapeo
+                    app.tapeo.renderStep();
+
+                } catch (error) {
+                    console.error("Error al inicializar:", error);
+                    app.tapeo.displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
+                }
+            },
+
+            // --- Lógica Específica de la Sección "Tapeo" ---
+            tapeo: {
+                levelsConfig: {
+                    autonomias: { title: '¿Dónde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias', key: app.config.COLS.autonomia },
+                    provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades', key: app.config.COLS.provincia },
+                    ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios', key: app.config.COLS.ciudad },
+                    barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios', key: app.config.COLS.barrio },
+                    sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null }
+                },
+
+                renderStep() {
+                    app.tapeo.showLoading(true);
+                    let dataToProcess = app.state.data.tapeo;
+                    const { selection } = app.state.tapeoState;
+
+                    // Filtrar datos según la selección actual
+                    if (selection.autonomia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.autonomia] === selection.autonomia);
+                    if (selection.provincia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.provincia] === selection.provincia);
+                    if (selection.ciudad) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.ciudad] === selection.ciudad);
+                    if (selection.barrio && selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[app.config.COLS.barrio] === selection.barrio);
+
+                    app.elements.tapeo.backButton.classList.toggle('hidden', app.state.tapeoState.history.length === 0);
+                    app.elements.tapeo.backButton.classList.toggle('inline-flex', app.state.tapeoState.history.length > 0);
+                    app.tapeo.renderBreadcrumbs();
+
+                    if (app.state.tapeoState.level === 'sitios') {
+                        app.tapeo.populateGridWithSitios(dataToProcess);
+                    } else {
+                        const colKey = app.tapeo.levelsConfig[app.state.tapeoState.level].key;
+                        let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
+                        
+                        if (app.state.tapeoState.level === 'barrios' && uniqueValues.length > 1) {
+                            uniqueValues.unshift('Todos');
+                        }
+                        
+                        // Auto-saltar si solo hay una opción
+                        if (uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios') {
+                            app.state.tapeoState.history.push({ 
+                                level: app.state.tapeoState.level, 
+                                selection: { ...app.state.tapeoState.selection }, 
+                                skipped: true 
+                            });
+                            app.tapeo.handleSelection(uniqueValues[0], true);
+                            return; // Salir para evitar renderizado innecesario
+                        }
+                        
+                        app.tapeo.populateGridWithOptions(uniqueValues);
+                    }
+                    
+                    app.tapeo.showLoading(false);
+                },
+
+                populateGridWithOptions(data) {
+                    const config = app.tapeo.levelsConfig[app.state.tapeoState.level];
+                    app.elements.tapeo.title.textContent = config.title;
+                    const grid = app.elements.tapeo.grid;
+                    grid.innerHTML = '';
+                    
+                    data.forEach(item => {
+                        const safeItem = item.replace(/'/g, "\\'"); // Escapar comillas para el onclick
+                        const cardHtml = `
+                            <div class="bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer" onclick="app.tapeo.handleSelection('${safeItem}')">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">${config.icon}</span>
+                                    </div>
+                                    <h3 class="text-2xl">${item}</h3>
+                                </div>
+                            </div>`;
+                        grid.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                },
+
+                populateGridWithSitios(data) {
+                    app.elements.tapeo.title.textContent = app.tapeo.levelsConfig.sitios.title;
+                    const grid = app.elements.tapeo.grid;
+                    grid.innerHTML = '';
+                    
+                    const sortedData = data.sort((a, b) => (b[app.config.COLS.nota] || 0) - (a[app.config.COLS.nota] || 0));
+                    app.state.tapeoState.currentSitios = sortedData;
+
+                    if (sortedData.length === 0) {
+                        grid.innerHTML = `<p class="font-brand text-xl text-center md:col-span-2 lg:col-span-3">No se encontraron sitios para esta selección.</p>`;
+                        return;
+                    }
+
+                    sortedData.forEach((row, index) => {
+                        const C = app.config.COLS;
+                        const imageUrl = row[C.foto1] ? `https://drive.google.com/thumbnail?id=${row[C.foto1]}&sz=w600` : '';
+                        
+                        let priceText = '';
+                        if (row[C.codprecio] == 10) priceText = 'El precio nos parece que está muy bien ✅';
+                        else if (row[C.codprecio] == 11) priceText = 'El precio nos parece que es justo ⚖️';
+                        else if (row[C.codprecio] == 12) priceText = 'El precio nos parece que es caro 💀';
+
+                        const cardHtml = `
+                            <div class="lg:col-span-3 bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col md:flex-row">
+                                ${imageUrl ? `<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>` : ''}
+                                <div class="p-6 flex flex-col flex-grow text-center">
+                                    <h3 class="text-3xl mb-2">${row[C.nombre] || 'Nombre no disponible'}</h3>
+                                    <div class="text-2xl mb-4" style="color: #ff4081;">${row[C.valoracion] || ''}</div>
+                                    ${row[C.nota] ? `<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap">${row[C.nota]}</p>` : ''}
+                                    <hr class="border-t-2 border-primary my-2">
+                                    <p class="font-brand text-on-surface text-lg my-2">${priceText}</p>
+                                    <hr class="border-t-2 border-primary my-2">
+                                    ${row[C.pintxo_tapa] ? `<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap">${row[C.pintxo_tapa]}</p>` : ''}
+                                    
+                                    <button class="mt-auto bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center justify-center self-center" onclick="app.tapeo.showDetail(${index})">
+                                        <span class="material-icons mr-2">visibility</span>
+                                        Ver toda la información
+                                    </button>
+                                </div>
+                            </div>`;
+                        grid.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                },
+
+                showDetail(index) {
+                    const siteRow = app.state.tapeoState.currentSitios[index];
+                    if (!siteRow) return;
+
+                    const C = app.config.COLS;
+                    const CE = app.config.COLS_EVENTOS;
+                    const CEP = app.config.COLS_EVENTOSPUNTUALES;
+                    
+                    // Mapear la fila a un objeto 'site' para fácil acceso
+                    const site = Object.keys(C).reduce((obj, key) => {
+                        obj[key] = siteRow[C[key]];
+                        return obj;
+                    }, {});
+
+                    app.elements.tapeo.selector.classList.add('hidden');
+
+                    // --- Construir Galería ---
+                    const galleryData = [];
+                    for (let i = 1; i <= 40; i++) {
+                        if (site[`foto${i}`]) {
+                            galleryData.push({ 
+                                url: `https://drive.google.com/thumbnail?id=${site[`foto${i}`]}&sz=w600`, 
+                                text: site[`text${i}`] || `Foto de ${site.nombre}` 
+                            });
+                        }
+                    }
+                    let galleryHtml = '';
+                    if (galleryData.length > 0) {
+                        const slidesHtml = galleryData.map((item, i) => `
+                            <div class="mySlides">
+                                <div class="numbertext">${i + 1} / ${galleryData.length}</div>
+                                <img src="${item.url}" class="w-full" alt="${item.text}">
+                            </div>`).join('');
+                        const thumbnailsHtml = galleryData.map((item, i) => `
+                            <div class="column">
+                                <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="app.gallery.currentSlide(${i + 1})" alt="${item.text}">
+                            </div>`).join('');
+                        galleryHtml = `
+                            <div class="gallery-container">
+                                ${slidesHtml}
+                                <a class="prev" onclick="app.gallery.plusSlides(-1)">❮</a>
+                                <a class="next" onclick="app.gallery.plusSlides(1)">❯</a>
+                                <div class="caption-container"><p id="caption"></p></div>
+                                <div class="row">${thumbnailsHtml}</div>
+                            </div>`;
+                    }
+
+                    // --- Construir Eventos Habituales ---
+                    let eventosHtml = '';
+                    const relatedEvents = app.state.data.eventosLookup[site.idsitio] || [];
+                    if (relatedEvents.length > 0) {
+                        const eventosCards = relatedEvents.map(eventoRow => {
+                            const eventoGallery = [];
+                            for (let i = 1; i <= 20; i++) {
+                                if (eventoRow[CE[`foto${i}`]]) {
+                                    eventoGallery.push({
+                                        url: `https://drive.google.com/thumbnail?id=${eventoRow[CE[`foto${i}`]]}&sz=w400`,
+                                        text: eventoRow[CE[`text${i}`]] || ''
+                                    });
+                                }
+                            }
+                            const imagenesHtml = eventoGallery.map(item => {
+                                const partes = item.text.split('\n');
+                                const linea1 = partes[0] || '';
+                                const linea2 = partes[1] || '';
+                                const safeText = (linea2 || linea1).replace(/'/g, "\\'");
+                                return `
+                                    <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group" 
+                                         style="background-image: url('${item.url}');"
+                                         onclick="app.gallery.openModal('${item.url.replace('w400', 'w1600')}', '${safeText}')">
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
+                                            <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
+                                                ${linea1}${linea2 ? `<br>${linea2}` : ''}
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            }).join('');
+
+                            return `
+                                <div class="bg-white/70 rounded-lg shadow-md overflow-hidden flex flex-col">
+                                    <div class="p-4 text-center border-b border-gray-300">
+                                        <h4 class="text-xl">${eventoRow[CE.eventoCulinario] || ''} ${eventoRow[CE.anyo] || ''}</h4>
+                                        <p class="font-brand text-sm italic opacity-70">${eventoRow[CE.eventoCulinarioDescripcion] || ''}</p>
+                                    </div>
+                                    <div class="p-4 grid grid-cols-2 md:grid-cols-4 gap-2">${imagenesHtml}</div>
+                                </div>`;
+                        }).join('');
+                        eventosHtml = `
+                            <div class="mt-8 pt-6 border-t border-primary/30">
+                                <h3 class="text-2xl text-center mb-6">Eventos Habituales</h3>
+                                <div class="grid grid-cols-1 ${relatedEvents.length > 1 ? 'lg:grid-cols-2' : ''} gap-6">${eventosCards}</div>
+                            </div>`;
+                    }
+                    
+                    // --- Construir Eventos Puntuales ---
+                    let eventosPuntualesHtml = '';
+                    const relatedEventsPuntuales = app.state.data.eventosPuntualesLookup[site.idsitio] || [];
+                     if (relatedEventsPuntuales.length > 0) {
+                        const eventosCards = relatedEventsPuntuales.map(eventoRow => {
+                            const eventoGallery = [];
+                            for (let i = 1; i <= 20; i++) {
+                                if (eventoRow[CEP[`foto${i}`]]) {
+                                    eventoGallery.push({
+                                        url: `https://drive.google.com/thumbnail?id=${eventoRow[CEP[`foto${i}`]]}&sz=w400`,
+                                        text: eventoRow[CEP[`text${i}`]] || ''
+                                    });
+                                }
+                            }
+                            const imagenesHtml = eventoGallery.map(item => {
+                                const partes = item.text.split('\n');
+                                const linea1 = partes[0] || '';
+                                const linea2 = partes[1] || '';
+                                const safeText = (linea2 || linea1).replace(/'/g, "\\'");
+                                return `
+                                    <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group" 
+                                         style="background-image: url('${item.url}');"
+                                         onclick="app.gallery.openModal('${item.url.replace('w400', 'w1600')}', '${safeText}')">
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
+                                            <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
+                                                ${linea1}${linea2 ? `<br>${linea2}` : ''}
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            }).join('');
+
+                            return `
+                                <div class="bg-white/70 rounded-lg shadow-md overflow-hidden flex flex-col">
+                                    <div class="p-4 text-center border-b border-gray-300">
+                                        <h4 class="text-xl">${eventoRow[CEP.eventoCulinario] || ''} ${eventoRow[CEP.anyo] || ''}</h4>
+                                        <p class="font-brand text-sm italic opacity-70">${eventoRow[CEP.eventoCulinarioDescripcion] || ''}</p>
+                                    </div>
+                                    <div class="p-4 grid grid-cols-2 md:grid-cols-4 gap-2">${imagenesHtml}</div>
+                                </div>`;
+                        }).join('');
+                        eventosPuntualesHtml = `
+                            <div class="mt-8 pt-6 border-t border-primary/30">
+                                <h3 class="text-2xl text-center mb-6">Eventos Puntuales</h3>
+                                <div class="grid grid-cols-1 ${relatedEventsPuntuales.length > 1 ? 'lg:grid-cols-2' : ''} gap-6">${eventosCards}</div>
+                            </div>`;
+                    }
+
+
+                    // --- Construir Botones de Acción ---
+                    const actions = [
+                        site.postinstagram ? `<a href="${site.postinstagram}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">photo_camera</span>Nuestra Última Visita</a>` : '',
+                        site.googleresenas ? `<a href="${site.googleresenas}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">rate_review</span>Reseñas</a>` : '',
+                        site.maps ? `<a href="${site.maps}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">place</span>Mapa</a>` : '',
+                        site.instagram ? `<a href="${site.instagram}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">camera_alt</span>Instagram</a>` : '',
+                        site.web ? `<a href="${site.web}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">language</span>Web</a>` : ''
+                    ].filter(Boolean).join('');
+
+                    // --- Construir HTML Final ---
+                    let priceText = '';
+                    if (site.codprecio == 10) priceText = 'El precio nos parece que está muy bien ✅';
+                    else if (site.codprecio == 11) priceText = 'El precio nos parece que es justo ⚖️';
+                    else if (site.codprecio == 12) priceText = 'El precio nos parece que es caro 💀';
+
+                    let tipoLugarText = '';
+                    if (site.tipo_lugar == 'Bar y Restaurante') {
+                        tipoLugarText = `Ademas de tapear puedes comer y en nuestra sección de restaurantes te lo contamos.`;
+                    }
+                    
+                    const detailHtml = `
+                        <button class="mb-6 bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center" onclick="app.tapeo.hideDetail()">
+                            <span class="material-icons mr-2">arrow_back</span>
+                            VOLVER AL LISTADO
+                        </button>
+                        
+                        <div class="bg-surface rounded-2xl shadow-lg p-4 md:p-8">
+                            <!-- Cabecera -->
+                            <div class="text-center mb-6">
+                                <h2 class="text-4xl md:text-5xl mb-2">${site.nombre || ''}</h2>
+                                <div class="text-3xl mb-4" style="color: #ff4081;">${site.valoracion || ''}</div>
+                                <div class="font-brand text-lg text-on-surface opacity-90 space-y-2">
+                                    ${site.nota ? `<p class="whitespace-pre-wrap">${site.nota}</p>` : ''}
+                                    <hr class="border-t-2 border-primary/30 max-w-xs mx-auto">
+                                    <p>${priceText}</p>
+                                    ${tipoLugarText ? `<hr class="border-t-2 border-primary/30 max-w-xs mx-auto"><p>${tipoLugarText}</p>` : ''}
+                                </div>
+                            </div>
+                            
+                            <!-- Acciones Principales -->
+                            <div class="flex flex-wrap gap-3 justify-center my-6">
+                                ${actions}
+                            </div>
+
+                            <!-- Galería -->
+                            ${galleryHtml}
+                            
+                            <!-- Cuerpo de Detalles -->
+                            <div class="mt-8 text-center">
+                                <p class="font-brand text-lg text-on-surface opacity-90 whitespace-pre-wrap">${site.pintxo_tapa || ''}</p>
+                                
+                                ${site.direccion ? `<p class="font-brand text-lg mt-6"><span class="material-icons v-align -mt-1 mr-2">place</span> <b>Dirección:</b> ${site.direccion}</p>` : ''}
+                                ${site.horario ? `<p class="font-brand text-lg mt-4 whitespace-pre-wrap"><span class="material-icons v-align -mt-1 mr-2">schedule</span> <b>Horario:</b><br>${site.horario}</p>` : ''}
+                                
+                                <!-- Eventos -->
+                                ${eventosHtml}
+                                ${eventosPuntualesHtml}
+                            </div>
+                        </div>
+
+                        <button class="mt-8 bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center" onclick="app.tapeo.hideDetail()">
+                            <span class="material-icons mr-2">arrow_back</span>
+                            VOLVER AL LISTADO
+                        </button>
+                    `;
+
+                    app.elements.tapeo.detailContainer.innerHTML = detailHtml;
+                    app.elements.tapeo.detailContainer.classList.remove('hidden');
+
+                    // Inicializar galería
+                    app.state.galleryState.slideIndex = 1;
+                    app.gallery.showSlides(1);
+                },
+
+                hideDetail() {
+                    app.elements.tapeo.detailContainer.innerHTML = '';
+                    app.elements.tapeo.detailContainer.classList.add('hidden');
+                    app.elements.tapeo.selector.classList.remove('hidden');
+                },
+
+                handleSelection(selectionName, isAutoSelection = false) {
+                    const state = app.state.tapeoState;
+                    if (!isAutoSelection) {
+                        state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
+                    }
+                    
+                    let key = state.level.slice(0, -1); // 'autonomias' -> 'autonomia'
+                    if (state.level === 'ciudades') key = 'ciudad';
+                    
+                    state.selection[key] = selectionName;
+                    state.level = app.tapeo.levelsConfig[state.level].next;
+                    
+                    if (state.level) {
+                        app.tapeo.renderStep();
+                    }
+                },
+
+                goBack() {
+                    const state = app.state.tapeoState;
+                    let lastState = state.history.pop();
+                    // Omitir pasos que se saltaron automáticamente
+                    while (lastState && lastState.skipped) {
+                        lastState = state.history.pop();
+                    }
+                    
+                    if (lastState) {
+                        state.level = lastState.level;
+                        state.selection = lastState.selection;
+                    } else {
+                        // Volver al inicio
+                        state.level = 'autonomias';
+                        state.selection = {};
+                        state.history = [];
+                    }
+                    app.tapeo.hideDetail(); // Asegurarse de que el detalle esté oculto
+                    app.tapeo.renderStep();
+                },
+
+                renderBreadcrumbs() {
+                    const { selection } = app.state.tapeoState;
+                    const crumbs = [];
+                    if (selection.autonomia) crumbs.push(selection.autonomia);
+                    if (selection.provincia) crumbs.push(selection.provincia);
+                    if (selection.ciudad) crumbs.push(selection.ciudad);
+                    if (selection.barrio && selection.barrio !== 'Todos') crumbs.push(selection.barrio);
+                    
+                    app.elements.tapeo.breadcrumbs.innerHTML = crumbs.join(' <span class="font-bold mx-1"> &gt; </span> ');
+                },
+
+                showLoading(isLoading) {
+                    app.elements.tapeo.loading.classList.toggle('hidden', !isLoading);
+                    app.elements.tapeo.loading.classList.toggle('flex', isLoading);
+                    app.elements.tapeo.grid.classList.toggle('hidden', isLoading);
+                    app.elements.tapeo.grid.classList.toggle('grid', !isLoading);
+                    app.elements.tapeo.error.classList.add('hidden');
+                },
+
+                displayError(message) {
+                    app.elements.tapeo.loading.classList.add('hidden');
+                    app.elements.tapeo.grid.classList.add('hidden');
+                    const errorEl = app.elements.tapeo.error;
+                    errorEl.innerHTML = `
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+                            <strong class="font-bold font-brand">Ha ocurrido un error</strong>
+                            <span class="block sm:inline font-brand">${message}</span>
+                        </div>`;
+                    errorEl.classList.remove('hidden');
+                }
+            },
+
+            // --- Lógica de la Galería/Modal ---
+            gallery: {
+                plusSlides(n) {
+                    const newIndex = app.state.galleryState.slideIndex += n;
+                    app.gallery.showSlides(newIndex);
+                },
+                currentSlide(n) {
+                    app.state.galleryState.slideIndex = n;
+                    app.gallery.showSlides(n);
+                },
+                showSlides(n) {
+                    const slides = document.getElementsByClassName("mySlides");
+                    const dots = document.getElementsByClassName("demo");
+                    const captionText = document.getElementById("caption");
+                    if (slides.length === 0) return;
+
+                    let slideIndex = n;
+                    if (n > slides.length) { slideIndex = 1; }
+                    if (n < 1) { slideIndex = slides.length; }
+                    app.state.galleryState.slideIndex = slideIndex; // Actualizar estado
+
+                    for (let i = 0; i < slides.length; i++) {
+                        slides[i].style.display = "none";
+                    }
+                    for (let i = 0; i < dots.length; i++) {
+                        dots[i].classList.remove("active");
+                    }
+                    
+                    slides[slideIndex - 1].style.display = "block";
+                    dots[slideIndex - 1].classList.add("active");
+                    captionText.innerHTML = dots[slideIndex - 1].alt;
+                },
+                
+                openModal(imageUrl, imageText) {
+                    const { overlay, image, caption } = app.elements.modal;
+                    image.src = imageUrl;
+                    caption.innerHTML = imageText || '';
+                    overlay.classList.remove('hidden');
+                    overlay.classList.add('flex');
+                    setTimeout(() => {
+                        overlay.classList.add('opacity-100');
+                        caption.classList.remove('opacity-0', '-translate-y-5');
+                    }, 10); // Pequeño retardo para la transición
+                },
+
+                closeModal() {
+                    const { overlay, caption } = app.elements.modal;
+                    overlay.classList.remove('opacity-100');
+                    caption.classList.add('opacity-0', '-translate-y-5');
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                        overlay.classList.remove('flex');
+                    }, 300); // Sincronizar con la duración de la transición
+                }
+            },
+
+            // --- Utilidades ---
+            utils: {
+                // Parseador de CSV (portado 1:1 de tapeo.html)
+                parseCSV(csvText) {
+                    const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
+                    csvText = csvText.trim();
+                    for (let i = 0; i < csvText.length; i++) {
+                        const char = csvText[i];
+                        if (char === '"') {
+                            if (inQuotes && i + 1 < csvText.length && csvText[i + 1] === '"') {
+                                currentField += '"'; i++; 
+                            } else {
+                                inQuotes = !inQuotes;
+                            }
+                        } else if (char === ',' && !inQuotes) {
+                            fields.push(currentField); currentField = ''; 
+                        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                            fields.push(currentField);
+                            rows.push(fields);
+                            fields = [];
+                            currentField = '';
+                            if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') { i++; }
+                        } else { 
+                            currentField += char;
+                        }
+                    }
+                    if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
+                    return rows.map(row => row.map(field => field.trim()));
+                }
+            }
+        };
+
+        // Iniciar la aplicación cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', app.init);
+        
+        // Manejar el estilo del header al hacer scroll
+        window.addEventListener('scroll', () => {
+            const header = app.elements.header;
+            if (app.state.currentPage === 'home') {
+                if (window.scrollY > 50) {
+                    header.classList.add('bg-surface', 'shadow-md');
+                    header.classList.remove('bg-transparent');
+                } else {
+                    header.classList.remove('bg-surface', 'shadow-md');
+                    header.classList.add('bg-transparent');
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
