@@ -536,12 +536,11 @@
                     drawer: document.getElementById('drawer'),
                     drawerScrim: document.getElementById('drawer-scrim'),
                     menuBtn: document.getElementById('menu-btn'),
-                    mainNav: document.getElementById('main-nav'), // Cachear el contenedor de enlaces
-                    navLinks: document.querySelectorAll('.nav-link'), // Links iniciales
+                    mainNav: document.getElementById('main-nav'), 
+                    navLinks: document.querySelectorAll('.nav-link'), 
                     pages: document.querySelectorAll('.page-content'),
                     footerYear: document.getElementById('footer-year'),
                     
-                    // Elementos de la página de Tapeo
                     pageTapeo: document.getElementById('page-tapeo'),
                     tapeo: {
                         selector: document.getElementById('tapeo-selector'),
@@ -554,7 +553,6 @@
                         error: document.getElementById('tapeo-error'),
                     },
 
-                    // Elementos de la Galería/Modal
                     modal: {
                         overlay: document.getElementById('photo-modal'),
                         image: document.getElementById('modal-image'),
@@ -562,32 +560,31 @@
                     }
                 };
 
-                // Añadir año al footer
                 if (app.elements.footerYear) {
                     app.elements.footerYear.textContent = new Date().getFullYear();
                 }
 
                 // --- Añadir Event Listeners ---
-                // Botón de menú
                 app.elements.menuBtn.addEventListener('click', app.toggleMenu);
                 app.elements.drawerScrim.addEventListener('click', app.toggleMenu);
 
-                // Enlaces de navegación (Delegación de eventos en el body)
+                // Event listener delegado para navegación
                  document.body.addEventListener('click', (e) => {
                     const navLink = e.target.closest('.nav-link');
-                    if (navLink && navLink.dataset.page) { // Asegurarse que tiene data-page
+                    // Comprobar que existe el link y tiene el atributo data-page
+                    if (navLink && navLink.dataset.page) { 
+                         console.log("Navigating to:", navLink.dataset.page); // Log para depuración
                          e.preventDefault(); 
                          app.navigateTo(navLink.dataset.page);
                     }
                  });
 
-
-                // Botón "Atrás" de Tapeo
                 app.elements.tapeo.backButton.addEventListener('click', app.tapeo.goBack);
 
-                // Mostrar página inicial y marcar enlace activo
                 app.showPage(app.state.currentPage, true);
                 app.updateActiveLink(app.state.currentPage);
+                 // Listener para estilo del header en scroll
+                 window.addEventListener('scroll', app.handleHeaderTransparency);
             },
 
             // --- Lógica de Navegación y Menú ---
@@ -596,7 +593,9 @@
                 if (app.state.isMenuOpen) {
                     app.elements.drawer.classList.remove('-translate-x-full');
                     app.elements.drawerScrim.classList.remove('hidden');
-                    app.elements.drawerScrim.classList.add('opacity-100');
+                    requestAnimationFrame(() => { // Asegurar que no está hidden antes de la transición
+                       app.elements.drawerScrim.classList.add('opacity-100');
+                    });
                 } else {
                     app.elements.drawer.classList.add('-translate-x-full');
                     app.elements.drawerScrim.classList.remove('opacity-100');
@@ -609,7 +608,11 @@
             },
 
             navigateTo(pageName) {
-                if (!pageName || pageName === app.state.currentPage) return; // Evitar navegación a la misma página o sin nombre
+                if (!pageName || pageName === app.state.currentPage) {
+                    // Si ya estamos en la página y el menú está abierto, cerrarlo
+                    if (app.state.isMenuOpen) app.toggleMenu();
+                    return;
+                }
 
                 if (app.state.isMenuOpen) {
                     app.toggleMenu();
@@ -618,12 +621,17 @@
                 app.showPage(pageName);
                 app.updateActiveLink(pageName); 
 
-                // Si navegamos a "tapeo" y los datos no están cargados, cargarlos.
-                if (pageName === 'tapeo' && !app.state.isDataLoaded && !app.state.isLoadingData) { // Añadido check isLoadingData
+                if (pageName === 'tapeo' && !app.state.isDataLoaded && !app.state.isLoadingData) { 
                     app.loadTapeoData();
                 } else if (pageName === 'tapeo' && app.state.isDataLoaded) {
-                     // Si volvemos a tapeo y los datos ya están cargados, renderizar el estado actual
-                     app.tapeo.hideDetail(); // Asegurarse que el detalle está oculto
+                     app.tapeo.hideDetail(); 
+                     // Reiniciar el estado de tapeo si volvemos a la sección
+                     app.state.tapeoState = {
+                         level: 'autonomias',
+                         selection: {},
+                         history: [],
+                         currentSitios: []
+                     };
                      app.tapeo.renderStep();
                 }
             },
@@ -631,10 +639,8 @@
             showPage(pageName, isInitialLoad = false) {
                  if (!pageName) return; 
 
-                // Ocultar todas las páginas
                 app.elements.pages.forEach(page => page.classList.add('hidden'));
                 
-                // Mostrar la página solicitada
                 const newPage = document.getElementById(`page-${pageName}`);
                 if (newPage) {
                     newPage.classList.remove('hidden');
@@ -643,43 +649,36 @@
                      const homePage = document.getElementById('page-home');
                      if(homePage) homePage.classList.remove('hidden');
                      app.state.currentPage = 'home';
-                     pageName = 'home'; // Actualizar pageName para el título
-                     app.updateActiveLink('home'); // Marcar home como activo
+                     pageName = 'home'; 
+                     app.updateActiveLink('home'); 
                 }
 
                 // Actualizar título del header y estilo
-                if (pageName === 'home') {
-                    app.elements.headerTitle.textContent = 'ANeKI';
-                    // Ajustar transparencia basada en scroll
-                    app.handleHeaderTransparency(); 
-                } else {
-                    app.elements.header.classList.add('bg-surface', 'shadow-md'); // Asegurar fondo sólido
-                    app.elements.header.classList.remove('bg-transparent');
-                    
-                    const link = document.querySelector(`.nav-link[data-page="${pageName}"]`);
-                    let title = 'ANeKI'; // Fallback title
-                    if (link) {
+                 let title = 'ANeKI'; // Default title
+                 if (pageName !== 'home') {
+                     const link = document.querySelector(`.nav-link[data-page="${pageName}"]`);
+                     if (link) {
                          const titleSpan = link.querySelector('span.font-brand');
-                         const titleH3 = link.querySelector('h3');
+                         const titleH3 = link.querySelector('h3'); // Para las tarjetas de categoría
                          if (titleSpan) {
-                              title = titleSpan.textContent;
+                             title = titleSpan.textContent;
                          } else if (titleH3) {
-                              // Intentar obtener un título más descriptivo de H3 si existe
-                              title = titleH3.textContent.includes(' ') ? titleH3.textContent.split(' ')[0] : titleH3.textContent;
+                             // Extraer título principal de H3 (ej: "Pintxos y Tapas")
+                             title = titleH3.textContent.split(' ')[0];
                          } else {
-                              // Fallback si no hay span ni h3 (poco probable con la estructura actual)
-                               title = pageName.charAt(0).toUpperCase() + pageName.slice(1).replace('-', ' ');
+                              // Fallback general basado en pageName
+                              title = pageName.charAt(0).toUpperCase() + pageName.slice(1).replace(/-/g, ' '); // Reemplazar guiones
                          }
-                    }
-                     app.elements.headerTitle.textContent = title;
-                }
+                     }
+                 }
+                 app.elements.headerTitle.textContent = title;
+                 app.handleHeaderTransparency(); // Actualizar estilo header aquí
 
                 if (!isInitialLoad) {
                     window.scrollTo(0, 0); 
                 }
             },
 
-            // --- Función para marcar el enlace activo ---
              updateActiveLink(pageName) {
                  if (!app.elements.mainNav) return; 
                  app.elements.mainNav.querySelectorAll('.nav-link').forEach(link => {
@@ -691,20 +690,13 @@
                  }
              },
             
-             // --- Función para manejar transparencia del header en scroll ---
              handleHeaderTransparency() {
                 if (!app.elements.header) return;
                 const header = app.elements.header;
-                 if (app.state.currentPage === 'home') {
-                     if (window.scrollY > 50) {
-                         header.classList.add('bg-surface', 'shadow-md');
-                         header.classList.remove('bg-transparent');
-                     } else {
-                         header.classList.remove('bg-surface', 'shadow-md');
-                         header.classList.add('bg-transparent');
-                     }
+                 if (app.state.currentPage === 'home' && window.scrollY <= 50) {
+                     header.classList.remove('bg-surface', 'shadow-md');
+                     header.classList.add('bg-transparent');
                  } else {
-                     // Asegurar fondo sólido fuera de la home
                      header.classList.add('bg-surface', 'shadow-md');
                      header.classList.remove('bg-transparent');
                  }
@@ -712,10 +704,10 @@
 
             // --- Lógica de Carga de Datos ---
             async loadTapeoData() {
-                if (app.state.isDataLoaded || app.state.isLoadingData) return; // Evitar recarga
+                if (app.state.isDataLoaded || app.state.isLoadingData) return; 
                 
-                app.state.isLoadingData = true; // Marcar como cargando
-                app.tapeo.showLoading(true);
+                app.state.isLoadingData = true; 
+                if(app.state.currentPage === 'tapeo') app.tapeo.showLoading(true); // Mostrar solo si estamos en tapeo
 
                 try {
                     const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all([
@@ -724,38 +716,32 @@
                         fetch(app.config.EVENTOSPUNTUALES_CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status} en EVENTOSPUNTUALES_CSV_URL`)))
                     ]);
 
-                    // Parsear y almacenar datos
                     app.state.data.tapeo = app.utils.parseCSV(tapeoCsvText).slice(1);
                     app.state.data.eventos = app.utils.parseCSV(eventosCsvText).slice(1);
                     app.state.data.eventosPuntuales = app.utils.parseCSV(eventosPuntualesCsvText).slice(1);
 
-                    // Pre-procesar eventos en un mapa para búsqueda rápida (lookup)
-                    app.state.data.eventosLookup = {};
-                    app.state.data.eventos.forEach(eventoRow => {
-                        const sitioId = eventoRow[app.config.COLS_EVENTOS.idSitio];
+                    // Pre-procesar lookups
+                    app.state.data.eventosLookup = app.state.data.eventos.reduce((acc, row) => {
+                        const sitioId = row[app.config.COLS_EVENTOS.idSitio];
                         if (sitioId) {
-                            if (!app.state.data.eventosLookup[sitioId]) {
-                                app.state.data.eventosLookup[sitioId] = [];
-                            }
-                            app.state.data.eventosLookup[sitioId].push(eventoRow);
+                            if (!acc[sitioId]) acc[sitioId] = [];
+                            acc[sitioId].push(row);
                         }
-                    });
+                        return acc;
+                    }, {});
+                     app.state.data.eventosPuntualesLookup = app.state.data.eventosPuntuales.reduce((acc, row) => {
+                        const sitioId = row[app.config.COLS_EVENTOSPUNTUALES.idSitio];
+                        if (sitioId) {
+                            if (!acc[sitioId]) acc[sitioId] = [];
+                            acc[sitioId].push(row);
+                        }
+                        return acc;
+                    }, {});
 
-                    app.state.data.eventosPuntualesLookup = {};
-                    app.state.data.eventosPuntuales.forEach(eventoRow => {
-                        const sitioId = eventoRow[app.config.COLS_EVENTOSPUNTUALES.idSitio];
-                        if (sitioId) {
-                            if (!app.state.data.eventosPuntualesLookup[sitioId]) {
-                                app.state.data.eventosPuntualesLookup[sitioId] = [];
-                            }
-                            app.state.data.eventosPuntualesLookup[sitioId].push(eventoRow);
-                        }
-                    });
 
                     app.state.isDataLoaded = true;
-                    // Iniciar el renderizado de la app de tapeo (si estamos en esa página)
                     if(app.state.currentPage === 'tapeo') {
-                         app.tapeo.renderStep();
+                         app.tapeo.renderStep(); // Renderizar AHORA que los datos están listos
                     }
 
                 } catch (error) {
@@ -764,10 +750,10 @@
                          app.tapeo.displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
                     }
                 } finally {
-                     app.state.isLoadingData = false; // Marcar como carga finalizada (éxito o error)
-                     // Ocultar el spinner general si ya no estamos en tapeo (pudo haber error y cambio de pag)
-                     if(app.state.currentPage !== 'tapeo') {
-                          app.tapeo.showLoading(false);
+                     app.state.isLoadingData = false; 
+                     // Asegurarse de ocultar el spinner si falló la carga o si ya no estamos en tapeo
+                     if(app.state.currentPage !== 'tapeo' || !app.state.isDataLoaded) {
+                         app.tapeo.showLoading(false);
                      }
                 }
             },
@@ -784,95 +770,108 @@
 
                 renderStep() {
                      if (!app.state.isDataLoaded) {
+                         console.log("renderStep called but data not loaded. Triggering load."); // Log
                          app.tapeo.showLoading(true);
                          if (!app.state.isLoadingData) { 
                               app.loadTapeoData();
                          }
                          return;
                      }
-
+                    
+                    console.log("Rendering step for level:", app.state.tapeoState.level); // Log
                     app.tapeo.showLoading(true); 
-                    // Usar requestAnimationFrame para permitir que el spinner se muestre antes de bloquear el hilo
-                    requestAnimationFrame(() => {
-                        let dataToProcess = app.state.data.tapeo;
-                        const { selection } = app.state.tapeoState;
+                    
+                    requestAnimationFrame(() => { // Usar rAF para mejor rendimiento percibido
+                        try { // Añadir try-catch para depuración
+                            let dataToProcess = app.state.data.tapeo;
+                            const { selection } = app.state.tapeoState;
 
-                        // Filtrar datos
-                        if (selection.autonomia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.autonomia] === selection.autonomia);
-                        if (selection.provincia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.provincia] === selection.provincia);
-                        if (selection.ciudad) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.ciudad] === selection.ciudad);
-                        if (selection.barrio && selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[app.config.COLS.barrio] === selection.barrio);
+                            // Filtrar datos
+                            if (selection.autonomia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.autonomia] === selection.autonomia);
+                            if (selection.provincia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.provincia] === selection.provincia);
+                            if (selection.ciudad) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.ciudad] === selection.ciudad);
+                            if (selection.barrio && selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[app.config.COLS.barrio] === selection.barrio);
 
-                        // Actualizar UI (botones, breadcrumbs)
-                        app.elements.tapeo.backButton.classList.toggle('hidden', app.state.tapeoState.history.length === 0);
-                        app.elements.tapeo.backButton.classList.toggle('inline-flex', app.state.tapeoState.history.length > 0);
-                        app.tapeo.renderBreadcrumbs();
+                            // Actualizar UI (botones, breadcrumbs)
+                            app.elements.tapeo.backButton.classList.toggle('hidden', app.state.tapeoState.history.length === 0);
+                            app.elements.tapeo.backButton.classList.toggle('inline-flex', app.state.tapeoState.history.length > 0);
+                            app.tapeo.renderBreadcrumbs();
 
-                        // Renderizar grid o saltar nivel
-                        if (app.state.tapeoState.level === 'sitios') {
-                            app.tapeo.populateGridWithSitios(dataToProcess);
-                        } else {
-                            const currentLevelConfig = app.tapeo.levelsConfig[app.state.tapeoState.level];
-                            if (!currentLevelConfig) {
-                                console.error("Nivel de tapeo inválido:", app.state.tapeoState.level);
-                                app.tapeo.displayError("Error interno: Nivel de navegación inválido.");
-                                app.tapeo.showLoading(false); // Ocultar spinner en error
-                                return;
-                            }
-                            const colKey = currentLevelConfig.key;
-                            let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
-                            
-                            if (app.state.tapeoState.level === 'barrios' && uniqueValues.length > 1) {
-                                uniqueValues.unshift('Todos');
-                            }
-                            
-                            if (uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios') {
-                                if (!uniqueValues[0]) {
-                                    app.tapeo.populateGridWithOptions([]); 
-                                    app.tapeo.showLoading(false);
-                                    return;
+                            let uniqueValues = []; // Declarar fuera para el chequeo final
+
+                            // Renderizar grid o saltar nivel
+                            if (app.state.tapeoState.level === 'sitios') {
+                                app.tapeo.populateGridWithSitios(dataToProcess);
+                            } else {
+                                const currentLevelConfig = app.tapeo.levelsConfig[app.state.tapeoState.level];
+                                if (!currentLevelConfig) {
+                                    throw new Error(`Nivel de tapeo inválido: ${app.state.tapeoState.level}`);
                                 }
-                                app.state.tapeoState.history.push({ 
-                                    level: app.state.tapeoState.level, 
-                                    selection: { ...app.state.tapeoState.selection }, 
-                                    skipped: true 
-                                });
-                                app.tapeo.handleSelection(uniqueValues[0], true);
-                                // No ocultar loading aquí, handleSelection llamará a renderStep de nuevo
-                                return; 
+                                const colKey = currentLevelConfig.key;
+                                uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
+                                
+                                if (app.state.tapeoState.level === 'barrios' && uniqueValues.length > 1) {
+                                    uniqueValues.unshift('Todos');
+                                }
+                                
+                                if (uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios') {
+                                    if (!uniqueValues[0]) { // Si el único valor es nulo/vacío
+                                        console.log("Único valor vacío, mostrando grid vacío."); // Log
+                                        app.tapeo.populateGridWithOptions([]); 
+                                        app.tapeo.showLoading(false);
+                                        return;
+                                    }
+                                     console.log("Auto-skipping level:", app.state.tapeoState.level, "with value:", uniqueValues[0]); // Log
+                                    app.state.tapeoState.history.push({ 
+                                        level: app.state.tapeoState.level, 
+                                        selection: { ...app.state.tapeoState.selection }, 
+                                        skipped: true 
+                                    });
+                                    app.tapeo.handleSelection(uniqueValues[0], true);
+                                    return; // Salir de rAF, handleSelection llamará a renderStep de nuevo
+                                }
+                                
+                                app.tapeo.populateGridWithOptions(uniqueValues);
                             }
                             
-                            app.tapeo.populateGridWithOptions(uniqueValues);
-                        }
-                        
-                        // Ocultar spinner después de renderizar (excepto si se saltó nivel)
-                        if (!(uniqueValues && uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios')) {
-                             setTimeout(() => app.tapeo.showLoading(false), 50); // Pequeño delay
+                            // Ocultar spinner después de renderizar (solo si no se saltó nivel)
+                            if (!(uniqueValues && uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios')) {
+                                setTimeout(() => app.tapeo.showLoading(false), 50); 
+                            }
+                        } catch(error) {
+                             console.error("Error during renderStep:", error);
+                             app.tapeo.displayError(`Error al renderizar: ${error.message}`);
+                             app.tapeo.showLoading(false); // Asegurar que el spinner se oculta
                         }
                     }); // Fin requestAnimationFrame
                 },
 
+
                 populateGridWithOptions(data) {
                     const config = app.tapeo.levelsConfig[app.state.tapeoState.level];
+                     if (!config) { // Comprobación añadida
+                         console.error("Configuración no encontrada para el nivel:", app.state.tapeoState.level);
+                         return;
+                     }
                     app.elements.tapeo.title.textContent = config.title;
                     const grid = app.elements.tapeo.grid;
                     grid.innerHTML = ''; 
-                    grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'; 
+                    grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'; // Responsive grid
 
                     if (data.length === 0) {
-                        grid.innerHTML = `<p class="font-brand text-xl text-center md:col-span-2 lg:col-span-3">No hay opciones disponibles.</p>`;
+                        grid.innerHTML = `<p class="font-brand text-xl text-center sm:col-span-2 md:col-span-3">No hay opciones disponibles.</p>`;
                         return;
                     }
                     
                     data.forEach(item => {
                         const safeItem = item.replace(/'/g, "\\'"); 
                         const cardHtml = `
-                            <div class="bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer" onclick="app.tapeo.handleSelection('${safeItem}')">
+                            <div class="bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer group" onclick="app.tapeo.handleSelection('${safeItem}')">
                                 <div class="p-6 flex flex-col items-center text-center h-full">
-                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex group-hover:bg-primary group-hover:text-on-primary transition-colors duration-200">
                                         <span class="material-icons text-4xl">${config.icon}</span>
                                     </div>
-                                    <h3 class="text-2xl">${item}</h3>
+                                    <h3 class="text-2xl group-hover:text-secondary transition-colors duration-200">${item}</h3>
                                 </div>
                             </div>`;
                         grid.insertAdjacentHTML('beforeend', cardHtml);
@@ -908,17 +907,17 @@
 
                         const cardHtml = `
                             <div class="bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col md:flex-row">
-                                ${imageUrl ? `<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>` : '<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-gray-300 flex items-center justify-center"><span class="material-icons text-6xl text-gray-500">hide_image</span></div>'}
+                                ${imageUrl ? `<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>` : '<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-gray-200 flex items-center justify-center"><span class="material-icons text-6xl text-gray-400">hide_image</span></div>'}
                                 <div class="p-6 flex flex-col flex-grow text-center">
                                     <h3 class="text-3xl mb-2">${row[C.nombre] || 'Nombre no disponible'}</h3>
                                     <div class="text-2xl mb-4" style="color: #ff4081;">${row[C.valoracion] || ''}</div>
                                     ${row[C.nota] ? `<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap">${row[C.nota]}</p>` : ''}
-                                    <hr class="border-t-2 border-primary my-2">
+                                    <hr class="border-t-2 border-primary/50 my-2"> <!-- Ligeramente más suave -->
                                     <p class="font-brand text-on-surface text-lg my-2">${priceText}</p>
-                                    <hr class="border-t-2 border-primary my-2">
-                                    ${row[C.pintxo_tapa] ? `<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap">${row[C.pintxo_tapa]}</p>` : ''}
+                                    <hr class="border-t-2 border-primary/50 my-2">
+                                    ${row[C.pintxo_tapa] ? `<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap flex-grow">${row[C.pintxo_tapa]}</p>` : '<div class="flex-grow"></div>'} <!-- Placeholder si no hay descripción -->
                                     
-                                    <button class="mt-auto bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center justify-center self-center" onclick="app.tapeo.showDetail(${index})">
+                                    <button class="mt-4 bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center justify-center self-center" onclick="app.tapeo.showDetail(${index})">
                                         <span class="material-icons mr-2">visibility</span>
                                         Ver toda la información
                                     </button>
@@ -929,8 +928,12 @@
                 },
 
                 showDetail(index) {
+                     console.log("Showing detail for index:", index); // Log
                     const siteRow = app.state.tapeoState.currentSitios[index];
-                    if (!siteRow) return;
+                    if (!siteRow) {
+                         console.error("Sitio no encontrado para el índice:", index);
+                         return;
+                    }
 
                     const C = app.config.COLS;
                     const CE = app.config.COLS_EVENTOS;
@@ -960,115 +963,81 @@
                                 <div class="numbertext">${i + 1} / ${galleryData.length}</div>
                                 <img src="${item.url}" class="w-full rounded-lg shadow" alt="${item.text}">
                             </div>`).join('');
+                        // Calcular ancho de columna dinámicamente (máx 6 columnas)
+                        const numThumbnails = galleryData.length;
+                        const columnWidthClass = numThumbnails >= 6 ? 'w-1/6' : 
+                                                 numThumbnails === 5 ? 'w-1/5' :
+                                                 numThumbnails === 4 ? 'w-1/4' :
+                                                 numThumbnails === 3 ? 'w-1/3' :
+                                                 numThumbnails === 2 ? 'w-1/2' : 'w-full';
+
                         const thumbnailsHtml = galleryData.map((item, i) => `
-                            <div class="column">
-                                <img class="demo cursor rounded" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="app.gallery.currentSlide(${i + 1})" alt="${item.text}">
+                            <div class="column ${columnWidthClass} p-1"> {/* Añadido padding */}
+                                <img class="demo cursor rounded block w-full h-auto" src="${item.url.replace('w600', 'w200')}" onclick="app.gallery.currentSlide(${i + 1})" alt="${item.text}">
                             </div>`).join('');
                         galleryHtml = `
-                            <div class="gallery-container">
+                            <div class="gallery-container mb-6"> {/* Añadido margen inferior */}
                                 ${slidesHtml}
                                 <a class="prev" onclick="app.gallery.plusSlides(-1)">❮</a>
                                 <a class="next" onclick="app.gallery.plusSlides(1)">❯</a>
                                 <div class="caption-container rounded-b-lg"><p id="caption"></p></div>
-                                <div class="row mt-2">${thumbnailsHtml}</div>
+                                <div class="row mt-2 flex flex-wrap justify-center">${thumbnailsHtml}</div> {/* Usar flexbox para thumbnails */}
                             </div>`;
                     }
 
-                    // --- Construir Eventos Habituales ---
-                    let eventosHtml = '';
-                    const relatedEvents = app.state.data.eventosLookup[site.idsitio] || [];
-                    if (relatedEvents.length > 0) {
-                        const eventosCards = relatedEvents.map(eventoRow => {
-                            const eventoGallery = [];
-                            for (let i = 1; i <= 20; i++) {
-                                if (eventoRow[CE[`foto${i}`]]) {
-                                    eventoGallery.push({
-                                        url: `https://drive.google.com/thumbnail?id=${eventoRow[CE[`foto${i}`]]}&sz=w400`,
-                                        text: eventoRow[CE[`text${i}`]] || ''
-                                    });
-                                }
-                            }
-                            const imagenesHtml = eventoGallery.map(item => {
-                                const partes = item.text.split('\n');
-                                const linea1 = partes[0] || '';
-                                const linea2 = partes[1] || '';
-                                const safeText = (linea2 || linea1).replace(/'/g, "\\'");
-                                const imageUrl = item.url.includes('thumbnail?id=') ? item.url : 'https://placehold.co/400x400/E0F2F1/004D40?text=Imagen+no+disponible';
-                                return `
-                                    <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group shadow" 
-                                         style="background-image: url('${imageUrl}');"
-                                         onclick="app.gallery.openModal('${imageUrl.replace('w400', 'w1600')}', '${safeText}')">
-                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
-                                            <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 w-full bg-black/50">
-                                                ${linea1}${linea2 ? `<br>${linea2}` : ''}
-                                            </div>
-                                        </div>
-                                    </div>`;
-                            }).join('');
+                    // --- Construir Eventos ---
+                     const buildEventSection = (lookup, cols, title) => {
+                         let html = '';
+                         const relatedEvents = lookup[site.idsitio] || [];
+                         if (relatedEvents.length > 0) {
+                             const eventosCards = relatedEvents.map(eventoRow => {
+                                 const eventoGallery = [];
+                                 for (let i = 1; i <= 20; i++) {
+                                     if (eventoRow[cols[`foto${i}`]]) {
+                                         eventoGallery.push({
+                                             url: `https://drive.google.com/thumbnail?id=${eventoRow[cols[`foto${i}`]]}&sz=w400`,
+                                             text: eventoRow[cols[`text${i}`]] || ''
+                                         });
+                                     }
+                                 }
+                                 const imagenesHtml = eventoGallery.map(item => {
+                                     const partes = item.text.split('\n');
+                                     const linea1 = partes[0] || '';
+                                     const linea2 = partes[1] || '';
+                                     const safeText = (linea2 || linea1).replace(/'/g, "\\'");
+                                     const imageUrl = item.url.includes('thumbnail?id=') ? item.url : 'https://placehold.co/400x400/E0F2F1/004D40?text=Error'; // Placeholder corto
+                                     return `
+                                         <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group shadow hover:shadow-lg transition-shadow" 
+                                              style="background-image: url('${imageUrl}');"
+                                              onclick="app.gallery.openModal('${imageUrl.replace('&sz=w400', '&sz=w1600')}', '${safeText}')">
+                                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
+                                                 <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 w-full bg-black/50 text-center">
+                                                     ${linea1}${linea2 ? `<br>${linea2}` : ''}
+                                                 </div>
+                                             </div>
+                                         </div>`;
+                                 }).join('');
 
-                            return `
-                                <div class="bg-white/70 rounded-lg shadow-md overflow-hidden flex flex-col">
-                                    <div class="p-4 text-center border-b border-gray-300">
-                                        <h4 class="text-xl">${eventoRow[CE.eventoCulinario] || ''} ${eventoRow[CE.anyo] || ''}</h4>
-                                        <p class="font-brand text-sm italic opacity-70">${eventoRow[CE.eventoCulinarioDescripcion] || ''}</p>
-                                    </div>
-                                    <div class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">${imagenesHtml}</div>
-                                </div>`;
-                        }).join('');
-                        eventosHtml = `
-                            <div class="mt-8 pt-6 border-t border-primary/30">
-                                <h3 class="text-2xl text-center mb-6">Eventos Habituales</h3>
-                                <div class="grid grid-cols-1 ${relatedEvents.length > 1 ? 'lg:grid-cols-2' : ''} gap-6">${eventosCards}</div>
-                            </div>`;
-                    }
-                    
-                    // --- Construir Eventos Puntuales ---
-                    let eventosPuntualesHtml = '';
-                    const relatedEventsPuntuales = app.state.data.eventosPuntualesLookup[site.idsitio] || [];
-                     if (relatedEventsPuntuales.length > 0) {
-                        const eventosCards = relatedEventsPuntuales.map(eventoRow => {
-                            const eventoGallery = [];
-                            for (let i = 1; i <= 20; i++) {
-                                if (eventoRow[CEP[`foto${i}`]]) {
-                                    eventoGallery.push({
-                                        url: `https://drive.google.com/thumbnail?id=${eventoRow[CEP[`foto${i}`]]}&sz=w400`,
-                                        text: eventoRow[CEP[`text${i}`]] || ''
-                                    });
-                                }
-                            }
-                            const imagenesHtml = eventoGallery.map(item => {
-                                const partes = item.text.split('\n');
-                                const linea1 = partes[0] || '';
-                                const linea2 = partes[1] || '';
-                                const safeText = (linea2 || linea1).replace(/'/g, "\\'");
-                                const imageUrl = item.url.includes('thumbnail?id=') ? item.url : 'https://placehold.co/400x400/E0F2F1/004D40?text=Imagen+no+disponible';
-                                return `
-                                    <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group shadow" 
-                                         style="background-image: url('${imageUrl}');"
-                                         onclick="app.gallery.openModal('${imageUrl.replace('w400', 'w1600')}', '${safeText}')">
-                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
-                                            <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 w-full bg-black/50">
-                                                ${linea1}${linea2 ? `<br>${linea2}` : ''}
-                                            </div>
-                                        </div>
-                                    </div>`;
-                            }).join('');
+                                 return `
+                                     <div class="bg-white/70 rounded-lg shadow-md overflow-hidden flex flex-col">
+                                         <div class="p-4 text-center border-b border-gray-300">
+                                             <h4 class="text-xl">${eventoRow[cols.eventoCulinario] || ''} ${eventoRow[cols.anyo] || ''}</h4>
+                                             <p class="font-brand text-sm italic opacity-70 mt-1">${eventoRow[cols.eventoCulinarioDescripcion] || ''}</p>
+                                         </div>
+                                         ${imagenesHtml ? `<div class="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">${imagenesHtml}</div>` : ''}
+                                     </div>`;
+                             }).join('');
+                             html = `
+                                 <div class="mt-8 pt-6 border-t border-primary/30">
+                                     <h3 class="text-3xl text-center mb-6">${title}</h3>
+                                     <div class="grid grid-cols-1 ${relatedEvents.length > 1 ? 'lg:grid-cols-2' : ''} gap-6">${eventosCards}</div>
+                                 </div>`;
+                         }
+                         return html;
+                     };
 
-                            return `
-                                <div class="bg-white/70 rounded-lg shadow-md overflow-hidden flex flex-col">
-                                    <div class="p-4 text-center border-b border-gray-300">
-                                        <h4 class="text-xl">${eventoRow[CEP.eventoCulinario] || ''} ${eventoRow[CEP.anyo] || ''}</h4>
-                                        <p class="font-brand text-sm italic opacity-70">${eventoRow[CEP.eventoCulinarioDescripcion] || ''}</p>
-                                    </div>
-                                    <div class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">${imagenesHtml}</div>
-                                </div>`;
-                        }).join('');
-                        eventosPuntualesHtml = `
-                            <div class="mt-8 pt-6 border-t border-primary/30">
-                                <h3 class="text-2xl text-center mb-6">Eventos Puntuales</h3>
-                                <div class="grid grid-cols-1 ${relatedEventsPuntuales.length > 1 ? 'lg:grid-cols-2' : ''} gap-6">${eventosCards}</div>
-                            </div>`;
-                    }
+                    const eventosHtml = buildEventSection(app.state.data.eventosLookup, CE, "Eventos Habituales");
+                    const eventosPuntualesHtml = buildEventSection(app.state.data.eventosPuntualesLookup, CEP, "Eventos Puntuales");
 
 
                     // --- Construir Botones de Acción ---
@@ -1104,7 +1073,7 @@
                                 <div class="text-3xl mb-4" style="color: #ff4081;">${site.valoracion || ''}</div>
                                 <div class="font-brand text-lg text-on-surface opacity-90 space-y-2">
                                     ${site.nota ? `<p class="whitespace-pre-wrap">${site.nota}</p>` : ''}
-                                    <hr class="border-t-2 border-primary/30 max-w-xs mx-auto my-3"> <!-- Separador -->
+                                    <hr class="border-t-2 border-primary/30 max-w-xs mx-auto my-3">
                                     <p>${priceText}</p>
                                     ${tipoLugarText ? `<hr class="border-t-2 border-primary/30 max-w-xs mx-auto my-3"><p>${tipoLugarText}</p>` : ''}
                                 </div>
@@ -1120,10 +1089,10 @@
                             
                             <!-- Cuerpo de Detalles -->
                             <div class="mt-8 text-center">
-                                <p class="font-brand text-lg text-on-surface opacity-90 whitespace-pre-wrap mb-6">${site.pintxo_tapa || ''}</p> <!-- Añadido margen inferior -->
+                                <p class="font-brand text-lg text-on-surface opacity-90 whitespace-pre-wrap mb-6">${site.pintxo_tapa || ''}</p>
                                 
-                                ${site.direccion ? `<p class="font-brand text-lg mt-6 flex items-center justify-center"><span class="material-icons align-middle -mt-1 mr-2">place</span> <b>Dirección:</b><span class="ml-2">${site.direccion}</span></p>` : ''} <!-- Flex para alinear icono y texto -->
-                                ${site.horario ? `<p class="font-brand text-lg mt-4 whitespace-pre-wrap"><span class="material-icons align-middle -mt-1 mr-2">schedule</span> <b>Horario:</b><br>${site.horario}</p>` : ''}
+                                ${site.direccion ? `<p class="font-brand text-lg mt-6 flex items-center justify-center text-left"><span class="material-icons align-middle -mt-1 mr-2 flex-shrink-0">place</span> <span><b>Dirección:</b> ${site.direccion}</span></p>` : ''} <!-- Alineado a la izquierda -->
+                                ${site.horario ? `<p class="font-brand text-lg mt-4 whitespace-pre-wrap text-left"><span class="material-icons align-top -mt-0 mr-2">schedule</span> <b>Horario:</b><br><span class="ml-8">${site.horario.replace(/\n/g, '<br class="ml-8">')}</span></p>` : ''} <!-- Alineado a la izquierda con sangría -->
                                 
                                 <!-- Eventos -->
                                 ${eventosHtml}
@@ -1140,23 +1109,22 @@
                     app.elements.tapeo.detailContainer.innerHTML = detailHtml;
                     app.elements.tapeo.detailContainer.classList.remove('hidden');
 
-                    // Inicializar galería si existe
                     if (galleryData.length > 0) {
                         app.state.galleryState.slideIndex = 1;
-                        // Esperar un instante a que el DOM se actualice antes de mostrar slides
                         requestAnimationFrame(() => app.gallery.showSlides(1)); 
                     }
-                     window.scrollTo(0, 0); // Scroll arriba al mostrar detalle
+                     window.scrollTo(0, 0); 
                 },
 
                 hideDetail() {
                     app.elements.tapeo.detailContainer.innerHTML = '';
                     app.elements.tapeo.detailContainer.classList.add('hidden');
                     app.elements.tapeo.selector.classList.remove('hidden');
-                     window.scrollTo(0, 0); // Scroll arriba al volver
+                     window.scrollTo(0, 0); 
                 },
 
                 handleSelection(selectionName, isAutoSelection = false) {
+                     console.log(`Handling selection: ${selectionName}, auto: ${isAutoSelection}`); // Log
                     const state = app.state.tapeoState;
                     if (!isAutoSelection) {
                         state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
@@ -1171,11 +1139,12 @@
                     if (nextLevel) {
                          state.level = nextLevel;
                          app.tapeo.renderStep();
-                     } else if (app.tapeo.levelsConfig[state.level] && !nextLevel) { // Si es el último nivel (sitios)
+                     } else if (app.tapeo.levelsConfig[state.level] && !nextLevel) { // Es el último nivel (sitios)
                          state.level = 'sitios'; 
                          app.tapeo.renderStep();
                      } else {
-                         console.error("No se pudo determinar el siguiente nivel desde:", state.level);
+                         console.error("Configuración no encontrada o 'next' inválido para el nivel:", state.level);
+                         app.tapeo.displayError("Error interno al determinar el siguiente paso.");
                      }
                      window.scrollTo(0, 0); 
                 },
@@ -1212,11 +1181,18 @@
                 },
 
                 showLoading(isLoading) {
-                    app.elements.tapeo.loading.classList.toggle('hidden', !isLoading);
-                    app.elements.tapeo.loading.classList.toggle('flex', isLoading);
-                    app.elements.tapeo.grid.classList.toggle('hidden', isLoading);
-                    app.elements.tapeo.grid.classList.toggle('grid', !isLoading);
-                    app.elements.tapeo.error.classList.add('hidden'); 
+                     // Solo mostrar/ocultar si estamos en la página de tapeo
+                     if (app.state.currentPage === 'tapeo') {
+                        app.elements.tapeo.loading.classList.toggle('hidden', !isLoading);
+                        app.elements.tapeo.loading.classList.toggle('flex', isLoading);
+                        app.elements.tapeo.grid.classList.toggle('hidden', isLoading);
+                        app.elements.tapeo.grid.classList.toggle('grid', !isLoading);
+                        if(isLoading) app.elements.tapeo.error.classList.add('hidden'); // Ocultar error si empezamos a cargar
+                     } else {
+                          // Asegurarse de que esté oculto si no estamos en tapeo
+                          app.elements.tapeo.loading.classList.add('hidden');
+                          app.elements.tapeo.loading.classList.remove('flex');
+                     }
                 },
 
                 displayError(message) {
@@ -1244,7 +1220,6 @@
                 },
                 showSlides(n) {
                     const detailContainer = app.elements.tapeo.detailContainer;
-                    // Asegurarse de que el contenedor de detalles está visible
                     if(detailContainer.classList.contains('hidden')) return; 
 
                     const slides = detailContainer.getElementsByClassName("mySlides");
@@ -1262,15 +1237,14 @@
                         slides[i].style.display = "none";
                     }
                     for (let i = 0; i < dots.length; i++) {
-                        dots[i].classList.remove("active"); // Quitar clase active
+                        dots[i].classList.remove("active"); 
                     }
                     
-                     // Comprobar si el índice es válido antes de acceder
                      if (slides[slideIndex - 1]) {
                         slides[slideIndex - 1].style.display = "block";
                      }
                      if(dots[slideIndex - 1]) {
-                         dots[slideIndex - 1].classList.add("active"); // Añadir clase active
+                         dots[slideIndex - 1].classList.add("active"); 
                          captionText.innerHTML = dots[slideIndex - 1].alt;
                      } else {
                           captionText.innerHTML = ""; 
@@ -1312,38 +1286,36 @@
             utils: {
                 parseCSV(csvText) {
                     const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
-                    csvText = csvText.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n'); // Normalizar saltos de línea
+                    csvText = csvText.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n'); 
                     for (let i = 0; i < csvText.length; i++) {
                         const char = csvText[i];
                         const nextChar = csvText[i + 1];
 
                         if (char === '"') {
-                            if (inQuotes && nextChar === '"') { // Comillas dobles escapadas
+                            if (inQuotes && nextChar === '"') { 
                                 currentField += '"'; i++; 
                             } else {
                                 inQuotes = !inQuotes;
                             }
-                        } else if (char === ',' && !inQuotes) { // Coma fuera de comillas
+                        } else if (char === ',' && !inQuotes) { 
                             fields.push(currentField); currentField = ''; 
-                        } else if (char === '\n' && !inQuotes) { // Salto de línea fuera de comillas
+                        } else if (char === '\n' && !inQuotes) { 
                             fields.push(currentField);
-                            // Validar antes de añadir: no añadir si todos los campos están vacíos
                             if (fields.some(field => field.trim() !== '')) {
-                                rows.push(fields.map(field => field.trim())); // Trim individualmente
+                                rows.push(fields.map(field => field.trim())); 
                             }
                             fields = []; currentField = '';
-                        } else { // Carácter normal
+                        } else { 
                             currentField += char;
                         }
                     }
-                     // Añadir la última línea/campo si existe
                      if (fields.length > 0 || currentField.trim() !== '') {
                           fields.push(currentField);
                            if (fields.some(field => field.trim() !== '')) {
                                 rows.push(fields.map(field => field.trim()));
                            }
                      }
-                    return rows; // Ya se hizo trim al añadir
+                    return rows; 
                 }
             }
         };
@@ -1354,7 +1326,7 @@
         // Manejar el estilo del header al hacer scroll
         window.addEventListener('scroll', () => {
              if (!app.elements || !app.elements.header) return; 
-             app.handleHeaderTransparency(); // Llamar a la función dedicada
+             app.handleHeaderTransparency(); 
         });
 
     </script>
