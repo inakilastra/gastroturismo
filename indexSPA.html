@@ -315,6 +315,7 @@
 
             // Init App
             init() {
+                console.log("App init starting..."); // Log
                 app.elements = { /* ... (cache elements - unchanged) ... */ 
                     header: document.getElementById('app-header'), headerTitle: document.getElementById('header-title'),
                     drawer: document.getElementById('drawer'), drawerScrim: document.getElementById('drawer-scrim'),
@@ -333,6 +334,7 @@
                         caption: document.getElementById('modal-caption')
                     }
                 };
+                console.log("Elements cached."); // Log
                 if (app.elements.footerYear) app.elements.footerYear.textContent = new Date().getFullYear();
 
                 // Event Listeners
@@ -348,11 +350,13 @@
                  });
                 app.elements.tapeo.backButton.addEventListener('click', app.tapeo.goBack);
                 
-                // *** CORRECTION: Moved scroll listener attachment HERE, inside init ***
+                // *** CORRECTION CONFIRMED: Scroll listener IS inside init ***
                 window.addEventListener('scroll', app.handleHeaderTransparency);
+                console.log("Scroll listener added."); // Log
 
                 app.showPage(app.state.currentPage, true);
                 app.updateActiveLink(app.state.currentPage);
+                console.log("App init finished."); // Log
             },
 
             // Navigation & Menu Logic
@@ -434,7 +438,7 @@
                  if (activeLink) activeLink.classList.add('active-link');
              },
              handleHeaderTransparency() { /* ... (unchanged) ... */ 
-                if (!app.elements.header) return;
+                if (!app.elements || !app.elements.header) return; // Added check for elements
                 const header = app.elements.header;
                  if (app.state.currentPage === 'home' && window.scrollY <= 50) {
                      header.classList.remove('bg-surface', 'shadow-md'); header.classList.add('bg-transparent');
@@ -587,7 +591,7 @@
                 plusSlides(n) { const newIdx = app.state.galleryState.slideIndex += n; app.gallery.showSlides(newIdx); },
                 currentSlide(n) { app.state.galleryState.slideIndex = n; app.gallery.showSlides(n); },
                 showSlides(n) {
-                    const cont = app.elements.tapeo.detailContainer; if(cont.classList.contains('hidden')) return; 
+                    const cont = app.elements.tapeo.detailContainer; if(!cont || cont.classList.contains('hidden')) return; // Added null check
                     const slides = cont.getElementsByClassName("mySlides"), dots = cont.getElementsByClassName("demo"), cap = cont.querySelector("#caption"); 
                     if (!cap || slides.length === 0) return; let idx = n; if (n > slides.length) idx = 1; if (n < 1) idx = slides.length; app.state.galleryState.slideIndex = idx; 
                     for (let i=0;i<slides.length;i++) slides[i].style.display="none"; for (let i=0;i<dots.length;i++) dots[i].classList.remove("active"); 
