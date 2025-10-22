@@ -33,6 +33,10 @@
             h1, h2, h3, h4, h5, h6 {
                 @apply font-brand text-primary;
             }
+            /* Clases para indicar enlace activo */
+            .active-link {
+                 @apply bg-background text-primary font-bold;
+            }
         }
         @layer components {
             /* Estilos del Spinner (portados del style.css original) */
@@ -147,7 +151,7 @@
 <body class="bg-background text-on-surface">
 
     <!-- Contenedor principal de la App -->
-    <div class="min-h-screen">
+    <div class="min-h-screen flex flex-col"> <!-- Contenedor flex para empujar footer abajo -->
 
         <!-- Header (Portado de header.html) -->
         <header id="app-header" class="fixed top-0 left-0 right-0 bg-surface text-on-surface shadow-md z-30 h-16 transition-all duration-300">
@@ -174,7 +178,7 @@
                     </a>
                 </div>
                 <!-- Contenido del Drawer (Navegación) -->
-                <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                <nav id="main-nav" class="flex-grow p-4 space-y-2 overflow-y-auto"> <!-- ID añadido -->
                     <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="home">
                         <span class="material-icons mr-3">home</span>
                         <span class="font-brand text-lg">Inicio</span>
@@ -218,7 +222,7 @@
         <div id="drawer-scrim" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden transition-opacity duration-300"></div>
 
         <!-- Contenido Principal (Aquí se "cargan" las páginas) -->
-        <main class="pt-16">
+        <main class="pt-16 flex-grow"> <!-- flex-grow añadido -->
             
             <!-- Página: INICIO (portada de index.html) -->
             <div id="page-home" class="page-content">
@@ -302,7 +306,47 @@
                                     <span class="font-brand text-primary font-bold">Explorar Turismo</span>
                                 </div>
                             </a>
-                            <!-- Añade más tarjetas para las otras categorías si lo deseas -->
+                            <!-- Añadidos enlaces para las demás categorías -->
+                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="eventos-culinarios">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">local_dining</span>
+                                    </div>
+                                    <h3 class="text-2xl mb-2">Eventos Culinarios 🎉 🧑‍🍳</h3>
+                                    <p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Ferias, menús temáticos, maridajes... ¡Revive los mejores momentos culinarios! 🥳</p>
+                                    <span class="font-brand text-primary font-bold">Ver Eventos Culinarios</span>
+                                </div>
+                            </a>
+                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="eventos-turisticos">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">festival</span>
+                                    </div>
+                                    <h3 class="text-2xl mb-2">Eventos Turísticos 🏰🎶</h3>
+                                    <p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Mercados medievales, festivales, ferias locales... ¡Rememora los momentos turísticos más top! 🚀</p>
+                                    <span class="font-brand text-primary font-bold">Ver Eventos Turísticos</span>
+                                </div>
+                            </a>
+                             <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="tiendas">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">storefront</span>
+                                    </div>
+                                    <h3 class="text-2xl mb-2">Compras Gourmet 🛍️🎁</h3>
+                                    <p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">¡Para los paladares finos! Descubre tiendas gourmet que nos encantan. 💎</p>
+                                    <span class="font-brand text-primary font-bold">Ver Tiendas</span>
+                                </div>
+                            </a>
+                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="curiosidades">
+                                <div class="p-6 flex flex-col items-center text-center h-full">
+                                    <div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex">
+                                        <span class="material-icons text-4xl">emoji_objects</span>
+                                    </div>
+                                    <h3 class="text-2xl mb-2">Curiosidades 🤪🛑</h3>
+                                    <p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Coleccionamos esos carteles y señales curiosas que te alegran el paseo. 😄</p>
+                                    <span class="font-brand text-primary font-bold">Ver Curiosidades</span>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </section>
@@ -332,7 +376,7 @@
                         </div>
                         
                         <!-- Estado de Carga -->
-                        <div id="tapeo-loading" class_="flex flex-col items-center justify-center p-10">
+                        <div id="tapeo-loading" class="flex flex-col items-center justify-center p-10"> <!-- Clase corregida -->
                             <div class="simple-loader" role="progressbar" aria-label="Cargando"></div>
                             <p class="font-brand text-2xl text-primary mt-4">Cargando datos...</p>
                         </div>
@@ -458,6 +502,7 @@
                 isMenuOpen: false,
                 currentPage: 'home',
                 isDataLoaded: false,
+                 isLoadingData: false, // Nueva bandera para evitar cargas múltiples
                 // Almacén para los datos de los CSV
                 data: {
                     tapeo: [],
@@ -491,7 +536,8 @@
                     drawer: document.getElementById('drawer'),
                     drawerScrim: document.getElementById('drawer-scrim'),
                     menuBtn: document.getElementById('menu-btn'),
-                    navLinks: document.querySelectorAll('.nav-link'),
+                    mainNav: document.getElementById('main-nav'), // Cachear el contenedor de enlaces
+                    navLinks: document.querySelectorAll('.nav-link'), // Links iniciales
                     pages: document.querySelectorAll('.page-content'),
                     footerYear: document.getElementById('footer-year'),
                     
@@ -526,20 +572,22 @@
                 app.elements.menuBtn.addEventListener('click', app.toggleMenu);
                 app.elements.drawerScrim.addEventListener('click', app.toggleMenu);
 
-                // Enlaces de navegación
-                app.elements.navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const pageName = e.currentTarget.dataset.page;
-                        app.navigateTo(pageName);
-                    });
-                });
+                // Enlaces de navegación (Delegación de eventos en el body)
+                 document.body.addEventListener('click', (e) => {
+                    const navLink = e.target.closest('.nav-link');
+                    if (navLink && navLink.dataset.page) { // Asegurarse que tiene data-page
+                         e.preventDefault(); 
+                         app.navigateTo(navLink.dataset.page);
+                    }
+                 });
+
 
                 // Botón "Atrás" de Tapeo
                 app.elements.tapeo.backButton.addEventListener('click', app.tapeo.goBack);
 
-                // Mostrar página inicial
+                // Mostrar página inicial y marcar enlace activo
                 app.showPage(app.state.currentPage, true);
+                app.updateActiveLink(app.state.currentPage);
             },
 
             // --- Lógica de Navegación y Menú ---
@@ -552,24 +600,37 @@
                 } else {
                     app.elements.drawer.classList.add('-translate-x-full');
                     app.elements.drawerScrim.classList.remove('opacity-100');
-                    app.elements.drawerScrim.classList.add('hidden');
+                    setTimeout(() => {
+                        if (!app.state.isMenuOpen) { 
+                            app.elements.drawerScrim.classList.add('hidden');
+                        }
+                    }, 300); 
                 }
             },
 
             navigateTo(pageName) {
+                if (!pageName || pageName === app.state.currentPage) return; // Evitar navegación a la misma página o sin nombre
+
                 if (app.state.isMenuOpen) {
                     app.toggleMenu();
                 }
                 app.state.currentPage = pageName;
                 app.showPage(pageName);
+                app.updateActiveLink(pageName); 
 
                 // Si navegamos a "tapeo" y los datos no están cargados, cargarlos.
-                if (pageName === 'tapeo' && !app.state.isDataLoaded) {
+                if (pageName === 'tapeo' && !app.state.isDataLoaded && !app.state.isLoadingData) { // Añadido check isLoadingData
                     app.loadTapeoData();
+                } else if (pageName === 'tapeo' && app.state.isDataLoaded) {
+                     // Si volvemos a tapeo y los datos ya están cargados, renderizar el estado actual
+                     app.tapeo.hideDetail(); // Asegurarse que el detalle está oculto
+                     app.tapeo.renderStep();
                 }
             },
 
             showPage(pageName, isInitialLoad = false) {
+                 if (!pageName) return; 
+
                 // Ocultar todas las páginas
                 app.elements.pages.forEach(page => page.classList.add('hidden'));
                 
@@ -577,32 +638,83 @@
                 const newPage = document.getElementById(`page-${pageName}`);
                 if (newPage) {
                     newPage.classList.remove('hidden');
+                } else {
+                    console.warn(`Página con ID "page-${pageName}" no encontrada. Mostrando 'home'.`);
+                     const homePage = document.getElementById('page-home');
+                     if(homePage) homePage.classList.remove('hidden');
+                     app.state.currentPage = 'home';
+                     pageName = 'home'; // Actualizar pageName para el título
+                     app.updateActiveLink('home'); // Marcar home como activo
                 }
 
-                // Actualizar título del header
+                // Actualizar título del header y estilo
                 if (pageName === 'home') {
                     app.elements.headerTitle.textContent = 'ANeKI';
-                    app.elements.header.classList.remove('bg-surface', 'shadow-md');
-                    app.elements.header.classList.add('bg-transparent');
+                    // Ajustar transparencia basada en scroll
+                    app.handleHeaderTransparency(); 
                 } else {
-                    app.elements.header.classList.add('bg-surface', 'shadow-md');
+                    app.elements.header.classList.add('bg-surface', 'shadow-md'); // Asegurar fondo sólido
                     app.elements.header.classList.remove('bg-transparent');
-                    // Encontrar el texto del enlace para usarlo como título
+                    
                     const link = document.querySelector(`.nav-link[data-page="${pageName}"]`);
+                    let title = 'ANeKI'; // Fallback title
                     if (link) {
-                        app.elements.headerTitle.textContent = link.querySelector('span:last-child').textContent;
+                         const titleSpan = link.querySelector('span.font-brand');
+                         const titleH3 = link.querySelector('h3');
+                         if (titleSpan) {
+                              title = titleSpan.textContent;
+                         } else if (titleH3) {
+                              // Intentar obtener un título más descriptivo de H3 si existe
+                              title = titleH3.textContent.includes(' ') ? titleH3.textContent.split(' ')[0] : titleH3.textContent;
+                         } else {
+                              // Fallback si no hay span ni h3 (poco probable con la estructura actual)
+                               title = pageName.charAt(0).toUpperCase() + pageName.slice(1).replace('-', ' ');
+                         }
                     }
+                     app.elements.headerTitle.textContent = title;
                 }
 
                 if (!isInitialLoad) {
-                    window.scrollTo(0, 0); // Scroll al principio al cambiar de página
+                    window.scrollTo(0, 0); 
                 }
             },
 
+            // --- Función para marcar el enlace activo ---
+             updateActiveLink(pageName) {
+                 if (!app.elements.mainNav) return; 
+                 app.elements.mainNav.querySelectorAll('.nav-link').forEach(link => {
+                     link.classList.remove('active-link');
+                 });
+                 const activeLink = app.elements.mainNav.querySelector(`.nav-link[data-page="${pageName}"]`);
+                 if (activeLink) {
+                     activeLink.classList.add('active-link');
+                 }
+             },
+            
+             // --- Función para manejar transparencia del header en scroll ---
+             handleHeaderTransparency() {
+                if (!app.elements.header) return;
+                const header = app.elements.header;
+                 if (app.state.currentPage === 'home') {
+                     if (window.scrollY > 50) {
+                         header.classList.add('bg-surface', 'shadow-md');
+                         header.classList.remove('bg-transparent');
+                     } else {
+                         header.classList.remove('bg-surface', 'shadow-md');
+                         header.classList.add('bg-transparent');
+                     }
+                 } else {
+                     // Asegurar fondo sólido fuera de la home
+                     header.classList.add('bg-surface', 'shadow-md');
+                     header.classList.remove('bg-transparent');
+                 }
+             },
+
             // --- Lógica de Carga de Datos ---
             async loadTapeoData() {
-                if (app.state.isDataLoaded) return;
+                if (app.state.isDataLoaded || app.state.isLoadingData) return; // Evitar recarga
                 
+                app.state.isLoadingData = true; // Marcar como cargando
                 app.tapeo.showLoading(true);
 
                 try {
@@ -641,12 +753,22 @@
                     });
 
                     app.state.isDataLoaded = true;
-                    // Iniciar el renderizado de la app de tapeo
-                    app.tapeo.renderStep();
+                    // Iniciar el renderizado de la app de tapeo (si estamos en esa página)
+                    if(app.state.currentPage === 'tapeo') {
+                         app.tapeo.renderStep();
+                    }
 
                 } catch (error) {
-                    console.error("Error al inicializar:", error);
-                    app.tapeo.displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
+                    console.error("Error al cargar datos:", error);
+                    if(app.state.currentPage === 'tapeo') {
+                         app.tapeo.displayError(`No se pudieron cargar los datos.<br><b>Razón:</b> ${error.message}`);
+                    }
+                } finally {
+                     app.state.isLoadingData = false; // Marcar como carga finalizada (éxito o error)
+                     // Ocultar el spinner general si ya no estamos en tapeo (pudo haber error y cambio de pag)
+                     if(app.state.currentPage !== 'tapeo') {
+                          app.tapeo.showLoading(false);
+                     }
                 }
             },
 
@@ -661,55 +783,89 @@
                 },
 
                 renderStep() {
-                    app.tapeo.showLoading(true);
-                    let dataToProcess = app.state.data.tapeo;
-                    const { selection } = app.state.tapeoState;
+                     if (!app.state.isDataLoaded) {
+                         app.tapeo.showLoading(true);
+                         if (!app.state.isLoadingData) { 
+                              app.loadTapeoData();
+                         }
+                         return;
+                     }
 
-                    // Filtrar datos según la selección actual
-                    if (selection.autonomia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.autonomia] === selection.autonomia);
-                    if (selection.provincia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.provincia] === selection.provincia);
-                    if (selection.ciudad) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.ciudad] === selection.ciudad);
-                    if (selection.barrio && selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[app.config.COLS.barrio] === selection.barrio);
+                    app.tapeo.showLoading(true); 
+                    // Usar requestAnimationFrame para permitir que el spinner se muestre antes de bloquear el hilo
+                    requestAnimationFrame(() => {
+                        let dataToProcess = app.state.data.tapeo;
+                        const { selection } = app.state.tapeoState;
 
-                    app.elements.tapeo.backButton.classList.toggle('hidden', app.state.tapeoState.history.length === 0);
-                    app.elements.tapeo.backButton.classList.toggle('inline-flex', app.state.tapeoState.history.length > 0);
-                    app.tapeo.renderBreadcrumbs();
+                        // Filtrar datos
+                        if (selection.autonomia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.autonomia] === selection.autonomia);
+                        if (selection.provincia) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.provincia] === selection.provincia);
+                        if (selection.ciudad) dataToProcess = dataToProcess.filter(row => row[app.config.COLS.ciudad] === selection.ciudad);
+                        if (selection.barrio && selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(row => row[app.config.COLS.barrio] === selection.barrio);
 
-                    if (app.state.tapeoState.level === 'sitios') {
-                        app.tapeo.populateGridWithSitios(dataToProcess);
-                    } else {
-                        const colKey = app.tapeo.levelsConfig[app.state.tapeoState.level].key;
-                        let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
-                        
-                        if (app.state.tapeoState.level === 'barrios' && uniqueValues.length > 1) {
-                            uniqueValues.unshift('Todos');
+                        // Actualizar UI (botones, breadcrumbs)
+                        app.elements.tapeo.backButton.classList.toggle('hidden', app.state.tapeoState.history.length === 0);
+                        app.elements.tapeo.backButton.classList.toggle('inline-flex', app.state.tapeoState.history.length > 0);
+                        app.tapeo.renderBreadcrumbs();
+
+                        // Renderizar grid o saltar nivel
+                        if (app.state.tapeoState.level === 'sitios') {
+                            app.tapeo.populateGridWithSitios(dataToProcess);
+                        } else {
+                            const currentLevelConfig = app.tapeo.levelsConfig[app.state.tapeoState.level];
+                            if (!currentLevelConfig) {
+                                console.error("Nivel de tapeo inválido:", app.state.tapeoState.level);
+                                app.tapeo.displayError("Error interno: Nivel de navegación inválido.");
+                                app.tapeo.showLoading(false); // Ocultar spinner en error
+                                return;
+                            }
+                            const colKey = currentLevelConfig.key;
+                            let uniqueValues = [...new Set(dataToProcess.map(row => row[colKey]))].filter(Boolean).sort();
+                            
+                            if (app.state.tapeoState.level === 'barrios' && uniqueValues.length > 1) {
+                                uniqueValues.unshift('Todos');
+                            }
+                            
+                            if (uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios') {
+                                if (!uniqueValues[0]) {
+                                    app.tapeo.populateGridWithOptions([]); 
+                                    app.tapeo.showLoading(false);
+                                    return;
+                                }
+                                app.state.tapeoState.history.push({ 
+                                    level: app.state.tapeoState.level, 
+                                    selection: { ...app.state.tapeoState.selection }, 
+                                    skipped: true 
+                                });
+                                app.tapeo.handleSelection(uniqueValues[0], true);
+                                // No ocultar loading aquí, handleSelection llamará a renderStep de nuevo
+                                return; 
+                            }
+                            
+                            app.tapeo.populateGridWithOptions(uniqueValues);
                         }
                         
-                        // Auto-saltar si solo hay una opción
-                        if (uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios') {
-                            app.state.tapeoState.history.push({ 
-                                level: app.state.tapeoState.level, 
-                                selection: { ...app.state.tapeoState.selection }, 
-                                skipped: true 
-                            });
-                            app.tapeo.handleSelection(uniqueValues[0], true);
-                            return; // Salir para evitar renderizado innecesario
+                        // Ocultar spinner después de renderizar (excepto si se saltó nivel)
+                        if (!(uniqueValues && uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios')) {
+                             setTimeout(() => app.tapeo.showLoading(false), 50); // Pequeño delay
                         }
-                        
-                        app.tapeo.populateGridWithOptions(uniqueValues);
-                    }
-                    
-                    app.tapeo.showLoading(false);
+                    }); // Fin requestAnimationFrame
                 },
 
                 populateGridWithOptions(data) {
                     const config = app.tapeo.levelsConfig[app.state.tapeoState.level];
                     app.elements.tapeo.title.textContent = config.title;
                     const grid = app.elements.tapeo.grid;
-                    grid.innerHTML = '';
+                    grid.innerHTML = ''; 
+                    grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'; 
+
+                    if (data.length === 0) {
+                        grid.innerHTML = `<p class="font-brand text-xl text-center md:col-span-2 lg:col-span-3">No hay opciones disponibles.</p>`;
+                        return;
+                    }
                     
                     data.forEach(item => {
-                        const safeItem = item.replace(/'/g, "\\'"); // Escapar comillas para el onclick
+                        const safeItem = item.replace(/'/g, "\\'"); 
                         const cardHtml = `
                             <div class="bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer" onclick="app.tapeo.handleSelection('${safeItem}')">
                                 <div class="p-6 flex flex-col items-center text-center h-full">
@@ -726,13 +882,18 @@
                 populateGridWithSitios(data) {
                     app.elements.tapeo.title.textContent = app.tapeo.levelsConfig.sitios.title;
                     const grid = app.elements.tapeo.grid;
-                    grid.innerHTML = '';
-                    
-                    const sortedData = data.sort((a, b) => (b[app.config.COLS.nota] || 0) - (a[app.config.COLS.nota] || 0));
+                    grid.innerHTML = ''; 
+                    grid.className = 'grid grid-cols-1 gap-6'; 
+
+                    const sortedData = data.sort((a, b) => {
+                         const notaA = parseFloat(a[app.config.COLS.nota]) || 0;
+                         const notaB = parseFloat(b[app.config.COLS.nota]) || 0;
+                         return notaB - notaA;
+                     });
                     app.state.tapeoState.currentSitios = sortedData;
 
                     if (sortedData.length === 0) {
-                        grid.innerHTML = `<p class="font-brand text-xl text-center md:col-span-2 lg:col-span-3">No se encontraron sitios para esta selección.</p>`;
+                        grid.innerHTML = `<p class="font-brand text-xl text-center">No se encontraron sitios para esta selección.</p>`;
                         return;
                     }
 
@@ -746,8 +907,8 @@
                         else if (row[C.codprecio] == 12) priceText = 'El precio nos parece que es caro 💀';
 
                         const cardHtml = `
-                            <div class="lg:col-span-3 bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col md:flex-row">
-                                ${imageUrl ? `<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>` : ''}
+                            <div class="bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col md:flex-row">
+                                ${imageUrl ? `<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-cover bg-center" style="background-image: url('${imageUrl}');"></div>` : '<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-gray-300 flex items-center justify-center"><span class="material-icons text-6xl text-gray-500">hide_image</span></div>'}
                                 <div class="p-6 flex flex-col flex-grow text-center">
                                     <h3 class="text-3xl mb-2">${row[C.nombre] || 'Nombre no disponible'}</h3>
                                     <div class="text-2xl mb-4" style="color: #ff4081;">${row[C.valoracion] || ''}</div>
@@ -775,7 +936,6 @@
                     const CE = app.config.COLS_EVENTOS;
                     const CEP = app.config.COLS_EVENTOSPUNTUALES;
                     
-                    // Mapear la fila a un objeto 'site' para fácil acceso
                     const site = Object.keys(C).reduce((obj, key) => {
                         obj[key] = siteRow[C[key]];
                         return obj;
@@ -798,19 +958,19 @@
                         const slidesHtml = galleryData.map((item, i) => `
                             <div class="mySlides">
                                 <div class="numbertext">${i + 1} / ${galleryData.length}</div>
-                                <img src="${item.url}" class="w-full" alt="${item.text}">
+                                <img src="${item.url}" class="w-full rounded-lg shadow" alt="${item.text}">
                             </div>`).join('');
                         const thumbnailsHtml = galleryData.map((item, i) => `
                             <div class="column">
-                                <img class="demo cursor" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="app.gallery.currentSlide(${i + 1})" alt="${item.text}">
+                                <img class="demo cursor rounded" src="${item.url.replace('w600', 'w200')}" style="width:100%" onclick="app.gallery.currentSlide(${i + 1})" alt="${item.text}">
                             </div>`).join('');
                         galleryHtml = `
                             <div class="gallery-container">
                                 ${slidesHtml}
                                 <a class="prev" onclick="app.gallery.plusSlides(-1)">❮</a>
                                 <a class="next" onclick="app.gallery.plusSlides(1)">❯</a>
-                                <div class="caption-container"><p id="caption"></p></div>
-                                <div class="row">${thumbnailsHtml}</div>
+                                <div class="caption-container rounded-b-lg"><p id="caption"></p></div>
+                                <div class="row mt-2">${thumbnailsHtml}</div>
                             </div>`;
                     }
 
@@ -833,12 +993,13 @@
                                 const linea1 = partes[0] || '';
                                 const linea2 = partes[1] || '';
                                 const safeText = (linea2 || linea1).replace(/'/g, "\\'");
+                                const imageUrl = item.url.includes('thumbnail?id=') ? item.url : 'https://placehold.co/400x400/E0F2F1/004D40?text=Imagen+no+disponible';
                                 return `
-                                    <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group" 
-                                         style="background-image: url('${item.url}');"
-                                         onclick="app.gallery.openModal('${item.url.replace('w400', 'w1600')}', '${safeText}')">
+                                    <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group shadow" 
+                                         style="background-image: url('${imageUrl}');"
+                                         onclick="app.gallery.openModal('${imageUrl.replace('w400', 'w1600')}', '${safeText}')">
                                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
-                                            <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
+                                            <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 w-full bg-black/50">
                                                 ${linea1}${linea2 ? `<br>${linea2}` : ''}
                                             </div>
                                         </div>
@@ -851,7 +1012,7 @@
                                         <h4 class="text-xl">${eventoRow[CE.eventoCulinario] || ''} ${eventoRow[CE.anyo] || ''}</h4>
                                         <p class="font-brand text-sm italic opacity-70">${eventoRow[CE.eventoCulinarioDescripcion] || ''}</p>
                                     </div>
-                                    <div class="p-4 grid grid-cols-2 md:grid-cols-4 gap-2">${imagenesHtml}</div>
+                                    <div class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">${imagenesHtml}</div>
                                 </div>`;
                         }).join('');
                         eventosHtml = `
@@ -880,12 +1041,13 @@
                                 const linea1 = partes[0] || '';
                                 const linea2 = partes[1] || '';
                                 const safeText = (linea2 || linea1).replace(/'/g, "\\'");
+                                const imageUrl = item.url.includes('thumbnail?id=') ? item.url : 'https://placehold.co/400x400/E0F2F1/004D40?text=Imagen+no+disponible';
                                 return `
-                                    <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group" 
-                                         style="background-image: url('${item.url}');"
-                                         onclick="app.gallery.openModal('${item.url.replace('w400', 'w1600')}', '${safeText}')">
+                                    <div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group shadow" 
+                                         style="background-image: url('${imageUrl}');"
+                                         onclick="app.gallery.openModal('${imageUrl.replace('w400', 'w1600')}', '${safeText}')">
                                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
-                                            <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
+                                            <div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 w-full bg-black/50">
                                                 ${linea1}${linea2 ? `<br>${linea2}` : ''}
                                             </div>
                                         </div>
@@ -898,7 +1060,7 @@
                                         <h4 class="text-xl">${eventoRow[CEP.eventoCulinario] || ''} ${eventoRow[CEP.anyo] || ''}</h4>
                                         <p class="font-brand text-sm italic opacity-70">${eventoRow[CEP.eventoCulinarioDescripcion] || ''}</p>
                                     </div>
-                                    <div class="p-4 grid grid-cols-2 md:grid-cols-4 gap-2">${imagenesHtml}</div>
+                                    <div class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">${imagenesHtml}</div>
                                 </div>`;
                         }).join('');
                         eventosPuntualesHtml = `
@@ -942,9 +1104,9 @@
                                 <div class="text-3xl mb-4" style="color: #ff4081;">${site.valoracion || ''}</div>
                                 <div class="font-brand text-lg text-on-surface opacity-90 space-y-2">
                                     ${site.nota ? `<p class="whitespace-pre-wrap">${site.nota}</p>` : ''}
-                                    <hr class="border-t-2 border-primary/30 max-w-xs mx-auto">
+                                    <hr class="border-t-2 border-primary/30 max-w-xs mx-auto my-3"> <!-- Separador -->
                                     <p>${priceText}</p>
-                                    ${tipoLugarText ? `<hr class="border-t-2 border-primary/30 max-w-xs mx-auto"><p>${tipoLugarText}</p>` : ''}
+                                    ${tipoLugarText ? `<hr class="border-t-2 border-primary/30 max-w-xs mx-auto my-3"><p>${tipoLugarText}</p>` : ''}
                                 </div>
                             </div>
                             
@@ -958,10 +1120,10 @@
                             
                             <!-- Cuerpo de Detalles -->
                             <div class="mt-8 text-center">
-                                <p class="font-brand text-lg text-on-surface opacity-90 whitespace-pre-wrap">${site.pintxo_tapa || ''}</p>
+                                <p class="font-brand text-lg text-on-surface opacity-90 whitespace-pre-wrap mb-6">${site.pintxo_tapa || ''}</p> <!-- Añadido margen inferior -->
                                 
-                                ${site.direccion ? `<p class="font-brand text-lg mt-6"><span class="material-icons v-align -mt-1 mr-2">place</span> <b>Dirección:</b> ${site.direccion}</p>` : ''}
-                                ${site.horario ? `<p class="font-brand text-lg mt-4 whitespace-pre-wrap"><span class="material-icons v-align -mt-1 mr-2">schedule</span> <b>Horario:</b><br>${site.horario}</p>` : ''}
+                                ${site.direccion ? `<p class="font-brand text-lg mt-6 flex items-center justify-center"><span class="material-icons align-middle -mt-1 mr-2">place</span> <b>Dirección:</b><span class="ml-2">${site.direccion}</span></p>` : ''} <!-- Flex para alinear icono y texto -->
+                                ${site.horario ? `<p class="font-brand text-lg mt-4 whitespace-pre-wrap"><span class="material-icons align-middle -mt-1 mr-2">schedule</span> <b>Horario:</b><br>${site.horario}</p>` : ''}
                                 
                                 <!-- Eventos -->
                                 ${eventosHtml}
@@ -978,15 +1140,20 @@
                     app.elements.tapeo.detailContainer.innerHTML = detailHtml;
                     app.elements.tapeo.detailContainer.classList.remove('hidden');
 
-                    // Inicializar galería
-                    app.state.galleryState.slideIndex = 1;
-                    app.gallery.showSlides(1);
+                    // Inicializar galería si existe
+                    if (galleryData.length > 0) {
+                        app.state.galleryState.slideIndex = 1;
+                        // Esperar un instante a que el DOM se actualice antes de mostrar slides
+                        requestAnimationFrame(() => app.gallery.showSlides(1)); 
+                    }
+                     window.scrollTo(0, 0); // Scroll arriba al mostrar detalle
                 },
 
                 hideDetail() {
                     app.elements.tapeo.detailContainer.innerHTML = '';
                     app.elements.tapeo.detailContainer.classList.add('hidden');
                     app.elements.tapeo.selector.classList.remove('hidden');
+                     window.scrollTo(0, 0); // Scroll arriba al volver
                 },
 
                 handleSelection(selectionName, isAutoSelection = false) {
@@ -995,21 +1162,27 @@
                         state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
                     }
                     
-                    let key = state.level.slice(0, -1); // 'autonomias' -> 'autonomia'
+                    let key = state.level.slice(0, -1); 
                     if (state.level === 'ciudades') key = 'ciudad';
                     
                     state.selection[key] = selectionName;
-                    state.level = app.tapeo.levelsConfig[state.level].next;
-                    
-                    if (state.level) {
-                        app.tapeo.renderStep();
-                    }
+                     const nextLevel = app.tapeo.levelsConfig[state.level]?.next; 
+
+                    if (nextLevel) {
+                         state.level = nextLevel;
+                         app.tapeo.renderStep();
+                     } else if (app.tapeo.levelsConfig[state.level] && !nextLevel) { // Si es el último nivel (sitios)
+                         state.level = 'sitios'; 
+                         app.tapeo.renderStep();
+                     } else {
+                         console.error("No se pudo determinar el siguiente nivel desde:", state.level);
+                     }
+                     window.scrollTo(0, 0); 
                 },
 
                 goBack() {
                     const state = app.state.tapeoState;
                     let lastState = state.history.pop();
-                    // Omitir pasos que se saltaron automáticamente
                     while (lastState && lastState.skipped) {
                         lastState = state.history.pop();
                     }
@@ -1018,13 +1191,13 @@
                         state.level = lastState.level;
                         state.selection = lastState.selection;
                     } else {
-                        // Volver al inicio
                         state.level = 'autonomias';
                         state.selection = {};
                         state.history = [];
                     }
-                    app.tapeo.hideDetail(); // Asegurarse de que el detalle esté oculto
+                    app.tapeo.hideDetail(); 
                     app.tapeo.renderStep();
+                     window.scrollTo(0, 0); 
                 },
 
                 renderBreadcrumbs() {
@@ -1043,12 +1216,12 @@
                     app.elements.tapeo.loading.classList.toggle('flex', isLoading);
                     app.elements.tapeo.grid.classList.toggle('hidden', isLoading);
                     app.elements.tapeo.grid.classList.toggle('grid', !isLoading);
-                    app.elements.tapeo.error.classList.add('hidden');
+                    app.elements.tapeo.error.classList.add('hidden'); 
                 },
 
                 displayError(message) {
-                    app.elements.tapeo.loading.classList.add('hidden');
-                    app.elements.tapeo.grid.classList.add('hidden');
+                    app.elements.tapeo.loading.classList.add('hidden'); 
+                    app.elements.tapeo.grid.classList.add('hidden'); 
                     const errorEl = app.elements.tapeo.error;
                     errorEl.innerHTML = `
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
@@ -1070,79 +1243,107 @@
                     app.gallery.showSlides(n);
                 },
                 showSlides(n) {
-                    const slides = document.getElementsByClassName("mySlides");
-                    const dots = document.getElementsByClassName("demo");
-                    const captionText = document.getElementById("caption");
-                    if (slides.length === 0) return;
+                    const detailContainer = app.elements.tapeo.detailContainer;
+                    // Asegurarse de que el contenedor de detalles está visible
+                    if(detailContainer.classList.contains('hidden')) return; 
+
+                    const slides = detailContainer.getElementsByClassName("mySlides");
+                    const dots = detailContainer.getElementsByClassName("demo");
+                    const captionText = detailContainer.querySelector("#caption"); 
+                    
+                    if (!captionText || slides.length === 0) return; 
 
                     let slideIndex = n;
                     if (n > slides.length) { slideIndex = 1; }
                     if (n < 1) { slideIndex = slides.length; }
-                    app.state.galleryState.slideIndex = slideIndex; // Actualizar estado
+                    app.state.galleryState.slideIndex = slideIndex; 
 
                     for (let i = 0; i < slides.length; i++) {
                         slides[i].style.display = "none";
                     }
                     for (let i = 0; i < dots.length; i++) {
-                        dots[i].classList.remove("active");
+                        dots[i].classList.remove("active"); // Quitar clase active
                     }
                     
-                    slides[slideIndex - 1].style.display = "block";
-                    dots[slideIndex - 1].classList.add("active");
-                    captionText.innerHTML = dots[slideIndex - 1].alt;
+                     // Comprobar si el índice es válido antes de acceder
+                     if (slides[slideIndex - 1]) {
+                        slides[slideIndex - 1].style.display = "block";
+                     }
+                     if(dots[slideIndex - 1]) {
+                         dots[slideIndex - 1].classList.add("active"); // Añadir clase active
+                         captionText.innerHTML = dots[slideIndex - 1].alt;
+                     } else {
+                          captionText.innerHTML = ""; 
+                     }
                 },
                 
                 openModal(imageUrl, imageText) {
                     const { overlay, image, caption } = app.elements.modal;
-                    image.src = imageUrl;
+                     try {
+                         new URL(imageUrl); 
+                         image.src = imageUrl;
+                     } catch (_) {
+                         console.error("URL de imagen inválida:", imageUrl);
+                         image.src = 'https://placehold.co/800x600/E0F2F1/004D40?text=Error+al+cargar+imagen'; 
+                     }
                     caption.innerHTML = imageText || '';
                     overlay.classList.remove('hidden');
                     overlay.classList.add('flex');
                     setTimeout(() => {
                         overlay.classList.add('opacity-100');
                         caption.classList.remove('opacity-0', '-translate-y-5');
-                    }, 10); // Pequeño retardo para la transición
+                    }, 10); 
                 },
 
                 closeModal() {
-                    const { overlay, caption } = app.elements.modal;
+                    const { overlay, image, caption } = app.elements.modal; 
                     overlay.classList.remove('opacity-100');
                     caption.classList.add('opacity-0', '-translate-y-5');
                     setTimeout(() => {
                         overlay.classList.add('hidden');
                         overlay.classList.remove('flex');
-                    }, 300); // Sincronizar con la duración de la transición
+                        image.src = ''; 
+                        caption.innerHTML = '';
+                    }, 300); 
                 }
             },
 
             // --- Utilidades ---
             utils: {
-                // Parseador de CSV (portado 1:1 de tapeo.html)
                 parseCSV(csvText) {
                     const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
-                    csvText = csvText.trim();
+                    csvText = csvText.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n'); // Normalizar saltos de línea
                     for (let i = 0; i < csvText.length; i++) {
                         const char = csvText[i];
+                        const nextChar = csvText[i + 1];
+
                         if (char === '"') {
-                            if (inQuotes && i + 1 < csvText.length && csvText[i + 1] === '"') {
+                            if (inQuotes && nextChar === '"') { // Comillas dobles escapadas
                                 currentField += '"'; i++; 
                             } else {
                                 inQuotes = !inQuotes;
                             }
-                        } else if (char === ',' && !inQuotes) {
+                        } else if (char === ',' && !inQuotes) { // Coma fuera de comillas
                             fields.push(currentField); currentField = ''; 
-                        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                        } else if (char === '\n' && !inQuotes) { // Salto de línea fuera de comillas
                             fields.push(currentField);
-                            rows.push(fields);
-                            fields = [];
-                            currentField = '';
-                            if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') { i++; }
-                        } else { 
+                            // Validar antes de añadir: no añadir si todos los campos están vacíos
+                            if (fields.some(field => field.trim() !== '')) {
+                                rows.push(fields.map(field => field.trim())); // Trim individualmente
+                            }
+                            fields = []; currentField = '';
+                        } else { // Carácter normal
                             currentField += char;
                         }
                     }
-                    if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
-                    return rows.map(row => row.map(field => field.trim()));
+                     // Añadir la última línea/campo si existe
+                     if (fields.length > 0 || currentField.trim() !== '') {
+                          fields.push(currentField);
+                           if (fields.some(field => field.trim() !== '')) {
+                                rows.push(fields.map(field => field.trim()));
+                           }
+                     }
+                    return rows; // Ya se hizo trim al añadir
                 }
             }
         };
@@ -1152,18 +1353,11 @@
         
         // Manejar el estilo del header al hacer scroll
         window.addEventListener('scroll', () => {
-            const header = app.elements.header;
-            if (app.state.currentPage === 'home') {
-                if (window.scrollY > 50) {
-                    header.classList.add('bg-surface', 'shadow-md');
-                    header.classList.remove('bg-transparent');
-                } else {
-                    header.classList.remove('bg-surface', 'shadow-md');
-                    header.classList.add('bg-transparent');
-                }
-            }
+             if (!app.elements || !app.elements.header) return; 
+             app.handleHeaderTransparency(); // Llamar a la función dedicada
         });
 
     </script>
 </body>
 </html>
+
