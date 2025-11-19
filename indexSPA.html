@@ -1,493 +1,541 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  MapPin, 
-  UtensilsCrossed, 
-  Wine, 
-  Compass, 
-  Calendar, 
-  ShoppingBag, 
-  HelpCircle, 
-  Menu, 
-  X, 
-  ChevronRight, 
-  Star, 
-  ArrowLeft,
-  Map,
-  Search
-} from 'lucide-react';
-
-// --- DATOS SIMULADOS (MOCK DATA) ---
-// Simulan la estructura de tu CSV.
-// Estructura: id, nombre, tipo (categoria), autonomia, provincia, ciudad, barrio, valoracion, imagen, descripcion, mes (para eventos)
-const MOCK_DATA = [
-  // PINTXOS Y TAPAS (Variedad para probar filtros)
-  { id: 1, type: 'pintxos', name: 'Bar La Cepa', autonomia: 'Euskadi', provincia: 'Gipuzkoa', ciudad: 'Donostia', barrio: 'Parte Vieja', rating: 4.5, image: 'https://images.unsplash.com/photo-1564844536311-de23cd95eb8d?auto=format&fit=crop&w=800&q=80', desc: 'Clásico de la parte vieja. Jamón de primera.' },
-  { id: 2, type: 'pintxos', name: 'Gandarias', autonomia: 'Euskadi', provincia: 'Gipuzkoa', ciudad: 'Donostia', barrio: 'Parte Vieja', rating: 4.8, image: 'https://images.unsplash.com/photo-1515443961218-a51367888e4b?auto=format&fit=crop&w=800&q=80', desc: 'El solomillo es imprescindible.' },
-  { id: 3, type: 'pintxos', name: 'El Globo', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Bilbao', barrio: 'Abando', rating: 4.6, image: 'https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&w=800&q=80', desc: 'Famoso por su pintxo de txangurro gratinado.' },
-  { id: 4, type: 'pintxos', name: 'Sorginzulo', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Bilbao', barrio: 'Casco Viejo', rating: 4.7, image: 'https://images.unsplash.com/photo-1579631542720-3a87824fff86?auto=format&fit=crop&w=800&q=80', desc: 'Calamares y pintxos morunos.' },
-  { id: 5, type: 'pintxos', name: 'Casa Pepe', autonomia: 'Andalucía', provincia: 'Jaén', ciudad: 'Linares', barrio: 'Centro', rating: 4.4, image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=800&q=80', desc: 'Tapas gratis con la bebida. Muy abundante.' },
-
-  // RESTAURANTES
-  { id: 6, type: 'restaurantes', name: 'Asador Etxebarri', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Atxondo', barrio: '', rating: 5.0, image: 'https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=800&q=80', desc: 'El rey de la parrilla mundial.' },
-  
-  // BODEGAS (Pocos datos para probar el "Salto automático de filtros")
-  // Si filtras bodegas, debería saltar Autonomía y Provincia si solo hay Rioja Alavesa
-  { id: 7, type: 'bodegas', name: 'Marqués de Riscal', autonomia: 'Euskadi', provincia: 'Araba', ciudad: 'Elciego', barrio: '', rating: 4.9, image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80', desc: 'Arquitectura de Gehry y vino excelente.' },
-  { id: 8, type: 'bodegas', name: 'Ysios', autonomia: 'Euskadi', provincia: 'Araba', ciudad: 'Laguardia', barrio: '', rating: 4.7, image: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&w=800&q=80', desc: 'Diseño de Calatrava a los pies de la sierra.' },
-
-  // EVENTOS (Tienen mes)
-  { id: 9, type: 'eventosCulinarios', name: 'Feria del Marisco', mes: 'Octubre', rating: 4.2, image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80', desc: 'O Grove se llena de sabor a mar.' },
-  { id: 10, type: 'eventosCulinarios', name: 'Santo Tomás', mes: 'Diciembre', rating: 4.8, image: 'https://images.unsplash.com/photo-1576616260335-4a9e73067f06?auto=format&fit=crop&w=800&q=80', desc: 'Txistorra y talo en todo Euskadi.' },
-  { id: 11, type: 'eventosTuristicos', name: 'Semana Grande', mes: 'Agosto', rating: 4.7, image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80', desc: 'Fiestas patronales de Bilbao y San Sebastián.' },
-
-  // TIENDAS (Orden alfabético)
-  { id: 12, type: 'tiendas', name: 'Arrese', rating: 4.9, image: 'https://images.unsplash.com/photo-1557499305-bd68d0ad468d?auto=format&fit=crop&w=800&q=80', desc: 'Trufas de chocolate míticas en Bilbao.' },
-  { id: 13, type: 'tiendas', name: 'La Viña del Ensanche', rating: 4.6, image: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?auto=format&fit=crop&w=800&q=80', desc: 'Tienda gourmet con jamón de Joselito.' },
-
-  // CURIOSIDADES
-  { id: 14, type: 'curiosidades', name: 'Señal de "Prohibido Cantar"', rating: 3.0, image: 'https://images.unsplash.com/photo-1531685217-835f475e5845?auto=format&fit=crop&w=800&q=80', desc: 'Visto en un bar de carretera antiguo.' },
-];
-
-// --- CONFIGURACIÓN DE ESTILOS ---
-const THEME = {
-  font: "font-['Special_Elite']",
-  colors: {
-    primary: 'bg-[#009688]',
-    secondary: 'bg-[#4DB6AC]',
-    surface: 'bg-[#E0F2F1]',
-    background: 'bg-[#B2DFDB]',
-    primaryContainer: 'bg-[#A7FFEB]',
-    textOnPrimary: 'text-white',
-    textOnSurface: 'text-[#004D40]',
-  }
-};
-
-// --- COMPONENTES ---
-
-const RatingStars = ({ rating }) => (
-  <div className="flex items-center text-yellow-500">
-    {[...Array(5)].map((_, i) => (
-      <Star 
-        key={i} 
-        size={14} 
-        fill={i < Math.round(rating) ? "currentColor" : "none"} 
-        className={i < Math.round(rating) ? "" : "text-gray-400"}
-      />
-    ))}
-    <span className="ml-1 text-xs text-gray-600 font-bold">{rating}</span>
-  </div>
-);
-
-const Card = ({ item, onClick }) => (
-  <div 
-    onClick={() => onClick(item)}
-    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer flex flex-col h-full transform hover:-translate-y-1 duration-200"
-  >
-    <div className="h-40 overflow-hidden relative">
-      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-      <div className="absolute bottom-0 right-0 bg-black bg-opacity-50 text-white px-2 py-1 text-xs">
-        {item.ciudad}
-      </div>
-    </div>
-    <div className="p-4 flex-1 flex flex-col">
-      <div className="flex justify-between items-start mb-2">
-        <h3 className={`text-lg font-bold ${THEME.colors.textOnSurface} leading-tight`}>{item.name}</h3>
-      </div>
-      {item.mes && <span className="text-xs font-semibold uppercase tracking-wider text-[#009688] mb-1">{item.mes}</span>}
-      <p className="text-gray-600 text-sm line-clamp-2 mb-3 flex-1">{item.desc}</p>
-      <RatingStars rating={item.rating} />
-    </div>
-  </div>
-);
-
-const FilterWizard = ({ data, onComplete }) => {
-  const [step, setStep] = useState(0); // 0: Auto, 1: Prov, 2: Ciudad, 3: Barrio
-  const [filters, setFilters] = useState({});
-  
-  // Analizar niveles disponibles
-  const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
-  
-  // Determinar datos actuales filtrados
-  const currentData = useMemo(() => {
-    return data.filter(item => {
-      return Object.keys(filters).every(key => item[key] === filters[key]);
-    });
-  }, [data, filters]);
-
-  // Obtener opciones únicas para el nivel actual
-  const getUniqueOptions = (level) => {
-    const options = [...new Set(currentData.map(item => item[level]))].filter(Boolean);
-    return options;
-  };
-
-  // Lógica de salto automático
-  useEffect(() => {
-    if (step >= levels.length) {
-      onComplete(currentData);
-      return;
-    }
-
-    const currentLevel = levels[step];
-    const options = getUniqueOptions(currentLevel);
-
-    if (options.length === 0) {
-      // No hay opciones (ej: ciudad sin barrios), terminamos
-      onComplete(currentData);
-    } else if (options.length === 1) {
-      // Solo una opción, autoseleccionamos y pasamos al siguiente
-      setFilters(prev => ({ ...prev, [currentLevel]: options[0] }));
-      setStep(prev => prev + 1);
-    }
-    // Si hay > 1 opción, nos quedamos en este paso para que el usuario elija
-  }, [step, currentData]);
-
-  const handleSelect = (value) => {
-    const currentLevel = levels[step];
-    setFilters(prev => ({ ...prev, [currentLevel]: value }));
-    setStep(prev => prev + 1);
-  };
-
-  const handleShowAll = () => {
-    onComplete(data);
-  };
-
-  // Si estamos procesando (saltando pasos), mostrar loading
-  const currentLevel = levels[step];
-  const options = getUniqueOptions(currentLevel);
-  
-  if (options.length <= 1 && step < levels.length) return (
-    <div className="flex flex-col items-center justify-center h-64 text-[#009688]">
-      <Compass className="animate-spin mb-4" size={48} />
-      <p className="animate-pulse">Buscando mejores rutas gastronómicas...</p>
-    </div>
-  );
-
-  return (
-    <div className="max-w-md mx-auto p-6">
-      <h2 className={`text-2xl mb-6 text-center ${THEME.colors.textOnSurface}`}>
-        ¿Dónde te apetece ir?
-      </h2>
-      
-      <div className="space-y-3">
-        <p className="text-sm text-gray-500 uppercase font-bold mb-2">Selecciona {currentLevel}:</p>
-        {options.map(opt => (
-          <button
-            key={opt}
-            onClick={() => handleSelect(opt)}
-            className={`w-full p-4 rounded-lg shadow-sm border border-teal-100 flex justify-between items-center hover:bg-teal-50 transition-colors ${THEME.colors.textOnSurface} bg-white`}
-          >
-            <span className="text-lg">{opt}</span>
-            <ChevronRight size={20} />
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-8 pt-4 border-t border-gray-200">
-        <button
-          onClick={handleShowAll}
-          className={`w-full py-3 rounded-lg ${THEME.colors.primary} ${THEME.colors.textOnPrimary} font-bold shadow-md hover:shadow-lg transition-all`}
-        >
-          Mostrar Todos los Sitios
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// --- VISTAS PRINCIPALES ---
-
-const SectionLocation = ({ title, type }) => {
-  const [filteredData, setFilteredData] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const rawData = MOCK_DATA.filter(d => d.type === type);
-
-  if (selectedItem) return <DetailView item={selectedItem} onBack={() => setSelectedItem(null)} />;
-
-  return (
-    <div className="h-full overflow-y-auto p-4 pb-20">
-      <header className="mb-6">
-        <h1 className={`text-3xl ${THEME.colors.textOnSurface} border-b-4 border-[#4DB6AC] inline-block pb-1`}>{title}</h1>
-      </header>
-
-      {!filteredData ? (
-        <FilterWizard data={rawData} onComplete={setFilteredData} />
-      ) : (
-        <>
-           <button 
-            onClick={() => setFilteredData(null)}
-            className="mb-4 flex items-center text-sm text-gray-500 hover:text-[#009688]"
-          >
-            <ArrowLeft size={16} className="mr-1" /> Cambiar Filtros
-          </button>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredData.map(item => (
-              <Card key={item.id} item={item} onClick={setSelectedItem} />
-            ))}
-          </div>
-          {filteredData.length === 0 && (
-            <p className="text-center text-gray-500 mt-10">No encontramos sitios con esos criterios.</p>
-          )}
-        </>
-      )}
-    </div>
-  );
-};
-
-const SectionMonth = ({ title, type }) => {
-  const [selectedItem, setSelectedItem] = useState(null);
-  const rawData = MOCK_DATA.filter(d => d.type === type);
-
-  // Ordenar meses (simple mapping)
-  const monthsOrder = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  const grouped = rawData.reduce((acc, item) => {
-    (acc[item.mes] = acc[item.mes] || []).push(item);
-    return acc;
-  }, {});
-
-  // Ordenar las keys del objeto grouped según monthsOrder
-  const sortedMonths = Object.keys(grouped).sort((a, b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
-
-  if (selectedItem) return <DetailView item={selectedItem} onBack={() => setSelectedItem(null)} />;
-
-  return (
-    <div className="h-full overflow-y-auto p-4 pb-20">
-      <header className="mb-6">
-        <h1 className={`text-3xl ${THEME.colors.textOnSurface} border-b-4 border-[#4DB6AC] inline-block pb-1`}>{title}</h1>
-      </header>
-      
-      <div className="space-y-8">
-        {sortedMonths.map(month => (
-          <div key={month}>
-            <h2 className={`text-xl font-bold mb-3 ${THEME.colors.textOnSurface} bg-[#A7FFEB] px-2 py-1 inline-block rounded`}>{month}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {grouped[month].map(item => (
-                <Card key={item.id} item={item} onClick={setSelectedItem} />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const SectionAlpha = ({ title, type }) => {
-  const [selectedItem, setSelectedItem] = useState(null);
-  const rawData = MOCK_DATA.filter(d => d.type === type).sort((a, b) => a.name.localeCompare(b.name));
-
-  if (selectedItem) return <DetailView item={selectedItem} onBack={() => setSelectedItem(null)} />;
-
-  return (
-    <div className="h-full overflow-y-auto p-4 pb-20">
-      <header className="mb-6">
-        <h1 className={`text-3xl ${THEME.colors.textOnSurface} border-b-4 border-[#4DB6AC] inline-block pb-1`}>{title}</h1>
-      </header>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {rawData.map(item => (
-          <Card key={item.id} item={item} onClick={setSelectedItem} />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const DetailView = ({ item, onBack }) => (
-  <div className="bg-white h-full overflow-y-auto relative animate-fadeIn">
-    <button 
-      onClick={onBack}
-      className="absolute top-4 left-4 z-10 bg-white/80 backdrop-blur p-2 rounded-full shadow-md hover:bg-white transition"
-    >
-      <ArrowLeft size={24} className="text-[#004D40]" />
-    </button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANEKI - Gastroturismo</title>
     
-    <div className="h-64 w-full relative">
-      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-6 pt-20">
-        <h2 className="text-3xl text-white font-bold">{item.name}</h2>
-        <p className="text-teal-100 text-sm flex items-center mt-1">
-          <MapPin size={14} className="mr-1" /> 
-          {[item.ciudad, item.barrio, item.provincia].filter(Boolean).join(', ')}
-        </p>
-      </div>
-    </div>
+    <!-- Tipografía: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-    <div className="p-6 max-w-3xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <RatingStars rating={item.rating} />
-        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${THEME.colors.primaryContainer} ${THEME.colors.textOnSurface}`}>
-          {item.type}
-        </span>
-      </div>
+    <!-- Configuración Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#009688',
+                        secondary: '#4DB6AC',
+                        surface: '#E0F2F1',
+                        background: '#F0FDFD',
+                        primaryContainer: '#A7FFEB',
+                        darkTeal: '#004D40',
+                    }
+                }
+            }
+        }
+    </script>
 
-      <p className="text-gray-700 text-lg leading-relaxed mb-8 font-light">
-        {item.desc}
-      </p>
+    <style>
+        /* Animaciones suaves */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body class="bg-background text-slate-800 h-screen flex overflow-hidden font-sans selection:bg-primaryContainer selection:text-darkTeal">
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Horario Habitual</h4>
-          <p className="text-sm font-mono">12:00 - 16:00</p>
-          <p className="text-sm font-mono">20:00 - 23:00</p>
-        </div>
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Contacto</h4>
-          <p className="text-sm">+34 944 123 456</p>
-          <button className="text-[#009688] text-sm font-bold mt-1 hover:underline">Ver Web</button>
-        </div>
-      </div>
-
-      <h3 className={`text-xl font-bold ${THEME.colors.textOnSurface} mb-4`}>Galería</h3>
-      <div className="grid grid-cols-3 gap-2">
-        {/* Simulando galería extra */}
-        {[1, 2, 3].map(i => (
-          <div key={i} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-             <img src={`https://source.unsplash.com/random/300x300?food&sig=${item.id + i}`} className="w-full h-full object-cover opacity-80 hover:opacity-100 transition" alt="Gallery" />
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
-const Landing = ({ setView }) => {
-  const categories = [
-    { id: 'pintxos', label: 'Pintxos y Tapas', icon: UtensilsCrossed, bg: 'bg-orange-100', color: 'text-orange-700' },
-    { id: 'restaurantes', label: 'Restaurantes', icon: Menu, bg: 'bg-red-100', color: 'text-red-700' },
-    { id: 'bodegas', label: 'Bodegas', icon: Wine, bg: 'bg-purple-100', color: 'text-purple-700' },
-    { id: 'turismo', label: 'Experiencias', icon: Compass, bg: 'bg-blue-100', color: 'text-blue-700' },
-    { id: 'eventosCulinarios', label: 'Eventos Culinarios', icon: Calendar, bg: 'bg-green-100', color: 'text-green-700' },
-    { id: 'eventosTuristicos', label: 'Eventos Turísticos', icon: Map, bg: 'bg-teal-100', color: 'text-teal-700' },
-    { id: 'tiendas', label: 'Compras Gourmet', icon: ShoppingBag, bg: 'bg-pink-100', color: 'text-pink-700' },
-    { id: 'curiosidades', label: 'Curiosidades', icon: HelpCircle, bg: 'bg-yellow-100', color: 'text-yellow-700' },
-  ];
-
-  return (
-    <div className="p-6 pb-20 overflow-y-auto h-full">
-      <div className="text-center mb-10 mt-4">
-        <h2 className={`text-4xl mb-2 ${THEME.colors.textOnSurface}`}>Gastroturismo</h2>
-        <p className="text-gray-600 italic">Descubre nuestros mundos</p>
-      </div>
-      
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {categories.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setView(cat.id)}
-            className={`${cat.bg} ${cat.color} p-6 rounded-2xl shadow-sm hover:shadow-md transition-transform transform hover:scale-105 flex flex-col items-center justify-center aspect-square text-center border-2 border-white`}
-          >
-            <cat.icon size={32} className="mb-3" />
-            <span className="font-bold leading-tight">{cat.label}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-12 bg-[#004D40] rounded-xl p-6 text-white text-center shadow-xl">
-        <h3 className="text-xl font-bold mb-2">¿Buscas inspiración?</h3>
-        <p className="opacity-80 mb-4 text-sm">Déjanos recomendarte algo especial para hoy.</p>
-        <button className="bg-[#A7FFEB] text-[#004D40] px-6 py-2 rounded-full font-bold hover:bg-white transition-colors">
-          Sorpréndeme ✨
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// --- APP PRINCIPAL ---
-
-export default function App() {
-  const [currentView, setCurrentView] = useState('landing');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const renderView = () => {
-    switch (currentView) {
-      case 'landing': return <Landing setView={setCurrentView} />;
-      case 'pintxos': return <SectionLocation title="Pintxos y Tapas" type="pintxos" />;
-      case 'restaurantes': return <SectionLocation title="Restaurantes" type="restaurantes" />;
-      case 'bodegas': return <SectionLocation title="Bodegas" type="bodegas" />;
-      case 'turismo': return <SectionLocation title="Experiencias Turísticas" type="turismo" />;
-      case 'eventosCulinarios': return <SectionMonth title="Eventos Culinarios" type="eventosCulinarios" />;
-      case 'eventosTuristicos': return <SectionMonth title="Eventos Turísticos" type="eventosTuristicos" />;
-      case 'tiendas': return <SectionAlpha title="Compras Gourmet" type="tiendas" />;
-      case 'curiosidades': return <SectionAlpha title="Curiosidades" type="curiosidades" />;
-      default: return <Landing setView={setCurrentView} />;
-    }
-  };
-
-  const menuItems = [
-    { id: 'landing', label: 'Inicio', icon: MapPin },
-    { id: 'pintxos', label: 'Pintxos y Tapas', icon: UtensilsCrossed },
-    { id: 'restaurantes', label: 'Restaurantes', icon: Menu },
-    { id: 'bodegas', label: 'Bodegas', icon: Wine },
-    { id: 'turismo', label: 'Turismo', icon: Compass },
-    { id: 'eventosCulinarios', label: 'Eventos Cul.', icon: Calendar },
-    { id: 'eventosTuristicos', label: 'Eventos Tur.', icon: Map },
-    { id: 'tiendas', label: 'Tiendas', icon: ShoppingBag },
-    { id: 'curiosidades', label: 'Curiosidades', icon: HelpCircle },
-  ];
-
-  return (
-    <div className={`flex h-screen w-screen overflow-hidden ${THEME.colors.background} ${THEME.font}`}>
-      <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
-      
-      {/* SIDEBAR (Mobile & Desktop) */}
-      <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-[#004D40] text-white transform transition-transform duration-300 ease-in-out shadow-2xl
-        ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-        md:relative md:translate-x-0
-      `}>
-        <div className="p-5 flex justify-between items-center border-b border-teal-800">
-          <div className="font-bold text-xl tracking-widest">ANEKI</div>
-          <button onClick={() => setIsMenuOpen(false)} className="md:hidden">
-            <X />
-          </button>
-        </div>
-        <nav className="p-4 space-y-2">
-          {menuItems.map(item => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setCurrentView(item.id);
-                setIsMenuOpen(false);
-              }}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors
-                ${currentView === item.id ? 'bg-[#009688] text-white shadow-md' : 'hover:bg-teal-800 text-teal-100'}
-              `}
-            >
-              <item.icon size={20} />
-              <span>{item.label}</span>
+    <!-- SIDEBAR (Escritorio y Móvil) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity" onclick="toggleMenu()"></div>
+    
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
+        <div class="p-6 flex justify-between items-center border-b border-teal-800/50">
+            <div class="font-bold text-2xl tracking-tight">ANEKI</div>
+            <button onclick="toggleMenu()" class="md:hidden text-teal-200 hover:text-white">
+                <i data-lucide="x"></i>
             </button>
-          ))}
+        </div>
+        
+        <nav class="p-4 space-y-1 flex-1 overflow-y-auto" id="nav-menu">
+            <!-- Se rellena con JS -->
         </nav>
-        <div className="absolute bottom-0 w-full p-6 bg-teal-900 text-xs text-center text-teal-400">
-          <p>Gastroturismo 2.0</p>
-          <p>© Iñaki & Angels</p>
-        </div>
-      </aside>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col h-full relative bg-[#E0F2F1]">
-        {/* Header Mobile */}
-        <div className={`md:hidden h-[60px] ${THEME.colors.primary} flex items-center px-4 text-white shadow-md flex-shrink-0`}>
-          <button onClick={() => setIsMenuOpen(true)}>
-            <Menu />
-          </button>
-          <span className="ml-4 font-bold text-lg">Gastroturismo</span>
+        <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-400/60">
+            <p class="font-medium">Gastroturismo 2.0</p>
+            <p>© Iñaki & Angels</p>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-1 flex flex-col h-full relative md:ml-64 w-full transition-all duration-300">
+        
+        <!-- Header Móvil -->
+        <div class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20">
+            <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition">
+                <i data-lucide="menu"></i>
+            </button>
+            <span class="ml-3 font-bold text-xl tracking-tight">Gastroturismo</span>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-hidden relative">
-          {renderView()}
+        <!-- Área de Vistas Dinámicas -->
+        <div id="app-content" class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8">
+            <!-- Aquí se inyecta el HTML de cada sección -->
         </div>
-      </main>
+    </main>
 
-      {/* Overlay for mobile menu */}
-      {isMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
-    </div>
-  );
-}
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // --- DATOS (MOCK DATA) ---
+        const DATA = [
+            { id: 1, type: 'pintxos', name: 'Bar La Cepa', autonomia: 'Euskadi', provincia: 'Gipuzkoa', ciudad: 'Donostia', barrio: 'Parte Vieja', rating: 4.5, image: 'https://images.unsplash.com/photo-1564844536311-de23cd95eb8d?auto=format&fit=crop&w=800&q=80', desc: 'Clásico de la parte vieja. Jamón de primera.' },
+            { id: 2, type: 'pintxos', name: 'Gandarias', autonomia: 'Euskadi', provincia: 'Gipuzkoa', ciudad: 'Donostia', barrio: 'Parte Vieja', rating: 4.8, image: 'https://images.unsplash.com/photo-1515443961218-a51367888e4b?auto=format&fit=crop&w=800&q=80', desc: 'El solomillo es imprescindible.' },
+            { id: 3, type: 'pintxos', name: 'El Globo', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Bilbao', barrio: 'Abando', rating: 4.6, image: 'https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&w=800&q=80', desc: 'Famoso por su pintxo de txangurro gratinado.' },
+            { id: 4, type: 'pintxos', name: 'Sorginzulo', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Bilbao', barrio: 'Casco Viejo', rating: 4.7, image: 'https://images.unsplash.com/photo-1579631542720-3a87824fff86?auto=format&fit=crop&w=800&q=80', desc: 'Calamares y pintxos morunos.' },
+            { id: 5, type: 'pintxos', name: 'Casa Pepe', autonomia: 'Andalucía', provincia: 'Jaén', ciudad: 'Linares', barrio: 'Centro', rating: 4.4, image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=800&q=80', desc: 'Tapas gratis con la bebida. Muy abundante.' },
+            { id: 6, type: 'restaurantes', name: 'Asador Etxebarri', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Atxondo', barrio: '', rating: 5.0, image: 'https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=800&q=80', desc: 'El rey de la parrilla mundial.' },
+            { id: 7, type: 'bodegas', name: 'Marqués de Riscal', autonomia: 'Euskadi', provincia: 'Araba', ciudad: 'Elciego', barrio: '', rating: 4.9, image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80', desc: 'Arquitectura de Gehry y vino excelente.' },
+            { id: 8, type: 'bodegas', name: 'Ysios', autonomia: 'Euskadi', provincia: 'Araba', ciudad: 'Laguardia', barrio: '', rating: 4.7, image: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&w=800&q=80', desc: 'Diseño de Calatrava a los pies de la sierra.' },
+            { id: 9, type: 'eventosCulinarios', name: 'Feria del Marisco', mes: 'Octubre', rating: 4.2, image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80', desc: 'O Grove se llena de sabor a mar.' },
+            { id: 10, type: 'eventosCulinarios', name: 'Santo Tomás', mes: 'Diciembre', rating: 4.8, image: 'https://images.unsplash.com/photo-1576616260335-4a9e73067f06?auto=format&fit=crop&w=800&q=80', desc: 'Txistorra y talo en todo Euskadi.' },
+            { id: 11, type: 'eventosTuristicos', name: 'Semana Grande', mes: 'Agosto', rating: 4.7, image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80', desc: 'Fiestas patronales de Bilbao y San Sebastián.' },
+            { id: 12, type: 'tiendas', name: 'Arrese', rating: 4.9, image: 'https://images.unsplash.com/photo-1557499305-bd68d0ad468d?auto=format&fit=crop&w=800&q=80', desc: 'Trufas de chocolate míticas en Bilbao.' },
+            { id: 13, type: 'tiendas', name: 'La Viña del Ensanche', rating: 4.6, image: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?auto=format&fit=crop&w=800&q=80', desc: 'Tienda gourmet con jamón de Joselito.' },
+            { id: 14, type: 'curiosidades', name: 'Señal de "Prohibido Cantar"', rating: 3.0, image: 'https://images.unsplash.com/photo-1531685217-835f475e5845?auto=format&fit=crop&w=800&q=80', desc: 'Visto en un bar de carretera antiguo.' },
+        ];
+
+        // --- ESTADO DE LA APP ---
+        const state = {
+            view: 'landing', // landing, pintxos, restaurantes, etc.
+            filters: {}, // { autonomia: 'Euskadi' }
+            selectedItem: null,
+            filterStep: 0 // 0: auto, 1: prov, etc.
+        };
+
+        const MENUS = [
+            { id: 'landing', label: 'Inicio', icon: 'map-pin' },
+            { id: 'pintxos', label: 'Pintxos y Tapas', icon: 'utensils-crossed' },
+            { id: 'restaurantes', label: 'Restaurantes', icon: 'menu' },
+            { id: 'bodegas', label: 'Bodegas', icon: 'wine' },
+            { id: 'turismo', label: 'Turismo', icon: 'compass' },
+            { id: 'eventosCulinarios', label: 'Eventos Cul.', icon: 'calendar' },
+            { id: 'eventosTuristicos', label: 'Eventos Tur.', icon: 'map' },
+            { id: 'tiendas', label: 'Tiendas', icon: 'shopping-bag' },
+            { id: 'curiosidades', label: 'Curiosidades', icon: 'help-circle' },
+        ];
+
+        // --- FUNCIONES PRINCIPALES ---
+
+        function init() {
+            renderSidebar();
+            navigate('landing');
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function navigate(viewId) {
+            state.view = viewId;
+            state.filters = {};
+            state.selectedItem = null;
+            state.filterStep = 0;
+            
+            // Cerrar menú en móvil al navegar
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.add('hidden');
+
+            // Actualizar UI del menú
+            document.querySelectorAll('#nav-menu button').forEach(btn => {
+                if(btn.dataset.id === viewId) {
+                    btn.className = "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group bg-primary text-white shadow-lg shadow-teal-900/50 translate-x-1";
+                    btn.querySelector('i').classList.remove('text-teal-300');
+                    btn.querySelector('i').classList.add('text-teal-50');
+                } else {
+                    btn.className = "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group hover:bg-teal-800/50 text-teal-100 hover:text-white hover:translate-x-1";
+                    const icon = btn.querySelector('i');
+                    if(icon) {
+                        icon.classList.add('text-teal-300');
+                        icon.classList.remove('text-teal-50');
+                    }
+                }
+            });
+
+            renderAppContent();
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('nav-menu');
+            container.innerHTML = MENUS.map(item => `
+                <button onclick="navigate('${item.id}')" data-id="${item.id}">
+                    <i data-lucide="${item.icon}" size="20"></i>
+                    <span class="font-medium">${item.label}</span>
+                </button>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderAppContent() {
+            const container = document.getElementById('app-content');
+            container.innerHTML = ''; // Limpiar
+
+            if (state.selectedItem) {
+                container.innerHTML = getDetailHtml(state.selectedItem);
+            } else if (state.view === 'landing') {
+                container.innerHTML = getLandingHtml();
+            } else {
+                // Vistas por Categoría
+                const type = state.view;
+                
+                if (['eventosCulinarios', 'eventosTuristicos'].includes(type)) {
+                    container.innerHTML = getSectionMonthHtml(type);
+                } else if (['tiendas', 'curiosidades'].includes(type)) {
+                    container.innerHTML = getSectionAlphaHtml(type);
+                } else {
+                    // Vistas con Filtro Geográfico (Pintxos, Bodegas, etc.)
+                    container.innerHTML = getSectionLocationHtml(type);
+                }
+            }
+            
+            lucide.createIcons();
+            container.scrollTo(0,0);
+        }
+
+        // --- GENERADORES DE HTML (VISTAS) ---
+
+        function getLandingHtml() {
+            const cards = [
+                { id: 'pintxos', label: 'Pintxos y Tapas', icon: 'utensils-crossed', color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100' },
+                { id: 'restaurantes', label: 'Restaurantes', icon: 'menu', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100' },
+                { id: 'bodegas', label: 'Bodegas', icon: 'wine', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100' },
+                { id: 'turismo', label: 'Experiencias', icon: 'compass', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+                { id: 'eventosCulinarios', label: 'Eventos Culinarios', icon: 'calendar', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100' },
+                { id: 'eventosTuristicos', label: 'Eventos Turísticos', icon: 'map', color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-100' },
+                { id: 'tiendas', label: 'Compras Gourmet', icon: 'shopping-bag', color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-100' },
+                { id: 'curiosidades', label: 'Curiosidades', icon: 'help-circle', color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-100' },
+            ];
+
+            return `
+                <div class="fade-in max-w-6xl mx-auto">
+                    <div class="text-center mb-12 mt-8">
+                        <h2 class="text-5xl font-bold mb-3 text-darkTeal tracking-tight">Gastroturismo</h2>
+                        <p class="text-gray-500 font-medium text-lg">Explora, saborea y descubre</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        ${cards.map(c => `
+                            <button onclick="navigate('${c.id}')" class="${c.bg} ${c.color} ${c.border} border p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
+                                <div class="bg-white p-4 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                    <i data-lucide="${c.icon}" size="28"></i>
+                                </div>
+                                <span class="font-bold text-sm md:text-base leading-tight text-slate-800 group-hover:text-black">${c.label}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                     <div class="mt-16 bg-darkTeal rounded-3xl p-8 text-white text-center shadow-2xl shadow-teal-900/20 max-w-4xl mx-auto relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-full opacity-10" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        <div class="relative z-10">
+                            <h3 class="text-2xl font-bold mb-2">¿No sabes por dónde empezar?</h3>
+                            <p class="opacity-80 mb-6 font-light">Déjanos recomendarte una ruta basada en tus gustos.</p>
+                            <button onclick="alert('¡Función mágica próximamente!')" class="bg-primaryContainer text-darkTeal px-8 py-3 rounded-xl font-bold hover:bg-white hover:scale-105 transition-all shadow-lg">
+                            Sorpréndeme ✨
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- LOGICA DE FILTRO (El corazón de tu petición) ---
+        
+        function selectFilter(level, value) {
+            state.filters[level] = value;
+            state.filterStep++;
+            renderAppContent(); // Re-render para evaluar siguiente paso
+        }
+
+        function resetFilters() {
+            state.filters = {};
+            state.filterStep = 0;
+            renderAppContent();
+        }
+
+        function showAllFilters() {
+            // Forzamos finalización
+            state.filterStep = 99; 
+            renderAppContent();
+        }
+
+        function getSectionLocationHtml(type) {
+            const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
+            
+            // 1. Filtrar datos actuales
+            const currentData = DATA.filter(d => d.type === type && 
+                Object.keys(state.filters).every(k => d[k] === state.filters[k])
+            );
+
+            // 2. Evaluar si hemos terminado o hay que saltar pasos
+            let currentLevel = levels[state.filterStep];
+            
+            // Bucle de salto automático (Lógica inteligente)
+            while (state.filterStep < levels.length) {
+                currentLevel = levels[state.filterStep];
+                // Opciones disponibles en este nivel
+                const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean);
+                
+                if (options.length === 0) {
+                    // No hay subniveles, terminar
+                    state.filterStep = 99; 
+                    break;
+                } else if (options.length === 1) {
+                    // Solo 1 opción, autoseleccionar y seguir
+                    state.filters[currentLevel] = options[0];
+                    state.filterStep++;
+                } else {
+                    // Hay varias opciones, detenerse y pedir al usuario
+                    return renderFilterWizard(currentLevel, options);
+                }
+            }
+
+            // 3. Si llegamos aquí, mostrar resultados
+            return renderResultsGrid(type, currentData);
+        }
+
+        function renderFilterWizard(level, options) {
+            return `
+                <div class="fade-in max-w-md mx-auto p-6 mt-10">
+                    <h2 class="text-2xl font-bold mb-8 text-center text-darkTeal tracking-tight">
+                        ¿Dónde te apetece ir?
+                    </h2>
+                    <div class="space-y-3">
+                        <p class="text-xs text-gray-400 uppercase font-bold mb-3 tracking-widest pl-1">Selecciona ${level}:</p>
+                        ${options.map(opt => `
+                            <button onclick="selectFilter('${level}', '${opt}')" class="w-full p-5 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:border-teal-200 hover:bg-teal-50/50 transition-all bg-white group text-slate-700">
+                                <span class="text-lg font-medium">${opt}</span>
+                                <i data-lucide="chevron-right" class="text-gray-300 group-hover:text-primary transition-colors"></i>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-100">
+                        <button onclick="showAllFilters()" class="w-full py-4 rounded-xl bg-primary text-white font-bold shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:scale-[1.02] transition-all active:scale-95">
+                            Mostrar todo
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getSectionMonthHtml(type) {
+            const rawData = DATA.filter(d => d.type === type);
+            const monthsOrder = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            // Agrupar
+            const grouped = rawData.reduce((acc, item) => {
+                (acc[item.mes] = acc[item.mes] || []).push(item);
+                return acc;
+            }, {});
+            
+            const sortedMonths = Object.keys(grouped).sort((a, b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
+
+            const title = MENUS.find(m => m.id === type).label;
+
+            return `
+                <div class="fade-in pb-24">
+                    <header class="mb-8">
+                        <h1 class="text-3xl font-bold text-darkTeal tracking-tight">${title}</h1>
+                    </header>
+                    <div class="space-y-10">
+                        ${sortedMonths.map(month => `
+                            <div class="relative">
+                                <div class="sticky top-0 z-10 bg-[#F0FDFD]/95 backdrop-blur py-2 mb-4 border-b border-teal-100 flex items-center">
+                                    <i data-lucide="calendar" class="mr-2 text-primary" size="18"></i>
+                                    <h2 class="text-lg font-bold text-darkTeal">${month}</h2>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    ${grouped[month].map(item => renderCard(item)).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getSectionAlphaHtml(type) {
+            const rawData = DATA.filter(d => d.type === type).sort((a, b) => a.name.localeCompare(b.name));
+            const title = MENUS.find(m => m.id === type).label;
+            
+            return renderResultsGrid(type, rawData, title, false);
+        }
+
+        function renderResultsGrid(type, items, titleOverride = null, showFilterBtn = true) {
+            const title = titleOverride || MENUS.find(m => m.id === type).label;
+            
+            if (items.length === 0) {
+                return `
+                     <div class="fade-in pb-24">
+                        <header class="mb-8 flex justify-between items-center">
+                            <h1 class="text-3xl font-bold text-darkTeal tracking-tight">${title}</h1>
+                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Filtros</button>` : ''}
+                        </header>
+                        <div class="text-center py-20">
+                             <div class="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                <i data-lucide="search"></i>
+                             </div>
+                             <p class="text-gray-500 font-medium">No hay resultados.</p>
+                             <button onclick="resetFilters()" class="text-primary font-bold mt-2">Limpiar</button>
+                        </div>
+                     </div>
+                `;
+            }
+
+            return `
+                <div class="fade-in pb-24">
+                    <header class="mb-8 flex justify-between items-center">
+                        <h1 class="text-3xl font-bold text-darkTeal tracking-tight">${title}</h1>
+                        ${showFilterBtn && Object.keys(state.filters).length > 0 ? `
+                            <button onclick="resetFilters()" class="text-sm font-medium text-primary bg-teal-50 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition-colors">
+                                Cambiar zona
+                            </button>
+                        ` : ''}
+                    </header>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${items.map(item => renderCard(item)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCard(item) {
+            const stars = Math.round(item.rating);
+            const starHtml = Array(5).fill(0).map((_, i) => 
+                `<svg class="w-3.5 h-3.5 ${i < stars ? 'text-yellow-500 fill-current' : 'text-gray-300'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+            ).join('');
+
+            return `
+                <div onclick="openDetail(${item.id})" class="bg-white rounded-2xl shadow-sm border border-teal-50 overflow-hidden hover:shadow-xl hover:border-teal-200 transition-all cursor-pointer flex flex-col h-full transform hover:-translate-y-1 duration-300 group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+                        <div class="absolute bottom-0 right-0 bg-black/60 backdrop-blur-sm text-white px-3 py-1 text-xs font-medium rounded-tl-lg">
+                            ${item.ciudad || item.provincia || ''}
+                        </div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col">
+                        <h3 class="text-lg font-bold text-darkTeal leading-snug mb-1">${item.name}</h3>
+                        ${item.mes ? `<span class="text-xs font-bold uppercase tracking-wide text-primary mb-2 block">${item.mes}</span>` : ''}
+                        <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1 font-normal leading-relaxed">${item.desc}</p>
+                        <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
+                            <div class="flex items-center space-x-1">${starHtml} <span class="text-xs text-gray-400 ml-1 font-bold">${item.rating}</span></div>
+                            <i data-lucide="chevron-right" class="text-teal-300 group-hover:text-primary transition-colors" size="16"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- VISTA DETALLE ---
+
+        function openDetail(id) {
+            state.selectedItem = DATA.find(d => d.id === id);
+            renderAppContent();
+        }
+
+        function closeDetail() {
+            state.selectedItem = null;
+            renderAppContent();
+        }
+
+        function getDetailHtml(item) {
+            const stars = Math.round(item.rating);
+            const starHtml = Array(5).fill(0).map((_, i) => 
+                `<svg class="w-5 h-5 ${i < stars ? 'text-yellow-500 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+            ).join('');
+
+            const locationStr = [item.ciudad, item.barrio, item.provincia].filter(Boolean).join(', ');
+
+            return `
+                <div class="bg-white h-full w-full absolute inset-0 overflow-y-auto fade-in z-20">
+                    <button onclick="closeDetail()" class="absolute top-4 left-4 z-30 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all active:scale-95 text-darkTeal">
+                        <i data-lucide="arrow-left"></i>
+                    </button>
+                    
+                    <div class="h-80 w-full relative">
+                        <img src="${item.image}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#00251a] via-transparent to-transparent opacity-90"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-8">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3 bg-white/20 backdrop-blur text-white border border-white/30">
+                                ${MENUS.find(m => m.id === item.type)?.label || item.type}
+                            </span>
+                            <h2 class="text-4xl text-white font-bold tracking-tight leading-tight mb-2">${item.name}</h2>
+                            <p class="text-teal-50 text-sm flex items-center font-medium">
+                                <i data-lucide="map-pin" size="16" class="mr-2"></i> ${locationStr}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-8 max-w-4xl mx-auto -mt-6 bg-white rounded-t-3xl relative">
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl font-bold text-darkTeal">${item.rating}</span>
+                                <div class="flex">${starHtml}</div>
+                            </div>
+                            <button class="bg-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-teal-500/30 hover:bg-teal-600 transition-colors w-full md:w-auto">
+                                Cómo llegar
+                            </button>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="md:col-span-2">
+                                <h3 class="text-lg font-bold text-gray-900 mb-3">Sobre este lugar</h3>
+                                <p class="text-gray-600 text-lg leading-relaxed mb-8 font-light">${item.desc}</p>
+                                <h3 class="text-lg font-bold text-gray-900 mb-4">Galería</h3>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden"><img src="https://source.unsplash.com/random/400x400?food&sig=${item.id}1" class="w-full h-full object-cover"></div>
+                                    <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden"><img src="https://source.unsplash.com/random/400x400?food&sig=${item.id}2" class="w-full h-full object-cover"></div>
+                                    <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden"><img src="https://source.unsplash.com/random/400x400?food&sig=${item.id}3" class="w-full h-full object-cover"></div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-6">
+                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100">
+                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center">
+                                        <i data-lucide="calendar" size="14" class="mr-2"></i> Horario
+                                    </h4>
+                                    <div class="space-y-2 text-sm text-gray-700 font-medium">
+                                        <div class="flex justify-between"><span>Comida</span> <span>13:00 - 16:00</span></div>
+                                        <div class="flex justify-between"><span>Cena</span> <span>20:30 - 23:30</span></div>
+                                    </div>
+                                </div>
+                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100">
+                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center">
+                                       <i data-lucide="phone" size="14" class="mr-2"></i> Contacto
+                                    </h4>
+                                    <p class="text-lg font-bold text-gray-900 mb-1">+34 944 123 456</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Arrancar
+        init();
+
+    </script>
+</body>
+</html>
