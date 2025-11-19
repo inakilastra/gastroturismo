@@ -1,622 +1,493 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANeKI - Gastroturismo</title>
-    <!-- Favicon -->
-    <!-- <link rel="icon" type="image/x-icon" href="./favicon.ico"> -->
+import React, { useState, useMemo, useEffect } from 'react';
+import { 
+  MapPin, 
+  UtensilsCrossed, 
+  Wine, 
+  Compass, 
+  Calendar, 
+  ShoppingBag, 
+  HelpCircle, 
+  Menu, 
+  X, 
+  ChevronRight, 
+  Star, 
+  ArrowLeft,
+  Map,
+  Search
+} from 'lucide-react';
+
+// --- DATOS SIMULADOS (MOCK DATA) ---
+// Simulan la estructura de tu CSV.
+// Estructura: id, nombre, tipo (categoria), autonomia, provincia, ciudad, barrio, valoracion, imagen, descripcion, mes (para eventos)
+const MOCK_DATA = [
+  // PINTXOS Y TAPAS (Variedad para probar filtros)
+  { id: 1, type: 'pintxos', name: 'Bar La Cepa', autonomia: 'Euskadi', provincia: 'Gipuzkoa', ciudad: 'Donostia', barrio: 'Parte Vieja', rating: 4.5, image: 'https://images.unsplash.com/photo-1564844536311-de23cd95eb8d?auto=format&fit=crop&w=800&q=80', desc: 'Clásico de la parte vieja. Jamón de primera.' },
+  { id: 2, type: 'pintxos', name: 'Gandarias', autonomia: 'Euskadi', provincia: 'Gipuzkoa', ciudad: 'Donostia', barrio: 'Parte Vieja', rating: 4.8, image: 'https://images.unsplash.com/photo-1515443961218-a51367888e4b?auto=format&fit=crop&w=800&q=80', desc: 'El solomillo es imprescindible.' },
+  { id: 3, type: 'pintxos', name: 'El Globo', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Bilbao', barrio: 'Abando', rating: 4.6, image: 'https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&w=800&q=80', desc: 'Famoso por su pintxo de txangurro gratinado.' },
+  { id: 4, type: 'pintxos', name: 'Sorginzulo', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Bilbao', barrio: 'Casco Viejo', rating: 4.7, image: 'https://images.unsplash.com/photo-1579631542720-3a87824fff86?auto=format&fit=crop&w=800&q=80', desc: 'Calamares y pintxos morunos.' },
+  { id: 5, type: 'pintxos', name: 'Casa Pepe', autonomia: 'Andalucía', provincia: 'Jaén', ciudad: 'Linares', barrio: 'Centro', rating: 4.4, image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=800&q=80', desc: 'Tapas gratis con la bebida. Muy abundante.' },
+
+  // RESTAURANTES
+  { id: 6, type: 'restaurantes', name: 'Asador Etxebarri', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Atxondo', barrio: '', rating: 5.0, image: 'https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=800&q=80', desc: 'El rey de la parrilla mundial.' },
+  
+  // BODEGAS (Pocos datos para probar el "Salto automático de filtros")
+  // Si filtras bodegas, debería saltar Autonomía y Provincia si solo hay Rioja Alavesa
+  { id: 7, type: 'bodegas', name: 'Marqués de Riscal', autonomia: 'Euskadi', provincia: 'Araba', ciudad: 'Elciego', barrio: '', rating: 4.9, image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80', desc: 'Arquitectura de Gehry y vino excelente.' },
+  { id: 8, type: 'bodegas', name: 'Ysios', autonomia: 'Euskadi', provincia: 'Araba', ciudad: 'Laguardia', barrio: '', rating: 4.7, image: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&w=800&q=80', desc: 'Diseño de Calatrava a los pies de la sierra.' },
+
+  // EVENTOS (Tienen mes)
+  { id: 9, type: 'eventosCulinarios', name: 'Feria del Marisco', mes: 'Octubre', rating: 4.2, image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80', desc: 'O Grove se llena de sabor a mar.' },
+  { id: 10, type: 'eventosCulinarios', name: 'Santo Tomás', mes: 'Diciembre', rating: 4.8, image: 'https://images.unsplash.com/photo-1576616260335-4a9e73067f06?auto=format&fit=crop&w=800&q=80', desc: 'Txistorra y talo en todo Euskadi.' },
+  { id: 11, type: 'eventosTuristicos', name: 'Semana Grande', mes: 'Agosto', rating: 4.7, image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80', desc: 'Fiestas patronales de Bilbao y San Sebastián.' },
+
+  // TIENDAS (Orden alfabético)
+  { id: 12, type: 'tiendas', name: 'Arrese', rating: 4.9, image: 'https://images.unsplash.com/photo-1557499305-bd68d0ad468d?auto=format&fit=crop&w=800&q=80', desc: 'Trufas de chocolate míticas en Bilbao.' },
+  { id: 13, type: 'tiendas', name: 'La Viña del Ensanche', rating: 4.6, image: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?auto=format&fit=crop&w=800&q=80', desc: 'Tienda gourmet con jamón de Joselito.' },
+
+  // CURIOSIDADES
+  { id: 14, type: 'curiosidades', name: 'Señal de "Prohibido Cantar"', rating: 3.0, image: 'https://images.unsplash.com/photo-1531685217-835f475e5845?auto=format&fit=crop&w=800&q=80', desc: 'Visto en un bar de carretera antiguo.' },
+];
+
+// --- CONFIGURACIÓN DE ESTILOS ---
+const THEME = {
+  font: "font-['Special_Elite']",
+  colors: {
+    primary: 'bg-[#009688]',
+    secondary: 'bg-[#4DB6AC]',
+    surface: 'bg-[#E0F2F1]',
+    background: 'bg-[#B2DFDB]',
+    primaryContainer: 'bg-[#A7FFEB]',
+    textOnPrimary: 'text-white',
+    textOnSurface: 'text-[#004D40]',
+  }
+};
+
+// --- COMPONENTES ---
+
+const RatingStars = ({ rating }) => (
+  <div className="flex items-center text-yellow-500">
+    {[...Array(5)].map((_, i) => (
+      <Star 
+        key={i} 
+        size={14} 
+        fill={i < Math.round(rating) ? "currentColor" : "none"} 
+        className={i < Math.round(rating) ? "" : "text-gray-400"}
+      />
+    ))}
+    <span className="ml-1 text-xs text-gray-600 font-bold">{rating}</span>
+  </div>
+);
+
+const Card = ({ item, onClick }) => (
+  <div 
+    onClick={() => onClick(item)}
+    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer flex flex-col h-full transform hover:-translate-y-1 duration-200"
+  >
+    <div className="h-40 overflow-hidden relative">
+      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 right-0 bg-black bg-opacity-50 text-white px-2 py-1 text-xs">
+        {item.ciudad}
+      </div>
+    </div>
+    <div className="p-4 flex-1 flex flex-col">
+      <div className="flex justify-between items-start mb-2">
+        <h3 className={`text-lg font-bold ${THEME.colors.textOnSurface} leading-tight`}>{item.name}</h3>
+      </div>
+      {item.mes && <span className="text-xs font-semibold uppercase tracking-wider text-[#009688] mb-1">{item.mes}</span>}
+      <p className="text-gray-600 text-sm line-clamp-2 mb-3 flex-1">{item.desc}</p>
+      <RatingStars rating={item.rating} />
+    </div>
+  </div>
+);
+
+const FilterWizard = ({ data, onComplete }) => {
+  const [step, setStep] = useState(0); // 0: Auto, 1: Prov, 2: Ciudad, 3: Barrio
+  const [filters, setFilters] = useState({});
+  
+  // Analizar niveles disponibles
+  const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
+  
+  // Determinar datos actuales filtrados
+  const currentData = useMemo(() => {
+    return data.filter(item => {
+      return Object.keys(filters).every(key => item[key] === filters[key]);
+    });
+  }, [data, filters]);
+
+  // Obtener opciones únicas para el nivel actual
+  const getUniqueOptions = (level) => {
+    const options = [...new Set(currentData.map(item => item[level]))].filter(Boolean);
+    return options;
+  };
+
+  // Lógica de salto automático
+  useEffect(() => {
+    if (step >= levels.length) {
+      onComplete(currentData);
+      return;
+    }
+
+    const currentLevel = levels[step];
+    const options = getUniqueOptions(currentLevel);
+
+    if (options.length === 0) {
+      // No hay opciones (ej: ciudad sin barrios), terminamos
+      onComplete(currentData);
+    } else if (options.length === 1) {
+      // Solo una opción, autoseleccionamos y pasamos al siguiente
+      setFilters(prev => ({ ...prev, [currentLevel]: options[0] }));
+      setStep(prev => prev + 1);
+    }
+    // Si hay > 1 opción, nos quedamos en este paso para que el usuario elija
+  }, [step, currentData]);
+
+  const handleSelect = (value) => {
+    const currentLevel = levels[step];
+    setFilters(prev => ({ ...prev, [currentLevel]: value }));
+    setStep(prev => prev + 1);
+  };
+
+  const handleShowAll = () => {
+    onComplete(data);
+  };
+
+  // Si estamos procesando (saltando pasos), mostrar loading
+  const currentLevel = levels[step];
+  const options = getUniqueOptions(currentLevel);
+  
+  if (options.length <= 1 && step < levels.length) return (
+    <div className="flex flex-col items-center justify-center h-64 text-[#009688]">
+      <Compass className="animate-spin mb-4" size={48} />
+      <p className="animate-pulse">Buscando mejores rutas gastronómicas...</p>
+    </div>
+  );
+
+  return (
+    <div className="max-w-md mx-auto p-6">
+      <h2 className={`text-2xl mb-6 text-center ${THEME.colors.textOnSurface}`}>
+        ¿Dónde te apetece ir?
+      </h2>
+      
+      <div className="space-y-3">
+        <p className="text-sm text-gray-500 uppercase font-bold mb-2">Selecciona {currentLevel}:</p>
+        {options.map(opt => (
+          <button
+            key={opt}
+            onClick={() => handleSelect(opt)}
+            className={`w-full p-4 rounded-lg shadow-sm border border-teal-100 flex justify-between items-center hover:bg-teal-50 transition-colors ${THEME.colors.textOnSurface} bg-white`}
+          >
+            <span className="text-lg">{opt}</span>
+            <ChevronRight size={20} />
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-8 pt-4 border-t border-gray-200">
+        <button
+          onClick={handleShowAll}
+          className={`w-full py-3 rounded-lg ${THEME.colors.primary} ${THEME.colors.textOnPrimary} font-bold shadow-md hover:shadow-lg transition-all`}
+        >
+          Mostrar Todos los Sitios
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// --- VISTAS PRINCIPALES ---
+
+const SectionLocation = ({ title, type }) => {
+  const [filteredData, setFilteredData] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const rawData = MOCK_DATA.filter(d => d.type === type);
+
+  if (selectedItem) return <DetailView item={selectedItem} onBack={() => setSelectedItem(null)} />;
+
+  return (
+    <div className="h-full overflow-y-auto p-4 pb-20">
+      <header className="mb-6">
+        <h1 className={`text-3xl ${THEME.colors.textOnSurface} border-b-4 border-[#4DB6AC] inline-block pb-1`}>{title}</h1>
+      </header>
+
+      {!filteredData ? (
+        <FilterWizard data={rawData} onComplete={setFilteredData} />
+      ) : (
+        <>
+           <button 
+            onClick={() => setFilteredData(null)}
+            className="mb-4 flex items-center text-sm text-gray-500 hover:text-[#009688]"
+          >
+            <ArrowLeft size={16} className="mr-1" /> Cambiar Filtros
+          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredData.map(item => (
+              <Card key={item.id} item={item} onClick={setSelectedItem} />
+            ))}
+          </div>
+          {filteredData.length === 0 && (
+            <p className="text-center text-gray-500 mt-10">No encontramos sitios con esos criterios.</p>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+const SectionMonth = ({ title, type }) => {
+  const [selectedItem, setSelectedItem] = useState(null);
+  const rawData = MOCK_DATA.filter(d => d.type === type);
+
+  // Ordenar meses (simple mapping)
+  const monthsOrder = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const grouped = rawData.reduce((acc, item) => {
+    (acc[item.mes] = acc[item.mes] || []).push(item);
+    return acc;
+  }, {});
+
+  // Ordenar las keys del objeto grouped según monthsOrder
+  const sortedMonths = Object.keys(grouped).sort((a, b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
+
+  if (selectedItem) return <DetailView item={selectedItem} onBack={() => setSelectedItem(null)} />;
+
+  return (
+    <div className="h-full overflow-y-auto p-4 pb-20">
+      <header className="mb-6">
+        <h1 className={`text-3xl ${THEME.colors.textOnSurface} border-b-4 border-[#4DB6AC] inline-block pb-1`}>{title}</h1>
+      </header>
+      
+      <div className="space-y-8">
+        {sortedMonths.map(month => (
+          <div key={month}>
+            <h2 className={`text-xl font-bold mb-3 ${THEME.colors.textOnSurface} bg-[#A7FFEB] px-2 py-1 inline-block rounded`}>{month}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {grouped[month].map(item => (
+                <Card key={item.id} item={item} onClick={setSelectedItem} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const SectionAlpha = ({ title, type }) => {
+  const [selectedItem, setSelectedItem] = useState(null);
+  const rawData = MOCK_DATA.filter(d => d.type === type).sort((a, b) => a.name.localeCompare(b.name));
+
+  if (selectedItem) return <DetailView item={selectedItem} onBack={() => setSelectedItem(null)} />;
+
+  return (
+    <div className="h-full overflow-y-auto p-4 pb-20">
+      <header className="mb-6">
+        <h1 className={`text-3xl ${THEME.colors.textOnSurface} border-b-4 border-[#4DB6AC] inline-block pb-1`}>{title}</h1>
+      </header>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {rawData.map(item => (
+          <Card key={item.id} item={item} onClick={setSelectedItem} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const DetailView = ({ item, onBack }) => (
+  <div className="bg-white h-full overflow-y-auto relative animate-fadeIn">
+    <button 
+      onClick={onBack}
+      className="absolute top-4 left-4 z-10 bg-white/80 backdrop-blur p-2 rounded-full shadow-md hover:bg-white transition"
+    >
+      <ArrowLeft size={24} className="text-[#004D40]" />
+    </button>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
-
-    <style type="text/tailwindcss">
-        @layer base {
-            body {
-                font-family: 'Inter', sans-serif;
-                background-color: theme('colors.background');
-                color: theme('colors.on-surface');
-            }
-            .font-brand {
-                font-family: 'Special Elite', cursive;
-            }
-            h1, h2, h3, h4, h5, h6 {
-                @apply font-brand text-primary;
-            }
-            .active-link {
-                 @apply bg-background text-primary font-bold;
-            }
-        }
-        @layer components {
-            .simple-loader {
-                border: 5px solid theme('colors.surface');
-                border-top: 5px solid theme('colors.primary');
-                border-radius: 50%;
-                width: 48px;
-                height: 48px;
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-            .gallery-container {
-                position: relative; max-width: 900px; margin: 20px auto;
-            }
-            .mySlides { display: none; }
-            .mySlides img { vertical-align: middle; }
-            .cursor { cursor: pointer; }
-            .prev, .next {
-                cursor: pointer; position: absolute; top: 50%; width: auto;
-                padding: 16px; margin-top: -50px; color: theme('colors.on-surface');
-                font-weight: bold; font-size: 20px; border-radius: 0 3px 3px 0;
-                user-select: none; background-color: theme('colors.background');
-                transition: background-color 0.6s ease;
-            }
-            .next { right: 0; border-radius: 3px 0 0 3px; }
-            .prev:hover, .next:hover { background-color: theme('colors.primary'); color: white; }
-            .numbertext {
-                color: theme('colors.on-surface'); font-size: 12px; font-weight: bold;
-                padding: 8px 12px; position: absolute; top: 0;
-                background-color: theme('colors.background'); border-radius: 0 0 5px 0;
-            }
-            .caption-container {
-                text-align: center; background-color: #222; padding: 2px 16px;
-                color: white; margin-top: -4px; font-family: 'Special Elite', cursive;
-            }
-            .row:after { content: ""; display: table; clear: both; }
-            .column { float: left; padding: 5px; } /* width set dynamically */
-            .demo { opacity: 0.6; transition: opacity 0.3s ease; }
-            .active, .demo:hover { opacity: 1; }
-            .modal-overlay { transition: opacity 0.3s ease; }
-            .modal-content { animation: zoomIn 0.3s ease; }
-            @keyframes zoomIn { from {transform: scale(0.8);} to {transform: scale(1);} }
-            #modal-caption {
-                font-family: 'Special Elite', cursive;
-                transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
-            }
-        }
-    </style>
-
-    <script>
-        // Tailwind Config
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        brand: ['Special Elite', 'cursive'],
-                    },
-                    colors: {
-                        primary: '#009688', 'on-primary': '#FFFFFF',
-                        secondary: '#4DB6AC', 'on-secondary': '#FFFFFF',
-                        surface: '#E0F2F1', 'on-surface': '#004D40',
-                        background: '#B2DFDB',
-                        'primary-container': '#A7FFEB', 'on-primary-container': '#004D40',
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-background text-on-surface">
-
-    <!-- App Container -->
-    <div class="min-h-screen flex flex-col">
-
-        <!-- Header -->
-        <header id="app-header" class="fixed top-0 left-0 right-0 bg-surface text-on-surface shadow-md z-30 h-16 transition-all duration-300">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex items-center">
-                        <button id="menu-btn" aria-label="Abrir menú" class="p-2 rounded-md text-on-surface hover:bg-background focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
-                            <span class="material-icons">menu</span>
-                        </button>
-                        <span id="header-title" class="font-brand text-2xl text-primary ml-3">ANeKI</span>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Drawer -->
-        <aside id="drawer" class="fixed top-0 left-0 z-40 h-full w-72 bg-surface shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out pt-16">
-            <div class="flex flex-col h-full">
-                <div class="bg-primary-container p-4">
-                    <a href="#" class="nav-link" data-page="home">
-                        <h3 class="font-brand text-2xl text-on-primary-container">ANeKI</h3>
-                        <h6 class="font-brand text-lg text-on-primary-container opacity-80">Gastroturismo</h6>
-                    </a>
-                </div>
-                <nav id="main-nav" class="flex-grow p-4 space-y-2 overflow-y-auto">
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="home">
-                        <span class="material-icons mr-3">home</span><span class="font-brand text-lg">Inicio</span>
-                    </a>
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="tapeo">
-                        <span class="material-icons mr-3">tapas</span><span class="font-brand text-lg">Tapear</span>
-                    </a>
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="restaurantes">
-                        <span class="material-icons mr-3">restaurant</span><span class="font-brand text-lg">Restaurantes</span>
-                    </a>
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="bodegas">
-                        <span class="material-icons mr-3">wine_bar</span><span class="font-brand text-lg">Bodegas</span>
-                    </a>
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="turismo">
-                        <span class="material-icons mr-3">map</span><span class="font-brand text-lg">Turismo</span>
-                    </a>
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="eventos-culinarios">
-                        <span class="material-icons mr-3">local_dining</span><span class="font-brand text-lg">Eventos Culinarios</span>
-                    </a>
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="eventos-turisticos">
-                        <span class="material-icons mr-3">event</span><span class="font-brand text-lg">Eventos Turísticos</span>
-                    </a>
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="tiendas">
-                        <span class="material-icons mr-3">storefront</span><span class="font-brand text-lg">Tiendas</span>
-                    </a>
-                    <a href="#" class="nav-link group flex items-center px-3 py-2 text-on-surface rounded-md hover:bg-background hover:text-primary" data-page="curiosidades">
-                        <span class="material-icons mr-3">help_outline</span><span class="font-brand text-lg">Curiosidades</span>
-                    </a>
-                </nav>
-            </div>
-        </aside>
-        <!-- Scrim -->
-        <div id="drawer-scrim" class="fixed inset-0 bg-black bg-opacity-50 z-35 hidden transition-opacity duration-300"></div>
-
-        <!-- Main Content -->
-        <main class="pt-16 flex-grow">
-            
-            <!-- Page: Home -->
-            <div id="page-home" class="page-content">
-                <section class="min-h-[70vh] bg-cover bg-center flex items-center justify-center text-center text-white relative" style="background-image: url('https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200-h800');">
-                    <div class="absolute inset-0 bg-black bg-opacity-40"></div>
-                    <div class="relative z-10 p-5 max-w-3xl">
-                        <h1 class="font-brand text-5xl md:text-6xl text-white mb-4">Gastronomía y turismo en tu bolsillo</h1>
-                        <p class="text-xl md:text-2xl mb-8 font-brand">Compartimos nuestras experiencias gastronómicas y turísticas, por si te apetece probar alguna...</p>
-                        <a href="#categories" class="inline-block bg-primary text-on-primary font-brand text-lg px-6 py-3 rounded-lg shadow-lg hover:bg-secondary transition-colors">
-                            ¡Pasa a ver nuestras recomendaciones! 👇
-                        </a>
-                    </div>
-                </section>
-                <section class="py-12 md:py-16 bg-surface">
-                    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
-                            <div class="md:col-span-2">
-                                <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w800-h500" alt="Angels e Iñaki" class="w-full h-auto rounded-2xl shadow-lg object-cover">
-                            </div>
-                            <div class="md:col-span-3 text-center md:text-left">
-                                <h2 class="text-3xl md:text-4xl mb-4">¡Hola! Somos Angels e Iñaki 👋</h2>
-                                <p class="text-lg md:text-xl font-brand leading-relaxed">
-                                    Te abrimos las puertas a nuestro universo.<br>Tenemos de todo: desde bocados de pura felicidad 😋, hasta kilómetros de aventura ✨ y carteles que nos sacan una sonrisa 😂.<br>Si buscas un chute de inspiración, ¡estás en el sitio perfecto! 🎉
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section id="categories" class="py-12 md:py-16">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h2 class="text-4xl md:text-5xl text-center mb-12">Descubre Nuestros Mundos</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <!-- Category Cards -->
-                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="tapeo">
-                                <div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex"><span class="material-icons text-4xl">tapas</span></div><h3 class="text-2xl mb-2">Pintxos y Tapas 🍷🍢</h3><p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">¡A gozar! Descubre sitios donde ofrecen buenos pintxos o tapas, de los que te hacen salivar. 🍻🍡</p><span class="font-brand text-primary font-bold">Explorar Tapeo</span></div>
-                            </a>
-                             <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="restaurantes">
-                                <div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex"><span class="material-icons text-4xl">restaurant</span></div><h3 class="text-2xl mb-2">Restaurantes 🍽️🌟</h3><p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Desde la cocina casera 👵🥘 hasta esos sitios con soles y estrellas Michelin. ¡Buen provecho! 🥂</p><span class="font-brand text-primary font-bold">Ver Restaurantes</span></div>
-                            </a>
-                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="bodegas">
-                                <div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex"><span class="material-icons text-4xl">wine_bar</span></div><h3 class="text-2xl mb-2">Bodegas 🍇🍷</h3><p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Descubre bodegas con encanto que nos han conquistado (y sus caldos también, claro). 😉</p><span class="font-brand text-primary font-bold">Visitar Bodegas</span></div>
-                            </a>
-                             <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="turismo">
-                                <div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex"><span class="material-icons text-4xl">explore</span></div><h3 class="text-2xl mb-2">Turismo 🏞️🚶‍♀️</h3><p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Acompáñanos a explorar experiencias turísticas que nos han marcado ✨. ¡Prepara la cámara! 📸</p><span class="font-brand text-primary font-bold">Explorar Turismo</span></div>
-                            </a>
-                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="eventos-culinarios">
-                                <div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex"><span class="material-icons text-4xl">local_dining</span></div><h3 class="text-2xl mb-2">Eventos Culinarios 🎉 🧑‍🍳</h3><p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Ferias, menús temáticos, maridajes... ¡Revive los mejores momentos culinarios! 🥳</p><span class="font-brand text-primary font-bold">Ver Eventos Culinarios</span></div>
-                            </a>
-                             <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="eventos-turisticos">
-                                <div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex"><span class="material-icons text-4xl">festival</span></div><h3 class="text-2xl mb-2">Eventos Turísticos 🏰🎶</h3><p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Mercados medievales, festivales, ferias locales... ¡Rememora los momentos turísticos más top! 🚀</p><span class="font-brand text-primary font-bold">Ver Eventos Turísticos</span></div>
-                            </a>
-                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="tiendas">
-                                <div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex"><span class="material-icons text-4xl">storefront</span></div><h3 class="text-2xl mb-2">Compras Gourmet 🛍️🎁</h3><p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">¡Para los paladares finos! Descubre tiendas gourmet que nos encantan. 💎</p><span class="font-brand text-primary font-bold">Ver Tiendas</span></div>
-                            </a>
-                            <a href="#" class="nav-link block bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300" data-page="curiosidades">
-                                <div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex"><span class="material-icons text-4xl">emoji_objects</span></div><h3 class="text-2xl mb-2">Curiosidades 🤪🛑</h3><p class="font-brand text-on-surface opacity-80 text-base mb-4 flex-grow">Coleccionamos esos carteles y señales curiosas que te alegran el paseo. 😄</p><span class="font-brand text-primary font-bold">Ver Curiosidades</span></div>
-                            </a>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            
-            <!-- Page: Tapeo -->
-            <div id="page-tapeo" class="page-content hidden">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div id="tapeo-selector">
-                        <div class="mb-5">
-                            <div class="flex items-center min-h-[40px] mb-4">
-                                <button id="tapeo-back-button" class="hidden bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors items-center">
-                                    <span class="material-icons mr-2">arrow_back</span>ATRÁS
-                                </button>
-                                <div id="tapeo-breadcrumbs" class="ml-4 font-brand text-lg text-primary opacity-70"></div>
-                            </div>
-                            <h2 id="tapeo-title" class="text-3xl md:text-4xl text-left m-0"></h2>
-                        </div>
-                        <div id="tapeo-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                        <div id="tapeo-loading" class="flex flex-col items-center justify-center p-10">
-                            <div class="simple-loader" role="progressbar" aria-label="Cargando"></div>
-                            <p class="font-brand text-2xl text-primary mt-4">Cargando datos...</p>
-                        </div>
-                        <div id="tapeo-error" class="hidden p-10"></div>
-                    </div>
-                    <div id="tapeo-detail-container" class="hidden"></div>
-                </div>
-            </div>
-
-            <!-- Placeholder Pages -->
-            <div id="page-restaurantes" class="page-content hidden"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><h2 class="text-4xl text-center">Restaurantes</h2><p class="font-brand text-xl text-center mt-4">Contenido próximamente...</p></div></div>
-            <div id="page-bodegas" class="page-content hidden"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><h2 class="text-4xl text-center">Bodegas</h2><p class="font-brand text-xl text-center mt-4">Contenido próximamente...</p></div></div>
-            <div id="page-turismo" class="page-content hidden"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><h2 class="text-4xl text-center">Turismo</h2><p class="font-brand text-xl text-center mt-4">Contenido próximamente...</p></div></div>
-            <div id="page-eventos-culinarios" class="page-content hidden"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><h2 class="text-4xl text-center">Eventos Culinarios</h2><p class="font-brand text-xl text-center mt-4">Contenido próximamente...</p></div></div>
-            <div id="page-eventos-turisticos" class="page-content hidden"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><h2 class="text-4xl text-center">Eventos Turísticos</h2><p class="font-brand text-xl text-center mt-4">Contenido próximamente...</p></div></div>
-            <div id="page-tiendas" class="page-content hidden"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><h2 class="text-4xl text-center">Tiendas</h2><p class="font-brand text-xl text-center mt-4">Contenido próximamente...</p></div></div>
-            <div id="page-curiosidades" class="page-content hidden"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><h2 class="text-4xl text-center">Curiosidades</h2><p class="font-brand text-xl text-center mt-4">Contenido próximamente...</p></div></div>
-
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-surface text-on-surface text-center p-3 mt-auto">
-            <span id="footer-year"></span> ANeKI Gastroturismo.
-        </footer>
-
+    <div className="h-64 w-full relative">
+      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-6 pt-20">
+        <h2 className="text-3xl text-white font-bold">{item.name}</h2>
+        <p className="text-teal-100 text-sm flex items-center mt-1">
+          <MapPin size={14} className="mr-1" /> 
+          {[item.ciudad, item.barrio, item.provincia].filter(Boolean).join(', ')}
+        </p>
+      </div>
     </div>
 
-    <!-- FAB (Chatbot) -->
-    <div class="fixed bottom-6 right-6 z-20">
-        <a href="https://notebooklm.google.com/notebook/6b38dfab-ba8b-449f-a4f3-48154aaa29e4" target="_blank" rel="noopener noreferrer" title="Habla con tu Colega del Tapeo 😉" class="flex items-center justify-center w-14 h-14 bg-primary text-background rounded-full shadow-lg transform hover:scale-110 hover:bg-background hover:text-primary transition-all duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor" aria-hidden="true"><g><rect fill="none" height="24" width="24"/></g><g><g><path d="M20,2H4C2.9,2,2,2.9,2,4v18l4-4h14c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2z M20,16H5.17L4,17.17V4h16V16z"/><circle cx="12" cy="10" r="1.5"/><circle cx="16" cy="10" r="1.5"/><circle cx="8" cy="10" r="1.5"/></g></g></svg>
-            <span class="sr-only">Habla con tu Colega del Tapeo (abre en una nueva pestaña)</span>
-        </a>
+    <div className="p-6 max-w-3xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <RatingStars rating={item.rating} />
+        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${THEME.colors.primaryContainer} ${THEME.colors.textOnSurface}`}>
+          {item.type}
+        </span>
+      </div>
+
+      <p className="text-gray-700 text-lg leading-relaxed mb-8 font-light">
+        {item.desc}
+      </p>
+
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Horario Habitual</h4>
+          <p className="text-sm font-mono">12:00 - 16:00</p>
+          <p className="text-sm font-mono">20:00 - 23:00</p>
+        </div>
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Contacto</h4>
+          <p className="text-sm">+34 944 123 456</p>
+          <button className="text-[#009688] text-sm font-bold mt-1 hover:underline">Ver Web</button>
+        </div>
+      </div>
+
+      <h3 className={`text-xl font-bold ${THEME.colors.textOnSurface} mb-4`}>Galería</h3>
+      <div className="grid grid-cols-3 gap-2">
+        {/* Simulando galería extra */}
+        {[1, 2, 3].map(i => (
+          <div key={i} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+             <img src={`https://source.unsplash.com/random/300x300?food&sig=${item.id + i}`} className="w-full h-full object-cover opacity-80 hover:opacity-100 transition" alt="Gallery" />
+          </div>
+        ))}
+      </div>
     </div>
+  </div>
+);
 
-    <!-- Modal para Fotos -->
-    <div id="photo-modal" class="modal-overlay hidden fixed inset-0 z-50 bg-black bg-opacity-80 items-center justify-center p-4" onclick="app.gallery.closeModal()">
-        <span class="modal-close absolute top-2 right-4 text-white text-6xl font-light cursor-pointer" onclick="event.stopPropagation(); app.gallery.closeModal()">&times;</span>
-        <img class="modal-content max-w-[90%] max-h-[80%] object-contain" id="modal-image" onclick="event.stopPropagation();">
-        <div id="modal-caption" class="absolute bottom-10 left-0 right-0 mx-auto w-auto max-w-[70%] text-center text-white text-lg p-4 bg-black bg-opacity-70 rounded-md opacity-0 -translate-y-5"></div>
+const Landing = ({ setView }) => {
+  const categories = [
+    { id: 'pintxos', label: 'Pintxos y Tapas', icon: UtensilsCrossed, bg: 'bg-orange-100', color: 'text-orange-700' },
+    { id: 'restaurantes', label: 'Restaurantes', icon: Menu, bg: 'bg-red-100', color: 'text-red-700' },
+    { id: 'bodegas', label: 'Bodegas', icon: Wine, bg: 'bg-purple-100', color: 'text-purple-700' },
+    { id: 'turismo', label: 'Experiencias', icon: Compass, bg: 'bg-blue-100', color: 'text-blue-700' },
+    { id: 'eventosCulinarios', label: 'Eventos Culinarios', icon: Calendar, bg: 'bg-green-100', color: 'text-green-700' },
+    { id: 'eventosTuristicos', label: 'Eventos Turísticos', icon: Map, bg: 'bg-teal-100', color: 'text-teal-700' },
+    { id: 'tiendas', label: 'Compras Gourmet', icon: ShoppingBag, bg: 'bg-pink-100', color: 'text-pink-700' },
+    { id: 'curiosidades', label: 'Curiosidades', icon: HelpCircle, bg: 'bg-yellow-100', color: 'text-yellow-700' },
+  ];
+
+  return (
+    <div className="p-6 pb-20 overflow-y-auto h-full">
+      <div className="text-center mb-10 mt-4">
+        <h2 className={`text-4xl mb-2 ${THEME.colors.textOnSurface}`}>Gastroturismo</h2>
+        <p className="text-gray-600 italic">Descubre nuestros mundos</p>
+      </div>
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {categories.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => setView(cat.id)}
+            className={`${cat.bg} ${cat.color} p-6 rounded-2xl shadow-sm hover:shadow-md transition-transform transform hover:scale-105 flex flex-col items-center justify-center aspect-square text-center border-2 border-white`}
+          >
+            <cat.icon size={32} className="mb-3" />
+            <span className="font-bold leading-tight">{cat.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-12 bg-[#004D40] rounded-xl p-6 text-white text-center shadow-xl">
+        <h3 className="text-xl font-bold mb-2">¿Buscas inspiración?</h3>
+        <p className="opacity-80 mb-4 text-sm">Déjanos recomendarte algo especial para hoy.</p>
+        <button className="bg-[#A7FFEB] text-[#004D40] px-6 py-2 rounded-full font-bold hover:bg-white transition-colors">
+          Sorpréndeme ✨
+        </button>
+      </div>
     </div>
+  );
+};
 
+// --- APP PRINCIPAL ---
 
-    <!-- App Logic -->
-    <script>
-        const app = {
-            // Config & URLs
-            config: { /* ... (CSV URLs and COL definitions - unchanged) ... */ 
-                CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv',
-                EVENTOS_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv',
-                EVENTOSPUNTUALES_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=1883625439&single=true&output=csv',
-                COLS: { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 },
-                COLS_EVENTOS: { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6, text1: 7, foto2: 8, text2: 9, foto3: 10, text3: 11, foto4:12, text4: 13, foto5: 14, text5: 15, foto6: 16, text6: 17, foto7: 18, text7: 19, foto8: 20, text8: 21, foto9: 22, text9: 23, foto10: 24, text10: 25, foto11:26, text11: 27, foto12: 28, text12: 29, foto13: 30, text13: 31, foto14: 32, text14: 33, foto15: 34, text15: 35, foto16: 36, text16: 37, foto17: 38, text17: 39, foto18: 40, text18: 41, foto19:42, text19: 43, foto20: 44, text20:45 },
-                COLS_EVENTOSPUNTUALES: { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6, text1: 7, foto2: 8, text2: 9, foto3: 10, text3: 11, foto4:12, text4: 13, foto5: 14, text5: 15, foto6: 16, text6: 17, foto7: 18, text7: 19, foto8: 20, text8: 21, foto9: 22, text9: 23, foto10: 24, text10: 25, foto11:26, text11: 27, foto12: 28, text12: 29, foto13: 30, text13: 31, foto14: 32, text14: 33, foto15: 34, text15: 35, foto16: 36, text16: 37, foto17: 38, text17: 39, foto18: 40, text18: 41, foto19:42, text19: 43, foto20: 44, text20:45 }
-             },
-            // App State
-            state: { /* ... (unchanged) ... */ 
-                isMenuOpen: false, currentPage: 'home', isDataLoaded: false, isLoadingData: false, 
-                data: { tapeo: [], eventos: [], eventosPuntuales: [], eventosLookup: {}, eventosPuntualesLookup: {} },
-                tapeoState: { level: 'autonomias', selection: {}, history: [], currentSitios: [] },
-                galleryState: { slideIndex: 1 }
-            },
-            // DOM Elements
-            elements: {},
+export default function App() {
+  const [currentView, setCurrentView] = useState('landing');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-            // Init App
-            init() {
-                console.log("App init starting..."); // Log
-                app.elements = { /* ... (cache elements - unchanged) ... */ 
-                    header: document.getElementById('app-header'), headerTitle: document.getElementById('header-title'),
-                    drawer: document.getElementById('drawer'), drawerScrim: document.getElementById('drawer-scrim'),
-                    menuBtn: document.getElementById('menu-btn'), mainNav: document.getElementById('main-nav'), 
-                    navLinks: document.querySelectorAll('.nav-link'), pages: document.querySelectorAll('.page-content'),
-                    footerYear: document.getElementById('footer-year'),
-                    pageTapeo: document.getElementById('page-tapeo'),
-                    tapeo: {
-                        selector: document.getElementById('tapeo-selector'), detailContainer: document.getElementById('tapeo-detail-container'),
-                        backButton: document.getElementById('tapeo-back-button'), breadcrumbs: document.getElementById('tapeo-breadcrumbs'),
-                        title: document.getElementById('tapeo-title'), grid: document.getElementById('tapeo-grid'),
-                        loading: document.getElementById('tapeo-loading'), error: document.getElementById('tapeo-error'),
-                    },
-                    modal: {
-                        overlay: document.getElementById('photo-modal'), image: document.getElementById('modal-image'),
-                        caption: document.getElementById('modal-caption')
-                    }
-                };
-                console.log("Elements cached."); // Log
-                if (app.elements.footerYear) app.elements.footerYear.textContent = new Date().getFullYear();
+  const renderView = () => {
+    switch (currentView) {
+      case 'landing': return <Landing setView={setCurrentView} />;
+      case 'pintxos': return <SectionLocation title="Pintxos y Tapas" type="pintxos" />;
+      case 'restaurantes': return <SectionLocation title="Restaurantes" type="restaurantes" />;
+      case 'bodegas': return <SectionLocation title="Bodegas" type="bodegas" />;
+      case 'turismo': return <SectionLocation title="Experiencias Turísticas" type="turismo" />;
+      case 'eventosCulinarios': return <SectionMonth title="Eventos Culinarios" type="eventosCulinarios" />;
+      case 'eventosTuristicos': return <SectionMonth title="Eventos Turísticos" type="eventosTuristicos" />;
+      case 'tiendas': return <SectionAlpha title="Compras Gourmet" type="tiendas" />;
+      case 'curiosidades': return <SectionAlpha title="Curiosidades" type="curiosidades" />;
+      default: return <Landing setView={setCurrentView} />;
+    }
+  };
 
-                // Event Listeners
-                app.elements.menuBtn.addEventListener('click', app.toggleMenu);
-                app.elements.drawerScrim.addEventListener('click', app.toggleMenu);
-                document.body.addEventListener('click', (e) => {
-                    const navLink = e.target.closest('a.nav-link'); 
-                    if (navLink && navLink.dataset.page) { 
-                         console.log("Navigating via body listener to:", navLink.dataset.page); 
-                         e.preventDefault(); 
-                         app.navigateTo(navLink.dataset.page);
-                    }
-                 });
-                app.elements.tapeo.backButton.addEventListener('click', app.tapeo.goBack);
-                
-                // *** CORRECTION CONFIRMED: Scroll listener IS inside init ***
-                window.addEventListener('scroll', app.handleHeaderTransparency);
-                console.log("Scroll listener added."); // Log
+  const menuItems = [
+    { id: 'landing', label: 'Inicio', icon: MapPin },
+    { id: 'pintxos', label: 'Pintxos y Tapas', icon: UtensilsCrossed },
+    { id: 'restaurantes', label: 'Restaurantes', icon: Menu },
+    { id: 'bodegas', label: 'Bodegas', icon: Wine },
+    { id: 'turismo', label: 'Turismo', icon: Compass },
+    { id: 'eventosCulinarios', label: 'Eventos Cul.', icon: Calendar },
+    { id: 'eventosTuristicos', label: 'Eventos Tur.', icon: Map },
+    { id: 'tiendas', label: 'Tiendas', icon: ShoppingBag },
+    { id: 'curiosidades', label: 'Curiosidades', icon: HelpCircle },
+  ];
 
-                app.showPage(app.state.currentPage, true);
-                app.updateActiveLink(app.state.currentPage);
-                console.log("App init finished."); // Log
-            },
+  return (
+    <div className={`flex h-screen w-screen overflow-hidden ${THEME.colors.background} ${THEME.font}`}>
+      <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
+      
+      {/* SIDEBAR (Mobile & Desktop) */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-[#004D40] text-white transform transition-transform duration-300 ease-in-out shadow-2xl
+        ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
+        md:relative md:translate-x-0
+      `}>
+        <div className="p-5 flex justify-between items-center border-b border-teal-800">
+          <div className="font-bold text-xl tracking-widest">ANEKI</div>
+          <button onClick={() => setIsMenuOpen(false)} className="md:hidden">
+            <X />
+          </button>
+        </div>
+        <nav className="p-4 space-y-2">
+          {menuItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => {
+                setCurrentView(item.id);
+                setIsMenuOpen(false);
+              }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors
+                ${currentView === item.id ? 'bg-[#009688] text-white shadow-md' : 'hover:bg-teal-800 text-teal-100'}
+              `}
+            >
+              <item.icon size={20} />
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="absolute bottom-0 w-full p-6 bg-teal-900 text-xs text-center text-teal-400">
+          <p>Gastroturismo 2.0</p>
+          <p>© Iñaki & Angels</p>
+        </div>
+      </aside>
 
-            // Navigation & Menu Logic
-            toggleMenu() { /* ... (unchanged) ... */ 
-                app.state.isMenuOpen = !app.state.isMenuOpen;
-                if (app.state.isMenuOpen) {
-                    app.elements.drawer.classList.remove('-translate-x-full');
-                    app.elements.drawerScrim.classList.remove('hidden');
-                    requestAnimationFrame(() => { app.elements.drawerScrim.classList.add('opacity-100'); });
-                } else {
-                    app.elements.drawer.classList.add('-translate-x-full');
-                    app.elements.drawerScrim.classList.remove('opacity-100');
-                    setTimeout(() => { if (!app.state.isMenuOpen) app.elements.drawerScrim.classList.add('hidden'); }, 300); 
-                }
-            },
-            navigateTo(pageName) {
-                console.log(`MapsTo called with: ${pageName}`);
-                if (!pageName || pageName === app.state.currentPage) {
-                    if (app.state.isMenuOpen) app.toggleMenu();
-                    return;
-                }
+      {/* MAIN CONTENT */}
+      <main className="flex-1 flex flex-col h-full relative bg-[#E0F2F1]">
+        {/* Header Mobile */}
+        <div className={`md:hidden h-[60px] ${THEME.colors.primary} flex items-center px-4 text-white shadow-md flex-shrink-0`}>
+          <button onClick={() => setIsMenuOpen(true)}>
+            <Menu />
+          </button>
+          <span className="ml-4 font-bold text-lg">Gastroturismo</span>
+        </div>
 
-                if (app.state.isMenuOpen) app.toggleMenu();
-                
-                // Reset tapeo state ONLY when navigating TO tapeo
-                if (pageName === 'tapeo') {
-                     console.log("Resetting tapeo state because navigating to tapeo");
-                     app.state.tapeoState = {
-                         level: 'autonomias', selection: {}, history: [], currentSitios: []
-                     };
-                     app.tapeo.hideDetail(); 
-                }
-                
-                app.state.currentPage = pageName;
-                app.showPage(pageName);
-                app.updateActiveLink(pageName); 
+        {/* Content Area */}
+        <div className="flex-1 overflow-hidden relative">
+          {renderView()}
+        </div>
+      </main>
 
-                // Load data or render tapeo page
-                if (pageName === 'tapeo') {
-                    if (!app.state.isDataLoaded && !app.state.isLoadingData) { 
-                        app.loadTapeoData();
-                    } else if (app.state.isDataLoaded) {
-                         console.log("Data loaded, rendering tapeo step"); 
-                         app.tapeo.renderStep(); 
-                    }
-                }
-            },
-            showPage(pageName, isInitialLoad = false) { /* ... (unchanged) ... */ 
-                 if (!pageName) return; 
-                app.elements.pages.forEach(page => page.classList.add('hidden'));
-                const newPage = document.getElementById(`page-${pageName}`);
-                if (newPage) { newPage.classList.remove('hidden'); } 
-                else {
-                    console.warn(`Page "page-${pageName}" not found. Showing 'home'.`);
-                     const homePage = document.getElementById('page-home');
-                     if(homePage) homePage.classList.remove('hidden');
-                     app.state.currentPage = 'home'; pageName = 'home'; 
-                     app.updateActiveLink('home'); 
-                }
-                 let title = 'ANeKI'; 
-                 if (pageName !== 'home') {
-                     const link = document.querySelector(`.nav-link[data-page="${pageName}"]`);
-                     if (link) {
-                         const titleSpan = link.querySelector('span.font-brand');
-                         const titleH3 = link.querySelector('h3'); 
-                         if (titleSpan) title = titleSpan.textContent;
-                         else if (titleH3) title = titleH3.textContent.split(' ')[0];
-                         else title = pageName.charAt(0).toUpperCase() + pageName.slice(1).replace(/-/g, ' '); 
-                     }
-                 }
-                 app.elements.headerTitle.textContent = title;
-                 app.handleHeaderTransparency(); 
-                if (!isInitialLoad) window.scrollTo(0, 0); 
-            },
-             updateActiveLink(pageName) { /* ... (unchanged) ... */ 
-                 if (!app.elements.mainNav) return; 
-                 app.elements.mainNav.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active-link'));
-                 const activeLink = app.elements.mainNav.querySelector(`.nav-link[data-page="${pageName}"]`);
-                 if (activeLink) activeLink.classList.add('active-link');
-             },
-             handleHeaderTransparency() { /* ... (unchanged) ... */ 
-                if (!app.elements || !app.elements.header) return; // Added check for elements
-                const header = app.elements.header;
-                 if (app.state.currentPage === 'home' && window.scrollY <= 50) {
-                     header.classList.remove('bg-surface', 'shadow-md'); header.classList.add('bg-transparent');
-                 } else {
-                     header.classList.add('bg-surface', 'shadow-md'); header.classList.remove('bg-transparent');
-                 }
-             },
-
-            // Data Loading
-            async loadTapeoData() { /* ... (unchanged) ... */ 
-                if (app.state.isDataLoaded || app.state.isLoadingData) return; 
-                app.state.isLoadingData = true; 
-                if(app.state.currentPage === 'tapeo') app.tapeo.showLoading(true); 
-                try {
-                    console.log("Fetching CSV data...");
-                    const [tapeoCsvText, eventosCsvText, eventosPuntualesCsvText] = await Promise.all([
-                        fetch(app.config.CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status}`))),
-                        fetch(app.config.EVENTOS_CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status}`))),
-                        fetch(app.config.EVENTOSPUNTUALES_CSV_URL).then(res => res.ok ? res.text() : Promise.reject(new Error(`Error ${res.status}`)))
-                    ]);
-                    console.log("CSV data fetched.");
-                    app.state.data.tapeo = app.utils.parseCSV(tapeoCsvText).slice(1);
-                    app.state.data.eventos = app.utils.parseCSV(eventosCsvText).slice(1);
-                    app.state.data.eventosPuntuales = app.utils.parseCSV(eventosPuntualesCsvText).slice(1);
-                    console.log("CSV data parsed. Tapeo rows:", app.state.data.tapeo.length);
-                    app.state.data.eventosLookup = app.state.data.eventos.reduce((acc, row) => { const id = row[app.config.COLS_EVENTOS.idSitio]; if(id){ if(!acc[id]) acc[id] = []; acc[id].push(row); } return acc; }, {});
-                    app.state.data.eventosPuntualesLookup = app.state.data.eventosPuntuales.reduce((acc, row) => { const id = row[app.config.COLS_EVENTOSPUNTUALES.idSitio]; if(id){ if(!acc[id]) acc[id] = []; acc[id].push(row); } return acc; }, {});
-                    console.log("Event lookups created.");
-                    app.state.isDataLoaded = true;
-                    if(app.state.currentPage === 'tapeo') { console.log("Calling renderStep after load."); app.tapeo.renderStep(); }
-                } catch (error) {
-                    console.error("Error loading data:", error);
-                    if(app.state.currentPage === 'tapeo') app.tapeo.displayError(`Data load failed: ${error.message}`);
-                } finally {
-                     app.state.isLoadingData = false; 
-                     if(app.state.currentPage !== 'tapeo' || !app.state.isDataLoaded) app.tapeo.showLoading(false);
-                }
-            },
-
-            // Tapeo Section Logic
-            tapeo: { /* ... (levelsConfig, populateGridWithOptions, populateGridWithSitios, showDetail, hideDetail, handleSelection, goBack, renderBreadcrumbs, showLoading, displayError - all largely unchanged but referencing app.state correctly) ... */ 
-                levelsConfig: {
-                    autonomias: { title: '¿Dónde quieres ir de pintxos o tapas?', icon: 'public', next: 'provincias', key: app.config.COLS.autonomia },
-                    provincias: { title: 'Selecciona una Provincia', icon: 'map', next: 'ciudades', key: app.config.COLS.provincia },
-                    ciudades: { title: 'Selecciona una Ciudad', icon: 'location_city', next: 'barrios', key: app.config.COLS.ciudad },
-                    barrios: { title: 'Selecciona un Barrio', icon: 'storefront', next: 'sitios', key: app.config.COLS.barrio },
-                    sitios: { title: 'Sitios para Tapear', icon: 'tapas', next: null }
-                },
-                renderStep() {
-                     if (!app.state.isDataLoaded) { console.log("renderStep: Data not loaded, calling load."); app.tapeo.showLoading(true); if (!app.state.isLoadingData) app.loadTapeoData(); return; }
-                    console.log("Rendering step for level:", app.state.tapeoState.level); 
-                    app.tapeo.showLoading(true); 
-                    requestAnimationFrame(() => { 
-                        try { 
-                            let dataToProcess = app.state.data.tapeo; const { selection } = app.state.tapeoState;
-                            if (selection.autonomia) dataToProcess = dataToProcess.filter(r => r[app.config.COLS.autonomia] === selection.autonomia);
-                            if (selection.provincia) dataToProcess = dataToProcess.filter(r => r[app.config.COLS.provincia] === selection.provincia);
-                            if (selection.ciudad) dataToProcess = dataToProcess.filter(r => r[app.config.COLS.ciudad] === selection.ciudad);
-                            if (selection.barrio && selection.barrio !== 'Todos') dataToProcess = dataToProcess.filter(r => r[app.config.COLS.barrio] === selection.barrio);
-                            app.elements.tapeo.backButton.classList.toggle('hidden', app.state.tapeoState.history.length === 0);
-                            app.elements.tapeo.backButton.classList.toggle('inline-flex', app.state.tapeoState.history.length > 0);
-                            app.tapeo.renderBreadcrumbs();
-                            let uniqueValues = []; 
-                            if (app.state.tapeoState.level === 'sitios') { app.tapeo.populateGridWithSitios(dataToProcess); } 
-                            else {
-                                const cfg = app.tapeo.levelsConfig[app.state.tapeoState.level]; if (!cfg) throw new Error(`Invalid level: ${app.state.tapeoState.level}`);
-                                const key = cfg.key; uniqueValues = [...new Set(dataToProcess.map(r => r[key]))].filter(Boolean).sort();
-                                if (app.state.tapeoState.level === 'barrios' && uniqueValues.length > 1) uniqueValues.unshift('Todos');
-                                if (uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios') {
-                                    if (!uniqueValues[0]) { console.log("Single empty value."); app.tapeo.populateGridWithOptions([]); app.tapeo.showLoading(false); return; }
-                                     console.log("Auto-skipping:", app.state.tapeoState.level); app.state.tapeoState.history.push({ level: app.state.tapeoState.level, selection: { ...app.state.tapeoState.selection }, skipped: true });
-                                    setTimeout(() => app.tapeo.handleSelection(uniqueValues[0], true), 0); return; 
-                                }
-                                app.tapeo.populateGridWithOptions(uniqueValues);
-                            }
-                            const shouldHide = !(uniqueValues && uniqueValues.length === 1 && app.state.tapeoState.level !== 'sitios');
-                            if (shouldHide) setTimeout(() => app.tapeo.showLoading(false), 50); 
-                        } catch(error) { console.error("Error in renderStep rAF:", error); app.tapeo.displayError(`Render error: ${error.message}`); app.tapeo.showLoading(false); }
-                    }); 
-                },
-                populateGridWithOptions(data) { /* ... (unchanged) ... */ 
-                    const config = app.tapeo.levelsConfig[app.state.tapeoState.level]; if (!config) { console.error("Config missing:", app.state.tapeoState.level); return; }
-                    app.elements.tapeo.title.textContent = config.title; const grid = app.elements.tapeo.grid; grid.innerHTML = ''; 
-                    grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'; 
-                    if (data.length === 0) { grid.innerHTML = `<p class="font-brand text-xl text-center sm:col-span-2 md:col-span-3">No hay opciones disponibles.</p>`; return; }
-                    data.forEach(item => { const safeItem = item.replace(/'/g, "\\'"); const cardHtml = `<div class="bg-surface rounded-2xl shadow-md overflow-hidden transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer group" onclick="app.tapeo.handleSelection('${safeItem}')"><div class="p-6 flex flex-col items-center text-center h-full"><div class="bg-primary-container text-on-primary-container rounded-full p-4 mb-4 inline-flex group-hover:bg-primary group-hover:text-on-primary transition-colors duration-200"><span class="material-icons text-4xl">${config.icon}</span></div><h3 class="text-2xl group-hover:text-secondary transition-colors duration-200">${item}</h3></div></div>`; grid.insertAdjacentHTML('beforeend', cardHtml); });
-                },
-                populateGridWithSitios(data) { /* ... (unchanged) ... */ 
-                    app.elements.tapeo.title.textContent = app.tapeo.levelsConfig.sitios.title; const grid = app.elements.tapeo.grid; grid.innerHTML = ''; grid.className = 'grid grid-cols-1 gap-6'; 
-                    const sortedData = data.sort((a, b) => (parseFloat(b[app.config.COLS.nota]) || 0) - (parseFloat(a[app.config.COLS.nota]) || 0)); app.state.tapeoState.currentSitios = sortedData;
-                    if (sortedData.length === 0) { grid.innerHTML = `<p class="font-brand text-xl text-center">No se encontraron sitios para esta selección.</p>`; return; }
-                    sortedData.forEach((row, index) => { const C = app.config.COLS; const img = row[C.foto1] ? `https://drive.google.com/thumbnail?id=${row[C.foto1]}&sz=w600` : ''; let price = ''; if (row[C.codprecio] == 10) price = 'Precio muy bien ✅'; else if (row[C.codprecio] == 11) price = 'Precio justo ⚖️'; else if (row[C.codprecio] == 12) price = 'Precio caro 💀'; const card = `<div class="bg-surface rounded-2xl shadow-md overflow-hidden flex flex-col md:flex-row">${img ? `<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-cover bg-center" style="background-image: url('${img}');"></div>` : '<div class="md:w-1/3 h-64 md:h-auto flex-shrink-0 bg-gray-200 flex items-center justify-center"><span class="material-icons text-6xl text-gray-400">hide_image</span></div>'}<div class="p-6 flex flex-col flex-grow text-center"><h3 class="text-3xl mb-2">${row[C.nombre]||'N/A'}</h3><div class="text-2xl mb-4" style="color: #ff4081;">${row[C.valoracion]||''}</div>${row[C.nota]?`<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap">${row[C.nota]}</p>`:''}<hr class="border-t-2 border-primary/50 my-2"><p class="font-brand text-on-surface text-lg my-2">${price}</p><hr class="border-t-2 border-primary/50 my-2">${row[C.pintxo_tapa]?`<p class="font-brand text-on-surface opacity-80 text-lg mb-4 text-left whitespace-pre-wrap flex-grow">${row[C.pintxo_tapa]}</p>`:'<div class="flex-grow"></div>'}<button class="mt-4 bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center justify-center self-center" onclick="app.tapeo.showDetail(${index})"><span class="material-icons mr-2">visibility</span>Ver info</button></div></div>`; grid.insertAdjacentHTML('beforeend', card); });
-                },
-                showDetail(index) { /* ... (unchanged, includes gallery building) ... */ 
-                     console.log("Showing detail:", index); const siteRow = app.state.tapeoState.currentSitios[index]; if (!siteRow) { console.error("Site not found:", index); return; }
-                    const C=app.config.COLS, CE=app.config.COLS_EVENTOS, CEP=app.config.COLS_EVENTOSPUNTUALES; const site = Object.keys(C).reduce((o,k)=>{o[k]=siteRow[C[k]]; return o;}, {});
-                    app.elements.tapeo.selector.classList.add('hidden'); const galleryData=[]; for(let i=1;i<=40;i++) if(site[`foto${i}`]) galleryData.push({url:`https://drive.google.com/thumbnail?id=${site[`foto${i}`]}&sz=w600`, text:site[`text${i}`]||`Foto ${site.nombre}`}); let galleryHtml=''; if(galleryData.length>0){ const slides=galleryData.map((item,i)=>`<div class="mySlides"><div class="numbertext">${i+1}/${galleryData.length}</div><img src="${item.url}" class="w-full rounded-lg shadow" alt="${item.text}"></div>`).join(''); const numThumbs=galleryData.length; const colW=numThumbs>=6?'w-1/6':numThumbs===5?'w-1/5':numThumbs===4?'w-1/4':numThumbs===3?'w-1/3':numThumbs===2?'w-1/2':'w-full'; const thumbs=galleryData.map((item,i)=>`<div class="column ${colW} p-1"><img class="demo cursor rounded block w-full h-auto aspect-[4/3] object-cover" src="${item.url.replace('&sz=w600','&sz=w200')}" onclick="app.gallery.currentSlide(${i+1})" alt="${item.text}"></div>`).join(''); galleryHtml=`<div class="gallery-container mb-6">${slides}<a class="prev" onclick="app.gallery.plusSlides(-1)">❮</a><a class="next" onclick="app.gallery.plusSlides(1)">❯</a><div class="caption-container rounded-b-lg"><p id="caption"></p></div><div class="row mt-2 flex flex-wrap justify-center">${thumbs}</div></div>`;}
-                    const buildEvent=(lookup,cols,title)=>{ let html=''; const events=lookup[site.idsitio]||[]; if(events.length>0){ const cards=events.map(row=>{ const gallery=[]; for(let i=1;i<=20;i++) if(row[cols[`foto${i}`]]) gallery.push({url:`https://drive.google.com/thumbnail?id=${row[cols[`foto${i}`]]}&sz=w400`, text:row[cols[`text${i}`]]||''}); const images=gallery.map(item=>{ const parts=item.text.split('\n'); const l1=parts[0]||''; const l2=parts[1]||''; const safe=(l2||l1).replace(/'/g,"\\'"); const imgUrl=item.url.includes('thumbnail?id=')?item.url:'https://placehold.co/400x400/E0F2F1/004D40?text=Error'; return `<div class="aspect-square bg-cover bg-center rounded-lg relative overflow-hidden cursor-pointer group shadow hover:shadow-lg transition-shadow" style="background-image: url('${imgUrl}');" onclick="app.gallery.openModal('${imgUrl.replace('&sz=w400','&sz=w1600')}', '${safe}')"><div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end"><div class="text-white p-2 text-xs font-brand opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 w-full bg-black/50 text-center">${l1}${l2?`<br>${l2}`:''}</div></div></div>`;}).join(''); return `<div class="bg-white/70 rounded-lg shadow-md overflow-hidden flex flex-col"><div class="p-4 text-center border-b border-gray-300"><h4 class="text-xl">${row[cols.eventoCulinario]||''} ${row[cols.anyo]||''}</h4><p class="font-brand text-sm italic opacity-70 mt-1">${row[cols.eventoCulinarioDescripcion]||''}</p></div>${images?`<div class="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">${images}</div>`:''}</div>`;}).join(''); html=`<div class="mt-8 pt-6 border-t border-primary/30"><h3 class="text-3xl text-center mb-6">${title}</h3><div class="grid grid-cols-1 ${events.length>1?'lg:grid-cols-2':''} gap-6">${cards}</div></div>`;} return html;};
-                    const eventosHtml=buildEvent(app.state.data.eventosLookup,CE,"Eventos Habituales"); const eventosPuntualesHtml=buildEvent(app.state.data.eventosPuntualesLookup,CEP,"Eventos Puntuales");
-                    const actions=[ site.postinstagram?`<a href="${site.postinstagram}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">photo_camera</span>Última Visita</a>`:'', site.googleresenas?`<a href="${site.googleresenas}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">rate_review</span>Reseñas</a>`:'', site.maps?`<a href="${site.maps}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">place</span>Mapa</a>`:'', site.instagram?`<a href="${site.instagram}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">camera_alt</span>Instagram</a>`:'', site.web?`<a href="${site.web}" target="_blank" rel="noopener" class="flex items-center justify-center bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors"><span class="material-icons mr-2">language</span>Web</a>`:'' ].filter(Boolean).join('');
-                    let price=''; if(site.codprecio==10) price='Precio muy bien ✅'; else if(site.codprecio==11) price='Precio justo ⚖️'; else if(site.codprecio==12) price='Precio caro 💀'; let tipo=''; if(site.tipo_lugar=='Bar y Restaurante') tipo=`Ademas de tapear puedes comer y en nuestra sección de restaurantes te lo contamos.`;
-                    const detail=`<button class="mb-6 bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center" onclick="app.tapeo.hideDetail()"><span class="material-icons mr-2">arrow_back</span>VOLVER</button><div class="bg-surface rounded-2xl shadow-lg p-4 md:p-8"><div class="text-center mb-6"><h2 class="text-4xl md:text-5xl mb-2">${site.nombre||''}</h2><div class="text-3xl mb-4" style="color:#ff4081;">${site.valoracion||''}</div><div class="font-brand text-lg text-on-surface opacity-90 space-y-2">${site.nota?`<p class="whitespace-pre-wrap">${site.nota}</p>`:''}<hr class="border-t-2 border-primary/30 max-w-xs mx-auto my-3"><p>${price}</p>${tipo?`<hr class="border-t-2 border-primary/30 max-w-xs mx-auto my-3"><p>${tipo}</p>`:''}</div></div><div class="flex flex-wrap gap-3 justify-center my-6">${actions}</div>${galleryHtml}<div class="mt-8 text-center"><p class="font-brand text-lg text-on-surface opacity-90 whitespace-pre-wrap mb-6">${site.pintxo_tapa||''}</p>${site.direccion?`<p class="font-brand text-lg mt-6 flex items-center justify-center text-left"><span class="material-icons align-middle -mt-1 mr-2 flex-shrink-0">place</span><span><b>Dirección:</b> ${site.direccion}</span></p>`:''}${site.horario?`<p class="font-brand text-lg mt-4 whitespace-pre-wrap text-left"><span class="material-icons align-top -mt-0 mr-2">schedule</span><b>Horario:</b><br><span class="ml-8">${site.horario.replace(/\n/g,'<br class="ml-8">')}</span></p>`:''}${eventosHtml}${eventosPuntualesHtml}</div></div><button class="mt-8 bg-primary text-on-primary font-brand px-4 py-2 rounded-lg shadow-md hover:bg-secondary transition-colors inline-flex items-center" onclick="app.tapeo.hideDetail()"><span class="material-icons mr-2">arrow_back</span>VOLVER</button>`;
-                    app.elements.tapeo.detailContainer.innerHTML=detail; app.elements.tapeo.detailContainer.classList.remove('hidden'); if(galleryData.length>0){ app.state.galleryState.slideIndex=1; requestAnimationFrame(()=>app.gallery.showSlides(1)); } window.scrollTo(0,0); 
-                },
-                hideDetail() { /* ... (unchanged) ... */ 
-                    app.elements.tapeo.detailContainer.innerHTML = ''; app.elements.tapeo.detailContainer.classList.add('hidden');
-                    app.elements.tapeo.selector.classList.remove('hidden'); window.scrollTo(0, 0); 
-                },
-                handleSelection(selectionName, isAutoSelection = false) { /* ... (unchanged) ... */ 
-                     console.log(`Selection: ${selectionName}, auto: ${isAutoSelection}`); const state = app.state.tapeoState;
-                    if (!isAutoSelection) state.history.push({ level: state.level, selection: { ...state.selection }, skipped: false });
-                    let key = state.level.slice(0, -1); if (state.level === 'ciudades') key = 'ciudad'; state.selection[key] = selectionName;
-                     const nextLevel = app.tapeo.levelsConfig[state.level]?.next; 
-                    if (nextLevel) { state.level = nextLevel; app.tapeo.renderStep(); } 
-                    else if (app.tapeo.levelsConfig[state.level] && !nextLevel) { state.level = 'sitios'; app.tapeo.renderStep(); } 
-                    else { console.error("Invalid next level:", state.level); app.tapeo.displayError("Internal error."); }
-                     window.scrollTo(0, 0); 
-                },
-                goBack() { /* ... (unchanged) ... */ 
-                    const state = app.state.tapeoState; let lastState = state.history.pop();
-                    while (lastState && lastState.skipped) lastState = state.history.pop();
-                    if (lastState) { state.level = lastState.level; state.selection = lastState.selection; } 
-                    else { state.level = 'autonomias'; state.selection = {}; state.history = []; }
-                    app.tapeo.hideDetail(); app.tapeo.renderStep(); window.scrollTo(0, 0); 
-                },
-                renderBreadcrumbs() { /* ... (unchanged) ... */ 
-                    const { selection } = app.state.tapeoState; const crumbs = [];
-                    if (selection.autonomia) crumbs.push(selection.autonomia); if (selection.provincia) crumbs.push(selection.provincia);
-                    if (selection.ciudad) crumbs.push(selection.ciudad); if (selection.barrio && selection.barrio !== 'Todos') crumbs.push(selection.barrio);
-                    app.elements.tapeo.breadcrumbs.innerHTML = crumbs.join(' <span class="font-bold mx-1"> &gt; </span> ');
-                },
-                showLoading(isLoading) { /* ... (unchanged) ... */ 
-                     if (app.state.currentPage === 'tapeo') {
-                        app.elements.tapeo.loading.classList.toggle('hidden', !isLoading); app.elements.tapeo.loading.classList.toggle('flex', isLoading);
-                        app.elements.tapeo.grid.classList.toggle('hidden', isLoading); app.elements.tapeo.grid.classList.toggle('grid', !isLoading); 
-                        if(isLoading) app.elements.tapeo.error.classList.add('hidden'); 
-                     } else {
-                          app.elements.tapeo.loading.classList.add('hidden'); app.elements.tapeo.loading.classList.remove('flex');
-                     }
-                },
-                displayError(message) { /* ... (unchanged) ... */ 
-                    app.elements.tapeo.loading.classList.add('hidden'); app.elements.tapeo.grid.classList.add('hidden'); 
-                    const errorEl = app.elements.tapeo.error; errorEl.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert"><strong class="font-bold font-brand">Error</strong><span class="block sm:inline font-brand">${message}</span></div>`;
-                    errorEl.classList.remove('hidden');
-                }
-            },
-
-            // Gallery/Modal Logic
-            gallery: { /* ... (plusSlides, currentSlide, showSlides, openModal, closeModal - all unchanged) ... */ 
-                plusSlides(n) { const newIdx = app.state.galleryState.slideIndex += n; app.gallery.showSlides(newIdx); },
-                currentSlide(n) { app.state.galleryState.slideIndex = n; app.gallery.showSlides(n); },
-                showSlides(n) {
-                    const cont = app.elements.tapeo.detailContainer; if(!cont || cont.classList.contains('hidden')) return; // Added null check
-                    const slides = cont.getElementsByClassName("mySlides"), dots = cont.getElementsByClassName("demo"), cap = cont.querySelector("#caption"); 
-                    if (!cap || slides.length === 0) return; let idx = n; if (n > slides.length) idx = 1; if (n < 1) idx = slides.length; app.state.galleryState.slideIndex = idx; 
-                    for (let i=0;i<slides.length;i++) slides[i].style.display="none"; for (let i=0;i<dots.length;i++) dots[i].classList.remove("active"); 
-                    if (slides[idx-1]) slides[idx-1].style.display="block"; if(dots[idx-1]){ dots[idx-1].classList.add("active"); cap.innerHTML=dots[idx-1].alt; } else { cap.innerHTML=""; }
-                },
-                openModal(imgUrl, imgTxt) {
-                    const { overlay, image, caption } = app.elements.modal; try { new URL(imgUrl); image.src = imgUrl; } catch (_) { console.error("Invalid image URL:", imgUrl); image.src = 'https://placehold.co/800x600/E0F2F1/004D40?text=Error'; }
-                    caption.innerHTML = imgTxt || ''; overlay.classList.remove('hidden'); overlay.classList.add('flex'); setTimeout(() => { overlay.classList.add('opacity-100'); caption.classList.remove('opacity-0', '-translate-y-5'); }, 10); 
-                },
-                closeModal() {
-                    const { overlay, image, caption } = app.elements.modal; overlay.classList.remove('opacity-100'); caption.classList.add('opacity-0', '-translate-y-5');
-                    setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); image.src = ''; caption.innerHTML = ''; }, 300); 
-                }
-            },
-
-            // Utilities
-            utils: { /* ... (parseCSV - unchanged) ... */ 
-                parseCSV(csvTxt) { const rows=[], fields=[]; let field='', inQ=false; csvTxt=csvTxt.trim().replace(/\r\n/g,'\n').replace(/\r/g,'\n'); for(let i=0;i<csvTxt.length;i++){ const char=csvTxt[i], next=csvTxt[i+1]; if(char==='"'){ if(inQ&&next==='"'){ field+='"'; i++; } else { inQ=!inQ; }} else if(char===','&&!inQ){ fields.push(field); field=''; } else if(char==='\n'&&!inQ){ fields.push(field); if(fields.some(f=>f.trim()!=='')) rows.push(fields.map(f=>f.trim())); fields.length=0; field=''; } else { field+=char; }} if(fields.length>0||field.trim()!==''){ fields.push(field); if(fields.some(f=>f.trim()!=='')) rows.push(fields.map(f=>f.trim())); } return rows; }
-            }
-        };
-
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', app.init);
-        
-    </script>
-</body>
-</html>
-
+      {/* Overlay for mobile menu */}
+      {isMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
