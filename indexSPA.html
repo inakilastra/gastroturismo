@@ -11,8 +11,8 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Iconos Lucide -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Iconos Lucide (Versión UMD corregida para navegadores) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <!-- Configuración Tailwind -->
     <script>
@@ -37,14 +37,14 @@
 
     <style>
         /* Animaciones suaves */
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Scrollbar personalizada */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        ::-webkit-scrollbar-thumb { background: #009688; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #004D40; }
     </style>
 </head>
 <body class="bg-background text-slate-800 h-screen flex overflow-hidden font-sans selection:bg-primaryContainer selection:text-darkTeal">
@@ -71,14 +71,16 @@
     </aside>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main class="flex-1 flex flex-col h-full relative md:ml-64 w-full transition-all duration-300">
+    <main class="flex-1 flex flex-col h-full relative md:ml-64 w-full transition-all duration-300 bg-[#F0FDFD]">
         
         <!-- Header Móvil -->
-        <div class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20">
-            <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition">
-                <i data-lucide="menu"></i>
-            </button>
-            <span class="ml-3 font-bold text-xl tracking-tight">Gastroturismo</span>
+        <div class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
+            <div class="flex items-center">
+                <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3">
+                    <i data-lucide="menu"></i>
+                </button>
+                <span class="font-bold text-xl tracking-tight">Gastroturismo</span>
+            </div>
         </div>
 
         <!-- Área de Vistas Dinámicas -->
@@ -130,6 +132,7 @@
         // --- FUNCIONES PRINCIPALES ---
 
         function init() {
+            console.log("Iniciando App...");
             renderSidebar();
             navigate('landing');
         }
@@ -149,6 +152,7 @@
         }
 
         function navigate(viewId) {
+            console.log("Navegando a:", viewId);
             state.view = viewId;
             state.filters = {};
             state.selectedItem = null;
@@ -159,14 +163,17 @@
             document.getElementById('sidebar-overlay').classList.add('hidden');
 
             // Actualizar UI del menú
-            document.querySelectorAll('#nav-menu button').forEach(btn => {
+            const buttons = document.querySelectorAll('#nav-menu button');
+            buttons.forEach(btn => {
+                const icon = btn.querySelector('i');
                 if(btn.dataset.id === viewId) {
                     btn.className = "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group bg-primary text-white shadow-lg shadow-teal-900/50 translate-x-1";
-                    btn.querySelector('i').classList.remove('text-teal-300');
-                    btn.querySelector('i').classList.add('text-teal-50');
+                    if(icon) {
+                        icon.classList.remove('text-teal-300');
+                        icon.classList.add('text-teal-50');
+                    }
                 } else {
                     btn.className = "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group hover:bg-teal-800/50 text-teal-100 hover:text-white hover:translate-x-1";
-                    const icon = btn.querySelector('i');
                     if(icon) {
                         icon.classList.add('text-teal-300');
                         icon.classList.remove('text-teal-50');
@@ -180,37 +187,46 @@
         function renderSidebar() {
             const container = document.getElementById('nav-menu');
             container.innerHTML = MENUS.map(item => `
-                <button onclick="navigate('${item.id}')" data-id="${item.id}">
-                    <i data-lucide="${item.icon}" size="20"></i>
+                <button onclick="navigate('${item.id}')" data-id="${item.id}" class="w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group hover:bg-teal-800/50 text-teal-100 hover:text-white hover:translate-x-1">
+                    <i data-lucide="${item.icon}" class="text-teal-300"></i>
                     <span class="font-medium">${item.label}</span>
                 </button>
             `).join('');
-            lucide.createIcons();
+            // Re-iniciar iconos después de renderizar
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         }
 
         function renderAppContent() {
             const container = document.getElementById('app-content');
             container.innerHTML = ''; // Limpiar
 
+            let htmlContent = '';
+
             if (state.selectedItem) {
-                container.innerHTML = getDetailHtml(state.selectedItem);
+                htmlContent = getDetailHtml(state.selectedItem);
             } else if (state.view === 'landing') {
-                container.innerHTML = getLandingHtml();
+                htmlContent = getLandingHtml();
             } else {
                 // Vistas por Categoría
                 const type = state.view;
                 
                 if (['eventosCulinarios', 'eventosTuristicos'].includes(type)) {
-                    container.innerHTML = getSectionMonthHtml(type);
+                    htmlContent = getSectionMonthHtml(type);
                 } else if (['tiendas', 'curiosidades'].includes(type)) {
-                    container.innerHTML = getSectionAlphaHtml(type);
+                    htmlContent = getSectionAlphaHtml(type);
                 } else {
                     // Vistas con Filtro Geográfico (Pintxos, Bodegas, etc.)
-                    container.innerHTML = getSectionLocationHtml(type);
+                    htmlContent = getSectionLocationHtml(type);
                 }
             }
             
-            lucide.createIcons();
+            container.innerHTML = htmlContent;
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
             container.scrollTo(0,0);
         }
 
@@ -239,7 +255,7 @@
                         ${cards.map(c => `
                             <button onclick="navigate('${c.id}')" class="${c.bg} ${c.color} ${c.border} border p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
                                 <div class="bg-white p-4 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                    <i data-lucide="${c.icon}" size="28"></i>
+                                    <i data-lucide="${c.icon}" width="28" height="28"></i>
                                 </div>
                                 <span class="font-bold text-sm md:text-base leading-tight text-slate-800 group-hover:text-black">${c.label}</span>
                             </button>
@@ -251,7 +267,7 @@
                         <div class="relative z-10">
                             <h3 class="text-2xl font-bold mb-2">¿No sabes por dónde empezar?</h3>
                             <p class="opacity-80 mb-6 font-light">Déjanos recomendarte una ruta basada en tus gustos.</p>
-                            <button onclick="alert('¡Función mágica próximamente!')" class="bg-primaryContainer text-darkTeal px-8 py-3 rounded-xl font-bold hover:bg-white hover:scale-105 transition-all shadow-lg">
+                            <button class="bg-primaryContainer text-darkTeal px-8 py-3 rounded-xl font-bold hover:bg-white hover:scale-105 transition-all shadow-lg">
                             Sorpréndeme ✨
                             </button>
                         </div>
@@ -260,12 +276,12 @@
             `;
         }
 
-        // --- LOGICA DE FILTRO (El corazón de tu petición) ---
+        // --- LOGICA DE FILTRO ---
         
         function selectFilter(level, value) {
             state.filters[level] = value;
             state.filterStep++;
-            renderAppContent(); // Re-render para evaluar siguiente paso
+            renderAppContent(); 
         }
 
         function resetFilters() {
@@ -275,7 +291,6 @@
         }
 
         function showAllFilters() {
-            // Forzamos finalización
             state.filterStep = 99; 
             renderAppContent();
         }
@@ -283,35 +298,26 @@
         function getSectionLocationHtml(type) {
             const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
             
-            // 1. Filtrar datos actuales
             const currentData = DATA.filter(d => d.type === type && 
                 Object.keys(state.filters).every(k => d[k] === state.filters[k])
             );
 
-            // 2. Evaluar si hemos terminado o hay que saltar pasos
-            let currentLevel = levels[state.filterStep];
-            
-            // Bucle de salto automático (Lógica inteligente)
+            // Lógica de salto automático
             while (state.filterStep < levels.length) {
-                currentLevel = levels[state.filterStep];
-                // Opciones disponibles en este nivel
+                let currentLevel = levels[state.filterStep];
                 const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean);
                 
                 if (options.length === 0) {
-                    // No hay subniveles, terminar
                     state.filterStep = 99; 
                     break;
                 } else if (options.length === 1) {
-                    // Solo 1 opción, autoseleccionar y seguir
                     state.filters[currentLevel] = options[0];
                     state.filterStep++;
                 } else {
-                    // Hay varias opciones, detenerse y pedir al usuario
                     return renderFilterWizard(currentLevel, options);
                 }
             }
 
-            // 3. Si llegamos aquí, mostrar resultados
             return renderResultsGrid(type, currentData);
         }
 
@@ -343,15 +349,13 @@
             const rawData = DATA.filter(d => d.type === type);
             const monthsOrder = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
             
-            // Agrupar
             const grouped = rawData.reduce((acc, item) => {
                 (acc[item.mes] = acc[item.mes] || []).push(item);
                 return acc;
             }, {});
             
             const sortedMonths = Object.keys(grouped).sort((a, b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
-
-            const title = MENUS.find(m => m.id === type).label;
+            const title = MENUS.find(m => m.id === type)?.label || type;
 
             return `
                 <div class="fade-in pb-24">
@@ -362,7 +366,7 @@
                         ${sortedMonths.map(month => `
                             <div class="relative">
                                 <div class="sticky top-0 z-10 bg-[#F0FDFD]/95 backdrop-blur py-2 mb-4 border-b border-teal-100 flex items-center">
-                                    <i data-lucide="calendar" class="mr-2 text-primary" size="18"></i>
+                                    <i data-lucide="calendar" class="mr-2 text-primary" width="18"></i>
                                     <h2 class="text-lg font-bold text-darkTeal">${month}</h2>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -377,13 +381,13 @@
 
         function getSectionAlphaHtml(type) {
             const rawData = DATA.filter(d => d.type === type).sort((a, b) => a.name.localeCompare(b.name));
-            const title = MENUS.find(m => m.id === type).label;
+            const title = MENUS.find(m => m.id === type)?.label || type;
             
             return renderResultsGrid(type, rawData, title, false);
         }
 
         function renderResultsGrid(type, items, titleOverride = null, showFilterBtn = true) {
-            const title = titleOverride || MENUS.find(m => m.id === type).label;
+            const title = titleOverride || MENUS.find(m => m.id === type)?.label || type;
             
             if (items.length === 0) {
                 return `
@@ -440,7 +444,7 @@
                         <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1 font-normal leading-relaxed">${item.desc}</p>
                         <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
                             <div class="flex items-center space-x-1">${starHtml} <span class="text-xs text-gray-400 ml-1 font-bold">${item.rating}</span></div>
-                            <i data-lucide="chevron-right" class="text-teal-300 group-hover:text-primary transition-colors" size="16"></i>
+                            <i data-lucide="chevron-right" class="text-teal-300 group-hover:text-primary transition-colors" width="16"></i>
                         </div>
                     </div>
                 </div>
@@ -482,7 +486,7 @@
                             </span>
                             <h2 class="text-4xl text-white font-bold tracking-tight leading-tight mb-2">${item.name}</h2>
                             <p class="text-teal-50 text-sm flex items-center font-medium">
-                                <i data-lucide="map-pin" size="16" class="mr-2"></i> ${locationStr}
+                                <i data-lucide="map-pin" width="16" class="mr-2"></i> ${locationStr}
                             </p>
                         </div>
                     </div>
@@ -513,7 +517,7 @@
                             <div class="space-y-6">
                                 <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100">
                                     <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center">
-                                        <i data-lucide="calendar" size="14" class="mr-2"></i> Horario
+                                        <i data-lucide="calendar" width="14" class="mr-2"></i> Horario
                                     </h4>
                                     <div class="space-y-2 text-sm text-gray-700 font-medium">
                                         <div class="flex justify-between"><span>Comida</span> <span>13:00 - 16:00</span></div>
@@ -522,7 +526,7 @@
                                 </div>
                                 <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100">
                                     <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center">
-                                       <i data-lucide="phone" size="14" class="mr-2"></i> Contacto
+                                       <i data-lucide="phone" width="14" class="mr-2"></i> Contacto
                                     </h4>
                                     <p class="text-lg font-bold text-gray-900 mb-1">+34 944 123 456</p>
                                 </div>
@@ -533,8 +537,10 @@
             `;
         }
 
-        // Arrancar
-        init();
+        // Asegurar que el DOM esté listo antes de ejecutar
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+        });
 
     </script>
 </body>
