@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANeKI - Gastroturismo</title>
+    
+    <!-- Tipografías: Outfit (Moderna) y Special Elite (Marca) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- Configuración Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        brand: ['Special Elite', 'cursive'],
+                    },
+                    colors: {
+                        primary: '#009688',       /* Teal 500 */
+                        secondary: '#4DB6AC',     /* Teal 300 */
+                        surface: '#E0F2F1',       /* Teal 50 */
+                        background: '#F0FDFD',
+                        primaryContainer: '#A7FFEB', /* Teal A100 */
+                        darkTeal: '#004D40',      /* Teal 900 */
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #009688; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #004D40; }
+
+        /* Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #009688;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-background text-slate-800 h-screen flex overflow-hidden font-sans selection:bg-primaryContainer selection:text-darkTeal">
+
+    <!-- OVERLAY LOADING INICIAL -->
+    <div id="loading-overlay" class="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="loader mb-4"></div>
+        <h2 class="font-brand text-2xl text-darkTeal">Cargando el mundo de Aneki...</h2>
+        <p class="text-gray-500 text-sm mt-2" id="loading-text">Conectando con Google Sheets...</p>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity" onclick="toggleMenu()"></div>
+    
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
+        <div class="p-6 flex justify-between items-center border-b border-teal-800/50">
+            <div class="font-brand text-2xl tracking-widest text-primaryContainer">ANEKI</div>
+            <button onclick="toggleMenu()" class="md:hidden text-teal-200 hover:text-white">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        
+        <nav class="p-4 space-y-1 flex-1 overflow-y-auto" id="nav-menu">
+            <!-- Se rellena con JS -->
+        </nav>
+
+        <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-400/60 font-brand">
+            <p>Gastroturismo 2.0</p>
+            <p>© Iñaki & Angels</p>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-1 flex flex-col h-full relative md:ml-64 w-full transition-all duration-300 bg-[#F0FDFD]">
+        
+        <!-- Header Móvil -->
+        <div class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
+            <div class="flex items-center">
+                <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3">
+                    <i data-lucide="menu"></i>
+                </button>
+                <span class="font-brand text-xl tracking-wide">Gastroturismo</span>
+            </div>
+        </div>
+
+        <!-- Área de Vistas -->
+        <div id="app-content" class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8 pb-24">
+            <!-- Inyección de HTML -->
+        </div>
+    </main>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // --- CONFIGURACIÓN DE CSVs ---
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
+        const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
+        
+        // Mapeo de columnas basado en tu código anterior
+        const COLS = { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, tipo_lugar: 18, valoracion: 19, codprecio: 20, foto1: 23 };
+        const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6 };
+
+        let DATA = []; // Aquí guardaremos los datos procesados
+
+        // --- DEFINICIÓN DE MENÚ Y CATEGORÍAS ---
+        const MENUS = [
+            { id: 'landing', label: 'Inicio', icon: 'home' },
+            { id: 'pintxos', label: 'Pintxos y Tapas', icon: 'utensils-crossed', keywords: ['pintxo', 'tapa', 'bar'] },
+            { id: 'restaurantes', label: 'Restaurantes', icon: 'chef-hat', keywords: ['restaurante', 'asador', 'comida'] },
+            { id: 'bodegas', label: 'Bodegas', icon: 'wine', keywords: ['bodega', 'vino', 'catas'] },
+            { id: 'turismo', label: 'Turismo', icon: 'compass', keywords: ['turismo', 'visita', 'museo'] },
+            { id: 'eventosCulinarios', label: 'Eventos Cul.', icon: 'calendar-heart' },
+            { id: 'eventosTuristicos', label: 'Eventos Tur.', icon: 'map' },
+            { id: 'tiendas', label: 'Tiendas', icon: 'shopping-bag', keywords: ['tienda', 'comercio', 'gourmet'] },
+            { id: 'curiosidades', label: 'Curiosidades', icon: 'help-circle', keywords: ['curiosidad', 'cartel', 'señal'] },
+        ];
+
+        const state = {
+            view: 'landing',
+            filters: {},
+            selectedItem: null,
+            filterStep: 0
+        };
+
+        // --- PARSER CSV (Tu código adaptado) ---
+        function parseCSV(csvText) {
+            const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
+            csvText = csvText.trim();
+            for (let i = 0; i < csvText.length; i++) {
+                const char = csvText[i];
+                if (char === '"') {
+                    if (inQuotes && i + 1 < csvText.length && csvText[i + 1] === '"') { currentField += '"'; i++; }
+                    else { inQuotes = !inQuotes; }
+                } else if (char === ',' && !inQuotes) {
+                    fields.push(currentField); currentField = '';
+                } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                    fields.push(currentField); rows.push(fields); fields = []; currentField = '';
+                    if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') i++;
+                } else { currentField += char; }
+            }
+            if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
+            return rows.map(row => row.map(field => field.trim()));
+        }
+
+        // --- INICIALIZACIÓN DE DATOS ---
+        async function loadData() {
+            try {
+                const [sitesRes, eventsRes] = await Promise.all([fetch(CSV_URL), fetch(EVENTOS_CSV_URL)]);
+                const sitesRaw = parseCSV(await sitesRes.text()).slice(1);
+                const eventsRaw = parseCSV(await eventsRes.text()).slice(1);
+
+                // 1. Procesar Sitios
+                const sitesProcessed = sitesRaw.map(row => {
+                    // Determinar tipo basado en columna tipo_lugar o heurísticas
+                    let type = 'pintxos'; // Default
+                    const rawType = (row[COLS.tipo_lugar] || '').toLowerCase();
+                    
+                    if (rawType.includes('restaurante') || rawType.includes('asador')) type = 'restaurantes';
+                    else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
+                    else if (rawType.includes('turismo') || rawType.includes('visita')) type = 'turismo';
+                    else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
+                    else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';
+                    
+                    // Construir galería completa
+                    const gallery = [];
+                    for(let i=1; i<=40; i++) {
+                        // El índice en el array del CSV se calcula sumando al offset de foto1
+                        // foto1 es index 23. texto1 es 24. foto2 es 25, texto2 es 26...
+                        // Fórmula: 23 + (i-1)*2
+                        const photoIdx = 23 + (i-1)*2;
+                        const textIdx = 24 + (i-1)*2;
+                        if(row[photoIdx]) {
+                            gallery.push({
+                                url: `https://drive.google.com/thumbnail?id=${row[photoIdx]}&sz=w800`,
+                                caption: row[textIdx] || ''
+                            });
+                        }
+                    }
+
+                    return {
+                        id: row[COLS.idsitio] || Math.random().toString(),
+                        type: type,
+                        name: row[COLS.nombre],
+                        autonomia: row[COLS.autonomia],
+                        provincia: row[COLS.provincia],
+                        ciudad: row[COLS.ciudad],
+                        barrio: row[COLS.barrio],
+                        rating: parseFloat((row[COLS.valoracion] || '0').replace(',', '.')) || 0,
+                        image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto', // Fallback
+                        desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
+                        fullDesc: row[COLS.pintxo_tapa] || '',
+                        priceCode: row[COLS.codprecio],
+                        address: row[COLS.direccion],
+                        hours: row[COLS.horario],
+                        links: {
+                            maps: row[COLS.maps],
+                            web: row[COLS.web],
+                            instagram: row[COLS.instagram],
+                            post: row[COLS.postinstagram],
+                            reviews: row[COLS.googleresenas]
+                        },
+                        gallery: gallery
+                    };
+                });
+
+                // 2. Procesar Eventos (Lo simplificamos para la demo, usando la misma lógica de galería si fuera necesario)
+                const eventsProcessed = eventsRaw.map((row, idx) => ({
+                    id: `evt-${idx}`,
+                    type: 'eventosCulinarios', // Por defecto culinarios, podrías añadir lógica para turísticos
+                    name: row[COLS_EVENTOS.eventoCulinario],
+                    mes: row[COLS_EVENTOS.eventoMes],
+                    desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
+                    image: row[COLS_EVENTOS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS_EVENTOS.foto1]}&sz=w800` : 'https://placehold.co/600x400?text=Evento',
+                    rating: 5 // Default rating para eventos
+                }));
+
+                DATA = [...sitesProcessed, ...eventsProcessed];
+                
+                // Ocultar loader
+                document.getElementById('loading-overlay').classList.add('opacity-0', 'pointer-events-none');
+                initApp();
+
+            } catch (err) {
+                document.getElementById('loading-text').innerHTML = `<span class="text-red-500">Error: ${err.message}</span>`;
+                console.error(err);
+            }
+        }
+
+        function initApp() {
+            renderSidebar();
+            navigate('landing');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        // --- NAVEGACIÓN Y UI ---
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function navigate(viewId) {
+            state.view = viewId;
+            state.filters = {};
+            state.selectedItem = null;
+            state.filterStep = 0;
+            
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.add('hidden');
+
+            updateActiveMenu(viewId);
+            renderAppContent();
+        }
+
+        function updateActiveMenu(viewId) {
+            const container = document.getElementById('nav-menu');
+            // Re-renderizar es más fácil que manipular clases una a una
+            renderSidebar(); 
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('nav-menu');
+            container.innerHTML = MENUS.map(item => `
+                <button onclick="navigate('${item.id}')" class="w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${state.view === item.id ? 'bg-primary text-white shadow-lg shadow-teal-900/50 translate-x-1' : 'hover:bg-teal-800/50 text-teal-100 hover:text-white hover:translate-x-1'}">
+                    <i data-lucide="${item.icon}" class="${state.view === item.id ? 'text-teal-50' : 'text-teal-300'}"></i>
+                    <span class="font-medium">${item.label}</span>
+                </button>
+            `).join('');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function renderAppContent() {
+            const container = document.getElementById('app-content');
+            container.innerHTML = ''; 
+
+            let htmlContent = '';
+
+            if (state.selectedItem) {
+                htmlContent = getDetailHtml(state.selectedItem);
+            } else if (state.view === 'landing') {
+                htmlContent = getLandingHtml();
+            } else {
+                const type = state.view;
+                if (['eventosCulinarios', 'eventosTuristicos'].includes(type)) {
+                    htmlContent = getSectionMonthHtml(type);
+                } else if (['tiendas', 'curiosidades'].includes(type)) {
+                    htmlContent = getSectionAlphaHtml(type);
+                } else {
+                    htmlContent = getSectionLocationHtml(type);
+                }
+            }
+            container.innerHTML = htmlContent;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            container.scrollTo(0,0);
+        }
+
+        // --- VISTAS ---
+
+        function getLandingHtml() {
+            // Tarjetas del Home
+            const cards = MENUS.filter(m => m.id !== 'landing');
+            const colors = ['orange', 'red', 'purple', 'blue', 'green', 'teal', 'pink', 'yellow'];
+
+            return `
+                <div class="fade-in max-w-6xl mx-auto">
+                    <section class="relative h-[400px] rounded-3xl overflow-hidden mb-10 shadow-2xl">
+                        <img src="https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200-h800" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-darkTeal/90 to-transparent flex flex-col justify-end p-8 text-center">
+                            <h1 class="font-brand text-4xl md:text-6xl text-white mb-2 text-shadow">Gastronomía y turismo</h1>
+                            <p class="text-teal-100 text-lg md:text-xl font-light">Compartimos nuestras experiencias, por si te apetece probar alguna...</p>
+                        </div>
+                    </section>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        ${cards.map((c, idx) => {
+                            const color = colors[idx % colors.length];
+                            // Usamos clases de Tailwind dinámicas con estilo inline para simplificar la demo sin JIT complejo
+                            // En producción usaría clases completas como bg-orange-50
+                            return `
+                            <button onclick="navigate('${c.id}')" class="bg-${color}-50 hover:bg-${color}-100 border border-${color}-200 p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
+                                <div class="bg-white p-4 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                    <i data-lucide="${c.icon}" class="text-${color}-600" width="32" height="32"></i>
+                                </div>
+                                <span class="font-bold text-slate-800 group-hover:text-darkTeal font-brand text-lg">${c.label}</span>
+                            </button>
+                        `}).join('')}
+                    </div>
+
+                    <!-- About Us Mini -->
+                    <div class="mt-16 bg-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-8">
+                         <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w400" class="w-32 h-32 rounded-full object-cover border-4 border-primary">
+                         <div class="text-center md:text-left">
+                            <h2 class="font-brand text-2xl text-darkTeal mb-2">¡Hola! Somos Angels e Iñaki 👋</h2>
+                            <p class="text-gray-600">Te abrimos las puertas a nuestro universo. Tenemos de todo: desde bocados de pura felicidad 😋, hasta kilómetros de aventura ✨.</p>
+                         </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- FILTROS Y GRID ---
+
+        function selectFilter(level, value) {
+            state.filters[level] = value;
+            state.filterStep++;
+            renderAppContent(); 
+        }
+
+        function resetFilters() {
+            state.filters = {};
+            state.filterStep = 0;
+            renderAppContent();
+        }
+
+        function showAllFilters() {
+            state.filterStep = 99; 
+            renderAppContent();
+        }
+
+        function getSectionLocationHtml(type) {
+            const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
+            
+            // Filtrar datos reales
+            const currentData = DATA.filter(d => d.type === type && 
+                Object.keys(state.filters).every(k => d[k] === state.filters[k])
+            );
+
+            // Título de la sección
+            const sectionTitle = MENUS.find(m => m.id === type)?.label || type;
+
+            // Lógica de salto automático (Auto-skip)
+            while (state.filterStep < levels.length) {
+                let currentLevel = levels[state.filterStep];
+                // Obtener opciones únicas y limpiar vacíos
+                const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean).sort();
+                
+                if (options.length === 0) {
+                    state.filterStep = 99; // No hay más niveles, mostrar resultados
+                    break;
+                } else if (options.length === 1) {
+                    // Solo una opción, autoseleccionar
+                    state.filters[currentLevel] = options[0];
+                    state.filterStep++;
+                } else {
+                    // Hay varias opciones, preguntar al usuario
+                    return renderFilterWizard(sectionTitle, currentLevel, options);
+                }
+            }
+
+            return renderResultsGrid(sectionTitle, currentData);
+        }
+
+        function renderFilterWizard(title, level, options) {
+            return `
+                <div class="fade-in max-w-lg mx-auto p-6 mt-4">
+                    <button onclick="resetFilters()" class="mb-6 flex items-center text-primary font-bold hover:underline"><i data-lucide="arrow-left" class="mr-2"></i> Volver al inicio de ${title}</button>
+                    <h2 class="text-3xl font-brand font-bold mb-2 text-center text-darkTeal">
+                        ${title}
+                    </h2>
+                    <p class="text-center text-gray-500 mb-8">Selecciona ${level}:</p>
+                    
+                    <div class="space-y-3">
+                        ${options.map(opt => `
+                            <button onclick="selectFilter('${level}', '${opt}')" class="w-full p-5 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:border-teal-400 hover:bg-teal-50 transition-all bg-white group text-slate-700">
+                                <span class="text-lg font-medium">${opt}</span>
+                                <i data-lucide="chevron-right" class="text-gray-300 group-hover:text-primary transition-colors"></i>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <button onclick="showAllFilters()" class="w-full py-4 rounded-xl bg-primary text-white font-bold shadow-lg shadow-teal-500/20 hover:bg-darkTeal transition-all">
+                            Mostrar todos los resultados
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getSectionMonthHtml(type) {
+            const rawData = DATA.filter(d => d.type === type);
+            const monthsOrder = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            const grouped = rawData.reduce((acc, item) => {
+                const m = item.mes || 'Sin Fecha';
+                (acc[m] = acc[m] || []).push(item);
+                return acc;
+            }, {});
+            
+            // Ordenar meses
+            const sortedMonths = Object.keys(grouped).sort((a, b) => {
+                const idxA = monthsOrder.indexOf(a);
+                const idxB = monthsOrder.indexOf(b);
+                if (idxA === -1) return 1;
+                if (idxB === -1) return -1;
+                return idxA - idxB;
+            });
+            
+            const title = MENUS.find(m => m.id === type)?.label || type;
+
+            return `
+                <div class="fade-in pb-24">
+                    <header class="mb-8 border-b-4 border-secondary inline-block pb-2">
+                        <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                    </header>
+                    <div class="space-y-12">
+                        ${sortedMonths.map(month => `
+                            <div class="relative">
+                                <div class="sticky top-0 z-10 bg-[#F0FDFD]/95 backdrop-blur py-3 mb-4 border-b border-teal-100 flex items-center">
+                                    <span class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold uppercase tracking-wider mr-3">${month}</span>
+                                    <span class="text-gray-400 text-sm">${grouped[month].length} eventos</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    ${grouped[month].map(item => renderCard(item)).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getSectionAlphaHtml(type) {
+            const rawData = DATA.filter(d => d.type === type).sort((a, b) => a.name.localeCompare(b.name));
+            const title = MENUS.find(m => m.id === type)?.label || type;
+            return renderResultsGrid(title, rawData, false);
+        }
+
+        function renderResultsGrid(title, items, showFilterBtn = true) {
+            if (items.length === 0) {
+                return `
+                     <div class="fade-in pb-24">
+                        <header class="mb-8 flex justify-between items-center">
+                            <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Reiniciar Filtros</button>` : ''}
+                        </header>
+                        <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+                             <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                <i data-lucide="search" width="32" height="32"></i>
+                             </div>
+                             <p class="text-gray-500 font-medium text-lg">No hemos encontrado nada aquí.</p>
+                             <button onclick="resetFilters()" class="text-primary font-bold mt-4 border border-primary px-4 py-2 rounded-full hover:bg-primary hover:text-white transition">Limpiar búsqueda</button>
+                        </div>
+                     </div>
+                `;
+            }
+
+            return `
+                <div class="fade-in pb-24">
+                    <header class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                        <div>
+                            <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                            <p class="text-gray-500 text-sm mt-1">Mostrando ${items.length} resultados</p>
+                        </div>
+                        ${showFilterBtn && Object.keys(state.filters).length > 0 ? `
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-400 bg-white px-2 py-1 rounded border">
+                                    ${Object.values(state.filters).join(' > ')}
+                                </span>
+                                <button onclick="resetFilters()" class="text-sm font-bold text-white bg-primary px-4 py-2 rounded-lg hover:bg-darkTeal transition-colors shadow-md">
+                                    Cambiar Zona
+                                </button>
+                            </div>
+                        ` : ''}
+                    </header>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        ${items.map(item => renderCard(item)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCard(item) {
+            const stars = Math.round(item.rating);
+            const starHtml = Array(5).fill(0).map((_, i) => 
+                `<svg class="w-4 h-4 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+            ).join('');
+
+            return `
+                <div onclick="openDetail('${item.id}')" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col h-full">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                        <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-darkTeal px-3 py-1 text-xs font-bold rounded-lg shadow-sm">
+                            ${item.ciudad || item.provincia || 'General'}
+                        </div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="mb-2">
+                             <h3 class="text-lg font-bold text-slate-800 leading-snug group-hover:text-primary transition-colors font-brand">${item.name}</h3>
+                             ${item.mes ? `<span class="text-xs font-bold uppercase tracking-wide text-secondary mt-1 block">${item.mes}</span>` : ''}
+                        </div>
+                        
+                        <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1 font-light leading-relaxed">${item.desc}</p>
+                        
+                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                            <div class="flex items-center space-x-1">${starHtml}</div>
+                            <span class="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                <i data-lucide="chevron-right" width="16"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- VISTA DETALLE ---
+
+        function openDetail(id) {
+            state.selectedItem = DATA.find(d => d.id === id);
+            renderAppContent();
+        }
+
+        function closeDetail() {
+            state.selectedItem = null;
+            renderAppContent();
+        }
+
+        function getDetailHtml(item) {
+            const stars = Math.round(item.rating);
+            const starHtml = Array(5).fill(0).map((_, i) => 
+                `<svg class="w-6 h-6 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+            ).join('');
+
+            const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
+            
+            // Lógica de precio
+            let priceText = '';
+            if (item.priceCode == 10) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
+            else if (item.priceCode == 11) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
+            else if (item.priceCode == 12) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
+
+            // Galería (excluyendo la primera que es la principal)
+            const remainingGallery = item.gallery.slice(1);
+
+            return `
+                <div class="bg-white min-h-full absolute inset-0 z-20 overflow-y-auto animate-fadeIn pb-20">
+                    <!-- Botón Flotante Volver -->
+                    <button onclick="closeDetail()" class="fixed top-4 left-4 z-50 bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100">
+                        <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
+                    </button>
+                    
+                    <!-- Imagen Principal Hero -->
+                    <div class="h-[50vh] w-full relative">
+                        <img src="${item.image}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
+                            <div class="max-w-4xl mx-auto">
+                                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 bg-primary text-white shadow-lg border border-white/20">
+                                    ${MENUS.find(m => m.id === item.type)?.label || item.type}
+                                </span>
+                                <h2 class="font-brand text-4xl md:text-5xl text-white mb-2 leading-tight drop-shadow-lg">${item.name}</h2>
+                                <p class="text-gray-200 text-sm md:text-base flex items-center font-medium opacity-90">
+                                    <i data-lucide="map-pin" width="16" class="mr-2 text-primaryContainer"></i> ${item.ciudad}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido Principal -->
+                    <div class="max-w-5xl mx-auto -mt-10 relative px-4 md:px-0">
+                        <div class="bg-white rounded-t-3xl shadow-xl border-t border-gray-100 p-6 md:p-10 flex flex-col md:flex-row gap-10">
+                            
+                            <!-- Columna Izquierda: Información -->
+                            <div class="flex-1 space-y-8">
+                                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-dashed border-gray-200 pb-6">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating}</span>
+                                        <div class="flex">${starHtml}</div>
+                                    </div>
+                                    ${priceText}
+                                </div>
+
+                                <div>
+                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand uppercase tracking-widest">Nuestra Experiencia</h3>
+                                    <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                        ${item.fullDesc || item.desc}
+                                    </div>
+                                </div>
+
+                                <!-- Botones de Acción -->
+                                <div class="flex flex-wrap gap-3">
+                                    ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
+                                    ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
+                                    ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Instagram</a>` : ''}
+                                </div>
+                            </div>
+
+                            <!-- Columna Derecha: Sidebar Sticky -->
+                            <div class="w-full md:w-80 flex-shrink-0 space-y-6">
+                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm sticky top-6">
+                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center border-b border-teal-200 pb-2">
+                                        <i data-lucide="info" width="14" class="mr-2"></i> Datos Prácticos
+                                    </h4>
+                                    
+                                    ${item.address ? `
+                                    <div class="mb-4">
+                                        <span class="text-xs text-gray-400 font-bold uppercase">Dirección</span>
+                                        <p class="text-sm font-medium text-slate-700 mt-1">${item.address}</p>
+                                    </div>` : ''}
+
+                                    ${item.hours ? `
+                                    <div class="mb-4">
+                                        <span class="text-xs text-gray-400 font-bold uppercase">Horario</span>
+                                        <div class="text-sm font-medium text-slate-700 mt-1 whitespace-pre-line">${item.hours}</div>
+                                    </div>` : ''}
+
+                                    ${item.links.reviews ? `
+                                    <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
+                                        Leer Reseñas en Google
+                                    </a>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Galería Completa -->
+                        ${remainingGallery.length > 0 ? `
+                        <div class="mt-12 mb-12">
+                            <h3 class="text-2xl font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Galería de Fotos</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                ${remainingGallery.map(img => `
+                                    <div class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative">
+                                        <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
+                                        ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[10px] p-2 opacity-0 group-hover:opacity-100 transition">${img.caption}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- INICIAR ---
+        document.addEventListener('DOMContentLoaded', loadData);
+
+    </script>
+</body>
+</html>
