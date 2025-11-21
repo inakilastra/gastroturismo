@@ -170,8 +170,8 @@
                     let type = 'pintxos'; // Default
                     const rawType = (row[COLS.tipo_lugar] || '').toLowerCase();
                     
-                    if (rawType.includes('bar') || rawType.includes('bar y restaurante')) type = 'bar';
-                    else if (rawType.includes('restaurante') || rawType.includes('bar y restaurante')) type = 'restaurantes';
+                    if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
+                    else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
                     else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
                     else if (rawType.includes('turismo') || rawType.includes('visita')) type = 'turismo';
                     else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
