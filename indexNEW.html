@@ -367,23 +367,46 @@
 
         function goBackOneStep() {
             const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
+            const currentType = state.view;
+
+            // 1. Caso base: Si estamos en el principio de todo, vamos a la Landing
             if (state.filterStep === 0 && Object.keys(state.filters).length === 0) {
                 navigate('landing');
                 return;
             }
 
+            // 2. Identificar filtros y borrar el último
             const activeFilters = levels.filter(l => state.filters[l]);
-
+            
             if (activeFilters.length > 0) {
                 const lastFilter = activeFilters[activeFilters.length - 1];
                 delete state.filters[lastFilter];
+                // Retrocedemos el step al nivel del filtro que acabamos de borrar
                 state.filterStep = activeFilters.length - 1;
             } else {
+                // Si no había filtros pero el step era > 0
                 state.filterStep = Math.max(0, state.filterStep - 1);
             }
 
-            if (state.filterStep === 99) {
-                state.filterStep = Object.keys(state.filters).length;
+            // 3. FIX INTELIGENTE (Recursividad)
+            // Antes de renderizar, comprobamos si el lugar al que hemos vuelto tiene solo 1 opción.
+            // Si es así, el sistema nos volvería a empujar adelante, así que forzamos otro paso atrás.
+            
+            // Filtramos los datos con los filtros que quedan tras borrar
+            const currentData = DATA.filter(d => d.type === currentType && 
+                Object.keys(state.filters).every(k => d[k] === state.filters[k])
+            );
+            
+            // Miramos las opciones disponibles en este nuevo nivel
+            if (state.filterStep < levels.length) {
+                const currentLevel = levels[state.filterStep];
+                const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean);
+                
+                // Si solo hay 1 opción (y no estamos ya en el inicio absoluto), VOLVEMOS OTRA VEZ
+                if (options.length <= 1 && (state.filterStep > 0 || Object.keys(state.filters).length > 0)) {
+                    goBackOneStep(); // <--- ¡Se llama a sí misma!
+                    return; // Importante salir para no renderizar dos veces
+                }
             }
 
             renderAppContent();
