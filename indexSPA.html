@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANeKI - Gastroturismo</title>
     
-    <!-- Tipografías: Outfit (Moderna) y Special Elite (Marca) -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Iconos Lucide -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-    <!-- Configuración Tailwind -->
     <script>
         tailwind.config = {
             theme: {
@@ -59,13 +55,11 @@
 </head>
 <body class="bg-background text-slate-800 h-screen flex overflow-hidden font-sans selection:bg-primaryContainer selection:text-darkTeal">
 
-    <!-- OVERLAY LOADING INICIAL -->
     <div id="loading-overlay" class="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="loader mb-4"></div>
         <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando el mundo de Aneki...</h2>
     </div>
 
-    <!-- SIDEBAR -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity" onclick="toggleMenu()"></div>
     
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
@@ -77,8 +71,7 @@
         </div>
         
         <nav class="p-4 space-y-1 flex-1 overflow-y-auto" id="nav-menu">
-            <!-- Se rellena con JS -->
-        </nav>
+            </nav>
 
         <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-400/60 font-brand">
             <p>Gastroturismo 2.0</p>
@@ -86,10 +79,8 @@
         </div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-1 flex flex-col h-full relative md:ml-64 w-full transition-all duration-300 bg-[#F0FDFD]">
         
-        <!-- Header Móvil -->
         <div class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
             <div class="flex items-center">
                 <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3">
@@ -99,25 +90,20 @@
             </div>
         </div>
 
-        <!-- Área de Vistas -->
         <div id="app-content" class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8 pb-24">
-            <!-- Inyección de HTML -->
-        </div>
+            </div>
     </main>
 
-    <!-- LÓGICA JAVASCRIPT -->
     <script>
         // --- CONFIGURACIÓN DE CSVs ---
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
         const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
         
-        // Mapeo de columnas basado en tu código anterior
         const COLS = { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
         const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6 };
 
-        let DATA = []; // Aquí guardaremos los datos procesados
+        let DATA = []; 
 
-        // --- DEFINICIÓN DE MENÚ Y CATEGORÍAS ---
         const MENUS = [
             { id: 'landing', label: 'Inicio', icon: 'home' },
             { id: 'pintxos', label: 'Pintxos y Tapas', icon: 'utensils-crossed', keywords: ['pintxo', 'tapa', 'bar'] },
@@ -137,7 +123,7 @@
             filterStep: 0
         };
 
-        // --- PARSER CSV (Tu código adaptado) ---
+        // --- PARSER CSV ---
         function parseCSV(csvText) {
             const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
             csvText = csvText.trim();
@@ -164,10 +150,8 @@
                 const sitesRaw = parseCSV(await sitesRes.text()).slice(1);
                 const eventsRaw = parseCSV(await eventsRes.text()).slice(1);
 
-                // 1. Procesar Sitios
                 const sitesProcessed = sitesRaw.map(row => {
-                    // Determinar tipo basado en columna tipo_lugar o heurísticas
-                    let type = 'pintxos'; // Default
+                    let type = 'pintxos'; 
                     const rawType = (row[COLS.tipo_lugar] || '').toLowerCase();
                     
                     if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
@@ -177,12 +161,8 @@
                     else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
                     else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';
                     
-                    // Construir galería completa
                     const gallery = [];
                     for(let i=1; i<=40; i++) {
-                        // El índice en el array del CSV se calcula sumando al offset de foto1
-                        // foto1 es index 23. texto1 es 24. foto2 es 25, texto2 es 26...
-                        // Fórmula: 23 + (i-1)*2
                         const photoIdx = 23 + (i-1)*2;
                         const textIdx = 24 + (i-1)*2;
                         if(row[photoIdx]) {
@@ -193,13 +173,8 @@
                         }
                     }
 
-                    // 1. Obtener el valor crudo, asegurar que es texto y cambiar coma por punto
                     let rawVal = String(row[COLS.valoracion] || '10').replace(',', '.');
-
-                    // 2. Convertir a número flotante
                     let valNum = parseFloat(rawVal);
-
-                    // 3. Calcular nota: Si no es un número o es menor que 10, se queda en 0. Si no, restamos 10.
                     let finalRating = (isNaN(valNum) || valNum < 10) ? 0 : valNum - 10;
                     return {
                         id: row[COLS.idsitio] || Math.random().toString(),
@@ -210,7 +185,7 @@
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
                         rating: finalRating,
-                        image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto', // Fallback
+                        image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto', 
                         desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
                         fullDesc: row[COLS.pintxo_tapa] || '',
                         priceCode: row[COLS.codprecio],
@@ -227,20 +202,18 @@
                     };
                 });
 
-                // 2. Procesar Eventos (Lo simplificamos para la demo, usando la misma lógica de galería si fuera necesario)
                 const eventsProcessed = eventsRaw.map((row, idx) => ({
                     id: `evt-${idx}`,
-                    type: 'eventosCulinarios', // Por defecto culinarios, podrías añadir lógica para turísticos
+                    type: 'eventosCulinarios',
                     name: row[COLS_EVENTOS.eventoCulinario],
                     mes: row[COLS_EVENTOS.eventoMes],
                     desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
                     image: row[COLS_EVENTOS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS_EVENTOS.foto1]}&sz=w800` : 'https://placehold.co/600x400?text=Evento',
-                    rating: 5 // Default rating para eventos
+                    rating: 5 
                 }));
 
                 DATA = [...sitesProcessed, ...eventsProcessed];
                 
-                // Ocultar loader
                 document.getElementById('loading-overlay').classList.add('opacity-0', 'pointer-events-none');
                 initApp();
 
@@ -248,18 +221,12 @@
                 console.error("Error cargando datos:", err);
                 const loadingText = document.getElementById('loading-text');
                 const loader = document.querySelector('.loader');
-                
-                // Ocultar el spinner giratorio
                 if (loader) loader.style.display = 'none';
-
-                // Mostrar el error al usuario
                 if (loadingText) {
                     loadingText.innerHTML = `
                         <span class="text-red-600 font-bold">¡Ups! Algo falló.</span><br>
                         <span class="text-sm text-red-400">${err.message}</span>
                     `;
-                } else {
-                    alert("Error crítico: " + err.message);
                 }
             }
         }
@@ -300,8 +267,6 @@
         }
 
         function updateActiveMenu(viewId) {
-            const container = document.getElementById('nav-menu');
-            // Re-renderizar es más fácil que manipular clases una a una
             renderSidebar(); 
         }
 
@@ -344,7 +309,6 @@
         // --- VISTAS ---
 
         function getLandingHtml() {
-            // Tarjetas del Home
             const cards = MENUS.filter(m => m.id !== 'landing');
             const colors = ['orange', 'red', 'purple', 'blue', 'green', 'teal', 'pink', 'yellow'];
 
@@ -361,8 +325,6 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         ${cards.map((c, idx) => {
                             const color = colors[idx % colors.length];
-                            // Usamos clases de Tailwind dinámicas con estilo inline para simplificar la demo sin JIT complejo
-                            // En producción usaría clases completas como bg-orange-50
                             return `
                             <button onclick="navigate('${c.id}')" class="bg-${color}-50 hover:bg-${color}-100 border border-${color}-200 p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
                                 <div class="bg-white p-4 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
@@ -373,7 +335,6 @@
                         `}).join('')}
                     </div>
 
-                    <!-- About Us Mini -->
                     <div class="mt-16 bg-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-8">
                          <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w400" class="w-32 h-32 rounded-full object-cover border-4 border-primary">
                          <div class="text-center md:text-left">
@@ -404,32 +365,62 @@
             renderAppContent();
         }
 
+        function goBackOneStep() {
+            const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
+            const currentType = state.view;
+
+            if (state.filterStep === 0 && Object.keys(state.filters).length === 0) {
+                navigate('landing');
+                return;
+            }
+
+            const activeFilters = levels.filter(l => state.filters[l]);
+            
+            if (activeFilters.length > 0) {
+                const lastFilter = activeFilters[activeFilters.length - 1];
+                delete state.filters[lastFilter];
+                state.filterStep = activeFilters.length - 1;
+            } else {
+                state.filterStep = Math.max(0, state.filterStep - 1);
+            }
+
+            const currentData = DATA.filter(d => d.type === currentType && 
+                Object.keys(state.filters).every(k => d[k] === state.filters[k])
+            );
+            
+            if (state.filterStep < levels.length) {
+                const currentLevel = levels[state.filterStep];
+                const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean);
+                
+                if (options.length <= 1 && (state.filterStep > 0 || Object.keys(state.filters).length > 0)) {
+                    goBackOneStep(); 
+                    return; 
+                }
+            }
+
+            renderAppContent();
+        }
+
         function getSectionLocationHtml(type) {
             const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
             
-            // Filtrar datos reales
             const currentData = DATA.filter(d => d.type === type && 
                 Object.keys(state.filters).every(k => d[k] === state.filters[k])
             );
 
-            // Título de la sección
             const sectionTitle = MENUS.find(m => m.id === type)?.label || type;
 
-            // Lógica de salto automático (Auto-skip)
             while (state.filterStep < levels.length) {
                 let currentLevel = levels[state.filterStep];
-                // Obtener opciones únicas y limpiar vacíos
                 const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean).sort();
                 
                 if (options.length === 0) {
-                    state.filterStep = 99; // No hay más niveles, mostrar resultados
+                    state.filterStep = 99; 
                     break;
                 } else if (options.length === 1) {
-                    // Solo una opción, autoseleccionar
                     state.filters[currentLevel] = options[0];
                     state.filterStep++;
                 } else {
-                    // Hay varias opciones, preguntar al usuario
                     return renderFilterWizard(sectionTitle, currentLevel, options);
                 }
             }
@@ -437,14 +428,22 @@
             return renderResultsGrid(sectionTitle, currentData);
         }
 
-        function renderFilterWizard(title, level, options) {
+       function renderFilterWizard(title, level, options) {
+            const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
+            
             return `
                 <div class="fade-in max-w-lg mx-auto p-6 mt-4">
-                    <button onclick="resetFilters()" class="mb-6 flex items-center text-primary font-bold hover:underline"><i data-lucide="arrow-left" class="mr-2"></i> Volver al inicio de ${title}</button>
+                    <button onclick="goBackOneStep()" class="mb-6 flex items-center text-slate-500 font-bold hover:text-primary transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center mr-2 group-hover:bg-primary/10">
+                            <i data-lucide="arrow-left" width="18"></i>
+                        </div>
+                        Atrás / Anterior
+                    </button>
+
                     <h2 class="text-3xl font-brand font-bold mb-2 text-center text-darkTeal">
                         ${title}
                     </h2>
-                    <p class="text-center text-gray-500 mb-8">Selecciona ${level}:</p>
+                    <p class="text-center text-gray-500 mb-8">Selecciona ${levelLabel}:</p>
                     
                     <div class="space-y-3">
                         ${options.map(opt => `
@@ -473,7 +472,6 @@
                 return acc;
             }, {});
             
-            // Ordenar meses
             const sortedMonths = Object.keys(grouped).sort((a, b) => {
                 const idxA = monthsOrder.indexOf(a);
                 const idxB = monthsOrder.indexOf(b);
@@ -515,40 +513,59 @@
         function renderResultsGrid(title, items, showFilterBtn = true) {
             if (items.length === 0) {
                 return `
-                     <div class="fade-in pb-24">
-                        <header class="mb-8 flex justify-between items-center">
-                            <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
-                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Reiniciar Filtros</button>` : ''}
-                        </header>
-                        <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+                      <div class="fade-in pb-24">
+                         <header class="mb-8 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <button onclick="goBackOneStep()" class="p-2 bg-white rounded-full border border-gray-200 hover:border-primary hover:text-primary transition"><i data-lucide="arrow-left"></i></button>
+                                <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                            </div>
+                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Reiniciar Todo</button>` : ''}
+                         </header>
+                         <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
                              <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
                                 <i data-lucide="search" width="32" height="32"></i>
                              </div>
                              <p class="text-gray-500 font-medium text-lg">No hemos encontrado nada aquí.</p>
-                             <button onclick="resetFilters()" class="text-primary font-bold mt-4 border border-primary px-4 py-2 rounded-full hover:bg-primary hover:text-white transition">Limpiar búsqueda</button>
-                        </div>
-                     </div>
+                             <button onclick="goBackOneStep()" class="text-primary font-bold mt-4 border border-primary px-4 py-2 rounded-full hover:bg-primary hover:text-white transition">Volver atrás</button>
+                         </div>
+                      </div>
                 `;
             }
 
+            const hasFilters = Object.keys(state.filters).length > 0;
+            // ESTA ES LA LÍNEA QUE FALTABA:
+            const canGoBack = hasFilters || state.filterStep === 99;
+
             return `
                 <div class="fade-in pb-24">
-                    <header class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                        <div>
-                            <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
-                            <p class="text-gray-500 text-sm mt-1">Mostrando ${items.length} resultados</p>
-                        </div>
-                        ${showFilterBtn && Object.keys(state.filters).length > 0 ? `
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-400 bg-white px-2 py-1 rounded border">
-                                    ${Object.values(state.filters).join(' > ')}
-                                </span>
-                                <button onclick="resetFilters()" class="text-sm font-bold text-white bg-primary px-4 py-2 rounded-lg hover:bg-darkTeal transition-colors shadow-md">
-                                    Cambiar Zona
+                    <header class="mb-8">
+                        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                            <div class="flex items-start gap-4">
+                                ${canGoBack ? `
+                                <button onclick="goBackOneStep()" class="mt-1 p-2 bg-white rounded-full shadow-sm border border-gray-200 hover:bg-primary hover:text-white transition-colors group" title="Volver un paso">
+                                    <i data-lucide="arrow-left" width="20"></i>
                                 </button>
+                                ` : ''}
+                                
+                                <div>
+                                    <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                                    <p class="text-gray-500 text-sm mt-1">Mostrando ${items.length} resultados</p>
+                                </div>
                             </div>
-                        ` : ''}
+
+                            ${showFilterBtn && hasFilters ? `
+                                <div class="flex items-center gap-2 flex-wrap justify-end">
+                                    <span class="text-xs text-gray-400 bg-white px-2 py-1 rounded border hidden md:inline-block">
+                                        ${Object.values(state.filters).join(' > ')}
+                                    </span>
+                                    <button onclick="resetFilters()" class="text-xs font-bold text-teal-600 bg-teal-50 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors">
+                                        Borrar todo
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
                     </header>
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         ${items.map(item => renderCard(item)).join('')}
                     </div>
@@ -602,28 +619,29 @@
             renderAppContent();
         }
 
-        function getDetailHtml(item) {
+       function getDetailHtml(item) {
             const stars = Math.round(item.rating);
-            // Generar estrellas
             const starHtml = Array(5).fill(0).map((_, i) => 
                 `<svg class="w-6 h-6 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
 
             const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
             
-            // Lógica de precio
             let priceText = '';
             if (item.priceCode == 10) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
             else if (item.priceCode == 11) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
             else if (item.priceCode == 12) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
 
-            // Galería (excluyendo la primera que es la principal)
             const remainingGallery = item.gallery.slice(1);
 
+            // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
+            // Esto hace que en el móvil la ficha tape el menú verde superior.
             return `
-                <div class="bg-white min-h-full absolute inset-0 z-20 overflow-y-auto animate-fadeIn pb-20">
-                    <button onclick="closeDetail()" class="fixed top-4 left-4 z-50 bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100">
+                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-20">
+                    
+                    <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
                         <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
+                        <span class="font-bold text-sm hidden sm:inline">Volver</span>
                     </button>
                     
                     <div class="h-[50vh] w-full relative cursor-pointer group" onclick="openLightbox(0)">
@@ -657,6 +675,7 @@
                                     </div>
                                     ${priceText}
                                 </div>
+
                                 <div>
                                     <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand uppercase tracking-widest">Nuestra Experiencia</h3>
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
@@ -727,18 +746,14 @@
             currentLightboxIndex = index;
             const lightbox = document.getElementById('lightbox');
             
-            // Mostrar
             lightbox.classList.remove('hidden');
-            // Pequeño delay para permitir que el navegador renderice el block antes de la opacidad (fade-in)
             setTimeout(() => {
                 lightbox.classList.remove('opacity-0');
             }, 10);
 
             updateLightboxContent();
             
-            // Añadir listener de teclado
             document.addEventListener('keydown', handleLightboxKeys);
-            // Bloquear scroll del body
             document.body.style.overflow = 'hidden';
         }
 
@@ -748,17 +763,16 @@
             
             setTimeout(() => {
                 lightbox.classList.add('hidden');
-            }, 300); // Esperar a la transición
+            }, 300);
 
             document.removeEventListener('keydown', handleLightboxKeys);
-            document.body.style.overflow = ''; // Restaurar scroll
+            document.body.style.overflow = ''; 
         }
 
         function changeLightboxSlide(direction) {
             const gallery = state.selectedItem.gallery;
             currentLightboxIndex += direction;
 
-            // Loop infinito
             if (currentLightboxIndex >= gallery.length) currentLightboxIndex = 0;
             if (currentLightboxIndex < 0) currentLightboxIndex = gallery.length - 1;
 
@@ -772,9 +786,7 @@
             const imgEl = document.getElementById('lightbox-img');
             const captionEl = document.getElementById('lightbox-caption');
             const counterEl = document.getElementById('lightbox-counter');
-            const captionContainer = document.getElementById('lightbox-caption-container');
-
-            // Efecto de cambio suave
+            
             imgEl.style.opacity = '0.5';
             setTimeout(() => imgEl.style.opacity = '1', 200);
 
@@ -796,14 +808,11 @@
             if (e.key === 'ArrowRight') changeLightboxSlide(1);
         }
 
-
-
         // --- INICIAR ---
         document.addEventListener('DOMContentLoaded', loadData);
 
     </script>
 
-    <!-- LIGHTBOX GLOBAL -->
     <div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm" onclick="if(event.target === this) closeLightbox()">
         
         <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/10 rounded-full p-2 transition-all z-50">
