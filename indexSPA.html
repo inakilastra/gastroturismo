@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANEKI - Gastroturismo</title>
+    <title>ANeKI - Gastroturismo</title>
     
-    <!-- Tipografía: Outfit -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Tipografías: Outfit (Moderna) y Special Elite (Marca) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Iconos Lucide (Versión UMD corregida para navegadores) -->
+    <!-- Iconos Lucide -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <!-- Configuración Tailwind -->
@@ -21,14 +21,15 @@
                 extend: {
                     fontFamily: {
                         sans: ['Outfit', 'sans-serif'],
+                        brand: ['Special Elite', 'cursive'],
                     },
                     colors: {
-                        primary: '#009688', //'#009688',
-                        secondary: '#4DB6AC', //'#4DB6AC',
-                        surface: '#E0F2F1', //'#E0F2F1',
-                        background: '#B2DFDB', //'#F0FDFD',
-                        primaryContainer: '#A7FFEB', //'#A7FFEB',
-                        darkTeal: '#004D40',
+                        primary: '#009688',       /* Teal 500 */
+                        secondary: '#4DB6AC',     /* Teal 300 */
+                        surface: '#E0F2F1',       /* Teal 50 */
+                        background: '#F0FDFD',
+                        primaryContainer: '#A7FFEB', /* Teal A100 */
+                        darkTeal: '#004D40',      /* Teal 900 */
                     }
                 }
             }
@@ -36,25 +37,40 @@
     </script>
 
     <style>
-        /* Animaciones suaves */
         .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Scrollbar personalizada */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #009688; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #004D40; }
+
+        /* Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #009688;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-background text-slate-800 h-screen flex overflow-hidden font-sans selection:bg-primaryContainer selection:text-darkTeal">
 
-    <!-- SIDEBAR (Escritorio y Móvil) -->
+    <!-- OVERLAY LOADING INICIAL -->
+    <div id="loading-overlay" class="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="loader mb-4"></div>
+        <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando el mundo de Aneki...</h2>
+    </div>
+
+    <!-- SIDEBAR -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity" onclick="toggleMenu()"></div>
     
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
         <div class="p-6 flex justify-between items-center border-b border-teal-800/50">
-            <div class="font-bold text-2xl tracking-tight">ANEKI</div>
+            <div class="font-brand text-2xl tracking-widest text-primaryContainer">ANEKI</div>
             <button onclick="toggleMenu()" class="md:hidden text-teal-200 hover:text-white">
                 <i data-lucide="x"></i>
             </button>
@@ -64,8 +80,8 @@
             <!-- Se rellena con JS -->
         </nav>
 
-        <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-400/60">
-            <p class="font-medium">Gastroturismo 2.0</p>
+        <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-400/60 font-brand">
+            <p>Gastroturismo 2.0</p>
             <p>© Iñaki & Angels</p>
         </div>
     </aside>
@@ -79,63 +95,182 @@
                 <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3">
                     <i data-lucide="menu"></i>
                 </button>
-                <span class="font-bold text-xl tracking-tight">Gastroturismo</span>
+                <span class="font-brand text-xl tracking-wide">Gastroturismo</span>
             </div>
         </div>
 
-        <!-- Área de Vistas Dinámicas -->
-        <div id="app-content" class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8">
-            <!-- Aquí se inyecta el HTML de cada sección -->
+        <!-- Área de Vistas -->
+        <div id="app-content" class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8 pb-24">
+            <!-- Inyección de HTML -->
         </div>
     </main>
 
     <!-- LÓGICA JAVASCRIPT -->
     <script>
-        // --- DATOS (MOCK DATA) ---
-        const DATA = [
-            { id: 1, type: 'pintxos', name: 'Bar La Cepa', autonomia: 'Euskadi', provincia: 'Gipuzkoa', ciudad: 'Donostia', barrio: 'Parte Vieja', rating: 4.5, image: 'https://images.unsplash.com/photo-1564844536311-de23cd95eb8d?auto=format&fit=crop&w=800&q=80', desc: 'Clásico de la parte vieja. Jamón de primera.' },
-            { id: 2, type: 'pintxos', name: 'Gandarias', autonomia: 'Euskadi', provincia: 'Gipuzkoa', ciudad: 'Donostia', barrio: 'Parte Vieja', rating: 4.8, image: 'https://images.unsplash.com/photo-1515443961218-a51367888e4b?auto=format&fit=crop&w=800&q=80', desc: 'El solomillo es imprescindible.' },
-            { id: 3, type: 'pintxos', name: 'El Globo', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Bilbao', barrio: 'Abando', rating: 4.6, image: 'https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&w=800&q=80', desc: 'Famoso por su pintxo de txangurro gratinado.' },
-            { id: 4, type: 'pintxos', name: 'Sorginzulo', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Bilbao', barrio: 'Casco Viejo', rating: 4.7, image: 'https://images.unsplash.com/photo-1579631542720-3a87824fff86?auto=format&fit=crop&w=800&q=80', desc: 'Calamares y pintxos morunos.' },
-            { id: 5, type: 'pintxos', name: 'Casa Pepe', autonomia: 'Andalucía', provincia: 'Jaén', ciudad: 'Linares', barrio: 'Centro', rating: 4.4, image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=800&q=80', desc: 'Tapas gratis con la bebida. Muy abundante.' },
-            { id: 6, type: 'restaurantes', name: 'Asador Etxebarri', autonomia: 'Euskadi', provincia: 'Bizkaia', ciudad: 'Atxondo', barrio: '', rating: 5.0, image: 'https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=800&q=80', desc: 'El rey de la parrilla mundial.' },
-            { id: 7, type: 'bodegas', name: 'Marqués de Riscal', autonomia: 'Euskadi', provincia: 'Araba', ciudad: 'Elciego', barrio: '', rating: 4.9, image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80', desc: 'Arquitectura de Gehry y vino excelente.' },
-            { id: 8, type: 'bodegas', name: 'Ysios', autonomia: 'Euskadi', provincia: 'Araba', ciudad: 'Laguardia', barrio: '', rating: 4.7, image: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&w=800&q=80', desc: 'Diseño de Calatrava a los pies de la sierra.' },
-            { id: 9, type: 'eventosCulinarios', name: 'Feria del Marisco', mes: 'Octubre', rating: 4.2, image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80', desc: 'O Grove se llena de sabor a mar.' },
-            { id: 10, type: 'eventosCulinarios', name: 'Santo Tomás', mes: 'Diciembre', rating: 4.8, image: 'https://images.unsplash.com/photo-1576616260335-4a9e73067f06?auto=format&fit=crop&w=800&q=80', desc: 'Txistorra y talo en todo Euskadi.' },
-            { id: 11, type: 'eventosTuristicos', name: 'Semana Grande', mes: 'Agosto', rating: 4.7, image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80', desc: 'Fiestas patronales de Bilbao y San Sebastián.' },
-            { id: 12, type: 'tiendas', name: 'Arrese', rating: 4.9, image: 'https://images.unsplash.com/photo-1557499305-bd68d0ad468d?auto=format&fit=crop&w=800&q=80', desc: 'Trufas de chocolate míticas en Bilbao.' },
-            { id: 13, type: 'tiendas', name: 'La Viña del Ensanche', rating: 4.6, image: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?auto=format&fit=crop&w=800&q=80', desc: 'Tienda gourmet con jamón de Joselito.' },
-            { id: 14, type: 'curiosidades', name: 'Señal de "Prohibido Cantar"', rating: 3.0, image: 'https://images.unsplash.com/photo-1531685217-835f475e5845?auto=format&fit=crop&w=800&q=80', desc: 'Visto en un bar de carretera antiguo.' },
+        // --- CONFIGURACIÓN DE CSVs ---
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
+        const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
+        
+        // Mapeo de columnas basado en tu código anterior
+        const COLS = { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
+        const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6 };
+
+        let DATA = []; // Aquí guardaremos los datos procesados
+
+        // --- DEFINICIÓN DE MENÚ Y CATEGORÍAS ---
+        const MENUS = [
+            { id: 'landing', label: 'Inicio', icon: 'home' },
+            { id: 'pintxos', label: 'Pintxos y Tapas', icon: 'utensils-crossed', keywords: ['pintxo', 'tapa', 'bar'] },
+            { id: 'restaurantes', label: 'Restaurantes', icon: 'chef-hat', keywords: ['restaurante', 'asador', 'comida'] },
+            { id: 'bodegas', label: 'Bodegas', icon: 'wine', keywords: ['bodega', 'vino', 'catas'] },
+            { id: 'turismo', label: 'Turismo', icon: 'compass', keywords: ['turismo', 'visita', 'museo'] },
+            { id: 'eventosCulinarios', label: 'Eventos Cul.', icon: 'calendar-heart' },
+            { id: 'eventosTuristicos', label: 'Eventos Tur.', icon: 'map' },
+            { id: 'tiendas', label: 'Tiendas', icon: 'shopping-bag', keywords: ['tienda', 'comercio', 'gourmet'] },
+            { id: 'curiosidades', label: 'Curiosidades', icon: 'help-circle', keywords: ['curiosidad', 'cartel', 'señal'] },
         ];
 
-        // --- ESTADO DE LA APP ---
         const state = {
-            view: 'landing', // landing, pintxos, restaurantes, etc.
-            filters: {}, // { autonomia: 'Euskadi' }
+            view: 'landing',
+            filters: {},
             selectedItem: null,
-            filterStep: 0 // 0: auto, 1: prov, etc.
+            filterStep: 0
         };
 
-        const MENUS = [
-            { id: 'landing', label: 'Inicio', icon: 'map-pin' },
-            { id: 'pintxos', label: 'Pintxos y Tapas', icon: 'utensils-crossed' },
-            { id: 'restaurantes', label: 'Restaurantes', icon: 'menu' },
-            { id: 'bodegas', label: 'Bodegas', icon: 'wine' },
-            { id: 'turismo', label: 'Turismo', icon: 'compass' },
-            { id: 'eventosCulinarios', label: 'Eventos Cul.', icon: 'calendar' },
-            { id: 'eventosTuristicos', label: 'Eventos Tur.', icon: 'map' },
-            { id: 'tiendas', label: 'Tiendas', icon: 'shopping-bag' },
-            { id: 'curiosidades', label: 'Curiosidades', icon: 'help-circle' },
-        ];
+        // --- PARSER CSV (Tu código adaptado) ---
+        function parseCSV(csvText) {
+            const rows = []; let fields = []; let currentField = ''; let inQuotes = false;
+            csvText = csvText.trim();
+            for (let i = 0; i < csvText.length; i++) {
+                const char = csvText[i];
+                if (char === '"') {
+                    if (inQuotes && i + 1 < csvText.length && csvText[i + 1] === '"') { currentField += '"'; i++; }
+                    else { inQuotes = !inQuotes; }
+                } else if (char === ',' && !inQuotes) {
+                    fields.push(currentField); currentField = '';
+                } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                    fields.push(currentField); rows.push(fields); fields = []; currentField = '';
+                    if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') i++;
+                } else { currentField += char; }
+            }
+            if (fields.length > 0 || currentField !== '') { fields.push(currentField); rows.push(fields); }
+            return rows.map(row => row.map(field => field.trim()));
+        }
 
-        // --- FUNCIONES PRINCIPALES ---
+        // --- INICIALIZACIÓN DE DATOS ---
+        async function loadData() {
+            try {
+                const [sitesRes, eventsRes] = await Promise.all([fetch(CSV_URL), fetch(EVENTOS_CSV_URL)]);
+                const sitesRaw = parseCSV(await sitesRes.text()).slice(1);
+                const eventsRaw = parseCSV(await eventsRes.text()).slice(1);
 
-        function init() {
-            console.log("Iniciando App...");
+                // 1. Procesar Sitios
+                const sitesProcessed = sitesRaw.map(row => {
+                    // Determinar tipo basado en columna tipo_lugar o heurísticas
+                    let type = 'pintxos'; // Default
+                    const rawType = (row[COLS.tipo_lugar] || '').toLowerCase();
+                    
+                    if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
+                    else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
+                    else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
+                    else if (rawType.includes('turismo') || rawType.includes('visita')) type = 'turismo';
+                    else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
+                    else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';
+                    
+                    // Construir galería completa
+                    const gallery = [];
+                    for(let i=1; i<=40; i++) {
+                        // El índice en el array del CSV se calcula sumando al offset de foto1
+                        // foto1 es index 23. texto1 es 24. foto2 es 25, texto2 es 26...
+                        // Fórmula: 23 + (i-1)*2
+                        const photoIdx = 23 + (i-1)*2;
+                        const textIdx = 24 + (i-1)*2;
+                        if(row[photoIdx]) {
+                            gallery.push({
+                                url: `https://drive.google.com/thumbnail?id=${row[photoIdx]}&sz=w800`,
+                                caption: row[textIdx] || ''
+                            });
+                        }
+                    }
+
+                    // 1. Obtener el valor crudo, asegurar que es texto y cambiar coma por punto
+                    let rawVal = String(row[COLS.valoracion] || '10').replace(',', '.');
+
+                    // 2. Convertir a número flotante
+                    let valNum = parseFloat(rawVal);
+
+                    // 3. Calcular nota: Si no es un número o es menor que 10, se queda en 0. Si no, restamos 10.
+                    let finalRating = (isNaN(valNum) || valNum < 10) ? 0 : valNum - 10;
+                    return {
+                        id: row[COLS.idsitio] || Math.random().toString(),
+                        type: type,
+                        name: row[COLS.nombre],
+                        autonomia: row[COLS.autonomia],
+                        provincia: row[COLS.provincia],
+                        ciudad: row[COLS.ciudad],
+                        barrio: row[COLS.barrio],
+                        rating: finalRating,
+                        image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto', // Fallback
+                        desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
+                        fullDesc: row[COLS.pintxo_tapa] || '',
+                        priceCode: row[COLS.codprecio],
+                        address: row[COLS.direccion],
+                        hours: row[COLS.horario],
+                        links: {
+                            maps: row[COLS.maps],
+                            web: row[COLS.web],
+                            instagram: row[COLS.instagram],
+                            post: row[COLS.postinstagram],
+                            reviews: row[COLS.googleresenas]
+                        },
+                        gallery: gallery
+                    };
+                });
+
+                // 2. Procesar Eventos (Lo simplificamos para la demo, usando la misma lógica de galería si fuera necesario)
+                const eventsProcessed = eventsRaw.map((row, idx) => ({
+                    id: `evt-${idx}`,
+                    type: 'eventosCulinarios', // Por defecto culinarios, podrías añadir lógica para turísticos
+                    name: row[COLS_EVENTOS.eventoCulinario],
+                    mes: row[COLS_EVENTOS.eventoMes],
+                    desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
+                    image: row[COLS_EVENTOS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS_EVENTOS.foto1]}&sz=w800` : 'https://placehold.co/600x400?text=Evento',
+                    rating: 5 // Default rating para eventos
+                }));
+
+                DATA = [...sitesProcessed, ...eventsProcessed];
+                
+                // Ocultar loader
+                document.getElementById('loading-overlay').classList.add('opacity-0', 'pointer-events-none');
+                initApp();
+
+            } catch (err) {
+                console.error("Error cargando datos:", err);
+                const loadingText = document.getElementById('loading-text');
+                const loader = document.querySelector('.loader');
+                
+                // Ocultar el spinner giratorio
+                if (loader) loader.style.display = 'none';
+
+                // Mostrar el error al usuario
+                if (loadingText) {
+                    loadingText.innerHTML = `
+                        <span class="text-red-600 font-bold">¡Ups! Algo falló.</span><br>
+                        <span class="text-sm text-red-400">${err.message}</span>
+                    `;
+                } else {
+                    alert("Error crítico: " + err.message);
+                }
+            }
+        }
+
+        function initApp() {
             renderSidebar();
             navigate('landing');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
+
+        // --- NAVEGACIÓN Y UI ---
 
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
@@ -152,55 +287,38 @@
         }
 
         function navigate(viewId) {
-            console.log("Navegando a:", viewId);
             state.view = viewId;
             state.filters = {};
             state.selectedItem = null;
             state.filterStep = 0;
             
-            // Cerrar menú en móvil al navegar
             document.getElementById('sidebar').classList.add('-translate-x-full');
             document.getElementById('sidebar-overlay').classList.add('hidden');
 
-            // Actualizar UI del menú
-            const buttons = document.querySelectorAll('#nav-menu button');
-            buttons.forEach(btn => {
-                const icon = btn.querySelector('i');
-                if(btn.dataset.id === viewId) {
-                    btn.className = "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group bg-primary text-white shadow-lg shadow-teal-900/50 translate-x-1";
-                    if(icon) {
-                        icon.classList.remove('text-teal-300');
-                        icon.classList.add('text-teal-50');
-                    }
-                } else {
-                    btn.className = "w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group hover:bg-teal-800/50 text-teal-100 hover:text-white hover:translate-x-1";
-                    if(icon) {
-                        icon.classList.add('text-teal-300');
-                        icon.classList.remove('text-teal-50');
-                    }
-                }
-            });
-
+            updateActiveMenu(viewId);
             renderAppContent();
+        }
+
+        function updateActiveMenu(viewId) {
+            const container = document.getElementById('nav-menu');
+            // Re-renderizar es más fácil que manipular clases una a una
+            renderSidebar(); 
         }
 
         function renderSidebar() {
             const container = document.getElementById('nav-menu');
             container.innerHTML = MENUS.map(item => `
-                <button onclick="navigate('${item.id}')" data-id="${item.id}" class="w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group hover:bg-teal-800/50 text-teal-100 hover:text-white hover:translate-x-1">
-                    <i data-lucide="${item.icon}" class="text-teal-300"></i>
+                <button onclick="navigate('${item.id}')" class="w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${state.view === item.id ? 'bg-primary text-white shadow-lg shadow-teal-900/50 translate-x-1' : 'hover:bg-teal-800/50 text-teal-100 hover:text-white hover:translate-x-1'}">
+                    <i data-lucide="${item.icon}" class="${state.view === item.id ? 'text-teal-50' : 'text-teal-300'}"></i>
                     <span class="font-medium">${item.label}</span>
                 </button>
             `).join('');
-            // Re-iniciar iconos después de renderizar
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function renderAppContent() {
             const container = document.getElementById('app-content');
-            container.innerHTML = ''; // Limpiar
+            container.innerHTML = ''; 
 
             let htmlContent = '';
 
@@ -209,78 +327,66 @@
             } else if (state.view === 'landing') {
                 htmlContent = getLandingHtml();
             } else {
-                // Vistas por Categoría
                 const type = state.view;
-                
                 if (['eventosCulinarios', 'eventosTuristicos'].includes(type)) {
                     htmlContent = getSectionMonthHtml(type);
                 } else if (['tiendas', 'curiosidades'].includes(type)) {
                     htmlContent = getSectionAlphaHtml(type);
                 } else {
-                    // Vistas con Filtro Geográfico (Pintxos, Bodegas, etc.)
                     htmlContent = getSectionLocationHtml(type);
                 }
             }
-            
             container.innerHTML = htmlContent;
-            
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
             container.scrollTo(0,0);
         }
 
-        // --- GENERADORES DE HTML (VISTAS) ---
+        // --- VISTAS ---
 
         function getLandingHtml() {
-            const cards = [
-                { id: 'pintxos', label: 'Pintxos y Tapas', icon: 'utensils-crossed', color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100' },
-                { id: 'restaurantes', label: 'Restaurantes', icon: 'menu', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100' },
-                { id: 'bodegas', label: 'Bodegas', icon: 'wine', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100' },
-                { id: 'turismo', label: 'Experiencias', icon: 'compass', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
-                { id: 'eventosCulinarios', label: 'Eventos Culinarios', icon: 'calendar', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100' },
-                { id: 'eventosTuristicos', label: 'Eventos Turísticos', icon: 'map', color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-100' },
-                { id: 'tiendas', label: 'Compras Gourmet', icon: 'shopping-bag', color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-100' },
-                { id: 'curiosidades', label: 'Curiosidades', icon: 'help-circle', color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-100' },
-            ];
+            // Tarjetas del Home
+            const cards = MENUS.filter(m => m.id !== 'landing');
+            const colors = ['orange', 'red', 'purple', 'blue', 'green', 'teal', 'pink', 'yellow'];
 
             return `
                 <div class="fade-in max-w-6xl mx-auto">
-                    <div class="text-center mb-12 mt-8">
-                        <h2 class="text-5xl font-bold mb-3 text-darkTeal tracking-tight">¡Hola! Somos Angels e Iñaki 👋</h2>
-                        <p class="text-gray-500 font-medium text-lg">
-                            Tenemos de todo: desde bocados de pura felicidad 😋, hasta kilómetros de aventura ✨ y carteles que nos sacan una sonrisa 😂
-                            <br>Si buscas un poco de inspiración, ¡estás en el sitio perfecto! 🎉 
-                        </p>                    
-                    </div>
+                    <section class="relative h-[400px] rounded-3xl overflow-hidden mb-10 shadow-2xl">
+                        <img src="https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200-h800" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-darkTeal/90 to-transparent flex flex-col justify-end p-8 text-center">
+                            <h1 class="font-brand text-4xl md:text-6xl text-white mb-2 text-shadow">Gastronomía y turismo</h1>
+                            <p class="text-teal-100 text-lg md:text-xl font-light">Compartimos nuestras experiencias, por si te apetece probar alguna...</p>
+                        </div>
+                    </section>
                     
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        ${cards.map(c => `
-                            <button onclick="navigate('${c.id}')" class="${c.bg} ${c.color} ${c.border} border p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
+                        ${cards.map((c, idx) => {
+                            const color = colors[idx % colors.length];
+                            // Usamos clases de Tailwind dinámicas con estilo inline para simplificar la demo sin JIT complejo
+                            // En producción usaría clases completas como bg-orange-50
+                            return `
+                            <button onclick="navigate('${c.id}')" class="bg-${color}-50 hover:bg-${color}-100 border border-${color}-200 p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
                                 <div class="bg-white p-4 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                    <i data-lucide="${c.icon}" width="28" height="28"></i>
+                                    <i data-lucide="${c.icon}" class="text-${color}-600" width="32" height="32"></i>
                                 </div>
-                                <span class="font-bold text-sm md:text-base leading-tight text-slate-800 group-hover:text-black">${c.label}</span>
+                                <span class="font-bold text-slate-800 group-hover:text-darkTeal font-brand text-lg">${c.label}</span>
                             </button>
-                        `).join('')}
+                        `}).join('')}
                     </div>
 
-                    <div class="mt-16 bg-darkTeal rounded-3xl p-8 text-white text-center shadow-2xl shadow-teal-900/20 max-w-4xl mx-auto relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-full h-full opacity-10" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 20px 20px;"></div>
-                        <div class="relative z-10">
-                            <h3 class="text-2xl font-bold mb-2">¿No sabes por dónde empezar?</h3>
-                            <p class="opacity-80 mb-6 font-light">Déjanos recomendarte una ruta basada en tus gustos.</p>
-                            <button class="bg-primaryContainer text-darkTeal px-8 py-3 rounded-xl font-bold hover:bg-white hover:scale-105 transition-all shadow-lg">
-                            Sorpréndeme ✨
-                            </button>
-                        </div>
+                    <!-- About Us Mini -->
+                    <div class="mt-16 bg-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-8">
+                         <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w400" class="w-32 h-32 rounded-full object-cover border-4 border-primary">
+                         <div class="text-center md:text-left">
+                            <h2 class="font-brand text-2xl text-darkTeal mb-2">¡Hola! Somos Angels e Iñaki 👋</h2>
+                            <p class="text-gray-600">Te abrimos las puertas a nuestro universo. Tenemos de todo: desde bocados de pura felicidad 😋, hasta kilómetros de aventura ✨.</p>
+                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- LOGICA DE FILTRO ---
-        
+        // --- FILTROS Y GRID ---
+
         function selectFilter(level, value) {
             state.filters[level] = value;
             state.filterStep++;
@@ -301,47 +407,56 @@
         function getSectionLocationHtml(type) {
             const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
             
+            // Filtrar datos reales
             const currentData = DATA.filter(d => d.type === type && 
                 Object.keys(state.filters).every(k => d[k] === state.filters[k])
             );
 
-            // Lógica de salto automático
+            // Título de la sección
+            const sectionTitle = MENUS.find(m => m.id === type)?.label || type;
+
+            // Lógica de salto automático (Auto-skip)
             while (state.filterStep < levels.length) {
                 let currentLevel = levels[state.filterStep];
-                const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean);
+                // Obtener opciones únicas y limpiar vacíos
+                const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean).sort();
                 
                 if (options.length === 0) {
-                    state.filterStep = 99; 
+                    state.filterStep = 99; // No hay más niveles, mostrar resultados
                     break;
                 } else if (options.length === 1) {
+                    // Solo una opción, autoseleccionar
                     state.filters[currentLevel] = options[0];
                     state.filterStep++;
                 } else {
-                    return renderFilterWizard(currentLevel, options);
+                    // Hay varias opciones, preguntar al usuario
+                    return renderFilterWizard(sectionTitle, currentLevel, options);
                 }
             }
 
-            return renderResultsGrid(type, currentData);
+            return renderResultsGrid(sectionTitle, currentData);
         }
 
-        function renderFilterWizard(level, options) {
+        function renderFilterWizard(title, level, options) {
             return `
-                <div class="fade-in max-w-md mx-auto p-6 mt-10">
-                    <h2 class="text-2xl font-bold mb-8 text-center text-darkTeal tracking-tight">
-                        ¿Dónde te apetece ir?
+                <div class="fade-in max-w-lg mx-auto p-6 mt-4">
+                    <button onclick="resetFilters()" class="mb-6 flex items-center text-primary font-bold hover:underline"><i data-lucide="arrow-left" class="mr-2"></i> Volver al inicio de ${title}</button>
+                    <h2 class="text-3xl font-brand font-bold mb-2 text-center text-darkTeal">
+                        ${title}
                     </h2>
+                    <p class="text-center text-gray-500 mb-8">Selecciona ${level}:</p>
+                    
                     <div class="space-y-3">
-                        <p class="text-xs text-gray-400 uppercase font-bold mb-3 tracking-widest pl-1">Selecciona ${level}:</p>
                         ${options.map(opt => `
-                            <button onclick="selectFilter('${level}', '${opt}')" class="w-full p-5 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:border-teal-200 hover:bg-teal-50/50 transition-all bg-white group text-slate-700">
+                            <button onclick="selectFilter('${level}', '${opt}')" class="w-full p-5 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:border-teal-400 hover:bg-teal-50 transition-all bg-white group text-slate-700">
                                 <span class="text-lg font-medium">${opt}</span>
                                 <i data-lucide="chevron-right" class="text-gray-300 group-hover:text-primary transition-colors"></i>
                             </button>
                         `).join('')}
                     </div>
-                    <div class="mt-8 pt-6 border-t border-gray-100">
-                        <button onclick="showAllFilters()" class="w-full py-4 rounded-xl bg-primary text-white font-bold shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:scale-[1.02] transition-all active:scale-95">
-                            Mostrar todo
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <button onclick="showAllFilters()" class="w-full py-4 rounded-xl bg-primary text-white font-bold shadow-lg shadow-teal-500/20 hover:bg-darkTeal transition-all">
+                            Mostrar todos los resultados
                         </button>
                     </div>
                 </div>
@@ -353,24 +468,33 @@
             const monthsOrder = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
             
             const grouped = rawData.reduce((acc, item) => {
-                (acc[item.mes] = acc[item.mes] || []).push(item);
+                const m = item.mes || 'Sin Fecha';
+                (acc[m] = acc[m] || []).push(item);
                 return acc;
             }, {});
             
-            const sortedMonths = Object.keys(grouped).sort((a, b) => monthsOrder.indexOf(a) - monthsOrder.indexOf(b));
+            // Ordenar meses
+            const sortedMonths = Object.keys(grouped).sort((a, b) => {
+                const idxA = monthsOrder.indexOf(a);
+                const idxB = monthsOrder.indexOf(b);
+                if (idxA === -1) return 1;
+                if (idxB === -1) return -1;
+                return idxA - idxB;
+            });
+            
             const title = MENUS.find(m => m.id === type)?.label || type;
 
             return `
                 <div class="fade-in pb-24">
-                    <header class="mb-8">
-                        <h1 class="text-3xl font-bold text-darkTeal tracking-tight">${title}</h1>
+                    <header class="mb-8 border-b-4 border-secondary inline-block pb-2">
+                        <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
                     </header>
-                    <div class="space-y-10">
+                    <div class="space-y-12">
                         ${sortedMonths.map(month => `
                             <div class="relative">
-                                <div class="sticky top-0 z-10 bg-[#F0FDFD]/95 backdrop-blur py-2 mb-4 border-b border-teal-100 flex items-center">
-                                    <i data-lucide="calendar" class="mr-2 text-primary" width="18"></i>
-                                    <h2 class="text-lg font-bold text-darkTeal">${month}</h2>
+                                <div class="sticky top-0 z-10 bg-[#F0FDFD]/95 backdrop-blur py-3 mb-4 border-b border-teal-100 flex items-center">
+                                    <span class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold uppercase tracking-wider mr-3">${month}</span>
+                                    <span class="text-gray-400 text-sm">${grouped[month].length} eventos</span>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     ${grouped[month].map(item => renderCard(item)).join('')}
@@ -385,26 +509,23 @@
         function getSectionAlphaHtml(type) {
             const rawData = DATA.filter(d => d.type === type).sort((a, b) => a.name.localeCompare(b.name));
             const title = MENUS.find(m => m.id === type)?.label || type;
-            
-            return renderResultsGrid(type, rawData, title, false);
+            return renderResultsGrid(title, rawData, false);
         }
 
-        function renderResultsGrid(type, items, titleOverride = null, showFilterBtn = true) {
-            const title = titleOverride || MENUS.find(m => m.id === type)?.label || type;
-            
+        function renderResultsGrid(title, items, showFilterBtn = true) {
             if (items.length === 0) {
                 return `
                      <div class="fade-in pb-24">
                         <header class="mb-8 flex justify-between items-center">
-                            <h1 class="text-3xl font-bold text-darkTeal tracking-tight">${title}</h1>
-                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Filtros</button>` : ''}
+                            <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Reiniciar Filtros</button>` : ''}
                         </header>
-                        <div class="text-center py-20">
-                             <div class="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                                <i data-lucide="search"></i>
+                        <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+                             <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                <i data-lucide="search" width="32" height="32"></i>
                              </div>
-                             <p class="text-gray-500 font-medium">No hay resultados.</p>
-                             <button onclick="resetFilters()" class="text-primary font-bold mt-2">Limpiar</button>
+                             <p class="text-gray-500 font-medium text-lg">No hemos encontrado nada aquí.</p>
+                             <button onclick="resetFilters()" class="text-primary font-bold mt-4 border border-primary px-4 py-2 rounded-full hover:bg-primary hover:text-white transition">Limpiar búsqueda</button>
                         </div>
                      </div>
                 `;
@@ -412,15 +533,23 @@
 
             return `
                 <div class="fade-in pb-24">
-                    <header class="mb-8 flex justify-between items-center">
-                        <h1 class="text-3xl font-bold text-darkTeal tracking-tight">${title}</h1>
+                    <header class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                        <div>
+                            <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                            <p class="text-gray-500 text-sm mt-1">Mostrando ${items.length} resultados</p>
+                        </div>
                         ${showFilterBtn && Object.keys(state.filters).length > 0 ? `
-                            <button onclick="resetFilters()" class="text-sm font-medium text-primary bg-teal-50 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition-colors">
-                                Cambiar zona
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-400 bg-white px-2 py-1 rounded border">
+                                    ${Object.values(state.filters).join(' > ')}
+                                </span>
+                                <button onclick="resetFilters()" class="text-sm font-bold text-white bg-primary px-4 py-2 rounded-lg hover:bg-darkTeal transition-colors shadow-md">
+                                    Cambiar Zona
+                                </button>
+                            </div>
                         ` : ''}
                     </header>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         ${items.map(item => renderCard(item)).join('')}
                     </div>
                 </div>
@@ -430,24 +559,31 @@
         function renderCard(item) {
             const stars = Math.round(item.rating);
             const starHtml = Array(5).fill(0).map((_, i) => 
-                `<svg class="w-3.5 h-3.5 ${i < stars ? 'text-yellow-500 fill-current' : 'text-gray-300'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+                `<svg class="w-4 h-4 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
 
             return `
-                <div onclick="openDetail(${item.id})" class="bg-white rounded-2xl shadow-sm border border-teal-50 overflow-hidden hover:shadow-xl hover:border-teal-200 transition-all cursor-pointer flex flex-col h-full transform hover:-translate-y-1 duration-300 group">
+                <div onclick="openDetail('${item.id}')" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col h-full">
                     <div class="h-48 overflow-hidden relative">
-                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
-                        <div class="absolute bottom-0 right-0 bg-black/60 backdrop-blur-sm text-white px-3 py-1 text-xs font-medium rounded-tl-lg">
-                            ${item.ciudad || item.provincia || ''}
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                        <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-darkTeal px-3 py-1 text-xs font-bold rounded-lg shadow-sm">
+                            ${item.ciudad || item.provincia || 'General'}
                         </div>
                     </div>
                     <div class="p-5 flex-1 flex flex-col">
-                        <h3 class="text-lg font-bold text-darkTeal leading-snug mb-1">${item.name}</h3>
-                        ${item.mes ? `<span class="text-xs font-bold uppercase tracking-wide text-primary mb-2 block">${item.mes}</span>` : ''}
-                        <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1 font-normal leading-relaxed">${item.desc}</p>
-                        <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
-                            <div class="flex items-center space-x-1">${starHtml} <span class="text-xs text-gray-400 ml-1 font-bold">${item.rating}</span></div>
-                            <i data-lucide="chevron-right" class="text-teal-300 group-hover:text-primary transition-colors" width="16"></i>
+                        <div class="mb-2">
+                             <h3 class="text-lg font-bold text-slate-800 leading-snug group-hover:text-primary transition-colors font-brand">${item.name}</h3>
+                             ${item.mes ? `<span class="text-xs font-bold uppercase tracking-wide text-secondary mt-1 block">${item.mes}</span>` : ''}
+                        </div>
+                        
+                        <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1 font-light leading-relaxed">${item.desc}</p>
+                        
+                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                            <div class="flex items-center space-x-1">${starHtml}</div>
+                            <span class="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                <i data-lucide="chevron-right" width="16"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -468,83 +604,231 @@
 
         function getDetailHtml(item) {
             const stars = Math.round(item.rating);
+            // Generar estrellas
             const starHtml = Array(5).fill(0).map((_, i) => 
-                `<svg class="w-5 h-5 ${i < stars ? 'text-yellow-500 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+                `<svg class="w-6 h-6 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
 
-            const locationStr = [item.ciudad, item.barrio, item.provincia].filter(Boolean).join(', ');
+            const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
+            
+            // Lógica de precio
+            let priceText = '';
+            if (item.priceCode == 10) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
+            else if (item.priceCode == 11) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
+            else if (item.priceCode == 12) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
+
+            // Galería (excluyendo la primera que es la principal)
+            const remainingGallery = item.gallery.slice(1);
 
             return `
-                <div class="bg-white h-full w-full absolute inset-0 overflow-y-auto fade-in z-20">
-                    <button onclick="closeDetail()" class="absolute top-4 left-4 z-30 bg-white/90 backdrop-blur p-3 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all active:scale-95 text-darkTeal">
-                        <i data-lucide="arrow-left"></i>
+                <div class="bg-white min-h-full absolute inset-0 z-20 overflow-y-auto animate-fadeIn pb-20">
+                    <button onclick="closeDetail()" class="fixed top-4 left-4 z-50 bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100">
+                        <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
                     </button>
                     
-                    <div class="h-80 w-full relative">
-                        <img src="${item.image}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#00251a] via-transparent to-transparent opacity-90"></div>
-                        <div class="absolute bottom-0 left-0 w-full p-8">
-                            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3 bg-white/20 backdrop-blur text-white border border-white/30">
-                                ${MENUS.find(m => m.id === item.type)?.label || item.type}
-                            </span>
-                            <h2 class="text-4xl text-white font-bold tracking-tight leading-tight mb-2">${item.name}</h2>
-                            <p class="text-teal-50 text-sm flex items-center font-medium">
-                                <i data-lucide="map-pin" width="16" class="mr-2"></i> ${locationStr}
-                            </p>
+                    <div class="h-[50vh] w-full relative cursor-pointer group" onclick="openLightbox(0)">
+                        <img src="${item.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+                             <span class="bg-black/50 text-white px-4 py-2 rounded-full backdrop-blur text-sm font-bold">Ver Galería</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 pointer-events-none">
+                            <div class="max-w-4xl mx-auto">
+                                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 bg-primary text-white shadow-lg border border-white/20">
+                                    ${MENUS.find(m => m.id === item.type)?.label || item.type}
+                                </span>
+                                <h2 class="font-brand text-4xl md:text-5xl text-white mb-2 leading-tight drop-shadow-lg">${item.name}</h2>
+                                <p class="text-gray-200 text-sm md:text-base flex items-center font-medium opacity-90">
+                                    <i data-lucide="map-pin" width="16" class="mr-2 text-primaryContainer"></i> ${item.ciudad}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="p-8 max-w-4xl mx-auto -mt-6 bg-white rounded-t-3xl relative">
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
-                            <div class="flex items-center space-x-3">
-                                <span class="text-4xl font-bold text-darkTeal">${item.rating}</span>
-                                <div class="flex">${starHtml}</div>
-                            </div>
-                            <button class="bg-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-teal-500/30 hover:bg-teal-600 transition-colors w-full md:w-auto">
-                                Cómo llegar
-                            </button>
-                        </div>
-
-                        <div class="grid md:grid-cols-3 gap-8">
-                            <div class="md:col-span-2">
-                                <h3 class="text-lg font-bold text-gray-900 mb-3">Sobre este lugar</h3>
-                                <p class="text-gray-600 text-lg leading-relaxed mb-8 font-light">${item.desc}</p>
-                                <h3 class="text-lg font-bold text-gray-900 mb-4">Galería</h3>
-                                <div class="grid grid-cols-3 gap-3">
-                                    <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden"><img src="https://source.unsplash.com/random/400x400?food&sig=${item.id}1" class="w-full h-full object-cover"></div>
-                                    <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden"><img src="https://source.unsplash.com/random/400x400?food&sig=${item.id}2" class="w-full h-full object-cover"></div>
-                                    <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden"><img src="https://source.unsplash.com/random/400x400?food&sig=${item.id}3" class="w-full h-full object-cover"></div>
+                    <div class="max-w-5xl mx-auto -mt-10 relative px-4 md:px-0">
+                        <div class="bg-white rounded-t-3xl shadow-xl border-t border-gray-100 p-6 md:p-10 flex flex-col md:flex-row gap-10">
+                            
+                            <div class="flex-1 space-y-8">
+                                
+                                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-dashed border-gray-200 pb-6">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating}</span>
+                                        <div class="flex">${starHtml}</div>
+                                    </div>
+                                    ${priceText}
                                 </div>
-                            </div>
-
-                            <div class="space-y-6">
-                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100">
-                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center">
-                                        <i data-lucide="calendar" width="14" class="mr-2"></i> Horario
-                                    </h4>
-                                    <div class="space-y-2 text-sm text-gray-700 font-medium">
-                                        <div class="flex justify-between"><span>Comida</span> <span>13:00 - 16:00</span></div>
-                                        <div class="flex justify-between"><span>Cena</span> <span>20:30 - 23:30</span></div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand uppercase tracking-widest">Nuestra Experiencia</h3>
+                                    <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                        ${item.fullDesc || item.desc}
                                     </div>
                                 </div>
-                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100">
-                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center">
-                                       <i data-lucide="phone" width="14" class="mr-2"></i> Contacto
+
+                                <div class="flex flex-wrap gap-3">
+                                    ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
+                                    ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
+                                    ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Instagram</a>` : ''}
+                                </div>
+                            </div>
+
+                            <div class="w-full md:w-80 flex-shrink-0 space-y-6">
+                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm sticky top-6">
+                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center border-b border-teal-200 pb-2">
+                                        <i data-lucide="info" width="14" class="mr-2"></i> Datos Prácticos
                                     </h4>
-                                    <p class="text-lg font-bold text-gray-900 mb-1">+34 944 123 456</p>
+                                    
+                                    ${item.address ? `
+                                    <div class="mb-4">
+                                        <span class="text-xs text-gray-400 font-bold uppercase">Dirección</span>
+                                        <p class="text-sm font-medium text-slate-700 mt-1">${item.address}</p>
+                                    </div>` : ''}
+
+                                    ${item.hours ? `
+                                    <div class="mb-4">
+                                        <span class="text-xs text-gray-400 font-bold uppercase">Horario</span>
+                                        <div class="text-sm font-medium text-slate-700 mt-1 whitespace-pre-line">${item.hours}</div>
+                                    </div>` : ''}
+
+                                    ${item.links.reviews ? `
+                                    <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
+                                        Leer Reseñas en Google
+                                    </a>` : ''}
                                 </div>
                             </div>
                         </div>
+
+                        ${remainingGallery.length > 0 ? `
+                        <div class="mt-12 mb-12">
+                            <h3 class="text-2xl font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Galería de Fotos</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                ${remainingGallery.map((img, idx) => `
+                                    <div onclick="openLightbox(${idx + 1})" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                        <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
+                                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                                        <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <i data-lucide="maximize-2" width="16" height="16"></i>
+                                        </div>
+                                        ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>` : ''}
                     </div>
                 </div>
             `;
         }
 
-        // Asegurar que el DOM esté listo antes de ejecutar
-        document.addEventListener('DOMContentLoaded', () => {
-            init();
-        });
+        // --- LÓGICA DEL LIGHTBOX ---
+        let currentLightboxIndex = 0;
+
+        function openLightbox(index) {
+            if (!state.selectedItem || !state.selectedItem.gallery) return;
+            
+            currentLightboxIndex = index;
+            const lightbox = document.getElementById('lightbox');
+            
+            // Mostrar
+            lightbox.classList.remove('hidden');
+            // Pequeño delay para permitir que el navegador renderice el block antes de la opacidad (fade-in)
+            setTimeout(() => {
+                lightbox.classList.remove('opacity-0');
+            }, 10);
+
+            updateLightboxContent();
+            
+            // Añadir listener de teclado
+            document.addEventListener('keydown', handleLightboxKeys);
+            // Bloquear scroll del body
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+            }, 300); // Esperar a la transición
+
+            document.removeEventListener('keydown', handleLightboxKeys);
+            document.body.style.overflow = ''; // Restaurar scroll
+        }
+
+        function changeLightboxSlide(direction) {
+            const gallery = state.selectedItem.gallery;
+            currentLightboxIndex += direction;
+
+            // Loop infinito
+            if (currentLightboxIndex >= gallery.length) currentLightboxIndex = 0;
+            if (currentLightboxIndex < 0) currentLightboxIndex = gallery.length - 1;
+
+            updateLightboxContent();
+        }
+
+        function updateLightboxContent() {
+            const gallery = state.selectedItem.gallery;
+            const item = gallery[currentLightboxIndex];
+            
+            const imgEl = document.getElementById('lightbox-img');
+            const captionEl = document.getElementById('lightbox-caption');
+            const counterEl = document.getElementById('lightbox-counter');
+            const captionContainer = document.getElementById('lightbox-caption-container');
+
+            // Efecto de cambio suave
+            imgEl.style.opacity = '0.5';
+            setTimeout(() => imgEl.style.opacity = '1', 200);
+
+            imgEl.src = item.url;
+            
+            if (item.caption) {
+                captionEl.textContent = item.caption;
+                captionEl.style.display = 'block';
+            } else {
+                captionEl.style.display = 'none';
+            }
+
+            counterEl.textContent = `${currentLightboxIndex + 1} de ${gallery.length}`;
+        }
+
+        function handleLightboxKeys(e) {
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') changeLightboxSlide(-1);
+            if (e.key === 'ArrowRight') changeLightboxSlide(1);
+        }
+
+
+
+        // --- INICIAR ---
+        document.addEventListener('DOMContentLoaded', loadData);
 
     </script>
+
+    <!-- LIGHTBOX GLOBAL -->
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm" onclick="if(event.target === this) closeLightbox()">
+        
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/10 rounded-full p-2 transition-all z-50">
+            <i data-lucide="x" width="32" height="32"></i>
+        </button>
+
+        <button onclick="changeLightboxSlide(-1)" class="absolute left-2 md:left-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-black/20 hover:bg-black/50 rounded-full">
+            <i data-lucide="chevron-left" width="40" height="40"></i>
+        </button>
+
+        <div class="relative max-w-7xl max-h-screen w-full h-full flex flex-col items-center justify-center p-4 md:p-10">
+            
+            <img id="lightbox-img" src="" class="max-h-[80vh] max-w-full object-contain shadow-2xl rounded-md select-none transition-transform duration-300" alt="Galería">
+            
+            <div id="lightbox-caption-container" class="absolute bottom-8 left-0 right-0 text-center pointer-events-none">
+                <div class="inline-block bg-black/60 backdrop-blur-md text-white px-6 py-3 rounded-full max-w-[90%]">
+                    <p id="lightbox-caption" class="text-sm md:text-lg font-brand tracking-wide"></p>
+                    <p id="lightbox-counter" class="text-xs text-white/60 mt-1 font-sans uppercase tracking-widest"></p>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="changeLightboxSlide(1)" class="absolute right-2 md:right-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-black/20 hover:bg-black/50 rounded-full">
+            <i data-lucide="chevron-right" width="40" height="40"></i>
+        </button>
+    </div>
 </body>
 </html>

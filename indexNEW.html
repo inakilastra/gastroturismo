@@ -404,6 +404,41 @@
             renderAppContent();
         }
 
+        function goBackOneStep() {
+            // Niveles definidos en getSectionLocationHtml
+            const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
+            
+            // Si estamos en la Home (paso 0), no hacemos nada o recargamos landing
+            if (state.filterStep === 0 && Object.keys(state.filters).length === 0) {
+                navigate('landing');
+                return;
+            }
+
+            // Identificar filtros activos
+            const activeFilters = levels.filter(l => state.filters[l]);
+
+            if (activeFilters.length > 0) {
+                // Si hay filtros, quitamos el último
+                const lastFilter = activeFilters[activeFilters.length - 1];
+                delete state.filters[lastFilter];
+                
+                // Recalculamos el step para que el wizard sepa dónde pintar
+                // Si había 2 filtros (índices 0 y 1), ahora habrá 1. El step debe ser 1.
+                state.filterStep = activeFilters.length - 1;
+            } else {
+                // Si no hay filtros pero el step > 0, simplemente bajamos el step
+                state.filterStep = Math.max(0, state.filterStep - 1);
+            }
+
+            // Si estábamos en modo resultados (99), al volver atrás reseteamos ese flag
+            if (state.filterStep === 99) {
+                // Calculamos step basado en los filtros que quedan
+                state.filterStep = Object.keys(state.filters).length;
+            }
+
+            renderAppContent();
+        }
+
         function getSectionLocationHtml(type) {
             const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
             
@@ -437,14 +472,23 @@
             return renderResultsGrid(sectionTitle, currentData);
         }
 
-        function renderFilterWizard(title, level, options) {
+       function renderFilterWizard(title, level, options) {
+            // Capitalizar primera letra para mostrar (ej: provincia -> Provincia)
+            const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
+            
             return `
                 <div class="fade-in max-w-lg mx-auto p-6 mt-4">
-                    <button onclick="resetFilters()" class="mb-6 flex items-center text-primary font-bold hover:underline"><i data-lucide="arrow-left" class="mr-2"></i> Volver al inicio de ${title}</button>
+                    <button onclick="goBackOneStep()" class="mb-6 flex items-center text-slate-500 font-bold hover:text-primary transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center mr-2 group-hover:bg-primary/10">
+                            <i data-lucide="arrow-left" width="18"></i>
+                        </div>
+                        Atrás / Anterior
+                    </button>
+
                     <h2 class="text-3xl font-brand font-bold mb-2 text-center text-darkTeal">
                         ${title}
                     </h2>
-                    <p class="text-center text-gray-500 mb-8">Selecciona ${level}:</p>
+                    <p class="text-center text-gray-500 mb-8">Selecciona ${levelLabel}:</p>
                     
                     <div class="space-y-3">
                         ${options.map(opt => `
@@ -515,21 +559,64 @@
         function renderResultsGrid(title, items, showFilterBtn = true) {
             if (items.length === 0) {
                 return `
-                     <div class="fade-in pb-24">
-                        <header class="mb-8 flex justify-between items-center">
-                            <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
-                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Reiniciar Filtros</button>` : ''}
-                        </header>
-                        <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+                      <div class="fade-in pb-24">
+                         <header class="mb-8 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <button onclick="goBackOneStep()" class="p-2 bg-white rounded-full border border-gray-200 hover:border-primary hover:text-primary transition"><i data-lucide="arrow-left"></i></button>
+                                <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                            </div>
+                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Reiniciar Todo</button>` : ''}
+                         </header>
+                         <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
                              <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
                                 <i data-lucide="search" width="32" height="32"></i>
                              </div>
                              <p class="text-gray-500 font-medium text-lg">No hemos encontrado nada aquí.</p>
-                             <button onclick="resetFilters()" class="text-primary font-bold mt-4 border border-primary px-4 py-2 rounded-full hover:bg-primary hover:text-white transition">Limpiar búsqueda</button>
-                        </div>
-                     </div>
+                             <button onclick="goBackOneStep()" class="text-primary font-bold mt-4 border border-primary px-4 py-2 rounded-full hover:bg-primary hover:text-white transition">Volver atrás</button>
+                         </div>
+                      </div>
                 `;
             }
+
+            // Comprobamos si hay filtros activos para mostrar el botón atrás
+            const hasFilters = Object.keys(state.filters).length > 0;
+
+            return `
+                <div class="fade-in pb-24">
+                    <header class="mb-8">
+                        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                            <div class="flex items-start gap-4">
+                                ${hasFilters ? `
+                                <button onclick="goBackOneStep()" class="mt-1 p-2 bg-white rounded-full shadow-sm border border-gray-200 hover:bg-primary hover:text-white transition-colors group" title="Volver un paso">
+                                    <i data-lucide="arrow-left" width="20"></i>
+                                </button>
+                                ` : ''}
+                                
+                                <div>
+                                    <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                                    <p class="text-gray-500 text-sm mt-1">Mostrando ${items.length} resultados</p>
+                                </div>
+                            </div>
+
+                            ${showFilterBtn && hasFilters ? `
+                                <div class="flex items-center gap-2 flex-wrap justify-end">
+                                    <span class="text-xs text-gray-400 bg-white px-2 py-1 rounded border hidden md:inline-block">
+                                        ${Object.values(state.filters).join(' > ')}
+                                    </span>
+                                    <button onclick="resetFilters()" class="text-xs font-bold text-teal-600 bg-teal-50 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors">
+                                        Borrar todo
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </header>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        ${items.map(item => renderCard(item)).join('')}
+                    </div>
+                </div>
+            `;
+        }
 
             return `
                 <div class="fade-in pb-24">
