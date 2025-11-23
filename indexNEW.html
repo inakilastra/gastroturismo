@@ -192,7 +192,7 @@
                             });
                         }
                     }
-
+                    const vvaloracion = row[COLS.valoracion] - 10;
                     return {
                         id: row[COLS.idsitio] || Math.random().toString(),
                         type: type,
@@ -201,7 +201,7 @@
                         provincia: row[COLS.provincia],
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
-                        rating: (parseFloat((row[COLS.valoracion] || '0').replace(',', '.')) - 10) || 0,
+                        rating: (parseFloat((vvaloracion || '0').replace(',', '.')) - 10) || 0,
                         image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto', // Fallback
                         desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
                         fullDesc: row[COLS.pintxo_tapa] || '',
