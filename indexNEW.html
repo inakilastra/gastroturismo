@@ -193,9 +193,14 @@
                         }
                     }
 
-                    let vvaloracion = row[COLS.valoracion] || '0';
-                    if(vvaloracion > 0){vvaloracion = row[COLS.valoracion] - 10;}
+                    // 1. Obtener el valor crudo, asegurar que es texto y cambiar coma por punto
+                    let rawVal = String(row[COLS.valoracion] || '10').replace(',', '.');
 
+                    // 2. Convertir a número flotante
+                    let valNum = parseFloat(rawVal);
+
+                    // 3. Calcular nota: Si no es un número o es menor que 10, se queda en 0. Si no, restamos 10.
+                    let finalRating = (isNaN(valNum) || valNum < 10) ? 0 : valNum - 10;
                     return {
                         id: row[COLS.idsitio] || Math.random().toString(),
                         type: type,
@@ -204,7 +209,7 @@
                         provincia: row[COLS.provincia],
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
-                        rating: parseFloat(vvaloracion).replace(',', '.') || 0,
+                        rating: finalRating,
                         image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto', // Fallback
                         desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
                         fullDesc: row[COLS.pintxo_tapa] || '',
