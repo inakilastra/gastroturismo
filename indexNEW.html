@@ -237,8 +237,22 @@
                 initApp();
 
             } catch (err) {
-                document.getElementById('loading-text').innerHTML = `<span class="text-red-500">Error: ${err.message}</span>`;
-                console.error(err);
+                console.error("Error cargando datos:", err);
+                const loadingText = document.getElementById('loading-text');
+                const loader = document.querySelector('.loader');
+                
+                // Ocultar el spinner giratorio
+                if (loader) loader.style.display = 'none';
+
+                // Mostrar el error al usuario
+                if (loadingText) {
+                    loadingText.innerHTML = `
+                        <span class="text-red-600 font-bold">¡Ups! Algo falló.</span><br>
+                        <span class="text-sm text-red-400">${err.message}</span>
+                    `;
+                } else {
+                    alert("Error crítico: " + err.message);
+                }
             }
         }
 
