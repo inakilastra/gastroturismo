@@ -201,7 +201,7 @@
                         provincia: row[COLS.provincia],
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
-                        rating: parseFloat(((row[COLS.valoracion] - 10) || '0').replace(',', '.')) || 0,
+                        rating: parseFloat(((row[COLS.valoracion].value - 10) || '0').replace(',', '.')) || 0,
                         image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto', // Fallback
                         desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
                         fullDesc: row[COLS.pintxo_tapa] || '',
