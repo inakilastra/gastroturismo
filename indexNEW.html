@@ -576,7 +576,7 @@
         function renderCard(item) {
             const stars = Math.round(item.rating);
             const starHtml = Array(5).fill(0).map((_, i) => 
-                `<svg class="w-4 h-4 ${i < stars ? 'text-green-400 fill-current' : 'text-zinc-400'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+                `<svg class="w-4 h-4 ${i < stars ? 'text-green-500 fill-current' : 'text-zinc-50'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
 
             return `
@@ -622,7 +622,7 @@
        function getDetailHtml(item) {
             const stars = Math.round(item.rating);
             const starHtml = Array(5).fill(0).map((_, i) => 
-                `<svg class="w-6 h-6 ${i < stars ? 'text-green-400 fill-current' : 'text-zinc-400'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+                `<svg class="w-6 h-6 ${i < stars ? 'text-green-500 fill-current' : 'text-zinc-50'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
 
             const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
