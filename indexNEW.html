@@ -65,26 +65,6 @@
         <h2 class="font-brand text-2xl text-darkTeal">Cargando el mundo de Aneki...</h2>
     </div>
 
-    <!-- LIGHTBOX -->
-    <div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden flex flex-col justify-center items-center opacity-0 transition-opacity duration-300">
-        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white/70 hover:text-white p-2 z-50">
-            <i data-lucide="x" width="40" height="40"></i>
-        </button>
-
-        <button onclick="changePhoto(-1)" class="absolute left-2 md:left-8 text-white/70 hover:text-white p-4 z-50 hover:bg-white/10 rounded-full transition">
-            <i data-lucide="chevron-left" width="40" height="40"></i>
-        </button>
-
-        <div class="relative max-w-full max-h-screen p-4 flex flex-col items-center">
-            <img id="lightbox-img" src="" class="max-h-[80vh] max-w-full object-contain shadow-2xl rounded-sm">
-            <p id="lightbox-caption" class="text-white/90 text-center mt-4 font-brand text-lg tracking-wider bg-black/50 px-4 py-2 rounded-lg backdrop-blur-sm empty:hidden"></p>
-            <p id="lightbox-counter" class="text-white/50 text-xs mt-2 uppercase tracking-widest"></p>
-        </div>
-
-        <button onclick="changePhoto(1)" class="absolute right-2 md:right-8 text-white/70 hover:text-white p-4 z-50 hover:bg-white/10 rounded-full transition">
-            <i data-lucide="chevron-right" width="40" height="40"></i>
-        </button>
-    </div>
     <!-- SIDEBAR -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity" onclick="toggleMenu()"></div>
     
@@ -713,60 +693,6 @@
                     </div>
                 </div>
             `;
-        }
-
-        // --- LÓGICA DEL LIGHTBOX ---
-        let currentPhotoIndex = 0;
-
-        function openLightbox(index) {
-            if (!state.selectedItem || !state.selectedItem.gallery) return;
-            
-            const lightbox = document.getElementById('lightbox');
-            lightbox.classList.remove('hidden');
-            // Pequeño delay para permitir la transición de opacidad
-            setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
-            
-            currentPhotoIndex = index;
-            updateLightboxUI();
-            
-            // Añadir soporte para teclado
-            document.addEventListener('keydown', handleLightboxKeys);
-        }
-
-        function closeLightbox() {
-            const lightbox = document.getElementById('lightbox');
-            lightbox.classList.add('opacity-0');
-            setTimeout(() => lightbox.classList.add('hidden'), 300);
-            document.removeEventListener('keydown', handleLightboxKeys);
-        }
-
-        function changePhoto(direction) {
-            const gallery = state.selectedItem.gallery;
-            currentPhotoIndex = (currentPhotoIndex + direction + gallery.length) % gallery.length;
-            updateLightboxUI();
-        }
-
-        function updateLightboxUI() {
-            const gallery = state.selectedItem.gallery;
-            const item = gallery[currentPhotoIndex];
-            
-            const imgEl = document.getElementById('lightbox-img');
-            const captionEl = document.getElementById('lightbox-caption');
-            const counterEl = document.getElementById('lightbox-counter');
-
-            // Efecto de carga simple
-            imgEl.style.opacity = '0.5';
-            imgEl.src = item.url;
-            imgEl.onload = () => imgEl.style.opacity = '1';
-            
-            captionEl.textContent = item.caption || '';
-            counterEl.textContent = `${currentPhotoIndex + 1} / ${gallery.length}`;
-        }
-
-        function handleLightboxKeys(e) {
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft') changePhoto(-1);
-            if (e.key === 'ArrowRight') changePhoto(1);
         }
 
         // --- INICIAR ---
