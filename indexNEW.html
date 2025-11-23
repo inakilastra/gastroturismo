@@ -543,6 +543,47 @@
                 `;
             }
 
+            // CORRECCIÓN: Mostramos el botón si hay filtros activos O si estamos en modo "Ver todos" (step 99)
+            const hasFilters = Object.keys(state.filters).length > 0;
+            const canGoBack = hasFilters || state.filterStep === 99;
+
+            return `
+                <div class="fade-in pb-24">
+                    <header class="mb-8">
+                        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                            <div class="flex items-start gap-4">
+                                ${canGoBack ? `
+                                <button onclick="goBackOneStep()" class="mt-1 p-2 bg-white rounded-full shadow-sm border border-gray-200 hover:bg-primary hover:text-white transition-colors group" title="Volver un paso">
+                                    <i data-lucide="arrow-left" width="20"></i>
+                                </button>
+                                ` : ''}
+                                
+                                <div>
+                                    <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                                    <p class="text-gray-500 text-sm mt-1">Mostrando ${items.length} resultados</p>
+                                </div>
+                            </div>
+
+                            ${showFilterBtn && hasFilters ? `
+                                <div class="flex items-center gap-2 flex-wrap justify-end">
+                                    <span class="text-xs text-gray-400 bg-white px-2 py-1 rounded border hidden md:inline-block">
+                                        ${Object.values(state.filters).join(' > ')}
+                                    </span>
+                                    <button onclick="resetFilters()" class="text-xs font-bold text-teal-600 bg-teal-50 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors">
+                                        Borrar todo
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </header>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        ${items.map(item => renderCard(item)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
             const hasFilters = Object.keys(state.filters).length > 0;
 
             return `
