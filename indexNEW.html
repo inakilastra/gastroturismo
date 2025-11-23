@@ -604,6 +604,7 @@
 
         function getDetailHtml(item) {
             const stars = Math.round(item.rating);
+            // Generar estrellas
             const starHtml = Array(5).fill(0).map((_, i) => 
                 `<svg class="w-6 h-6 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
@@ -621,10 +622,14 @@
 
             return `
                 <div class="bg-white min-h-full absolute inset-0 z-20 overflow-y-auto animate-fadeIn pb-20">
+                    <button onclick="closeDetail()" class="fixed top-4 left-4 z-50 bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100">
+                        <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
+                    </button>
+                    
                     <div class="h-[50vh] w-full relative cursor-pointer group" onclick="openLightbox(0)">
                         <img src="${item.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
-                        <div class="absolute center inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
                              <span class="bg-black/50 text-white px-4 py-2 rounded-full backdrop-blur text-sm font-bold">Ver Galería</span>
                         </div>
                         <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 pointer-events-none">
@@ -643,25 +648,53 @@
                     <div class="max-w-5xl mx-auto -mt-10 relative px-4 md:px-0">
                         <div class="bg-white rounded-t-3xl shadow-xl border-t border-gray-100 p-6 md:p-10 flex flex-col md:flex-row gap-10">
                             
-                             <div class="flex-1 space-y-8">
-                                ${item.links.maps ? `<div class="flex flex-wrap gap-3">
+                            <div class="flex-1 space-y-8">
+                                
+                                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-dashed border-gray-200 pb-6">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating}</span>
+                                        <div class="flex">${starHtml}</div>
+                                    </div>
+                                    ${priceText}
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand uppercase tracking-widest">Nuestra Experiencia</h3>
+                                    <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                        ${item.fullDesc || item.desc}
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap gap-3">
                                     ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
                                     ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
                                     ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Instagram</a>` : ''}
-                                </div>` : ''} 
-                             </div>
-                             
-                             <div class="w-full md:w-80 flex-shrink-0 space-y-6">
-                                ${item.address ? `<div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm sticky top-6">
-                                     <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center border-b border-teal-200 pb-2">
+                                </div>
+                            </div>
+
+                            <div class="w-full md:w-80 flex-shrink-0 space-y-6">
+                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm sticky top-6">
+                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center border-b border-teal-200 pb-2">
                                         <i data-lucide="info" width="14" class="mr-2"></i> Datos Prácticos
                                     </h4>
+                                    
+                                    ${item.address ? `
                                     <div class="mb-4">
                                         <span class="text-xs text-gray-400 font-bold uppercase">Dirección</span>
                                         <p class="text-sm font-medium text-slate-700 mt-1">${item.address}</p>
-                                    </div>
                                     </div>` : ''}
-                             </div>
+
+                                    ${item.hours ? `
+                                    <div class="mb-4">
+                                        <span class="text-xs text-gray-400 font-bold uppercase">Horario</span>
+                                        <div class="text-sm font-medium text-slate-700 mt-1 whitespace-pre-line">${item.hours}</div>
+                                    </div>` : ''}
+
+                                    ${item.links.reviews ? `
+                                    <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
+                                        Leer Reseñas en Google
+                                    </a>` : ''}
+                                </div>
+                            </div>
                         </div>
 
                         ${remainingGallery.length > 0 ? `
