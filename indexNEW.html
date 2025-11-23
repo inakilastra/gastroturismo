@@ -619,28 +619,27 @@
             renderAppContent();
         }
 
-        function getDetailHtml(item) {
+       function getDetailHtml(item) {
             const stars = Math.round(item.rating);
-            // Generar estrellas
             const starHtml = Array(5).fill(0).map((_, i) => 
                 `<svg class="w-6 h-6 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
 
             const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
             
-            // Lógica de precio
             let priceText = '';
             if (item.priceCode == 10) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
             else if (item.priceCode == 11) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
             else if (item.priceCode == 12) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
 
-            // Galería (excluyendo la primera que es la principal)
             const remainingGallery = item.gallery.slice(1);
 
+            // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
+            // Esto hace que en el móvil la ficha tape el menú verde superior.
             return `
-                <div class="bg-white min-h-full absolute inset-0 z-20 overflow-y-auto animate-fadeIn pb-20">
+                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-20">
                     
-                    <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[60] bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
+                    <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
                         <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
                         <span class="font-bold text-sm hidden sm:inline">Volver</span>
                     </button>
