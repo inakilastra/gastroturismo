@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANeKI - Gastroturismo</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
-    
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Special+Elite&display=swap"
+        rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <script>
@@ -33,13 +35,39 @@
     </script>
 
     <style>
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #009688; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #004D40; }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #009688;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #004D40;
+        }
 
         /* Loader */
         .loader {
@@ -50,28 +78,42 @@
             height: 40px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
-<body class="bg-background text-slate-800 h-screen flex overflow-hidden font-sans selection:bg-primaryContainer selection:text-darkTeal">
 
-    <div id="loading-overlay" class="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+<body
+    class="bg-background text-slate-800 h-screen flex overflow-hidden font-sans selection:bg-primaryContainer selection:text-darkTeal">
+
+    <div id="loading-overlay"
+        class="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="loader mb-4"></div>
         <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando el mundo de Aneki...</h2>
     </div>
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity" onclick="toggleMenu()"></div>
-    
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"
+        onclick="toggleMenu()"></div>
+
+    <aside id="sidebar"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
         <div class="p-6 flex justify-between items-center border-b border-teal-800/50">
             <div class="font-brand text-2xl tracking-widest text-primaryContainer">ANEKI</div>
             <button onclick="toggleMenu()" class="md:hidden text-teal-200 hover:text-white">
                 <i data-lucide="x"></i>
             </button>
         </div>
-        
+
         <nav class="p-4 space-y-1 flex-1 overflow-y-auto" id="nav-menu">
-            </nav>
+        </nav>
 
         <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-400/60 font-brand">
             <p>Gastroturismo 2.0</p>
@@ -80,8 +122,9 @@
     </aside>
 
     <main class="flex-1 flex flex-col h-full relative md:ml-64 w-full transition-all duration-300 bg-[#F0FDFD]">
-        
-        <div class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
+
+        <div
+            class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
             <div class="flex items-center">
                 <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3">
                     <i data-lucide="menu"></i>
@@ -91,18 +134,18 @@
         </div>
 
         <div id="app-content" class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8 pb-24">
-            </div>
+        </div>
     </main>
 
     <script>
         // --- CONFIGURACIÓN DE CSVs ---
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
         const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
-        
-        const COLS = { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40:102 };
-        const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo:5, foto1: 6 };
 
-        let DATA = []; 
+        const COLS = { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40: 102 };
+        const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo: 5, foto1: 6 };
+
+        let DATA = [];
 
         const MENUS = [
             { id: 'landing', label: 'Inicio', icon: 'home' },
@@ -151,21 +194,21 @@
                 const eventsRaw = parseCSV(await eventsRes.text()).slice(1);
 
                 const sitesProcessed = sitesRaw.map(row => {
-                    let type = 'pintxos'; 
+                    let type = 'pintxos';
                     const rawType = (row[COLS.tipo_lugar] || '').toLowerCase();
-                    
+
                     if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
                     else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
                     else if (rawType.includes('turismo') || rawType.includes('visita')) type = 'turismo';
                     else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
                     else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';
-                    
+
                     const gallery = [];
-                    for(let i=1; i<=40; i++) {
-                        const photoIdx = 23 + (i-1)*2;
-                        const textIdx = 24 + (i-1)*2;
-                        if(row[photoIdx]) {
+                    for (let i = 1; i <= 40; i++) {
+                        const photoIdx = 23 + (i - 1) * 2;
+                        const textIdx = 24 + (i - 1) * 2;
+                        if (row[photoIdx]) {
                             gallery.push({
                                 url: `https://drive.google.com/thumbnail?id=${row[photoIdx]}&sz=w800`,
                                 caption: row[textIdx] || ''
@@ -185,7 +228,7 @@
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
                         rating: finalRating,
-                        image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto', 
+                        image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto',
                         desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
                         fullDesc: row[COLS.pintxo_tapa] || '',
                         priceCode: row[COLS.codprecio],
@@ -209,11 +252,11 @@
                     mes: row[COLS_EVENTOS.eventoMes],
                     desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
                     image: row[COLS_EVENTOS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS_EVENTOS.foto1]}&sz=w800` : 'https://placehold.co/600x400?text=Evento',
-                    rating: 5 
+                    rating: 5
                 }));
 
                 DATA = [...sitesProcessed, ...eventsProcessed];
-                
+
                 document.getElementById('loading-overlay').classList.add('opacity-0', 'pointer-events-none');
                 initApp();
 
@@ -243,7 +286,7 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             const isClosed = sidebar.classList.contains('-translate-x-full');
-            
+
             if (isClosed) {
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
@@ -258,7 +301,7 @@
             state.filters = {};
             state.selectedItem = null;
             state.filterStep = 0;
-            
+
             document.getElementById('sidebar').classList.add('-translate-x-full');
             document.getElementById('sidebar-overlay').classList.add('hidden');
 
@@ -267,7 +310,7 @@
         }
 
         function updateActiveMenu(viewId) {
-            renderSidebar(); 
+            renderSidebar();
         }
 
         function renderSidebar() {
@@ -283,7 +326,7 @@
 
         function renderAppContent() {
             const container = document.getElementById('app-content');
-            container.innerHTML = ''; 
+            container.innerHTML = '';
 
             let htmlContent = '';
 
@@ -303,7 +346,7 @@
             }
             container.innerHTML = htmlContent;
             if (typeof lucide !== 'undefined') lucide.createIcons();
-            container.scrollTo(0,0);
+            container.scrollTo(0, 0);
         }
 
         // --- VISTAS ---
@@ -324,8 +367,8 @@
                     
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         ${cards.map((c, idx) => {
-                            const color = colors[idx % colors.length];
-                            return `
+                const color = colors[idx % colors.length];
+                return `
                             <button onclick="navigate('${c.id}')" class="bg-${color}-50 hover:bg-${color}-100 border border-${color}-200 p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
                                 <div class="bg-white p-4 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
                                     <i data-lucide="${c.icon}" class="text-${color}-600" width="32" height="32"></i>
@@ -351,7 +394,7 @@
         function selectFilter(level, value) {
             state.filters[level] = value;
             state.filterStep++;
-            renderAppContent(); 
+            renderAppContent();
         }
 
         function resetFilters() {
@@ -361,7 +404,7 @@
         }
 
         function showAllFilters() {
-            state.filterStep = 99; 
+            state.filterStep = 99;
             renderAppContent();
         }
 
@@ -375,7 +418,7 @@
             }
 
             const activeFilters = levels.filter(l => state.filters[l]);
-            
+
             if (activeFilters.length > 0) {
                 const lastFilter = activeFilters[activeFilters.length - 1];
                 delete state.filters[lastFilter];
@@ -384,17 +427,17 @@
                 state.filterStep = Math.max(0, state.filterStep - 1);
             }
 
-            const currentData = DATA.filter(d => d.type === currentType && 
+            const currentData = DATA.filter(d => d.type === currentType &&
                 Object.keys(state.filters).every(k => d[k] === state.filters[k])
             );
-            
+
             if (state.filterStep < levels.length) {
                 const currentLevel = levels[state.filterStep];
                 const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean);
-                
+
                 if (options.length <= 1 && (state.filterStep > 0 || Object.keys(state.filters).length > 0)) {
-                    goBackOneStep(); 
-                    return; 
+                    goBackOneStep();
+                    return;
                 }
             }
 
@@ -403,8 +446,8 @@
 
         function getSectionLocationHtml(type) {
             const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
-            
-            const currentData = DATA.filter(d => d.type === type && 
+
+            const currentData = DATA.filter(d => d.type === type &&
                 Object.keys(state.filters).every(k => d[k] === state.filters[k])
             );
 
@@ -413,9 +456,9 @@
             while (state.filterStep < levels.length) {
                 let currentLevel = levels[state.filterStep];
                 const options = [...new Set(currentData.map(item => item[currentLevel]))].filter(Boolean).sort();
-                
+
                 if (options.length === 0) {
-                    state.filterStep = 99; 
+                    state.filterStep = 99;
                     break;
                 } else if (options.length === 1) {
                     state.filters[currentLevel] = options[0];
@@ -428,9 +471,9 @@
             return renderResultsGrid(sectionTitle, currentData);
         }
 
-       function renderFilterWizard(title, level, options) {
+        function renderFilterWizard(title, level, options) {
             const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
-            
+
             return `
                 <div class="fade-in max-w-lg mx-auto p-6 mt-4">
                     <button onclick="goBackOneStep()" class="mb-6 flex items-center text-slate-500 font-bold hover:text-primary transition-colors">
@@ -465,13 +508,13 @@
         function getSectionMonthHtml(type) {
             const rawData = DATA.filter(d => d.type === type);
             const monthsOrder = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-            
+
             const grouped = rawData.reduce((acc, item) => {
                 const m = item.mes || 'Sin Fecha';
                 (acc[m] = acc[m] || []).push(item);
                 return acc;
             }, {});
-            
+
             const sortedMonths = Object.keys(grouped).sort((a, b) => {
                 const idxA = monthsOrder.indexOf(a);
                 const idxB = monthsOrder.indexOf(b);
@@ -479,7 +522,7 @@
                 if (idxB === -1) return -1;
                 return idxA - idxB;
             });
-            
+
             const title = MENUS.find(m => m.id === type)?.label || type;
 
             return `
@@ -575,8 +618,8 @@
 
         function renderCard(item) {
             const stars = Math.round(item.rating);
-            const starHtml = Array(5).fill(0).map((_, i) => 
-                `<svg class="w-4 h-4 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+            const starHtml = Array(5).fill(0).map((_, i) =>
+                `<svg class="w-4 h-4 ${i < stars ? 'text-green-500 fill-current' : 'text-zinc-400 fill-current'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
 
             return `
@@ -619,14 +662,14 @@
             renderAppContent();
         }
 
-       function getDetailHtml(item) {
+        function getDetailHtml(item) {
             const stars = Math.round(item.rating);
-            const starHtml = Array(5).fill(0).map((_, i) => 
-                `<svg class="w-6 h-6 ${i < stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+            const starHtml = Array(5).fill(0).map((_, i) =>
+                `<svg class="w-6 h-6 ${i < stars ? 'text-green-500 fill-current' : 'text-zinc-400 fill-current'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
             ).join('');
 
             const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
-            
+
             let priceText = '';
             if (item.priceCode == 10) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
             else if (item.priceCode == 11) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
@@ -742,17 +785,17 @@
 
         function openLightbox(index) {
             if (!state.selectedItem || !state.selectedItem.gallery) return;
-            
+
             currentLightboxIndex = index;
             const lightbox = document.getElementById('lightbox');
-            
+
             lightbox.classList.remove('hidden');
             setTimeout(() => {
                 lightbox.classList.remove('opacity-0');
             }, 10);
 
             updateLightboxContent();
-            
+
             document.addEventListener('keydown', handleLightboxKeys);
             document.body.style.overflow = 'hidden';
         }
@@ -760,13 +803,13 @@
         function closeLightbox() {
             const lightbox = document.getElementById('lightbox');
             lightbox.classList.add('opacity-0');
-            
+
             setTimeout(() => {
                 lightbox.classList.add('hidden');
             }, 300);
 
             document.removeEventListener('keydown', handleLightboxKeys);
-            document.body.style.overflow = ''; 
+            document.body.style.overflow = '';
         }
 
         function changeLightboxSlide(direction) {
@@ -782,16 +825,16 @@
         function updateLightboxContent() {
             const gallery = state.selectedItem.gallery;
             const item = gallery[currentLightboxIndex];
-            
+
             const imgEl = document.getElementById('lightbox-img');
             const captionEl = document.getElementById('lightbox-caption');
             const counterEl = document.getElementById('lightbox-counter');
-            
+
             imgEl.style.opacity = '0.5';
             setTimeout(() => imgEl.style.opacity = '1', 200);
 
             imgEl.src = item.url;
-            
+
             if (item.caption) {
                 captionEl.textContent = item.caption;
                 captionEl.style.display = 'block';
@@ -813,21 +856,29 @@
 
     </script>
 
-    <div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm" onclick="if(event.target === this) closeLightbox()">
-        
-        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/10 rounded-full p-2 transition-all z-50">
+    <div id="lightbox"
+        class="fixed inset-0 z-[100] bg-black/95 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm"
+        onclick="if(event.target === this) closeLightbox()">
+
+        <button onclick="closeLightbox()"
+            class="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/10 rounded-full p-2 transition-all z-50">
             <i data-lucide="x" width="32" height="32"></i>
         </button>
 
-        <button onclick="changeLightboxSlide(-1)" class="absolute left-2 md:left-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-black/20 hover:bg-black/50 rounded-full">
+        <button onclick="changeLightboxSlide(-1)"
+            class="absolute left-2 md:left-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-black/20 hover:bg-black/50 rounded-full">
             <i data-lucide="chevron-left" width="40" height="40"></i>
         </button>
 
-        <div class="relative max-w-7xl max-h-screen w-full h-full flex flex-col items-center justify-center p-4 md:p-10">
-            
-            <img id="lightbox-img" src="" class="max-h-[80vh] max-w-full object-contain shadow-2xl rounded-md select-none transition-transform duration-300" alt="Galería">
-            
-            <div id="lightbox-caption-container" class="absolute bottom-8 left-0 right-0 text-center pointer-events-none">
+        <div
+            class="relative max-w-7xl max-h-screen w-full h-full flex flex-col items-center justify-center p-4 md:p-10">
+
+            <img id="lightbox-img" src=""
+                class="max-h-[80vh] max-w-full object-contain shadow-2xl rounded-md select-none transition-transform duration-300"
+                alt="Galería">
+
+            <div id="lightbox-caption-container"
+                class="absolute bottom-8 left-0 right-0 text-center pointer-events-none">
                 <div class="inline-block bg-black/60 backdrop-blur-md text-white px-6 py-3 rounded-full max-w-[90%]">
                     <p id="lightbox-caption" class="text-sm md:text-lg font-brand tracking-wide"></p>
                     <p id="lightbox-counter" class="text-xs text-white/60 mt-1 font-sans uppercase tracking-widest"></p>
@@ -835,9 +886,11 @@
             </div>
         </div>
 
-        <button onclick="changeLightboxSlide(1)" class="absolute right-2 md:right-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-black/20 hover:bg-black/50 rounded-full">
+        <button onclick="changeLightboxSlide(1)"
+            class="absolute right-2 md:right-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-black/20 hover:bg-black/50 rounded-full">
             <i data-lucide="chevron-right" width="40" height="40"></i>
         </button>
     </div>
 </body>
+
 </html>
