@@ -311,7 +311,7 @@
                         barrio: row[COLS.barrio],
                         rating: finalRating,
                         image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto',
-                        desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
+                        desc: row[COLS.nota] || 'Sin descripción disponible.', // || row[COLS.pintxo_tapa]
                         fullDesc: row[COLS.pintxo_tapa] || '',
                         priceCode: row[COLS.codprecio],
                         address: row[COLS.direccion],
