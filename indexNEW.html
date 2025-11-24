@@ -16,27 +16,13 @@
     <meta property="og:title" content="ANeKI - Gastroturismo">
     <meta property="og:description" content="Compartimos nuestras experiencias gastronómicas y turísticas">
     <meta property="og:type" content="website">
-    <meta property="og:image"
-        content="https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
-
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Special+Elite&display=swap"
-        rel="stylesheet">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Outfit', 'sans-serif'],
-                        brand: ['Special Elite', 'cursive'],
+                        brand: ['Outfit', 'sans-serif'],
                     },
                     colors: {
                         primary: '#009688',       /* Teal 500 */
@@ -114,7 +100,7 @@
     <div id="loading-overlay"
         class="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="loader mb-4"></div>
-        <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando el mundo de Aneki...</h2>
+        <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando Aneki...</h2>
     </div>
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"
