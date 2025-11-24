@@ -520,6 +520,19 @@
                 return;
             }
 
+            if (state.filterStep === 99) {
+                const activeFilters = levels.filter(l => state.filters[l]);
+                if (activeFilters.length === 0) {
+                    // No hay filtros activos, volver al inicio
+                    navigate('landing');
+                } else {
+                    // Hay filtros activos, volver al último paso de filtrado
+                    state.filterStep = activeFilters.length - 1;
+                    renderAppContent();
+                }
+                return;
+            }
+
             const activeFilters = levels.filter(l => state.filters[l]);
 
             if (activeFilters.length > 0) {
