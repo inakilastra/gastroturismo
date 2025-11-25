@@ -300,7 +300,7 @@
 
                     let rawVal = String(row[COLS.valoracion] || '100').replace(',', '.');
                     let valNum = parseFloat(rawVal);
-                    let finalRating = (isNaN(valNum) || valNum < 100) ? 0 : valNum - 100;
+                    let finalRating = (isNaN(valNum) || valNum < 100) ? 0 : valNum - 1000;
                     return {
                         id: row[COLS.idsitio] || Math.random().toString(),
                         type: type,
