@@ -162,17 +162,19 @@
 
         // Generar COLS dinámicamente para mejor mantenibilidad
         const COLS = {
-            idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5,
-            nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10,
-            googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15,
-            web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20,
-            precio: 21, precioultimo: 22
+           
+            idsitio: 0, sitio: 1, autonomia: 2, provincia: 3, ciudad: 4, 
+            barrio: 5, orden: 6, valoracion: 7, codprecio: 8, precio: 9, 
+            barloultimo: 10, precioultimo: 11, barbreve: 12, bardetalle: 13, 
+            comida: 14, tipositio: 15, direccion: 16, horario: 17, 
+            googleresenas: 18, maps: 19, facebook: 20, instagram: 21, 
+            postinstagram: 22, web: 23,  
         };
 
         // Generar columnas de fotos dinámicamente (foto1-foto40, text1-text40)
         for (let i = 1; i <= 40; i++) {
-            COLS[`foto${i}`] = 23 + (i - 1) * 2;
-            COLS[`text${i}`] = 24 + (i - 1) * 2;
+            COLS[`foto${i}`] = 24 + (i - 1) * 2;
+            COLS[`text${i}`] = 25 + (i - 1) * 2;
         }
 
         const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo: 5, foto1: 6 };
@@ -277,7 +279,7 @@
 
                 const sitesProcessed = sitesRaw.map(row => {
                     let type = 'pintxos';
-                    const rawType = (row[COLS.tipo_lugar] || '').toLowerCase();
+                    const rawType = (row[COLS.tipositio] || '').toLowerCase();
 
                     if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
@@ -304,15 +306,15 @@
                     return {
                         id: row[COLS.idsitio] || Math.random().toString(),
                         type: type,
-                        name: row[COLS.nombre],
+                        name: row[COLS.sitio],
                         autonomia: row[COLS.autonomia],
                         provincia: row[COLS.provincia],
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
                         rating: finalRating,
                         image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto',
-                        desc: row[COLS.nota] || 'Sin descripción disponible.', // || row[COLS.pintxo_tapa]
-                        fullDesc: row[COLS.nota] || '', // row[COLS.pintxo_tapa]
+                        desc: row[COLS.barbreve] || 'Sin descripción disponible.', 
+                        fullDesc: row[COLS.bardetalle] || '', 
                         priceCode: row[COLS.codprecio],
                         address: row[COLS.direccion],
                         hours: row[COLS.horario],
