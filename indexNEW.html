@@ -171,13 +171,10 @@
             postinstagram: 22, web: 23
         };
 
-        // Generar columnas de fotos dinámicamente (foto1-foto40, text1-text40)
-        let foto = 24;
-        let text = 25;
-        
+        // Generar columnas de fotos dinámicamente (foto1-foto40, text1-text40)       
         for (let i = 1; i <= 20; i++) {
-            COLS[`foto${i}`] = 24; //COLS[`foto${i}`] = 23 + (i - 1) * 2;
-            COLS[`text${i}`] = 25; //COLS[`text${i}`] = 24 + (i - 1) * 2;
+            COLS[`foto${i}`] = 24 + (i - 1) * 2;
+            COLS[`text${i}`] = 25 + (i - 1) * 2;
         }
 
         const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo: 5, foto1: 6 };
@@ -293,8 +290,8 @@
 
                     const gallery = [];
                     for (let i = 1; i <= 40; i++) {
-                        const photoIdx = 23 + (i - 1) * 2;
-                        const textIdx = 24 + (i - 1) * 2;
+                        const photoIdx = 24 + (i - 1) * 2;
+                        const textIdx = 25 + (i - 1) * 2;
                         if (row[photoIdx]) {
                             gallery.push({
                                 url: `https://drive.google.com/thumbnail?id=${row[photoIdx]}&sz=w800`,
