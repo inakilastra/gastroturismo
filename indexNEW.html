@@ -168,13 +168,13 @@
             barloultimo: 10, precioultimo: 11, barbreve: 12, bardetalle: 13, 
             comida: 14, tipositio: 15, direccion: 16, horario: 17, 
             googleresenas: 18, maps: 19, facebook: 20, instagram: 21, 
-            postinstagram: 22, web: 23,  
+            postinstagram: 22, web: 23
         };
 
         // Generar columnas de fotos dinámicamente (foto1-foto40, text1-text40)
         for (let i = 1; i <= 40; i++) {
-            COLS[`foto${i}`] = 24 + (i - 1) * 2;
-            COLS[`text${i}`] = 25 + (i - 1) * 2;
+            COLS[`foto${i}`] = 23 + (i - 1) * 2;
+            COLS[`text${i}`] = 24 + (i - 1) * 2;
         }
 
         const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo: 5, foto1: 6 };
