@@ -318,18 +318,23 @@
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
                         rating: finalRating,
-                        image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto',
+                        priceCode: row[COLS.codprecio] || '', 
+                        price: row[COLS.precio] || '', 
+                        loultimo: row[COLS.barloultimo] || '', 
+                        precioultimo: row[COLS.precioultimo] + ' €' || '', 
                         desc: row[COLS.barbreve] || 'Sin descripción disponible.', 
                         fullDesc: row[COLS.bardetalle] || '', 
-                        priceCode: row[COLS.codprecio],
+                        comida: row[COLS.comida] || '', 
+                        image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto',
                         address: row[COLS.direccion],
                         hours: row[COLS.horario],
                         links: {
                             maps: row[COLS.maps],
                             web: row[COLS.web],
+                            reviews: row[COLS.googleresenas],
                             instagram: row[COLS.instagram],
-                            post: row[COLS.postinstagram],
-                            reviews: row[COLS.googleresenas]
+                            facebook: row[COLS.facebook],
+                            post: row[COLS.postinstagram]
                         },
                         gallery: gallery
                     };
@@ -892,7 +897,7 @@
                                     </div>
                                     <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Ùltima Visita</h3>
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                        ${item.comida}
+                                        ${item.comida} ${item.precioultimo}
                                     </div>
                                 </div>
 
