@@ -888,11 +888,10 @@
                                         <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating.toString().replace('.', ',')}</span>
                                         <div class="flex">
                                             ${starHtml}
-                                            ${item.links.reviews ? `<p>
+                                            ${item.links.reviews ? `<br>
                                                 <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
                                                     Leer Reseñas en Google
-                                                </a>
-                                            </p>` : ''}
+                                                </a>` : ''}
                                         </div>
                                     </div>
                                     ${priceText}
@@ -903,7 +902,7 @@
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                         ${item.fullDesc || item.desc}
                                     </div>
-                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Ùltima Visita</h3>
+                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Ùltima Visita 1</h3>
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                         ${item.links.loultimo ? `${item.loultimo}` : ''}
                                         ${item.links.loultimo && item.links.precioultimo ? '<br >' : ''}
