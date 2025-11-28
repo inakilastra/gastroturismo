@@ -908,7 +908,7 @@
                                             <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Nuestra Valoración</h3>
                                         </div>
                                         <div class="flex items-center space-x-4">
-                                            <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating.toString().replace('.', ',')}</span>
+                                            <span class="flex items-center justify-center w-16 h-16 bg-primary text-white rounded-full text-3xl font-brand font-bold shadow-md">${item.rating.toString().replace('.', ',')}</span>
                                             <div class="flex">${starHtml}</div>
                                         </div>
                                         <div class="text-center">
@@ -918,7 +918,7 @@
                                 
                                     <div class="text-right">
                                         ${item.links.reviews ? `
-                                            <a href="${item.links.reviews}" target="_blank" class="text-center bg-white border border-teal-200 text-primary py-1.5 px-4 rounded-lg text-xs font-bold hover:bg-primary hover:text-white transition w-full">
+                                            <a href="${item.links.reviews}" target="_blank" class="text-center bg-white border border-teal-200 text-primary py-1.5 px-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition w-full">
                                                 Leer Reseñas en Google
                                             </a>
                                         ` : ''}
