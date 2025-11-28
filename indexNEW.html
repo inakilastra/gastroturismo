@@ -287,7 +287,7 @@
                     let type = 'pintxos';
                     /*const rawType = (row[COLS.tipositio] || '').toLowerCase();*/
 
-                     if (row[COLS.tipositio] == 'Bar') || row[COLS.tipositio]  == 'Bar y Restaurante') type = 'pintxos';
+                     if (['Bar', 'Bar y Restaurante'].includes(row[COLS.tipositio])) type = 'pintxos';
                     
                     /*if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
