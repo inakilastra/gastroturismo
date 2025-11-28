@@ -285,15 +285,21 @@
 
                 const sitesProcessed = sitesRaw.map(row => {
                     let type = 'pintxos';
-                    /*const rawType = (row[COLS.tipositio] || '').toLowerCase();*/
+                    /*const rawType = (row[COLS.tipositio] || '').toLowerCase();
 
-                   /* if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
+                    if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
                     else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
                     else if (rawType.includes('turismo') || rawType.includes('')) type = 'turismo';
                     else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
                     else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';*/
-                    /*if (row[COLS.tipositio] = 'Bar' || row[COLS.tipositio] = 'Bar y Restaurante') type = 'pintxos';*/
+
+                    if (row[COLS.tipositio] = 'Bar' || row[COLS.tipositio] = 'Bar y Restaurante') type = 'pintxos';
+                    else if (row[COLS.tipositio] = 'Restaurante' || row[COLS.tipositio] = 'Bar y Restaurante') type = 'restaurantes';
+                    else if (row[COLS.tipositio] = 'bodega') type = 'bodegas';
+                    else if (row[COLS.tipositio] = 'turismo') type = 'turismo';
+                    else if (row[COLS.tipositio] = 'tienda') type = 'tiendas';
+                    else if (row[COLS.tipositio] = 'curiosidad') type = 'curiosidades';
                     
                     const gallery = [];
                     for (let i = 1; i <= 40; i++) {
@@ -928,7 +934,6 @@
                                 </div>
 
                                 ${(item.links.maps || item.links.web || item.links.instagram || item.links.facebook) ? `
-                                    <br>
                                     <h3 class="text-lg font-bold text-darkTeal mb-3 mt-6 font-brand tracking-widest">¡Anímate a conocerles!</h3>
                                     <div class="flex flex-wrap gap-3">
                                         ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
