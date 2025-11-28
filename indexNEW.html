@@ -887,6 +887,11 @@
                                     <div class="flex items-center space-x-2">
                                         <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating.toString().replace('.', ',')}</span>
                                         <div class="flex">${starHtml}</div>
+                                        ${item.links.reviews ? `<p>
+                                            <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
+                                                Leer Reseñas en Google
+                                            </a>
+                                        </p>` : ''}
                                     </div>
                                     ${priceText}
                                 </div>
