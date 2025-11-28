@@ -889,7 +889,10 @@
                                         <div class="flex">${starHtml}</div>
                                     </div>
                                     ${priceText}
-
+                                     ${item.links.reviews ? `<br>
+                                        <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
+                                            Leer Reseñas en Google
+                                        </a>` : ''}
                                 </div>
 
                                 <div>
