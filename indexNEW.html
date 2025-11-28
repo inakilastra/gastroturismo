@@ -887,7 +887,7 @@
                                 
                                     <div class="flex flex-col gap-4">
                                         
-                                        <div class="flex items-center space-x-3">
+                                        <div class="flex items-center space-x-4">
                                             <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating.toString().replace('.', ',')}</span>
                                             <div class="flex">${starHtml}</div>
                                         </div>
@@ -912,13 +912,14 @@
                                     </div>
                                      ${item.loultimo ? `
                                          <br>
-                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Ùltima Visita 2</h3>
+                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Última Visita</h3>
                                          <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                             ${item.loultimo}
                                             ${item.precioultimo ? `<br >💰 ${item.precioultimo}` : ''}
                                         </div>
                                     ` : ''}
                                     ${item.links.post ? `
+                                        <br>
                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Nuestro úlimo Instagram</h3>
                                         <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                             <a href="${item.links.post}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Post</a>
