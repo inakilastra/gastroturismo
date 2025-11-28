@@ -933,7 +933,7 @@
                                     </div>
                                      ${item.loultimo ? `
                                          <br>
-                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Última Visita ${item.precioultimo ? ` 💰 ${item.precioultimo}` : ''}</h3>
+                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Última Visita ${(item.precioultimo&& parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
                                          <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                             ${item.loultimo}
                                         </div>
