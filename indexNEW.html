@@ -285,9 +285,26 @@
 
                 const sitesProcessed = sitesRaw.map(row => {
                     let type = 'pintxos';
-                    /*const rawType = (row[COLS.tipositio] || '').toLowerCase();*/
 
-                     /*if (['Bar', 'Bar y Restaurante'].includes(row[COLS.tipositio])) type = 'pintxos';*/
+                    // 1. Obtenemos el valor y lo pasamos a minúsculas para comparar mejor
+                    const rawType = (row[COLS.tipositio] || '').toLowerCase().trim();
+
+                    // 2. Asignamos el tipo según lo que contenga la celda
+                    if (rawType.includes('bar') || rawType.includes('bar y restaurante')) {
+                        type = 'pintxos';
+                    } else if (rawType.includes('restaurante') || rawType.includes('bar y restaurante')) {
+                        type = 'restaurantes';
+                    } else if (rawType.includes('bodega') || rawType.includes('vino')) {
+                        type = 'bodegas';
+                    } else if (rawType.includes('tienda') || rawType.includes('comercio')) {
+                        type = 'tiendas';
+                    } else if (rawType.includes('curiosidad')) {
+                        type = 'curiosidades';
+                    } else {
+                        // Para turismo, museos o cualquier otro caso no contemplado arriba
+                        type = 'turismo';
+                    }
+                    /*const rawType = (row[COLS.tipositio] || '').toLowerCase();*/
                     
                     /*if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
