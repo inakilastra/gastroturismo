@@ -927,12 +927,16 @@
                                     ` : ''}
                                 </div>
 
-                                <div class="flex flex-wrap gap-3">
-                                    ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
-                                    ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
-                                    ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Instagram</a>` : ''}
-                                    ${item.links.facebook ? `<a href="${item.links.facebook}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Facebook</a>` : ''}
-                                </div>
+                                ${(item.links.maps || item.links.web || item.links.instagram || item.links.facebook) ? `
+                                    <br>
+                                    <h3 class="text-lg font-bold text-darkTeal mb-3 mt-6 font-brand tracking-widest">¡Anímate a conocerles!</h3>
+                                    <div class="flex flex-wrap gap-3">
+                                        ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
+                                        ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
+                                        ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Instagram</a>` : ''}
+                                        ${item.links.facebook ? `<a href="${item.links.facebook}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Facebook</a>` : ''}
+                                    </div>
+                                ` : ''}
                             </div>
 
                             <div class="w-full md:w-80 flex-shrink-0 space-y-6">
