@@ -886,15 +886,13 @@
                                 <div class="flex flex-wrap items-center justify-between gap-4 border-b border-dashed border-gray-200 pb-6">
                                     <div class="flex items-center space-x-2">
                                         <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating.toString().replace('.', ',')}</span>
-                                        <div class="flex">
-                                            ${starHtml}
-                                            ${item.links.reviews ? `<br>
-                                                <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
-                                                    Leer Reseñas en Google
-                                                </a>` : ''}
-                                        </div>
+                                        <div class="flex">${starHtml}</div>
                                     </div>
                                     ${priceText}
+                                    ${item.links.reviews ? `<br>
+                                        <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
+                                            Leer Reseñas en Google
+                                        </a>` : ''}
                                 </div>
 
                                 <div>
@@ -904,9 +902,9 @@
                                     </div>
                                     <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Ùltima Visita 1</h3>
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                        ${item.links.loultimo ? `${item.loultimo}` : ''}
-                                        ${item.links.loultimo && item.links.precioultimo ? '<br >' : ''}
-                                        ${item.links.precioultimo ? `💰 ${item.precioultimo}` : ''}
+                                        ${item.loultimo ? `${item.loultimo}` : ''}
+                                        ${item.loultimo && item.precioultimo ? '<br >' : ''}
+                                        ${item..precioultimo ? `💰 ${item.precioultimo}` : ''}
                                     </div>
                                     ${item.links.post ? `
                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Nuestro úlimo Instagram</h3>
