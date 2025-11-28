@@ -293,7 +293,7 @@
                     else if (rawType.includes('turismo') || rawType.includes('')) type = 'turismo';
                     else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
                     else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';*/
-                    if ((row[COLS.tipositio]).toLowerCase() = 'Bar' || (row[COLS.tipositio]).toLowerCase() = 'Bar y Restaurante') type = 'pintxos';
+                    if (row[COLS.tipositio] = 'Bar' || row[COLS.tipositio] = 'Bar y Restaurante') type = 'pintxos';
                     
                     const gallery = [];
                     for (let i = 1; i <= 40; i++) {
