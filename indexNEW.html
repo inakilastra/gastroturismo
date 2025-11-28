@@ -285,9 +285,9 @@
 
                 const sitesProcessed = sitesRaw.map(row => {
                     let type = 'pintxos';
-                    const rawType = (row[COLS.tipositio] || '').toLowerCase();
+                    /*const rawType = (row[COLS.tipositio] || '').toLowerCase();*/
 
-                     if (rawType == 'bar') || rawType == 'rar y restaurante') type = 'pintxos';
+                     if (row[COLS.tipositio] == 'Bar') || row[COLS.tipositio]  == 'Bar y Restaurante') type = 'pintxos';
                     
                     /*if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
