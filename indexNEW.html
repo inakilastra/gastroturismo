@@ -199,7 +199,7 @@
             { id: 'pintxos', label: 'Pintxos, Tapas...', icon: 'utensils-crossed', keywords: ['pintxo', 'tapa', 'bar'] },
             { id: 'restaurantes', label: 'Restaurantes', icon: 'chef-hat', keywords: ['restaurante', 'asador', 'comida'] },
             { id: 'bodegas', label: 'Bodegas', icon: 'wine', keywords: ['bodega', 'vino', 'catas'] },
-            { id: 'turismo', label: 'Turismo', icon: 'compass', keywords: ['turismo', 'visita', 'museo'] },
+            { id: 'turismo', label: 'Turismo', icon: 'compass', keywords: ['turismo', '', 'museo'] },
             { id: 'eventosCulinarios', label: 'Eventos Culinarios', icon: 'calendar-heart' },
             { id: 'eventosTuristicos', label: 'Eventos Turisticos', icon: 'map' },
             { id: 'tiendas', label: 'Tiendas', icon: 'shopping-bag', keywords: ['tienda', 'comercio', 'gourmet'] },
@@ -290,7 +290,7 @@
                     if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
                     else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
-                    else if (rawType.includes('turismo') || rawType.includes('visita')) type = 'turismo';
+                    else if (rawType.includes('turismo') || rawType.includes('')) type = 'turismo';
                     else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
                     else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';
 
@@ -901,14 +901,9 @@
                                         ${item.links.comida && item.links.precioultimo ? '<br >' : ''}
                                         ${item.links.precioultimo ? `💰 ${item.precioultimo}` : ''}
                                     </div>
-                                    ${item.links.post ? `
-                                        <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Nuestro úlimo Instagram</h3>
-                                        <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                            <a href="${item.links.post}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Post</a>
-                                        </div>
-                                    ` : ''}
-                                </div>
 
+                                </div>
+<!--Last Instagram-->
                                 <div class="flex flex-wrap gap-3">
                                     ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
                                     ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
