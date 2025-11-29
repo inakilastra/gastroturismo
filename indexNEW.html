@@ -168,12 +168,12 @@
 
         // Generar COLS dinámicamente para mejor mantenibilidad
         const COLS = {
-           
-            idsitio: 0, sitio: 1, autonomia: 2, provincia: 3, ciudad: 4, 
-            barrio: 5, orden: 6, valoracion: 7, codprecio: 8, precio: 9, 
-            barloultimo: 10, precioultimo: 11, barbreve: 12, bardetalle: 13, 
-            comida: 14, tipositio: 15, direccion: 16, horario: 17, 
-            googleresenas: 18, maps: 19, facebook: 20, instagram: 21, 
+
+            idsitio: 0, sitio: 1, autonomia: 2, provincia: 3, ciudad: 4,
+            barrio: 5, orden: 6, valoracion: 7, codprecio: 8, precio: 9,
+            barloultimo: 10, precioultimo: 11, barbreve: 12, bardetalle: 13,
+            comida: 14, tipositio: 15, direccion: 16, horario: 17,
+            googleresenas: 18, maps: 19, facebook: 20, instagram: 21,
             postinstagram: 22, web: 23
         };
 
@@ -305,14 +305,14 @@
                         type = 'turismo';
                     }
                     /*const rawType = (row[COLS.tipositio] || '').toLowerCase();*/
-                    
+
                     /*if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
                     else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
                     else if (rawType.includes('turismo') || rawType.includes('')) type = 'turismo';
                     else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
                     else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';*/
-                    
+
                     const gallery = [];
                     for (let i = 1; i <= 40; i++) {
                         const photoIdx = 24 + (i - 1) * 2;
@@ -337,13 +337,13 @@
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
                         rating: finalRating,
-                        priceCode: row[COLS.codprecio] || '', 
-                        price: row[COLS.precio] || '', 
-                        loultimo: row[COLS.barloultimo] || '', 
-                        precioultimo: row[COLS.precioultimo] + ' €' || '', 
-                        desc: row[COLS.barbreve] || 'Sin descripción disponible.', 
-                        fullDesc: row[COLS.bardetalle] || '', 
-                        comida: row[COLS.comida] || '', 
+                        priceCode: row[COLS.codprecio] || '',
+                        price: row[COLS.precio] || '',
+                        loultimo: row[COLS.barloultimo] || '',
+                        precioultimo: row[COLS.precioultimo] + ' €' || '',
+                        desc: row[COLS.barbreve] || 'Sin descripción disponible.',
+                        fullDesc: row[COLS.bardetalle] || '',
+                        comida: row[COLS.comida] || '',
                         image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto',
                         address: row[COLS.direccion],
                         hours: row[COLS.horario],
@@ -507,12 +507,12 @@
 
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         ${cards.map((c, idx) => {
-                            const color = colors[idx % colors.length];
-                            const classes = colorClasses[color].split(' ');
-                            const bgClass = classes[0];
-                            const hoverBgClass = classes[1];
-                            const borderClass = classes[2];
-                            const iconClass = classes[3];
+                const color = colors[idx % colors.length];
+                const classes = colorClasses[color].split(' ');
+                const bgClass = classes[0];
+                const hoverBgClass = classes[1];
+                const borderClass = classes[2];
+                const iconClass = classes[3];
 
                 return `
                             <button onclick="navigate('${escapeHtml(c.id)}')" class="${bgClass} ${hoverBgClass} border ${borderClass} p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
@@ -936,7 +936,7 @@
                                     </div>
                                      ${item.loultimo ? `
                                          <br>
-                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Última Visita ${(item.precioultimo&& parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
+                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Última Visita ${(item.precioultimo && parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
                                          <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                             ${item.loultimo}
                                         </div>
@@ -965,7 +965,8 @@
 
                                     ${(item.links.maps || item.links.web || item.links.instagram || item.links.facebook) ? `
                                         <div class="flex flex-wrap gap-3">
-                                            ${item.links.reviews ? `<a href="${item.links.reviews}" target="_blank" class="flex justify-center items-center gap-2 bg-white border border-teal-200 text-primary py-1.5 px-2 rounded-lg text-base font-bold hover:bg-primary hover:text-white transition w-full"><i data-lucide="star" class= "text-teal-500" width="18"></i> Leer Reseñas en Google</a>` : ''}
+                                            ${item.links.reviews ? `<a href="${item.links.reviews}" target="_blank" class="flex justify-center items-center gap-2 bg-white border border-teal-200 text-primary py-1.5 px-2 rounded-lg text-base font-bold hover:bg-primary hover:text-white transition w-full">
+                                                <i data-lucide="star" class= "text-yellow-400" width="18"></i> Leer Reseñas en Google</a>` : ''}
                                             ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
                                             ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
                                             ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Instagram</a>` : ''}
