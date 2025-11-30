@@ -6,7 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANeKI - Gastroturismo</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Special+Elite&display=swap"
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Descubre nuestras experiencias gastronómicas y turísticas. Pintxos, restaurantes, bodegas, eventos culinarios y mucho más.">
+    <meta name="author" content="Iñaki & Angels">
+    <meta name="keywords" content="gastroturismo, pintxos, restaurantes, bodegas, turismo gastronómico">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="ANeKI - Gastroturismo">
+    <meta property="og:description" content="Compartimos nuestras experiencias gastronómicas y turísticas">
+    <meta property="og:type" content="website">
+    <meta property="og:image"
+        content="https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,7 +36,7 @@
                 extend: {
                     fontFamily: {
                         sans: ['Outfit', 'sans-serif'],
-                        brand: ['Special Elite', 'cursive'],
+                        brand: ['Outfit', 'sans-serif'],
                     },
                     colors: {
                         primary: '#009688',       /* Teal 500 */
@@ -28,6 +45,12 @@
                         background: '#F0FDFD',
                         primaryContainer: '#A7FFEB', /* Teal A100 */
                         darkTeal: '#004D40',      /* Teal 900 */
+                        /* 
+                            star
+                            teal-500 #009688
+                            #30cfc0
+                            yellow-400 #f6e05e 
+                        */
                     }
                 }
             }
@@ -97,25 +120,25 @@
     <div id="loading-overlay"
         class="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="loader mb-4"></div>
-        <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando el mundo de Aneki...</h2>
+        <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando Aneki...</h2>
     </div>
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"
-        onclick="toggleMenu()"></div>
+        onclick="toggleMenu()" aria-hidden="true"></div>
 
     <aside id="sidebar"
         class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
         <div class="p-6 flex justify-between items-center border-b border-teal-800/50">
-            <div class="font-brand text-2xl tracking-widest text-primaryContainer">ANEKI</div>
+            <div class="font-brand text-2xl tracking-widest text-primaryContainer">ANeKI</div>
             <button onclick="toggleMenu()" class="md:hidden text-teal-200 hover:text-white">
                 <i data-lucide="x"></i>
             </button>
         </div>
 
-        <nav class="p-4 space-y-1 flex-1 overflow-y-auto" id="nav-menu">
+        <nav class="p-4 space-y-1 flex-1 overflow-y-auto" id="nav-menu" aria-label="Navegación principal">
         </nav>
 
-        <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-400/60 font-brand">
+        <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-200 font-brand">
             <p>Gastroturismo 2.0</p>
             <p>© Iñaki & Angels</p>
         </div>
@@ -126,7 +149,8 @@
         <div
             class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
             <div class="flex items-center">
-                <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3">
+                <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3"
+                    aria-label="Abrir menú de navegación">
                     <i data-lucide="menu"></i>
                 </button>
                 <span class="font-brand text-xl tracking-wide">Gastroturismo</span>
@@ -142,29 +166,95 @@
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
         const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
 
-        const COLS = { idsitio: 0, autonomia: 1, provincia: 2, ciudad: 3, barrio: 4, nombre: 5, nota: 6, direccion: 7, horario: 8, pintxo_tapa: 9, comida: 10, googleresenas: 11, maps: 12, facebook: 13, instagram: 14, postinstagram: 15, web: 16, lo_ultimo: 17, tipo_lugar: 18, valoracion: 19, codprecio: 20, precio: 21, precioultimo: 22, foto1: 23, text1: 24, foto2: 25, text2: 26, foto3: 27, text3: 28, foto4: 29, text4: 30, foto5: 31, text5: 32, foto6: 33, text6: 34, foto7: 35, text7: 36, foto8: 37, text8: 38, foto9: 39, text9: 40, foto10: 41, text10: 42, foto11: 43, text11: 44, foto12: 45, text12: 46, foto13: 47, text13: 48, foto14: 49, text14: 50, foto15: 51, text15: 52, foto16: 53, text16: 54, foto17: 55, text17: 56, foto18: 57, text18: 58, foto19: 59, text19: 60, foto20: 61, text20: 62, foto21: 63, text21: 64, foto22: 65, text22: 66, foto23: 67, text23: 68, foto24: 69, text24: 70, foto25: 71, text25: 72, foto26: 73, text26: 74, foto27: 75, text27: 76, foto28: 77, text28: 78, foto29: 79, text29: 80, foto30: 81, text30: 82, foto31: 83, text31: 84, foto32: 85, text32: 86, foto33: 87, text33: 88, foto34: 89, text34: 90, foto35: 91, text35: 92, foto36: 93, text36: 94, foto37: 95, text37: 96, foto38: 97, text38: 98, foto39: 99, text39: 100, foto40: 101, text40: 102 };
+        // Generar COLS dinámicamente para mejor mantenibilidad
+        const COLS = {
+
+            idsitio: 0, sitio: 1, autonomia: 2, provincia: 3, ciudad: 4,
+            barrio: 5, orden: 6, valoracion: 7, codprecio: 8, precio: 9,
+            barloultimo: 10, precioultimo: 11, barbreve: 12, bardetalle: 13,
+            comida: 14, tipositio: 15, direccion: 16, horario: 17,
+            googleresenas: 18, maps: 19, facebook: 20, instagram: 21,
+            postinstagram: 22, web: 23
+        };
+
+        // Generar columnas de fotos dinámicamente (foto1-foto40, text1-text40)       
+        for (let i = 1; i <= 40; i++) {
+            COLS[`foto${i}`] = 24 + (i - 1) * 2;
+            COLS[`text${i}`] = 25 + (i - 1) * 2;
+        }
+
         const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, anyo: 5, foto1: 6 };
+
+        // Constantes para códigos de precio
+        const PRICE_CODES = {
+            VERY_GOOD: 10,
+            FAIR: 11,
+            EXPENSIVE: 12
+        };
 
         let DATA = [];
 
         const MENUS = [
             { id: 'landing', label: 'Inicio', icon: 'home' },
-            { id: 'pintxos', label: 'Pintxos y Tapas', icon: 'utensils-crossed', keywords: ['pintxo', 'tapa', 'bar'] },
+            { id: 'pintxos', label: 'Pintxos, Tapas...', icon: 'utensils-crossed', keywords: ['pintxo', 'tapa', 'bar'] },
             { id: 'restaurantes', label: 'Restaurantes', icon: 'chef-hat', keywords: ['restaurante', 'asador', 'comida'] },
             { id: 'bodegas', label: 'Bodegas', icon: 'wine', keywords: ['bodega', 'vino', 'catas'] },
-            { id: 'turismo', label: 'Turismo', icon: 'compass', keywords: ['turismo', 'visita', 'museo'] },
-            { id: 'eventosCulinarios', label: 'Eventos Cul.', icon: 'calendar-heart' },
-            { id: 'eventosTuristicos', label: 'Eventos Tur.', icon: 'map' },
+            { id: 'turismo', label: 'Turismo', icon: 'compass', keywords: ['turismo', '', 'museo'] },
+            { id: 'eventosCulinarios', label: 'Eventos Culinarios', icon: 'calendar-heart' },
+            { id: 'eventosTuristicos', label: 'Eventos Turisticos', icon: 'map' },
             { id: 'tiendas', label: 'Tiendas', icon: 'shopping-bag', keywords: ['tienda', 'comercio', 'gourmet'] },
-            { id: 'curiosidades', label: 'Curiosidades', icon: 'help-circle', keywords: ['curiosidad', 'cartel', 'señal'] },
+            { id: 'curiosidades', label: 'Carteles, Señales', icon: 'help-circle', keywords: ['curiosidad', 'cartel', 'señal'] },
         ];
 
         const state = {
             view: 'landing',
             filters: {},
             selectedItem: null,
-            filterStep: 0
+            filterStep: 0,
+
+            // Método helper para resetear estado
+            reset() {
+                this.filters = {};
+                this.selectedItem = null;
+                this.filterStep = 0;
+            }
         };
+
+        // --- FUNCIONES HELPER ---
+
+        // Escapar HTML para prevenir XSS
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return unsafe;
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Helper para crear iconos
+        function createIcon(lucideIcon, width = 24, height = 24, classes = '') {
+            return `<i data-lucide="${lucideIcon}" ${width ? `width="${width}"` : ''} ${height ? `height="${height}"` : ''} ${classes ? `class="${classes}"` : ''}></i>`;
+        }
+
+        // Helper para reinicializar iconos de Lucide
+        function refreshIcons() {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        // Debounce helper para optimización
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
 
         // --- PARSER CSV ---
         function parseCSV(csvText) {
@@ -195,19 +285,38 @@
 
                 const sitesProcessed = sitesRaw.map(row => {
                     let type = 'pintxos';
-                    const rawType = (row[COLS.tipo_lugar] || '').toLowerCase();
 
-                    if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
+                    // 1. Obtenemos el valor y lo pasamos a minúsculas para comparar mejor
+                    const rawType = (row[COLS.tipositio] || '').toLowerCase().trim();
+
+                    // 2. Asignamos el tipo según lo que contenga la celda
+                    if (rawType.includes('bar') || rawType.includes('bar y restaurante')) {
+                        type = 'pintxos';
+                    } else if (rawType.includes('restaurante') || rawType.includes('bar y restaurante')) {
+                        type = 'restaurantes';
+                    } else if (rawType.includes('bodega') || rawType.includes('vino')) {
+                        type = 'bodegas';
+                    } else if (rawType.includes('tienda') || rawType.includes('comercio')) {
+                        type = 'tiendas';
+                    } else if (rawType.includes('curiosidad')) {
+                        type = 'curiosidades';
+                    } else {
+                        // Para turismo, museos o cualquier otro caso no contemplado arriba
+                        type = 'turismo';
+                    }
+                    /*const rawType = (row[COLS.tipositio] || '').toLowerCase();*/
+
+                    /*if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
                     else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
                     else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
-                    else if (rawType.includes('turismo') || rawType.includes('visita')) type = 'turismo';
+                    else if (rawType.includes('turismo') || rawType.includes('')) type = 'turismo';
                     else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
-                    else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';
+                    else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';*/
 
                     const gallery = [];
                     for (let i = 1; i <= 40; i++) {
-                        const photoIdx = 23 + (i - 1) * 2;
-                        const textIdx = 24 + (i - 1) * 2;
+                        const photoIdx = 24 + (i - 1) * 2;
+                        const textIdx = 25 + (i - 1) * 2;
                         if (row[photoIdx]) {
                             gallery.push({
                                 url: `https://drive.google.com/thumbnail?id=${row[photoIdx]}&sz=w800`,
@@ -216,30 +325,35 @@
                         }
                     }
 
-                    let rawVal = String(row[COLS.valoracion] || '10').replace(',', '.');
+                    let rawVal = String(row[COLS.valoracion] || '100').replace(',', '.');
                     let valNum = parseFloat(rawVal);
-                    let finalRating = (isNaN(valNum) || valNum < 10) ? 0 : valNum - 10;
+                    let finalRating = (isNaN(valNum) || valNum < 100) ? 0 : (valNum - 100) / 10;
                     return {
                         id: row[COLS.idsitio] || Math.random().toString(),
                         type: type,
-                        name: row[COLS.nombre],
+                        name: row[COLS.sitio],
                         autonomia: row[COLS.autonomia],
                         provincia: row[COLS.provincia],
                         ciudad: row[COLS.ciudad],
                         barrio: row[COLS.barrio],
                         rating: finalRating,
+                        priceCode: row[COLS.codprecio] || '',
+                        price: row[COLS.precio] || '',
+                        loultimo: row[COLS.barloultimo] || '',
+                        precioultimo: row[COLS.precioultimo] + ' €' || '',
+                        desc: row[COLS.barbreve] || 'Sin descripción disponible.',
+                        fullDesc: row[COLS.bardetalle] || '',
+                        comida: row[COLS.comida] || '',
                         image: gallery[0] ? gallery[0].url : 'https://placehold.co/600x400?text=Sin+Foto',
-                        desc: row[COLS.nota] || row[COLS.pintxo_tapa] || 'Sin descripción disponible.',
-                        fullDesc: row[COLS.pintxo_tapa] || '',
-                        priceCode: row[COLS.codprecio],
                         address: row[COLS.direccion],
                         hours: row[COLS.horario],
                         links: {
                             maps: row[COLS.maps],
                             web: row[COLS.web],
+                            reviews: row[COLS.googleresenas],
                             instagram: row[COLS.instagram],
-                            post: row[COLS.postinstagram],
-                            reviews: row[COLS.googleresenas]
+                            facebook: row[COLS.facebook],
+                            post: row[COLS.postinstagram]
                         },
                         gallery: gallery
                     };
@@ -247,6 +361,7 @@
 
                 const eventsProcessed = eventsRaw.map((row, idx) => ({
                     id: `evt-${idx}`,
+                    idSitio: row[COLS_EVENTOS.idSitio],
                     type: 'eventosCulinarios',
                     name: row[COLS_EVENTOS.eventoCulinario],
                     mes: row[COLS_EVENTOS.eventoMes],
@@ -268,7 +383,10 @@
                 if (loadingText) {
                     loadingText.innerHTML = `
                         <span class="text-red-600 font-bold">¡Ups! Algo falló.</span><br>
-                        <span class="text-sm text-red-400">${err.message}</span>
+                        <span class="text-sm text-red-400">${escapeHtml(err.message)}</span><br>
+                        <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-darkTeal transition-colors font-bold">
+                            Reintentar
+                        </button>
                     `;
                 }
             }
@@ -277,7 +395,7 @@
         function initApp() {
             renderSidebar();
             navigate('landing');
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            refreshIcons();
         }
 
         // --- NAVEGACIÓN Y UI ---
@@ -321,7 +439,7 @@
                     <span class="font-medium">${item.label}</span>
                 </button>
             `).join('');
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            refreshIcons();
         }
 
         function renderAppContent() {
@@ -345,7 +463,7 @@
                 }
             }
             container.innerHTML = htmlContent;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            refreshIcons();
             container.scrollTo(0, 0);
         }
 
@@ -353,7 +471,19 @@
 
         function getLandingHtml() {
             const cards = MENUS.filter(m => m.id !== 'landing');
-            const colors = ['orange', 'red', 'purple', 'blue', 'green', 'teal', 'pink', 'yellow'];
+
+            // Mapa de clases completas para TailwindCSS (CDN no soporta clases dinámicas)
+            const colorClasses = {
+                orange: 'bg-orange-50 hover:bg-orange-100 border-orange-200 text-orange-600',
+                red: 'bg-red-50 hover:bg-red-100 border-red-200 text-red-600',
+                purple: 'bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-600',
+                blue: 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-600',
+                green: 'bg-green-50 hover:bg-green-100 border-green-200 text-green-600',
+                teal: 'bg-teal-50 hover:bg-teal-100 border-teal-200 text-teal-600',
+                pink: 'bg-pink-50 hover:bg-pink-100 border-pink-200 text-pink-600',
+                yellow: 'bg-yellow-50 hover:bg-yellow-100 border-yellow-200 text-yellow-600'
+            };
+            const colors = Object.keys(colorClasses);
 
             return `
                 <div class="fade-in max-w-6xl mx-auto">
@@ -365,25 +495,34 @@
                         </div>
                     </section>
                     
+                    <div class="mt-16 mb-10 bg-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-8">
+                         <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w400" class="w-40 h-32 rounded-2xl object-cover border-4 border-primary">
+                         <div class="text-center md:text-left">
+                            <h2 class="font-brand text-2xl text-darkTeal mb-2">¡Hola! Somos Angels e Iñaki 👋</h2>
+                            <p class="text-gray-600">Te abrimos las puertas a nuestro universo. 
+                                <br>Tenemos de todo:
+                                <br>desde bocados de pura felicidad 😋,
+                                <br>hasta kilómetros de aventura ✨.</p>
+                         </div>
+                    </div>
+
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         ${cards.map((c, idx) => {
                 const color = colors[idx % colors.length];
+                const classes = colorClasses[color].split(' ');
+                const bgClass = classes[0];
+                const hoverBgClass = classes[1];
+                const borderClass = classes[2];
+                const iconClass = classes[3];
+
                 return `
-                            <button onclick="navigate('${c.id}')" class="bg-${color}-50 hover:bg-${color}-100 border border-${color}-200 p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
+                            <button onclick="navigate('${escapeHtml(c.id)}')" class="${bgClass} ${hoverBgClass} border ${borderClass} p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
                                 <div class="bg-white p-4 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                    <i data-lucide="${c.icon}" class="text-${color}-600" width="32" height="32"></i>
+                                    <i data-lucide="${c.icon}" class="${iconClass}" width="32" height="32"></i>
                                 </div>
-                                <span class="font-bold text-slate-800 group-hover:text-darkTeal font-brand text-lg">${c.label}</span>
+                                <span class="font-bold text-slate-800 group-hover:text-darkTeal font-brand text-lg">${escapeHtml(c.label)}</span>
                             </button>
                         `}).join('')}
-                    </div>
-
-                    <div class="mt-16 bg-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-8">
-                         <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w400" class="w-32 h-32 rounded-full object-cover border-4 border-primary">
-                         <div class="text-center md:text-left">
-                            <h2 class="font-brand text-2xl text-darkTeal mb-2">¡Hola! Somos Angels e Iñaki 👋</h2>
-                            <p class="text-gray-600">Te abrimos las puertas a nuestro universo. Tenemos de todo: desde bocados de pura felicidad 😋, hasta kilómetros de aventura ✨.</p>
-                         </div>
                     </div>
                 </div>
             `;
@@ -414,6 +553,19 @@
 
             if (state.filterStep === 0 && Object.keys(state.filters).length === 0) {
                 navigate('landing');
+                return;
+            }
+
+            if (state.filterStep === 99) {
+                const activeFilters = levels.filter(l => state.filters[l]);
+                if (activeFilters.length === 0) {
+                    // No hay filtros activos, volver al inicio
+                    navigate('landing');
+                } else {
+                    // Hay filtros activos, volver al último paso de filtrado
+                    state.filterStep = activeFilters.length - 1;
+                    renderAppContent();
+                }
                 return;
             }
 
@@ -617,10 +769,29 @@
         }
 
         function renderCard(item) {
-            const stars = Math.round(item.rating);
-            const starHtml = Array(5).fill(0).map((_, i) =>
-                `<svg class="w-4 h-4 ${i < stars ? 'text-green-500 fill-current' : 'text-zinc-400 fill-current'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
-            ).join('');
+            const rating = Math.round(item.rating * 2) / 2;
+            const starHtml = Array(5).fill(0).map((_, i) => {
+                const diff = rating - i;
+                if (diff >= 1) {
+                    // Estrella completa
+                    return `<svg class="w-6 h-6 text-yellow-400 fill-current" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                } else if (diff >= 0.5) {
+                    // Media estrella (con degradado)
+                    const gradId = `grad-${Math.random().toString(36).substr(2, 9)}`;
+                    return `<svg class="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0">
+                        <defs>
+                            <linearGradient id="${gradId}">
+                                <stop offset="50%" stop-color="currentColor"/>
+                                <stop offset="50%" stop-color="#30cfc0"/>
+                            </linearGradient>
+                        </defs>
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#${gradId})"></polygon>
+                    </svg>`;
+                } else {
+                    // Estrella vacía
+                    return `<svg class="w-6 h-6 text-teal-400 fill-current" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                }
+            }).join('');
 
             return `
                 <div onclick="openDetail('${item.id}')" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col h-full">
@@ -654,26 +825,51 @@
 
         function openDetail(id) {
             state.selectedItem = DATA.find(d => d.id === id);
+            // Prevenir scroll del body en móvil
+            document.body.style.overflow = 'hidden';
             renderAppContent();
         }
 
         function closeDetail() {
             state.selectedItem = null;
+            // Restaurar scroll del body
+            document.body.style.overflow = '';
             renderAppContent();
         }
 
         function getDetailHtml(item) {
-            const stars = Math.round(item.rating);
-            const starHtml = Array(5).fill(0).map((_, i) =>
-                `<svg class="w-6 h-6 ${i < stars ? 'text-green-500 fill-current' : 'text-zinc-400 fill-current'}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
-            ).join('');
+            // Buscamos en DATA un elemento que sea evento culinario Y coincida el idSitio
+            const eventoRelacionado = DATA.find(d => d.type === 'eventosCulinarios' && d.idSitio === item.id);
+            const rating = Math.round(item.rating * 2) / 2;
+            const starHtml = Array(5).fill(0).map((_, i) => {
+                const diff = rating - i;
+                if (diff >= 1) {
+                    // Estrella completa
+                    return `<svg class="w-11 h-11 text-yellow-400 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                } else if (diff >= 0.5) {
+                    // Media estrella
+                    const gradId = `grad-detail-${Math.random().toString(36).substr(2, 9)}`;
+                    return `<svg class="w-11 h-11 text-yellow-400" viewBox="0 0 24 24">
+                        <defs>
+                            <linearGradient id="${gradId}">
+                                <stop offset="50%" stop-color="currentColor"/>
+                                <stop offset="50%" stop-color="#30cfc0"/>
+                            </linearGradient>
+                        </defs>
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#${gradId})"></polygon>
+                    </svg>`;
+                } else {
+                    // Estrella vacía
+                    return `<svg class="w-11 h-11 text-teal-400 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                }
+            }).join('');
 
             const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
 
             let priceText = '';
-            if (item.priceCode == 10) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
-            else if (item.priceCode == 11) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
-            else if (item.priceCode == 12) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
+            if (item.priceCode == PRICE_CODES.VERY_GOOD) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
+            else if (item.priceCode == PRICE_CODES.FAIR) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
+            else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
 
             const remainingGallery = item.gallery.slice(1);
 
@@ -693,7 +889,7 @@
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
                              <span class="bg-black/50 text-white px-4 py-2 rounded-full backdrop-blur text-sm font-bold">Ver Galería</span>
                         </div>
-                        <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 pointer-events-none">
+                        <div class="absolute bottom-0 left-0 w-full p-6 pb-12 md:p-12 pointer-events-none">    
                             <div class="max-w-4xl mx-auto">
                                 <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 bg-primary text-white shadow-lg border border-white/20">
                                     ${MENUS.find(m => m.id === item.type)?.label || item.type}
@@ -711,32 +907,49 @@
                             
                             <div class="flex-1 space-y-8">
                                 
-                                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-dashed border-gray-200 pb-6">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="text-4xl font-brand text-darkTeal font-bold">${item.rating}</span>
-                                        <div class="flex">${starHtml}</div>
+                                <div class="flex flex-wrap items-start justify-between gap-4 border-b border-dashed border-gray-200 pb-6">
+                                
+                                    <div class="flex flex-col gap-4">
+                                        <div class="text-left px-4">
+                                            <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Nuestra Valoración</h3>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <span class="flex items-center justify-center w-16 h-16 bg-primary text-white rounded-full text-3xl font-brand font-bold shadow-md">${item.rating.toString().replace('.', ',')}</span>
+                                            <div class="flex">${starHtml}</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <h2 class="text-xl font-bold text-darkTeal mb-3 font-brand tracking-widest">${priceText}</h2>
+                                        </div>
                                     </div>
-                                    ${priceText}
+                                
                                 </div>
 
                                 <div>
-                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand uppercase tracking-widest">Nuestra Experiencia</h3>
+                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Nuestra Experiencia</h3>
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                         ${item.fullDesc || item.desc}
                                     </div>
-                                </div>
-
-                                <div class="flex flex-wrap gap-3">
-                                    ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
-                                    ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
-                                    ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Instagram</a>` : ''}
+                                     ${item.loultimo ? `
+                                         <br>
+                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Última Visita ${(item.precioultimo && parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
+                                         <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                            ${item.loultimo}
+                                        </div>
+                                    ` : ''}
+                                    ${item.links.post ? `
+                                        <br>
+                                        <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Nuestro úlimo Instagram</h3>
+                                        <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                            <a href="${item.links.post}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Post</a>
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
 
                             <div class="w-full md:w-80 flex-shrink-0 space-y-6">
                                 <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm sticky top-6">
                                     <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center border-b border-teal-200 pb-2">
-                                        <i data-lucide="info" width="14" class="mr-2"></i> Datos Prácticos
+                                        <i data-lucide="map-pin" width="14" class="mr-2"></i> ¡Anímate a conocerles!
                                     </h4>
                                     
                                     ${item.address ? `
@@ -745,16 +958,16 @@
                                         <p class="text-sm font-medium text-slate-700 mt-1">${item.address}</p>
                                     </div>` : ''}
 
-                                    ${item.hours ? `
-                                    <div class="mb-4">
-                                        <span class="text-xs text-gray-400 font-bold uppercase">Horario</span>
-                                        <div class="text-sm font-medium text-slate-700 mt-1 whitespace-pre-line">${item.hours}</div>
-                                    </div>` : ''}
-
-                                    ${item.links.reviews ? `
-                                    <a href="${item.links.reviews}" target="_blank" class="block w-full text-center bg-white border border-teal-200 text-primary py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition mt-6">
-                                        Leer Reseñas en Google
-                                    </a>` : ''}
+                                    ${(item.links.maps || item.links.web || item.links.instagram || item.links.facebook) ? `
+                                        <div class="flex flex-wrap gap-3">
+                                            ${item.links.reviews ? `<a href="${item.links.reviews}" target="_blank" class="flex justify-center items-center gap-2 bg-white border border-teal-200 text-primary py-1.5 px-2 rounded-lg text-base font-bold hover:bg-primary hover:text-white transition w-full">
+                                                <i data-lucide="star" class="text-yellow-400 fill-yellow-400" width="18"></i> Leer Reseñas en Google</a>` : ''}
+                                            ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-green-100 text-gray-800 hover:text-green-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map"></i> Ver Mapa</a>` : ''}
+                                            ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
+                                            ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-pink-100 text-gray-800 hover:text-pink-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Instagram</a>` : ''}
+                                            ${item.links.facebook ? `<a href="${item.links.facebook}" target="_blank" class="flex-1 min-w-[140px] text-center bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Facebook</a>` : ''}
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -775,6 +988,14 @@
                                 `).join('')}
                             </div>
                         </div>` : ''}
+                        ${eventoRelacionado ? `
+                            <div class="mt-6">
+                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${eventoRelacionado.name}</h2>
+                                <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                    ${eventoRelacionado.desc}
+                                </div>
+                            </div>ZZZ
+                        ` : 'XXX'}
                     </div>
                 </div>
             `;
@@ -857,16 +1078,16 @@
     </script>
 
     <div id="lightbox"
-        class="fixed inset-0 z-[100] bg-black/95 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm"
+        class="fixed inset-0 z-[100] bg-teal-800/80 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm"
         onclick="if(event.target === this) closeLightbox()">
 
         <button onclick="closeLightbox()"
-            class="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/10 rounded-full p-2 transition-all z-50">
+            class="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-teal-500/80 bg-teal-500/30 rounded-full p-2 transition-all z-50">
             <i data-lucide="x" width="32" height="32"></i>
         </button>
 
         <button onclick="changeLightboxSlide(-1)"
-            class="absolute left-2 md:left-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-black/20 hover:bg-black/50 rounded-full">
+            class="absolute left-2 md:left-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-teal-500/80 hover:bg-teal-800/50 rounded-full">
             <i data-lucide="chevron-left" width="40" height="40"></i>
         </button>
 
@@ -887,7 +1108,7 @@
         </div>
 
         <button onclick="changeLightboxSlide(1)"
-            class="absolute right-2 md:right-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-black/20 hover:bg-black/50 rounded-full">
+            class="absolute right-2 md:right-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-teal-500/80 hover:bg-teal-800/50 rounded-full">
             <i data-lucide="chevron-right" width="40" height="40"></i>
         </button>
     </div>

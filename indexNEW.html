@@ -839,17 +839,17 @@
 
         function getDetailHtml(item) {
             // Buscamos en DATA un elemento que sea evento culinario Y coincida el idSitio
-            const eventoRelacionado = DATA.find(d => d.type === 'eventosCulinarios' && d.idSitio === item.id);
+            const eventoRelacionado = DATA.find(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
             const rating = Math.round(item.rating * 2) / 2;
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
                 if (diff >= 1) {
                     // Estrella completa
-                    return `<svg class="w-11 h-11 text-yellow-400 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
-                } else if (diff >= 0.5) {
-                    // Media estrella
-                    const gradId = `grad-detail-${Math.random().toString(36).substr(2, 9)}`;
-                    return `<svg class="w-11 h-11 text-yellow-400" viewBox="0 0 24 24">
+            return `<svg class="w-11 h-11 text-yellow-400 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+        } else if (diff >= 0.5) {
+            // Media estrella
+            const gradId = `grad-detail-${Math.random().toString(36).substr(2, 9)}`;
+            return `<svg class="w-11 h-11 text-yellow-400" viewBox="0 0 24 24">
                         <defs>
                             <linearGradient id="${gradId}">
                                 <stop offset="50%" stop-color="currentColor"/>
@@ -858,24 +858,24 @@
                         </defs>
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#${gradId})"></polygon>
                     </svg>`;
-                } else {
-                    // Estrella vacía
-                    return `<svg class="w-11 h-11 text-teal-400 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
-                }
+        } else {
+            // Estrella vacía
+            return `<svg class="w-11 h-11 text-teal-400 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+        }
             }).join('');
 
-            const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
+        const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
 
-            let priceText = '';
-            if (item.priceCode == PRICE_CODES.VERY_GOOD) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
-            else if (item.priceCode == PRICE_CODES.FAIR) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
-            else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
+        let priceText = '';
+        if (item.priceCode == PRICE_CODES.VERY_GOOD) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
+        else if (item.priceCode == PRICE_CODES.FAIR) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
+        else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
 
-            const remainingGallery = item.gallery.slice(1);
+        const remainingGallery = item.gallery.slice(1);
 
-            // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
-            // Esto hace que en el móvil la ficha tape el menú verde superior.
-            return `
+        // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
+        // Esto hace que en el móvil la ficha tape el menú verde superior.
+        return `
                 <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-20">
                     
                     <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
