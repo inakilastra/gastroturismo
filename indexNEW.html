@@ -1000,7 +1000,16 @@
                             <strong>DEBUG INFO:</strong><br>
                             ID de este sitio: <b>"${item.id}"</b><br>
                             IDs encontrados en eventos: [${DATA.filter(d => d.type === 'eventosCulinarios').map(e => e.idSitio).join('], [')}]
-                        </div>                  
+                        </div>    
+                        ${eventoRelacionado ? `
+                            <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
+                                <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Evento Habitual</h3>
+                                <h4 class="text-xl font-bold text-primary mb-2">${eventoRelacionado.name}</h4>
+                                <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                    ${eventoRelacionado.desc}
+                                </div>
+                            </div>
+                        ` : ''}              
                     </div>
                 </div>
             `;
