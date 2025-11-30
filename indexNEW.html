@@ -361,6 +361,7 @@
 
                 const eventsProcessed = eventsRaw.map((row, idx) => ({
                     id: `evt-${idx}`,
+                    idSitio: row[COLS_EVENTOS.idSitio],
                     type: 'eventosCulinarios',
                     name: row[COLS_EVENTOS.eventoCulinario],
                     mes: row[COLS_EVENTOS.eventoMes],
@@ -837,6 +838,8 @@
         }
 
         function getDetailHtml(item) {
+            // Buscamos en DATA un elemento que sea evento culinario Y coincida el idSitio
+            const eventoRelacionado = DATA.find(d => d.type === 'eventosCulinarios' && d.idSitio === item.id);
             const rating = Math.round(item.rating * 2) / 2;
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
@@ -985,6 +988,14 @@
                                 `).join('')}
                             </div>
                         </div>` : ''}
+                        ${eventoRelacionado ? `
+                            <div class="mt-6">
+                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${eventoRelacionado.name}</h2>
+                                <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                    ${eventoRelacionado.desc}
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
