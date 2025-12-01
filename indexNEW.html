@@ -365,6 +365,7 @@
                     type: 'eventosCulinarios',
                     name: row[COLS_EVENTOS.eventoCulinario],
                     mes: row[COLS_EVENTOS.eventoMes],
+                    anyo: row[COLS_EVENTOS.eventoAnyo],
                     desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
                     image: row[COLS_EVENTOS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS_EVENTOS.foto1]}&sz=w800` : 'https://placehold.co/600x400?text=Evento',
                     rating: 5
@@ -994,7 +995,7 @@
                         ` : ''} 
                         ${eventoRelacionado ? `
                             <div class="mt-6">
-                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${eventoRelacionado.name}</h2>
+                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${eventoRelacionado.name} ${eventoRelacionado.anyo}</h2>
                                 <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                     ${eventoRelacionado.desc}
                                 </div>
