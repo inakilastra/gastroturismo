@@ -365,15 +365,15 @@
                     };
                 });
 
-                const eventsProcessed = eventsRaw.map((row, idx) => {
+                               const eventsProcessed = eventsRaw.map((row, idx) => {
                     // 1. Creamos la galería del evento
                     const gallery = [];
-                    // Iteramos hasta 20 (o el número que definiste en COLS_EVENTOS)
+                    // Iteramos hasta 20
                     for (let i = 1; i <= 20; i++) {
-                        const photoCol = COLS_EVENTOS[`foto${6 + (i - 1) * 2}`];
-                        const textCol = COLS_EVENTOS[`text${7 + (i - 1) * 2}`];
+                        // CORRECCIÓN: Usamos directamente 'foto' + i
+                        const photoCol = COLS_EVENTOS[`foto${i}`];
+                        const textCol = COLS_EVENTOS[`text${i}`];
                         
-                        // Verificamos si existe la columna y tiene dato
                         if (photoCol && row[photoCol]) {
                             gallery.push({
                                 url: `https://drive.google.com/thumbnail?id=${row[photoCol]}&sz=w800`,
