@@ -898,6 +898,7 @@
 
         const remainingGallery = item.gallery.slice(1);
         const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery.slice(1));
+        item.eventGallery = eventosGallery;
 
         // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
         // Esto hace que en el móvil la ficha tape el menú verde superior.
@@ -1031,7 +1032,7 @@
                             <h3 class="text-2xl font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Galería de Eventos</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${eventosGallery.map((img, idx) => `
-                                    <div onclick="openLightbox(${item.gallery.length + idx})" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                    <div onclick="openLightbox(${idx}, 'events')" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
                                         <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
                                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
                                         <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1047,11 +1048,18 @@
             `;
         }
 
-        // --- LÓGICA DEL LIGHTBOX ---
+                // --- LÓGICA DEL LIGHTBOX ---
         let currentLightboxIndex = 0;
+        let currentGalleryType = 'main'; // 'main' o 'events'
 
-        function openLightbox(index) {
-            if (!state.selectedItem || !state.selectedItem.gallery) return;
+        function openLightbox(index, type = 'main') {
+            if (!state.selectedItem) return;
+            
+            currentGalleryType = type;
+            // Elegimos qué galería usar según el tipo
+            const gallery = type === 'events' ? state.selectedItem.eventGallery : state.selectedItem.gallery;
+
+            if (!gallery || gallery.length === 0) return;
 
             currentLightboxIndex = index;
             const lightbox = document.getElementById('lightbox');
@@ -1080,7 +1088,8 @@
         }
 
         function changeLightboxSlide(direction) {
-            const gallery = state.selectedItem.gallery;
+            // Usamos la galería activa
+            const gallery = currentGalleryType === 'events' ? state.selectedItem.eventGallery : state.selectedItem.gallery;
             currentLightboxIndex += direction;
 
             if (currentLightboxIndex >= gallery.length) currentLightboxIndex = 0;
@@ -1090,7 +1099,8 @@
         }
 
         function updateLightboxContent() {
-            const gallery = state.selectedItem.gallery;
+            // Usamos la galería activa
+            const gallery = currentGalleryType === 'events' ? state.selectedItem.eventGallery : state.selectedItem.gallery;
             const item = gallery[currentLightboxIndex];
 
             const imgEl = document.getElementById('lightbox-img');
