@@ -840,7 +840,8 @@
 
         function getDetailHtml(item) {
             // Buscamos en DATA un elemento que sea evento culinario Y coincida el idSitio
-            const eventoRelacionado = DATA.find(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
+            //const eventoRelacionado = DATA.find(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
+            const eventosRelacionados = DATA.filter(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
             const rating = Math.round(item.rating * 2) / 2;
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
@@ -993,28 +994,14 @@
                                 <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Eventos Habituales</h3>
                             </div>
                         ` : ''} 
-                        ${eventoRelacionado ? `
+                        ${eventosRelacionados.map(evento => `
                             <div class="mt-6">
-                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${eventoRelacionado.name} ${eventoRelacionado.anyo}</h2>
+                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
                                 <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                    ${eventoRelacionado.desc}
-                                </div>
-                            </div>ZZZ
-                        ` : 'XXX'}
-                        <div class="mt-4 p-4 bg-yellow-100 text-xs font-mono text-black border border-yellow-300 rounded">
-                            <strong>DEBUG INFO:</strong><br>
-                            ID de este sitio: <b>"${item.id}"</b><br>
-                            IDs encontrados en eventos: [${DATA.filter(d => d.type === 'eventosCulinarios').map(e => e.idSitio).join('], [')}]
-                        </div>    
-                        ${eventoRelacionado ? `
-                            <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
-                                <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Evento Habitual</h3>
-                                <h4 class="text-xl font-bold text-primary mb-2">${eventoRelacionado.name}</h4>
-                                <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                    ${eventoRelacionado.desc}
+                                    ${evento.desc}
                                 </div>
                             </div>
-                        ` : ''}              
+                        `).join('')}             
                     </div>
                 </div>
             `;
