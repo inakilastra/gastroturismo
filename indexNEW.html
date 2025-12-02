@@ -183,8 +183,14 @@
             COLS[`text${i}`] = 25 + (i - 1) * 2;
         }
 
-        const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, eventoAnyo: 5, foto1: 6 };
+        const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, eventoAnyo: 5 };
 
+        // Generar columnas de fotos dinámicamente (foto1-foto20, text1-text20)       
+        for (let i = 1; i <= 20; i++) {
+            COLS_EVENTOS[`foto${i}`] = 6 + (i - 1) * 2;
+            COLS_EVENTOS[`text${i}`] = 7 + (i - 1) * 2;
+        }
+        
         // Constantes para códigos de precio
         const PRICE_CODES = {
             VERY_GOOD: 10,
@@ -359,17 +365,36 @@
                     };
                 });
 
-                const eventsProcessed = eventsRaw.map((row, idx) => ({
-                    id: `evt-${idx}`,
-                    idSitio: row[COLS_EVENTOS.idSitio],
-                    type: 'eventosCulinarios',
-                    name: row[COLS_EVENTOS.eventoCulinario],
-                    mes: row[COLS_EVENTOS.eventoMes],
-                    anyo: row[COLS_EVENTOS.eventoAnyo],
-                    desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
-                    image: row[COLS_EVENTOS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS_EVENTOS.foto1]}&sz=w800` : 'https://placehold.co/600x400?text=Evento',
-                    rating: 5
-                }));
+                const eventsProcessed = eventsRaw.map((row, idx) => {
+                    // 1. Creamos la galería del evento
+                    const gallery = [];
+                    // Iteramos hasta 20 (o el número que definiste en COLS_EVENTOS)
+                    for (let i = 1; i <= 20; i++) {
+                        const photoCol = COLS_EVENTOS[`foto${6 + (i - 1) * 2}`];
+                        const textCol = COLS_EVENTOS[`text${7 + (i - 1) * 2}`];
+                        
+                        // Verificamos si existe la columna y tiene dato
+                        if (photoCol && row[photoCol]) {
+                            gallery.push({
+                                url: `https://drive.google.com/thumbnail?id=${row[photoCol]}&sz=w800`,
+                                caption: row[textCol] || ''
+                            });
+                        }
+                    }
+
+                    // 2. Devolvemos el objeto con la galería incluida
+                    return {
+                        id: `evt-${idx}`,
+                        idSitio: row[COLS_EVENTOS.idSitio],
+                        type: 'eventosCulinarios',
+                        name: row[COLS_EVENTOS.eventoCulinario],
+                        mes: row[COLS_EVENTOS.eventoMes],
+                        anyo: row[COLS_EVENTOS.eventoAnyo],
+                        desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
+                        rating: 5,
+                        gallery: gallery
+                    };
+                });
 
                 DATA = [...sitesProcessed, ...eventsProcessed];
 
@@ -872,6 +897,7 @@
         else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
 
         const remainingGallery = item.gallery.slice(1);
+        const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery.slice(1));
 
         // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
         // Esto hace que en el móvil la ficha tape el menú verde superior.
@@ -999,7 +1025,23 @@
                                     ${evento.image ? `<img src="${evento.image}" alt="${evento.name}" class="w-full h-48 object-cover mb-4">` : ''} ${evento.desc}
                                 </div>
                             </div>
-                        `).join('')}             
+                        `).join('')} 
+                        ${eventosGallery.length > 0 ? `
+                        <div class="mt-12 mb-12">
+                            <h3 class="text-2xl font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Galería de Eventos</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                ${eventosGallery.map((img, idx) => `
+                                    <div onclick="openLightbox(${item.gallery.length + idx})" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                        <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
+                                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                                        <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <i data-lucide="maximize-2" width="16" height="16"></i>
+                                        </div>
+                                        ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>` : ''}         
                     </div>
                 </div>
             `;
