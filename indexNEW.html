@@ -839,8 +839,6 @@
         }
 
         function getDetailHtml(item) {
-            // Buscamos en DATA un elemento que sea evento culinario Y coincida el idSitio
-            //const eventoRelacionado = DATA.find(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
             const eventosRelacionados = DATA.filter(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
             const rating = Math.round(item.rating * 2) / 2;
             const starHtml = Array(5).fill(0).map((_, i) => {
@@ -998,7 +996,7 @@
                             <div class="mt-6">
                                 <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
                                 <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                    ${evento.desc}
+                                    ${evento.foto1 ? `<img src="${evento.foto1}" alt="${evento.name}" class="w-full h-48 object-cover mb-4">` : ''} ${evento.desc}
                                 </div>
                             </div>
                         `).join('')}             
