@@ -183,8 +183,14 @@
             COLS[`text${i}`] = 25 + (i - 1) * 2;
         }
 
-        const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, eventoAnyo: 5, foto1: 6 };
+        const COLS_EVENTOS = { eventoCulinario: 1, eventoMes: 2, eventoCulinarioDescripcion: 3, idSitio: 4, eventoAnyo: 5 };
 
+        // Generar columnas de fotos dinámicamente (foto1-foto20, text1-text20)       
+        for (let i = 1; i <= 20; i++) {
+            COLS_EVENTOS[`foto${i}`] = 4 + (i - 1) * 2;
+            COLS_EVENTOS[`text${i}`] = 5 + (i - 1) * 2;
+        }
+        
         // Constantes para códigos de precio
         const PRICE_CODES = {
             VERY_GOOD: 10,
@@ -359,17 +365,36 @@
                     };
                 });
 
-                const eventsProcessed = eventsRaw.map((row, idx) => ({
-                    id: `evt-${idx}`,
-                    idSitio: row[COLS_EVENTOS.idSitio],
-                    type: 'eventosCulinarios',
-                    name: row[COLS_EVENTOS.eventoCulinario],
-                    mes: row[COLS_EVENTOS.eventoMes],
-                    anyo: row[COLS_EVENTOS.eventoAnyo],
-                    desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
-                    image: row[COLS_EVENTOS.foto1] ? `https://drive.google.com/thumbnail?id=${row[COLS_EVENTOS.foto1]}&sz=w800` : 'https://placehold.co/600x400?text=Evento',
-                    rating: 5
-                }));
+                               const eventsProcessed = eventsRaw.map((row, idx) => {
+                    // 1. Creamos la galería del evento
+                    const gallery = [];
+                    // Iteramos hasta 20
+                    for (let i = 1; i <= 20; i++) {
+                        // CORRECCIÓN: Usamos directamente 'foto' + i
+                        const photoCol = COLS_EVENTOS[`foto${i}`];
+                        const textCol = COLS_EVENTOS[`text${i}`];
+                        
+                        if (photoCol && row[photoCol]) {
+                            gallery.push({
+                                url: `https://drive.google.com/thumbnail?id=${row[photoCol]}&sz=w800`,
+                                caption: row[textCol] || ''
+                            });
+                        }
+                    }
+
+                    // 2. Devolvemos el objeto con la galería incluida
+                    return {
+                        id: `evt-${idx}`,
+                        idSitio: row[COLS_EVENTOS.idSitio],
+                        type: 'eventosCulinarios',
+                        name: row[COLS_EVENTOS.eventoCulinario],
+                        mes: row[COLS_EVENTOS.eventoMes],
+                        anyo: row[COLS_EVENTOS.eventoAnyo],
+                        desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
+                        rating: 5,
+                        gallery: gallery
+                    };
+                });
 
                 DATA = [...sitesProcessed, ...eventsProcessed];
 
@@ -839,8 +864,7 @@
         }
 
         function getDetailHtml(item) {
-            // Buscamos en DATA un elemento que sea evento culinario Y coincida el idSitio
-            const eventoRelacionado = DATA.find(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
+            const eventosRelacionados = DATA.filter(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
             const rating = Math.round(item.rating * 2) / 2;
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
@@ -873,6 +897,8 @@
         else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
 
         const remainingGallery = item.gallery.slice(1);
+        const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery.slice(1));
+        item.eventGallery = eventosGallery;
 
         // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
         // Esto hace que en el móvil la ficha tape el menú verde superior.
@@ -911,8 +937,8 @@
                                 <div class="flex flex-wrap items-start justify-between gap-4 border-b border-dashed border-gray-200 pb-6">
                                 
                                     <div class="flex flex-col gap-4">
-                                        <div class="text-left px-4">
-                                            <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Nuestra Valoración</h3>
+                                        <div>
+                                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Nuestra Valoración</h3>
                                         </div>
                                         <div class="flex items-center space-x-4">
                                             <span class="flex items-center justify-center w-16 h-16 bg-primary text-white rounded-full text-3xl font-brand font-bold shadow-md">${item.rating.toString().replace('.', ',')}</span>
@@ -926,20 +952,20 @@
                                 </div>
 
                                 <div>
-                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Nuestra Experiencia</h3>
+                                    <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Nuestra Experiencia</h3>
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                         ${item.fullDesc || item.desc}
                                     </div>
                                      ${item.loultimo ? `
-                                         <br>
-                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Última Visita ${(item.precioultimo && parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
-                                         <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                        <br>
+                                        <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Última Visita ${(item.precioultimo && parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
+                                        <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                             ${item.loultimo}
                                         </div>
                                     ` : ''}
                                     ${item.links.post ? `
                                         <br>
-                                        <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Nuestro úlimo Instagram</h3>
+                                        <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Nuestro úlimo Instagram</h3>
                                         <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                             <a href="${item.links.post}" target="_blank" class="flex-1 min-w-[140px] text-center bg-fuchsia-100 hover:bg-teal-100 text-fuchsia-800 hover:text-teal-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Post</a>
                                         </div>
@@ -974,7 +1000,7 @@
 
                         ${remainingGallery.length > 0 ? `
                         <div class="mt-12 mb-12">
-                            <h3 class="text-2xl font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Galería de Fotos</h3>
+                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Galería de Fotos</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${remainingGallery.map((img, idx) => `
                                     <div onclick="openLightbox(${idx + 1})" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
@@ -988,43 +1014,50 @@
                                 `).join('')}
                             </div>
                         </div>` : ''}
-                        ${eventoRelacionado ? `
+                        ${eventosRelacionados.length > 0 ? `
                             <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
-                                <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Eventos Habituales</h3>
+                               <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Eventos Habituales</h3>
                             </div>
                         ` : ''} 
-                        ${eventoRelacionado ? `
+                        ${eventosRelacionados.map(evento => `
                             <div class="mt-6">
-                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${eventoRelacionado.name} ${eventoRelacionado.anyo}</h2>
-                                <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                    ${eventoRelacionado.desc}
-                                </div>
-                            </div>ZZZ
-                        ` : 'XXX'}
-                        <div class="mt-4 p-4 bg-yellow-100 text-xs font-mono text-black border border-yellow-300 rounded">
-                            <strong>DEBUG INFO:</strong><br>
-                            ID de este sitio: <b>"${item.id}"</b><br>
-                            IDs encontrados en eventos: [${DATA.filter(d => d.type === 'eventosCulinarios').map(e => e.idSitio).join('], [')}]
-                        </div>    
-                        ${eventoRelacionado ? `
-                            <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
-                                <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Evento Habitual</h3>
-                                <h4 class="text-xl font-bold text-primary mb-2">${eventoRelacionado.name}</h4>
-                                <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                    ${eventoRelacionado.desc}
-                                </div>
+                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
+                                ${evento.desc ? `${evento.desc}` : ''}
                             </div>
-                        ` : ''}              
+                        `).join('')} 
+                        ${eventosGallery.length > 0 ? `
+                        <div class="mt-12 mb-12">
+                            <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Fotos de los Eventos Habituales</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                ${eventosGallery.map((img, idx) => `
+                                    <div onclick="openLightbox(${idx}, 'events')" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                        <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
+                                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                                        <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <i data-lucide="maximize-2" width="16" height="16"></i>
+                                        </div>
+                                        ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>` : ''}         
                     </div>
                 </div>
             `;
         }
 
-        // --- LÓGICA DEL LIGHTBOX ---
+                // --- LÓGICA DEL LIGHTBOX ---
         let currentLightboxIndex = 0;
+        let currentGalleryType = 'main'; // 'main' o 'events'
 
-        function openLightbox(index) {
-            if (!state.selectedItem || !state.selectedItem.gallery) return;
+        function openLightbox(index, type = 'main') {
+            if (!state.selectedItem) return;
+            
+            currentGalleryType = type;
+            // Elegimos qué galería usar según el tipo
+            const gallery = type === 'events' ? state.selectedItem.eventGallery : state.selectedItem.gallery;
+
+            if (!gallery || gallery.length === 0) return;
 
             currentLightboxIndex = index;
             const lightbox = document.getElementById('lightbox');
@@ -1053,7 +1086,8 @@
         }
 
         function changeLightboxSlide(direction) {
-            const gallery = state.selectedItem.gallery;
+            // Usamos la galería activa
+            const gallery = currentGalleryType === 'events' ? state.selectedItem.eventGallery : state.selectedItem.gallery;
             currentLightboxIndex += direction;
 
             if (currentLightboxIndex >= gallery.length) currentLightboxIndex = 0;
@@ -1063,7 +1097,8 @@
         }
 
         function updateLightboxContent() {
-            const gallery = state.selectedItem.gallery;
+            // Usamos la galería activa
+            const gallery = currentGalleryType === 'events' ? state.selectedItem.eventGallery : state.selectedItem.gallery;
             const item = gallery[currentLightboxIndex];
 
             const imgEl = document.getElementById('lightbox-img');

@@ -123,14 +123,14 @@
         <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando Aneki...</h2>
     </div>
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity"
         onclick="toggleMenu()" aria-hidden="true"></div>
 
     <aside id="sidebar"
-        class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
         <div class="p-6 flex justify-between items-center border-b border-teal-800/50">
             <div class="font-brand text-2xl tracking-widest text-primaryContainer">ANeKI</div>
-            <button onclick="toggleMenu()" class="md:hidden text-teal-200 hover:text-white">
+            <button onclick="toggleMenu()" class="text-teal-200 hover:text-white">
                 <i data-lucide="x"></i>
             </button>
         </div>
@@ -144,10 +144,10 @@
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full relative md:ml-64 w-full transition-all duration-300 bg-[#F0FDFD]">
+    <main class="flex-1 flex flex-col h-full relative w-full transition-all duration-300 bg-[#F0FDFD]">
 
         <div
-            class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
+            class="h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
             <div class="flex items-center">
                 <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3"
                     aria-label="Abrir menú de navegación">
