@@ -1022,11 +1022,12 @@
                         ${eventosRelacionados.map(evento => `
                             <div class="mt-6">
                                 <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
+                                ${evento.desc ? `${evento.desc}` : ''}
                             </div>
                         `).join('')} 
                         ${eventosGallery.length > 0 ? `
                         <div class="mt-12 mb-12">
-                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Galería de Eventos</h3>
+                            <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Galería de Eventos</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${eventosGallery.map((img, idx) => `
                                     <div onclick="openLightbox(${idx}, 'events')" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
