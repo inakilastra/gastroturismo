@@ -905,7 +905,7 @@
         return `
                 <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-20">
                     
-                    <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
+                    <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-teal-800 text-white sm:bg-white/90 sm:text-slate-800 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
                         <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
                         <span class="font-bold text-sm hidden sm:inline">Volver</span>
                     </button>
@@ -975,9 +975,9 @@
 
                             <div class="w-full md:w-80 flex-shrink-0 space-y-6">
                                 <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm sticky top-6">
-                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center border-b border-teal-200 pb-2">
+                                    <h3 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center border-b border-teal-200 pb-2">
                                         <i data-lucide="map-pin" width="14" class="mr-2"></i> ¡Anímate a conocerles!
-                                    </h4>
+                                    </h3>
                                     
                                     ${item.address ? `
                                     <div class="mb-4">
