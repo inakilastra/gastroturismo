@@ -938,7 +938,7 @@
                                 
                                     <div class="flex flex-col gap-4">
                                         <div class="text-left px-4">
-                                            <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Nuestra Valoración</h3>
+                                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Nuestra Valoración</h3>
                                         </div>
                                         <div class="flex items-center space-x-4">
                                             <span class="flex items-center justify-center w-16 h-16 bg-primary text-white rounded-full text-3xl font-brand font-bold shadow-md">${item.rating.toString().replace('.', ',')}</span>
@@ -952,14 +952,14 @@
                                 </div>
 
                                 <div>
-                                    <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Nuestra Experiencia</h3>
+                                    <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Nuestra Experiencia</h3>
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                         ${item.fullDesc || item.desc}
                                     </div>
                                      ${item.loultimo ? `
-                                         <br>
-                                         <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Última Visita ${(item.precioultimo && parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
-                                         <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                        <br>
+                                        <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Última Visita ${(item.precioultimo && parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
+                                        <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                             ${item.loultimo}
                                         </div>
                                     ` : ''}
@@ -1000,7 +1000,7 @@
 
                         ${remainingGallery.length > 0 ? `
                         <div class="mt-12 mb-12">
-                            <h3 class="text-2xl font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Galería de Fotos</h3>
+                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Galería de Fotos</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${remainingGallery.map((img, idx) => `
                                     <div onclick="openLightbox(${idx + 1})" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
@@ -1016,7 +1016,7 @@
                         </div>` : ''}
                         ${eventosRelacionados.length > 0 ? `
                             <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
-                                <h3 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">Eventos Habituales</h3>
+                               <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Eventos Habituales</h3>
                             </div>
                         ` : ''} 
                         ${eventosRelacionados.map(evento => `
@@ -1026,7 +1026,7 @@
                         `).join('')} 
                         ${eventosGallery.length > 0 ? `
                         <div class="mt-12 mb-12">
-                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Galería de Eventos</h3>
+                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Galería de Eventos</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${eventosGallery.map((img, idx) => `
                                     <div onclick="openLightbox(${idx}, 'events')" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
