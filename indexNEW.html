@@ -157,19 +157,50 @@
             </div>
         </div>
 
-        <div id="app-content" class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8 pb-24">
-        </div>
-        <!-- Footer Fijo -->
-        <footer class="bg-teal-800 p-4 flex justify-center items-center gap-8 shrink-0 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-            <i data-lucide="utensils-crossed" class="text-white w-8 h-8"></i>
-            <i data-lucide="chef-hat" class="text-white w-8 h-8"></i>
-            <i data-lucide="wine" class="text-white w-8 h-8"></i>
-            <i data-lucide="compass" class="text-white w-8 h-8"></i>
-            <i data-lucide="calendar-heart" class="text-white w-8 h-8"></i>
-            <i data-lucide="map" class="text-white w-8 h-8"></i>
-            <i data-lucide="shopping-bag" class="text-white w-8 h-8"></i>
-            <i data-lucide="help-circle" class="text-white w-8 h-8"></i>
-        </footer>        
+        <!-- Nuevo contenedor que hace el scroll -->
+        <div class="flex-1 overflow-y-auto relative scroll-smooth">
+            
+            <!-- El contenido se carga aquí (quitamos las clases de scroll de este div) -->
+            <div id="app-content" class="p-4 md:p-8 pb-12">
+            </div>
+
+            <!-- Footer al final del contenido -->
+            <footer class="bg-teal-800 p-8 flex flex-wrap justify-center items-center gap-6">
+                
+                <div class="bg-teal-200 p-3 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="utensils-crossed" class="text-teal-800 w-6 h-6"></i>
+                </div>
+
+                <div class="bg-teal-200 p-3 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="chef-hat" class="text-teal-800 w-6 h-6"></i>
+                </div>
+
+                <div class="bg-teal-200 p-3 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="wine" class="text-teal-800 w-6 h-6"></i>
+                </div>
+
+                <div class="bg-teal-200 p-3 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="compass" class="text-teal-800 w-6 h-6"></i>
+                </div>
+
+                <div class="bg-teal-200 p-3 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="calendar-heart" class="text-teal-800 w-6 h-6"></i>
+                </div>
+
+                <div class="bg-teal-200 p-3 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="map" class="text-teal-800 w-6 h-6"></i>
+                </div>
+
+                <div class="bg-teal-200 p-3 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="shopping-bag" class="text-teal-800 w-6 h-6"></i>
+                </div>
+
+                <div class="bg-teal-200 p-3 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="help-circle" class="text-teal-800 w-6 h-6"></i>
+                </div>
+
+            </footer>
+        </div>       
     </main>
 
     <script>
