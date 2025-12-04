@@ -1115,7 +1115,35 @@
                                     </div>
                                 `).join('')}
                             </div>
-                        </div>` : ''}         
+                        </div>` : ''} 
+                        ${eventosPuntualesRelacionados.length > 0 ? `
+                            <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
+                               <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Eventos Puntuales</h3>
+                            </div>
+                        ` : ''} 
+                        ${eventosPuntualesRelacionados.map(evento => `
+                            <div class="mt-6">
+                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
+                                ${evento.desc ? `${evento.desc}` : ''}
+                            </div>
+                        `).join('')} 
+                        ${eventosPuntualesGallery.length > 0 ? `
+                        <div class="mt-12 mb-12">
+                            <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Fotos de Eventos Puntuales</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                ${eventosPuntualesGallery.map((img, idx) => `
+                                    <!-- Nota: sumamos eventosGallery.length al índice para que el lightbox sepa que son las fotos siguientes -->
+                                    <div onclick="openLightbox(${idx + eventosGallery.length}, 'events')" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                        <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
+                                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                                        <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <i data-lucide="maximize-2" width="16" height="16"></i>
+                                        </div>
+                                        ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>` : ''}                                
                     </div>
 
                     <!-- Footer insertado aquí -->
