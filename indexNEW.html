@@ -207,6 +207,7 @@
         // --- CONFIGURACIÓN DE CSVs ---
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=47128061&single=true&output=csv';
         const EVENTOS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=584577480&single=true&output=csv';
+        const EVENTOS_PUNTUALES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTwnZA7s0yysf5rIflyyj6WNhe_XddN2OCZ6SBJfB06LFm7fANQeZfHTs7GtSlLVXmNoG16BhVStAkD/pub?gid=1883625439&single=true&output=csv';
 
         // Generar COLS dinámicamente para mejor mantenibilidad
         const COLS = {
@@ -327,9 +328,15 @@
         // --- INICIALIZACIÓN DE DATOS ---
         async function loadData() {
             try {
-                const [sitesRes, eventsRes] = await Promise.all([fetch(CSV_URL), fetch(EVENTOS_CSV_URL)]);
+                const [sitesRes, eventsRes, eventsPuntualesRes] = await Promise.all([
+                    fetch(CSV_URL), 
+                    fetch(EVENTOS_CSV_URL),
+                    fetch(EVENTOS_PUNTUALES_CSV_URL)
+                ]);
+                
                 const sitesRaw = parseCSV(await sitesRes.text()).slice(1);
                 const eventsRaw = parseCSV(await eventsRes.text()).slice(1);
+                const eventsPuntualesRaw = parseCSV(await eventsPuntualesRes.text()).slice(1);
 
                 const sitesProcessed = sitesRaw.map(row => {
                     let type = 'pintxos';
@@ -407,7 +414,7 @@
                     };
                 });
 
-                               const eventsProcessed = eventsRaw.map((row, idx) => {
+                const eventsProcessed = eventsRaw.map((row, idx) => {
                     // 1. Creamos la galería del evento
                     const gallery = [];
                     // Iteramos hasta 20
@@ -438,7 +445,32 @@
                     };
                 });
 
-                DATA = [...sitesProcessed, ...eventsProcessed];
+                 const eventsPuntualesProcessed = eventsPuntualesRaw.map((row, idx) => {
+                    const gallery = [];
+                    for (let i = 1; i <= 20; i++) {
+                        const photoCol = COLS_EVENTOS[`foto${i}`];
+                        const textCol = COLS_EVENTOS[`text${i}`];
+                        if (photoCol && row[photoCol]) {
+                            gallery.push({
+                                url: `https://drive.google.com/thumbnail?id=${row[photoCol]}&sz=w800`,
+                                caption: row[textCol] || ''
+                            });
+                        }
+                    }
+                    return {
+                        id: `evt-puntual-${idx}`,
+                        idSitio: row[COLS_EVENTOS.idSitio],
+                        type: 'eventosPuntuales', // Tipo diferenciado
+                        name: row[COLS_EVENTOS.eventoCulinario],
+                        mes: row[COLS_EVENTOS.eventoMes],
+                        anyo: row[COLS_EVENTOS.eventoAnyo],
+                        desc: row[COLS_EVENTOS.eventoCulinarioDescripcion],
+                        rating: 5,
+                        gallery: gallery
+                    };
+                });
+
+                DATA = [...sitesProcessed, ...eventsProcessed, ...eventsPuntualesProcessed];
 
                 document.getElementById('loading-overlay').classList.add('opacity-0', 'pointer-events-none');
                 initApp();
@@ -907,6 +939,7 @@
 
         function getDetailHtml(item) {
             const eventosRelacionados = DATA.filter(d => d.type === 'eventosCulinarios' && String(d.idSitio).trim() === String(item.id).trim());
+            const eventosPuntualesRelacionados = DATA.filter(d => d.type === 'eventosPuntuales' && String(d.idSitio).trim() === String(item.id).trim());
             const rating = Math.round(item.rating * 2) / 2;
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
@@ -940,7 +973,8 @@
 
         const remainingGallery = item.gallery.slice(1);
         const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery.slice(1));
-        item.eventGallery = eventosGallery;
+        const eventosPuntualesGallery = eventosPuntualesRelacionados.flatMap(evt => evt.gallery.slice(1));
+        item.eventGallery = [...eventosGallery, ...eventosPuntualesGallery];
 
         // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
         // Esto hace que en el móvil la ficha tape el menú verde superior.
