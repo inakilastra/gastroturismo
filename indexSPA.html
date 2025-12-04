@@ -123,14 +123,14 @@
         <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando Aneki...</h2>
     </div>
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity"
         onclick="toggleMenu()" aria-hidden="true"></div>
 
     <aside id="sidebar"
-        class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl flex flex-col">
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
         <div class="p-6 flex justify-between items-center border-b border-teal-800/50">
             <div class="font-brand text-2xl tracking-widest text-primaryContainer">ANeKI</div>
-            <button onclick="toggleMenu()" class="md:hidden text-teal-200 hover:text-white">
+            <button onclick="toggleMenu()" class="text-teal-200 hover:text-white">
                 <i data-lucide="x"></i>
             </button>
         </div>
@@ -144,10 +144,10 @@
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full relative md:ml-64 w-full transition-all duration-300 bg-[#F0FDFD]">
+    <main class="flex-1 flex flex-col h-full relative w-full transition-all duration-300 bg-[#F0FDFD]">
 
         <div
-            class="md:hidden h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
+            class="h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
             <div class="flex items-center">
                 <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3"
                     aria-label="Abrir menú de navegación">
@@ -157,8 +157,50 @@
             </div>
         </div>
 
-        <div id="app-content" class="flex-1 overflow-y-auto relative scroll-smooth p-4 md:p-8 pb-24">
-        </div>
+        <!-- Nuevo contenedor que hace el scroll -->
+        <div class="flex-1 overflow-y-auto relative scroll-smooth">
+            
+            <!-- El contenido se carga aquí (quitamos las clases de scroll de este div) -->
+            <div id="app-content" class="p-4 md:p-8 pb-12">
+            </div>
+
+            <!-- Footer al final del contenido -->
+            <footer class="bg-teal-800 p-2 flex flex-wrap justify-center items-center gap-4">
+                
+                <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="utensils-crossed" class="text-teal-800 w-4 h-4"></i>
+                </div>
+
+                <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="chef-hat" class="text-teal-800 w-4 h-4"></i>
+                </div>
+
+                <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="wine" class="text-teal-800 w-4 h-4"></i>
+                </div>
+
+                <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="compass" class="text-teal-800 w-4 h-4"></i>
+                </div>
+
+                <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="calendar-heart" class="text-teal-800 w-4 h-4"></i>
+                </div>
+
+                <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="map" class="text-teal-800 w-4 h-4"></i>
+                </div>
+
+                <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="shopping-bag" class="text-teal-800 w-4 h-4"></i>
+                </div>
+
+                <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                    <i data-lucide="help-circle" class="text-teal-800 w-4 h-4"></i>
+                </div>
+
+            </footer>
+        </div>       
     </main>
 
     <script>
@@ -905,7 +947,7 @@
         return `
                 <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-20">
                     
-                    <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-white/90 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
+                    <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-teal-800 text-white sm:bg-white/90 sm:text-slate-800 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
                         <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
                         <span class="font-bold text-sm hidden sm:inline">Volver</span>
                     </button>
@@ -952,7 +994,6 @@
                                 </div>
 
                                 <div>
-                                    <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Nuestra Experiencia</h3>
                                     <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
                                         ${item.fullDesc || item.desc}
                                     </div>
@@ -975,9 +1016,9 @@
 
                             <div class="w-full md:w-80 flex-shrink-0 space-y-6">
                                 <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm sticky top-6">
-                                    <h4 class="text-xs font-bold text-teal-800 uppercase mb-4 tracking-wider flex items-center border-b border-teal-200 pb-2">
-                                        <i data-lucide="map-pin" width="14" class="mr-2"></i> ¡Anímate a conocerles!
-                                    </h4>
+                                    <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 flex items-center border-b border-teal-200 pb-2">
+                                        <i data-lucide="map-pin" width="20" class="mr-2"></i> ¡Anímate a conocerles!
+                                    </h3>
                                     
                                     ${item.address ? `
                                     <div class="mb-4">
@@ -1042,6 +1083,35 @@
                             </div>
                         </div>` : ''}         
                     </div>
+
+                    <!-- Footer insertado aquí -->
+                    <footer class="bg-teal-800 p-2 flex flex-wrap justify-center items-center gap-4">
+                        <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                            <i data-lucide="utensils-crossed" class="text-teal-800 w-4 h-4"></i>
+                        </div>
+                        <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                            <i data-lucide="chef-hat" class="text-teal-800 w-4 h-4"></i>
+                        </div>
+                        <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                            <i data-lucide="wine" class="text-teal-800 w-4 h-4"></i>
+                        </div>
+                        <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                            <i data-lucide="compass" class="text-teal-800 w-4 h-4"></i>
+                        </div>
+                        <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                            <i data-lucide="calendar-heart" class="text-teal-800 w-4 h-4"></i>
+                        </div>
+                        <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                            <i data-lucide="map" class="text-teal-800 w-4 h-4"></i>
+                        </div>
+                        <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                            <i data-lucide="shopping-bag" class="text-teal-800 w-4 h-4"></i>
+                        </div>
+                        <div class="bg-teal-200 p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
+                            <i data-lucide="help-circle" class="text-teal-800 w-4 h-4"></i>
+                        </div>
+                    </footer>
+                   
                 </div>
             `;
         }
