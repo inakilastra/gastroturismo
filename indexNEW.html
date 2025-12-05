@@ -213,13 +213,17 @@
     <main class="flex-1 flex flex-col h-full relative w-full transition-all duration-300 bg-[#F0FDFD]">
 
         <div class="h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between">
-            <div class="flex items-center">
+            <div class="flex items-center z-10">
                 <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3"
                     aria-label="Abrir menú de navegación">
                     <i data-lucide="menu"></i>
                 </button>
-                <span class="font-brand text-xl tracking-wide">Aneki | Gastroturismo</span>
             </div>
+            <span
+                class="font-brand text-xl tracking-wide absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none">
+                Aneki | Gastroturismo
+            </span>
+            <div class="w-10"></div>
         </div>
 
         <!-- Nuevo contenedor que hace el scroll -->
