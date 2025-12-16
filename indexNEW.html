@@ -444,7 +444,7 @@
                     else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';*/
 
                     const gallery = [];
-                    for (let i = 0; i <= 40; i++) {
+                    for (let i = 1; i <= 40; i++) {
                         const photoIdx = 24 + (i - 1) * 2;
                         const textIdx = 25 + (i - 1) * 2;
                         if (row[photoIdx]) {
@@ -1063,15 +1063,14 @@
             }).join('');
 
             const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
-
             let priceText = '';
             if (item.priceCode == PRICE_CODES.VERY_GOOD) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
             else if (item.priceCode == PRICE_CODES.FAIR) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
             else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
 
-            const remainingGallery = item.gallery.slice(1);
-            const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery.slice(1));
-            const eventosPuntualesGallery = eventosPuntualesRelacionados.flatMap(evt => evt.gallery.slice(1));
+            const remainingGallery = item.gallery;
+            const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery);
+            const eventosPuntualesGallery = eventosPuntualesRelacionados.flatMap(evt => evt.gallery);
             item.eventGallery = [...eventosGallery, ...eventosPuntualesGallery];
 
             // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
@@ -1176,7 +1175,7 @@
                             <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Galería de Fotos</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${remainingGallery.map((img, idx) => `
-                                    <div onclick="openLightbox(${idx + 1})" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                    <div onclick="openLightbox(${idx})" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
                                         <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
                                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
                                         <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
