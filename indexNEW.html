@@ -1069,8 +1069,8 @@
             else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
 
             const remainingGallery = item.gallery;
-            const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery);
-            const eventosPuntualesGallery = eventosPuntualesRelacionados.flatMap(evt => evt.gallery);
+            const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery.slice(1));
+            const eventosPuntualesGallery = eventosPuntualesRelacionados.flatMap(evt => evt.gallery.slice(1));
             item.eventGallery = [...eventosGallery, ...eventosPuntualesGallery];
 
             // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
