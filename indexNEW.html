@@ -822,6 +822,15 @@
 
         function renderFilterWizard(title, level, options) {
             const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
+            
+            // Calcular la ruta actual para el indicador
+            const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
+            const path = levels.map(l => state.filters[l]).filter(Boolean);
+            const pathHtml = path.length > 0 ? `
+                <div class="flex flex-wrap justify-center items-center gap-2 mb-6 text-xs font-bold text-teal-600 bg-teal-50/50 py-2 px-4 rounded-full border border-teal-100/50">
+                    ${path.join(' <i data-lucide="chevron-right" width="12" class="text-teal-300"></i> ')}
+                </div>
+            ` : '';
 
             return `
                 <div class="fade-in max-w-lg mx-auto p-6 mt-4">
@@ -911,7 +920,16 @@
                                 <button onclick="goBackOneStep()" class="p-2 bg-white rounded-full border border-gray-200 hover:border-primary hover:text-primary transition"><i data-lucide="arrow-left"></i></button>
                                 <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
                             </div>
-                            ${showFilterBtn ? `<button onclick="resetFilters()" class="text-sm font-medium text-primary hover:underline">Reiniciar Todo</button>` : ''}
+                            ${showFilterBtn && hasFilters ? `
+                                <div class="flex items-center gap-3 flex-wrap justify-end">
+                                    <div class="flex items-center gap-2 text-xs font-bold text-teal-600 bg-white px-3 py-2 rounded-lg border border-teal-100 shadow-sm">
+                                        ${Object.values(state.filters).join(' <i data-lucide="chevron-right" width="12" class="text-teal-300"></i> ')}
+                                    </div>
+                                    <button onclick="resetFilters()" class="text-xs font-bold text-white bg-primary px-3 py-2 rounded-lg hover:bg-darkTeal transition-all shadow-md">
+                                        Borrar filtros
+                                    </button>
+                                </div>
+                            ` : ''}
                          </header>
                          <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
                              <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
