@@ -680,7 +680,7 @@
             const colors = Object.keys(colorClasses);
 
             return `
-                <div class="fade-in max-w-6xl mx-auto">
+                <div class="fade-in max-w-6xl mx-auto pb-32">
                     <section class="relative h-[500px] rounded-3xl overflow-hidden mb-10 shadow-2xl">
                         <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w1200" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-darkTeal/90 to-transparent flex flex-col justify-end p-8 text-center">
@@ -1094,7 +1094,7 @@
             // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
             // Esto hace que en el móvil la ficha tape el menú verde superior.
             return `
-                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-20">
+                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-3">
                     
                     <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-teal-800 text-white sm:bg-white/90 sm:text-slate-800 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
                         <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
@@ -1384,7 +1384,7 @@
             <i data-lucide="chevron-right" width="40" height="40"></i>
         </button>
     </div>
-    <div class="fixed bottom-20 right-6 z-[1050] fab-container"
+    <div class="fixed bottom-15 right-4 z-[1050] fab-container"
         title="¿Buscas joyas? ¡Te chivamos los mejores sitios! 🤫">
         <button type="button"
             class="group w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-darkTeal hover:scale-110 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-secondary/50"
