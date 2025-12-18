@@ -1094,7 +1094,7 @@
             // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
             // Esto hace que en el móvil la ficha tape el menú verde superior.
             return `
-                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-3">
+                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-32">
                     
                     <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-teal-800 text-white sm:bg-white/90 sm:text-slate-800 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
                         <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
@@ -1257,8 +1257,9 @@
                                         ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
                                     </div>
                                 `).join('')}
-                            </div>
-                        </div>` : ''}                                
+                           </div>
+                           <div class="mb-20"></div>
+                        </div>` : ''}                              
                     </div>
                 </div>
             `;
