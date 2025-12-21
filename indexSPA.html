@@ -236,41 +236,41 @@
         <div class="flex-1 overflow-y-auto relative scroll-smooth">
 
             <!-- El contenido se carga aquí (quitamos las clases de scroll de este div) -->
-            <div id="app-content" class="p-4 md:p-8 pb-12">
+            <div id="app-content" class="p-4 md:p-8 pb-24">
             </div>
 
             <!-- Footer al final del contenido -->
-            <footer class="bg-transparent p-2 flex flex-wrap justify-center items-center gap-4">
-                <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                    <i data-lucide="utensils-crossed" class="text-white w-4 h-4"></i>
+            <footer class="fixed bottom-0 left-0 w-full bg-primary/90 backdrop-blur-md p-3 flex justify-center items-center gap-4 z-[1000] border-t border-white/10 shadow-[0_-4px_15px_rgba(0,0,0,0.1)]">
+                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
+                    <i data-lucide="utensils-crossed" class="text-primary w-4 h-4"></i>
                 </div>
 
-                <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                    <i data-lucide="chef-hat" class="text-white w-4 h-4"></i>
+                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
+                    <i data-lucide="chef-hat" class="text-primary w-4 h-4"></i>
                 </div>
 
-                <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                    <i data-lucide="wine" class="text-white w-4 h-4"></i>
+                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
+                    <i data-lucide="wine" class="text-primary w-4 h-4"></i>
                 </div>
 
-                <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                    <i data-lucide="compass" class="text-white w-4 h-4"></i>
+                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
+                    <i data-lucide="compass" class="text-primary w-4 h-4"></i>
                 </div>
 
-                <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                    <i data-lucide="calendar-heart" class="text-white w-4 h-4"></i>
+                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
+                    <i data-lucide="calendar-heart" class="text-primary w-4 h-4"></i>
                 </div>
 
-                <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                    <i data-lucide="map" class="text-white w-4 h-4"></i>
+                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
+                    <i data-lucide="map" class="text-primary w-4 h-4"></i>
                 </div>
 
-                <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                    <i data-lucide="shopping-bag" class="text-white w-4 h-4"></i>
+                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
+                    <i data-lucide="shopping-bag" class="text-primary w-4 h-4"></i>
                 </div>
 
-                <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                    <i data-lucide="help-circle" class="text-white w-4 h-4"></i>
+                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
+                    <i data-lucide="help-circle" class="text-primary w-4 h-4"></i>
                 </div>
 
             </footer>
@@ -680,7 +680,7 @@
             const colors = Object.keys(colorClasses);
 
             return `
-                <div class="fade-in max-w-6xl mx-auto">
+                <div class="fade-in max-w-6xl mx-auto pb-32">
                     <section class="relative h-[500px] rounded-3xl overflow-hidden mb-10 shadow-2xl">
                         <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w1200" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-darkTeal/90 to-transparent flex flex-col justify-end p-8 text-center">
@@ -1094,7 +1094,7 @@
             // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
             // Esto hace que en el móvil la ficha tape el menú verde superior.
             return `
-                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-20">
+                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-32">
                     
                     <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-teal-800 text-white sm:bg-white/90 sm:text-slate-800 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
                         <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
@@ -1257,37 +1257,10 @@
                                         ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
                                     </div>
                                 `).join('')}
-                            </div>
-                        </div>` : ''}                                
+                           </div>
+                           <div class="mb-20"></div>
+                        </div>` : ''}                              
                     </div>
-
-                    <!-- Footer insertado aquí -->
-                    <footer class="bg-transparent p-2 flex flex-wrap justify-center items-center gap-4">
-                        <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                            <i data-lucide="utensils-crossed" class="text-white w-4 h-4"></i>
-                        </div>
-                        <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                            <i data-lucide="chef-hat" class="text-white w-4 h-4"></i>
-                        </div>
-                        <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                            <i data-lucide="wine" class="text-white w-4 h-4"></i>
-                        </div>
-                        <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                            <i data-lucide="compass" class="text-white w-4 h-4"></i>
-                        </div>
-                        <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                            <i data-lucide="calendar-heart" class="text-white w-4 h-4"></i>
-                        </div>
-                        <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                            <i data-lucide="map" class="text-white w-4 h-4"></i>
-                        </div>
-                        <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                            <i data-lucide="shopping-bag" class="text-white w-4 h-4"></i>
-                        </div>
-                        <div class="bg-darkTeal p-1.5 rounded-full hover:scale-110 transition-transform shadow-lg">
-                            <i data-lucide="help-circle" class="text-white w-4 h-4"></i>
-                        </div>
-                    </footer>
                 </div>
             `;
         }
@@ -1412,7 +1385,7 @@
             <i data-lucide="chevron-right" width="40" height="40"></i>
         </button>
     </div>
-    <div class="fixed bottom-6 right-6 z-[1050] fab-container"
+    <div class="fixed bottom-14 right-2 z-[1050] fab-container"
         title="¿Buscas joyas? ¡Te chivamos los mejores sitios! 🤫">
         <button type="button"
             class="group w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-darkTeal hover:scale-110 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-secondary/50"
