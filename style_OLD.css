@@ -401,31 +401,15 @@
           text-align: center;
         }
         .about-us-content > div:last-child {text-align: center;}
-            /* --- TAMAÑOS DE FUENTE ADAPTABLES CON CLAMP() --- */
-        .hero-title {
-            font-size: clamp(2.5rem, 10vw, 3.5rem); /* Mínimo, Ideal, Máximo */
-        }
-        .hero-subtitle {
-            font-size: clamp(1rem, 4vw, 1.3rem);
-        }
-        .section-title {
-            font-size: clamp(2rem, 8vw, 2.8rem);
-        }
-        .category-card__title {
-            font-size: clamp(1.5rem, 6vw, 1.75rem);
-        }
-        .mdc-button .mdc-button__label {
-            font-size: clamp(0.9rem, 4vw, 1.1rem);
-        }
+        .hero-title {font-size: 8vw;}
+        .hero-subtitle {font-size: 4vw;}
+        .section-title {font-size: 6.5vw;}
+        .category-card__title {font-size: 5.5vw;}
+        .mdc-button .mdc-button__label {font-size: 3.3vw}
+        /* Si 'category-card__description' es la que aplica el tamaño final y quieres asegurarte */
         .category-card__description {
-            font-size: clamp(0.9rem, 3.5vw, 1rem);
-            line-height: 1.5;
-        }
-        .full-detail-header h2 {
-            font-size: clamp(1.8rem, 7vw, 2.5rem);
-        }
-        .evento-card-info h4 {
-            font-size: clamp(1.1rem, 5vw, 1.25rem);
+          font-size: 3.2vw; /* Asegúrate de que esta también sea del tamaño deseado */
+          line-height: 1.6;
         }
       }
       /* === NUEVO SPINNER SIMPLE A PRUEBA DE SANDBOX === */
@@ -470,10 +454,6 @@
         display: flex;
         flex-direction: column;
         text-align: center;
-      }
-      .sitio-card-info .mdc-button {
-        margin-top: auto; /* Magia de Flexbox: empuja el botón a la parte inferior */
-        padding-top: 16px; /* Añade un espacio por encima del botón para que no se pegue al texto */
       }
 
       .sitio-card-info h3 {
@@ -582,13 +562,6 @@
       }
       .full-detail-actions {
         display: flex;
-        flex-wrap: wrap; /* Permite que los botones pasen a la línea de abajo si no caben */
-        gap: 12px; /* Reduce un poco el espacio para móviles */
-        margin: 24px 0;
-        justify-content: center;
-      }
-      .full-detail-actions {
-        display: flex;
         flex-wrap: wrap;
         gap: 16px;
         margin: 24px 0;
@@ -597,9 +570,8 @@
       .full-detail-header, .full-detail-body {
         text-align: center;
       }
-      .full-detail-actions .mdc-button__icon {
-          font-size: 1.2em; /* Usa el tamaño de la fuente del botón como referencia */
-          margin-right: 8px;
+      .full-detail-actions {
+        justify-content: center; /* Centra los botones */
       }
       /* === FIN: ESTILOS PARA LA VISTA DE DETALLE === */
      .styled-hr {
@@ -666,8 +638,8 @@
 .prev:hover,
 .next:hover {
   /*background-color: rgba(0, 0, 0, 0.8);*/
-  background-color: #009688;
-  color: white;
+   background-color: #009688;
+   color: white;
 }
 
 /* Number text (1/6 etc) */
