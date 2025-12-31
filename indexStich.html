@@ -1,73 +1,857 @@
-<!DOCTYPE html> <html lang="es">
-  <head> <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>Master SPA Template</title>
-    <!-- Google Fonts: Inter (moderna y limpia) --> 
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS (via CDN) --> 
-    <script src="https://cdn.tailwindcss.com"></script> 
-    <style>
-      /* Variables de colores para fácil personalización */ :
-      root { --color-primary: #3B82F6; /* Azul Neutro */ 
-            --color-secondary: #60A5FA; /* Azul Claro */ 
-            --color-background: #F3F4F6; /* Gris Muy Claro */ 
-            --color-surface: #FFFFFF; /* Blanco para superficies/cards */ 
-            --color-text-default: #374151; /* Gris oscuro para texto */ 
-            --color-text-light: #6B7280; /* Gris medio para texto secundario */ 
-            --color-accent: #EF4444; /* Rojo para acentos o advertencias */ } 
-      body { font-family: 'Inter', sans-serif; background-color: var(--color-background); color: var(--color-text-default); } 
-      /* Configuración de Tailwind para usar las variables CSS */ 
-      /* Puedes expandir esto en un archivo tailwind.config.js si no usas CDN */ 
-      .bg-primary { background-color: var(--color-primary); } 
-      .text-primary { color: var(--color-primary); } 
-      .bg-secondary { background-color: var(--color-secondary); } 
-      .text-secondary { color: var(--color-secondary); } 
-      .bg-background { background-color: var(--color-background); } 
-      .text-background { color: var(--color-background); } 
-      .bg-surface { background-color: var(--color-surface); } 
-      .text-surface { color: var(--color-surface); } 
-      .text-default { color: var(--color-text-default); } 
-      .text-light { color: var(--color-light); } 
-      .bg-accent { background-color: var(--color-accent); } 
-      .text-accent { color: var(--color-accent); } 
-      /* Estilo básico para el loader */ 
-      #app-loader { display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 9999; transition: opacity 0.3s ease-in-out; } 
-      .spinner { border: 4px solid rgba(0, 0, 0, 0.1); border-left-color: var(--color-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } } 
-    </style> 
-    <!-- Lucide Icons (via CDN) --> 
-    <script src="https://unpkg.com/lucide@latest"></script> 
-  </head> 
-  <body class="min-h-screen flex flex-col"> 
-    <!-- Loader Inicial --> 
-    <div id="app-loader"> 
-      <div class="spinner"></div> 
-    </div> 
-    <!-- Contenedor principal de la aplicación --> 
-    <div id="app-container" class="flex flex-col flex-1 hidden"> 
-      <!-- Barra de Navegación Superior Fija --> 
-      <header id="main-navbar" class="fixed top-0 left-0 w-full bg-surface shadow-md p-4 z-10"> 
-        <div class="container mx-auto flex justify-between items-center">
-          <a href="/" class="text-xl font-bold text-primary" data-nav-link="landing">SPA Master</a> 
-          <nav class="hidden md:flex space-x-4"> 
-          <a href="/#" class="hover:text-primary transition-colors" data-nav-link="landing">Inicio</a> 
-          <a href="/#filters" class="hover:text-primary transition-colors" data-nav-link="filter-wizard">Filtrar</a> <a href="/#results" class="hover:text-primary transition-colors" data-nav-link="results-grid">Resultados</a> 
-          <a href="/#results/alphabetical" class="hover:text-primary transition-colors" data-nav-link="results-grid-alpha">A-Z</a> <a href="/#results/chronological" class="hover:text-primary transition-colors" data-nav-link="results-grid-chrono">Cronológico</a> 
-        </nav> <!-- Botón para Sidebar en móvil/desktop --> <button id="menu-toggle-btn" class="md:hidden p-2 rounded-md hover:bg-gray-100"> <i data-lucide="menu" class="w-6 h-6"></i> </button> </div> </header> 
-      <!-- Sidebar "Offcanvas" --> 
-      <aside id="sidebar-offcanvas" class="fixed top-0 left-0 h-full w-64 bg-surface shadow-lg z-20 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"> 
-        <div class="p-4 flex justify-between items-center border-b border-gray-200"> 
-          <h2 class="text-lg font-semibold text-primary">Menú</h2> 
-          <button id="sidebar-close-btn" class="md:hidden p-2 rounded-md hover:bg-gray-100"> <i data-lucide="x" class="w-6 h-6"></i> </button> </div> <nav class="mt-4 p-4"> <ul> <li class="mb-2"><a href="/#" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center" data-nav-link="landing"><i data-lucide="home" class="w-5 h-5 mr-2"></i>Inicio</a></li> <li class="mb-2"><a href="/#filters" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center" data-nav-link="filter-wizard"><i data-lucide="filter" class="w-5 h-5 mr-2"></i>Filtrar</a></li> <li class="mb-2"><a href="/#results" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center" data-nav-link="results-grid"><i data-lucide="grid" class="w-5 h-5 mr-2"></i>Resultados (Default)</a></li> <li class="mb-2"><a href="/#results/alphabetical" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center" data-nav-link="results-grid-alpha"><i data-lucide="abc" class="w-5 h-5 mr-2"></i>Orden Alfabético</a></li> <li class="mb-2"><a href="/#results/chronological" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center" data-nav-link="results-grid-chrono"><i data-lucide="calendar" class="w-5 h-5 mr-2"></i>Agrupación Cronológica</a></li> <li class="mb-2"><a href="/#about" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center"><i data-lucide="info" class="w-5 h-5 mr-2"></i>Acerca de</a></li> <!-- Aquí se añadirán los filtros dinámicos del wizard --> </ul> </nav> </aside> <!-- Contenido Principal (con padding para la navbar) --> <main class="flex-1 pt-20 pb-16 md:pl-64"> <!-- Ajustar pt y pl según navbar y sidebar --> <div class="container mx-auto p-4"> <!-- Sección para la Landing Page --> <section id="landing-view" class="view"> <h1 class="text-4xl font-bold text-center mb-8">Bienvenido a tu SPA Maestra</h1> <p class="text-center text-lg text-light mb-12">Explora un mundo de posibilidades con datos dinámicos.</p> <div id="landing-categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> <!-- Aquí se renderizarán las cards de categoría --> <div class="bg-surface p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"> <h3 class="text-xl font-semibold mb-2">Categoría de Ejemplo 1</h3> <p class="text-light">Descripción corta de la categoría. Lorem ipsum dolor sit amet.</p> </div> <div class="bg-surface p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"> <h3 class="text-xl font-semibold mb-2">Categoría de Ejemplo 2</h3> <p class="text-light">Descripción corta de la categoría. Consequatur unde aliquid.</p> </div> </div> </section> <!-- Sección para el Wizard de Filtrado --> <section id="filter-wizard-view" class="view hidden"> <h2 class="text-3xl font-bold mb-6">Wizard de Filtrado</h2> <div id="filter-levels" class="space-y-4"> <!-- Aquí se renderizarán los selectores de Nivel 1, Nivel 2, etc. --> <div class="p-4 bg-surface rounded-lg shadow-sm"> <label for="filter-level1" class="block text-light mb-2">Nivel 1:</label> <select id="filter-level1" class="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary"> <option value="">Selecciona Nivel 1</option> </select> </div> </div> <button id="show-results-btn" class="mt-6 px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary transition-colors">Mostrar Resultados</button> </section> <!-- Sección para el Grid de Resultados --> <section id="results-grid-view" class="view hidden"> <h2 class="text-3xl font-bold mb-6">Resultados de Búsqueda</h2> <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> <!-- Aquí se renderizarán las tarjetas de resultados --> <div class="bg-surface rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"> <img data-src="https://via.placeholder.com/400x250?text=Item+Image" alt="Item" class="w-full h-48 object-cover lazyload"> <div class="p-4"> <h3 class="text-xl font-semibold mb-2">Título del Ítem</h3> <p class="text-light text-sm mb-3">Descripción corta del ítem. Lorem ipsum dolor sit amet consectetur.</p> 
-        <div class="flex items-center"> 
-          <div class="flex text-yellow-400"> 
-            <i data-lucide="star" class="w-4 h-4 fill-current"></i> 
-            <i data-lucide="star" class="w-4 h-4 fill-current"></i> 
-            <i data-lucide="star" class="w-4 h-4 fill-current"></i> 
-            <i data-lucide="star" class="w-4 h-4"></i> 
-            <i data-lucide="star" class="w-4 h-4"></i> 
-          </div> 
-          <span class="ml-2 text-sm text-light">(7.5/10)</span> 
-        </div> </div> </div> </div> </section> 
-        <!-- Sección para la Vista de Detalle (Overlay/Modal) --> <section id="detail-view-overlay" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-30 hidden p-4"> <div class="bg-surface rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative"> <button id="detail-close-btn" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 z-40"> <i data-lucide="x" class="w-6 h-6 text-default"></i> </button> <div id="detail-content" class="p-6"> <!-- Cabecera con foto grande --> <div class="mb-6"> <img data-src="https://via.placeholder.com/800x400?text=Detail+Header+Image" alt="Item Header" class="w-full h-80 object-cover rounded-lg mb-4 cursor-pointer" id="detail-header-image"> <h2 class="text-4xl font-bold text-primary mb-2">Título del Ítem Detallado</h2> <p class="text-xl text-light">Descripción Corta Aquí</p> </div> <!-- Bloque de Valoración --> <div class="flex items-center mb-6"> <div class="relative w-48 h-8"> <!-- Fondo de estrellas grises --> <div class="absolute inset-0 flex text-gray-300"> <i data-lucide="star" class="w-8 h-8 fill-current"></i> <i data-lucide="star" class="w-8 h-8 fill-current"></i> <i data-lucide="star" class="w-8 h-8 fill-current"></i> <i data-lucide="star" class="w-8 h-8 fill-current"></i> <i data-lucide="star" class="w-8 h-8 fill-current"></i> </div> <!-- Superposición de estrellas con gradiente (ejemplo para 7.5/10 = 3.75 estrellas) --> <div class="absolute inset-0 flex text-yellow-400 overflow-hidden" style="width: 75%;"> <i data-lucide="star" class="w-8 h-8 fill-current"></i> <i data-lucide="star" class="w-8 h-8 fill-current"></i> <i data-lucide="star" class="w-8 h-8 fill-current"></i> <i data-lucide="star" class="w-8 h-8 fill-current"></i> <i data-lucide="star" class="w-8 h-8 fill-current"></i> </div> </div> <span class="ml-4 text-2xl font-semibold text-default">7.5/10</span> </div> <!-- Descripción Larga --> <div class="mb-6 prose max-w-none" id="detail-long-description"> <h3 class="text-2xl font-semibold mb-3">Acerca de este lugar</h3> <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p> <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p> </div> <!-- Galería de Imágenes --> <div class="mb-6"> <h3 class="text-2xl font-semibold mb-3">Galería</h3> <div id="detail-gallery" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"> <!-- Las imágenes de la galería se renderizarán aquí --> <img data-src="https://via.placeholder.com/300x200?text=Gallery+1" alt="Gallery item 1" class="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"> <img data-src="https://via.placeholder.com/300x200?text=Gallery+2" alt="Gallery item 2" class="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"> </div> </div> <!-- Información de Contacto (RRSS/Mapas) --> <div class="mb-6"> <h3 class="text-2xl font-semibold mb-3">Contacto</h3> <div class="flex space-x-4"> <!-- Los botones dinámicos se insertarán aquí --> <a href="#" target="_blank" class="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center"> <i data-lucide="facebook" class="w-6 h-6"></i> </a> <a href="#" target="_blank" class="p-3 rounded-full bg-blue-400 text-white hover:bg-blue-500 transition-colors flex items-center justify-center"> <i data-lucide="twitter" class="w-6 h-6"></i> </a> <a href="#" target="_blank" class="p-3 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors flex items-center justify-center"> <i data-lucide="map-pin" class="w-6 h-6"></i> </a> </div> </div> <!-- Relacionados --> <div id="detail-related-items"> <h3 class="text-2xl font-semibold mb-3">Items Relacionados</h3> <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <!-- Aquí se renderizarán los ítems relacionados del segundo CSV --> <div class="bg-gray-100 p-4 rounded-lg shadow-sm"> <h4 class="font-semibold">Evento Relacionado 1</h4> <p class="text-sm text-light">Breve descripción del evento. Fecha: DD/MM/AAAA</p> </div> </div> </div> </div> </div> </section> <!-- Lightbox Propietario --> <div id="custom-lightbox" class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50 hidden p-4"> <button id="lightbox-close-btn" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300"> <i data-lucide="x" class="w-6 h-6 text-default"></i> </button> <button id="lightbox-prev-btn" class="absolute left-4 p-3 rounded-full bg-gray-200 hover:bg-gray-300"> <i data-lucide="chevron-left" class="w-8 h-8 text-default"></i> </button> <img id="lightbox-img" src="" alt="Imagen en Lightbox" class="max-w-[90%] max-h-[90%] object-contain"> <button id="lightbox-next-btn" class="absolute right-4 p-3 rounded-full bg-gray-200 hover:bg-gray-300"> <i data-lucide="chevron-right" class="w-8 h-8 text-default"></i> </button> </div> </div> </main> <!-- Footer --> <footer id="main-footer" class="bg-surface shadow-inner p-4 mt-auto"> <div class="container mx-auto flex justify-center space-x-6 text-light"> <a href="/#" class="hover:text-primary transition-colors flex items-center flex-col" data-nav-link="landing"><i data-lucide="home" class="w-5 h-5"></i><span class="text-xs mt-1">Inicio</span></a> <a href="/#filters" class="hover:text-primary transition-colors flex items-center flex-col" data-nav-link="filter-wizard"><i data-lucide="search" class="w-5 h-5"></i><span class="text-xs mt-1">Buscar</span></a> <a href="/#settings" class="hover:text-primary transition-colors flex items-center flex-col" data-nav-link="settings"><i data-lucide="settings" class="w-5 h-5"></i><span class="text-xs mt-1">Ajustes</span></a> </div> </footer> <!-- Botón Flotante (FAB) con Popover --> <div id="fab-container" class="fixed bottom-4 right-4 z-40"> <button id="fab-btn" class="bg-accent text-white p-4 rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center"> <i data-lucide="message-square" class="w-6 h-6"></i> </button> <div id="fab-popover" class="absolute bottom-full right-0 mb-2 p-3 bg-surface rounded-lg shadow-lg hidden w-64"> <p class="text-sm text-default">¡Hola! Aquí puedes encontrar información útil o acceder a un atajo.</p> <button class="mt-2 text-primary text-sm font-semibold hover:underline">Ver más</button> </div> </div> </div> <!-- Fin de app-container --> <script type="module"> // =============================================================================================== // INICIALIZACIÓN Y REFERENCIAS DOM // =============================================================================================== // Inicializar Lucide Icons en el DOM. Necesario para todos los iconos declarados con data-lucide. lucide.createIcons(); // Referencias a elementos clave del DOM para interactuar con ellos fácilmente. const appLoader = document.getElementById('app-loader'); const appContainer = document.getElementById('app-container'); const views = document.querySelectorAll('.view'); // Colección de todas las secciones de vista principal // Vistas específicas const landingView = document.getElementById('landing-view'); const filterWizardView = document.getElementById('filter-wizard-view'); const resultsGridView = document.getElementById('results-grid-view'); const detailViewOverlay = document.getElementById('detail-view-overlay'); // Es un overlay, no una vista principal que reemplace las otras. const customLightbox = document.getElementById('custom-lightbox'); // El lightbox de imágenes a pantalla completa. // Elementos de la barra lateral y navegación const sidebarOffcanvas = document.getElementById('sidebar-offcanvas'); const menuToggleBtn = document.getElementById('menu-toggle-btn'); const sidebarCloseBtn = document.getElementById('sidebar-close-btn'); // Botón flotante (FAB) y su popover const fabBtn = document.getElementById('fab-btn'); const fabPopover = document.getElementById('fab-popover'); // =============================================================================================== // CONFIGURACIÓN GLOBAL // =============================================================================================== // 1. URLs de los CSVs: // Reemplaza estos con las URLs reales de tus CSVs de Google Sheets. // Asegúrate de que los CSVs sean accesibles públicamente. // Ejemplo: 'https://docs.google.com/spreadsheets/d/e/<YOUR_SHEET_ID>/pub?output=csv' const CSV_MAIN_DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G/pub?output=csv'; // Cambia esta URL const CSV_RELATED_DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G/pub?output=csv'; // Cambia esta URL si usas un CSV secundario para ítems relacionados // =============================================================================================== // MOTOR DE NAVEGACIÓN Y ESTADO (CORE SPA LOGIC) // =============================================================================================== // Objeto de estado reactivo simple. Centraliza la información global de la aplicación. const state = { currentView: 'landing', // La vista principal actual: 'landing', 'filter-wizard', 'results-grid', 'detail', 'settings'. filters: {}, // Objeto acumulativo para los filtros seleccionados en el wizard. selectedItem: null, // El objeto de datos del ítem que se está viendo en la vista de detalle. mainData: [], // Array con todos los datos del CSV principal. relatedData: [], // Array con todos los datos del CSV de ítems relacionados. currentGallery: [], // Array de URLs/objetos de imágenes para la galería del lightbox. currentGalleryIndex: 0, // Índice de la imagen actualmente visible en el lightbox. filterLevels: ['Nivel 1', 'Nivel 2', 'Nivel 3', 'Nivel 4'], // Columnas CSV usadas para los niveles de filtrado. sortOrder: 'default' // Orden de clasificación de los resultados: 'default', 'alphabetical', 'chronological'. }; /** * Actualiza la vista principal de la aplicación y la URL en el navegador. * Utiliza la History API para una navegación suave sin recargas. * @param {string} newView - El nombre de la nueva vista a mostrar. * @param {string|null} itemId - El ID del ítem si se navega a la vista de detalle. * @param {string} sort - El tipo de ordenación si se navega a la vista de resultados ('default', 'alphabetical', 'chronological'). * @param {boolean} pushState - Si se debe añadir una nueva entrada al historial del navegador. */ function updateView(newView, itemId = null, sort = 'default', pushState = true) { // Oculta todas las vistas principales para mostrar solo la deseada. views.forEach(view => view.classList.add('hidden')); // Asegura que los overlays (detalle y lightbox) también estén ocultos por defecto. detailViewOverlay.classList.add('hidden'); customLightbox.classList.add('hidden'); let newPath = '/'; // URL por defecto para la vista 'landing'. state.sortOrder = sort; // Actualiza el estado con el orden de clasificación. // Lógica para mostrar la vista correcta y construir la URL. switch (newView) { case 'landing': landingView.classList.remove('hidden'); newPath = '/'; renderLanding(); // Llama a la función de renderizado para esta vista. break; case 'filter-wizard': filterWizardView.classList.remove('hidden'); newPath = '/#filters'; renderFilterWizard(); // Llama a la función de renderizado para esta vista. break; case 'results-grid': resultsGridView.classList.remove('hidden'); // Construye la URL incluyendo el tipo de ordenación si no es el 'default'. newPath = `/#results${sort !== 'default' ? `/${sort}` : ''}`; renderResultsGrid(); // Llama a la función de renderizado para esta vista (maneja ordenación). break; case 'detail': // La vista de detalle es un overlay, se muestra sobre la vista principal actual. detailViewOverlay.classList.remove('hidden'); // Si no hay una vista principal subyacente visible (ej. acceso directo a /#detail/ID), // aseguramos que 'results-grid' sea visible detrás. if (state.currentView !== 'results-grid' && state.currentView !== 'filter-wizard') { resultsGridView.classList.remove('hidden'); } if (itemId) { // Busca el ítem seleccionado por su ID en los datos principales. state.selectedItem = state.mainData.find(item => item.id === itemId || item.ID === itemId); if (!state.selectedItem) { console.error("Item no encontrado para el detalle:", itemId); updateView(state.currentView); // Vuelve a la vista actual si el ítem no se encuentra. return; } renderDetail(state.selectedItem); // Llama a la función de renderizado para el detalle. newPath = `/#detail/${itemId}`; // Construye la URL para el detalle. } else { console.error("Se intentó ir a detalle sin itemId."); updateView(state.currentView); // Vuelve a la vista actual. return; } break; case 'settings': // Ejemplo de una vista de "Ajustes", no implementada visualmente aquí. console.log('Navegando a Ajustes...'); newPath = '/#settings'; // Aquí se llamaría a renderSettings() y se mostraría el elemento HTML de ajustes. break; default: console.warn(`Vista desconocida: ${newView}. Volviendo a landing.`); landingView.classList.remove('hidden'); newView = 'landing'; renderLanding(); } state.currentView = newView; // Actualiza el estado de la vista actual. // Si pushState es true, añade una nueva entrada al historial del navegador. if (pushState) { history.pushState(state, '', newPath); } // Oculta el sidebar en pantallas móviles al cambiar de vista para mejorar la UX. if (window.innerWidth < 768) { sidebarOffcanvas.classList.add('-translate-x-full'); } // Recarga los iconos de Lucide para asegurar que cualquier icono añadido dinámicamente sea renderizado. lucide.createIcons(); } /** * Maneja los eventos 'popstate' (navegación con botón atrás/adelante del navegador). * Restaura el estado de la aplicación desde el historial del navegador. * @param {PopStateEvent} event - El evento popstate. */ window.addEventListener('popstate', (event) => { if (event.state) { // Si el evento tiene un estado, lo restaura y actualiza la vista. Object.assign(state, event.state); // Fusiona el estado del historial con el actual. // Si el popstate ocurre mientras el detalle estaba abierto, lo reabrimos. if (state.currentView === 'detail' && state.selectedItem) { updateView('detail', state.selectedItem.id || state.selectedItem.ID, state.sortOrder, false); // No pushState. } else { updateView(state.currentView, null, state.sortOrder, false); // No pushState. } } else { // Si no hay estado (ej. primera carga o enlace externo directo), analiza la URL. handleLocationChange(); } }); /** * Analiza la URL actual (fragmento #) para determinar la vista inicial y sus parámetros. * Se llama al inicio de la aplicación y en eventos popstate sin un estado definido. */ function handleLocationChange() { // Obtiene la parte de la URL después del '#' (el hash). const path = window.location.hash.substring(1); const parts = path.split('/'); // Divide la ruta en segmentos. let view = 'landing'; // Vista por defecto. let itemId = null; // ID del ítem (para vista de detalle). let sort = 'default'; // Tipo de ordenación (para vista de resultados). if (parts[0] === 'filters') { view = 'filter-wizard'; } else if (parts[0] === 'results') { view = 'results-grid'; if (parts[1]) { // Si hay un segundo segmento, es el tipo de ordenación. sort = parts[1]; } } else if (parts[0] === 'detail' && parts[1]) { view = 'detail'; itemId = parts[1]; // El tercer segmento es el ID del ítem. } else if (parts[0] === 'settings') { view = 'settings'; } // Actualiza la vista sin añadir una nueva entrada al historial (ya estamos en esa URL). updateView(view, itemId, sort, false); } // =============================================================================================== // UTILIDADES: INGESTA Y PROCESAMIENTO DE DATOS CSV // =============================================================================================== /** * Descarga y parsea un archivo CSV desde la URL proporcionada. * Maneja comillas dobles escapadas y saltos de línea dentro de las celdas. * @param {string} url - La URL del archivo CSV. * @returns {Promise<Array<Object>>} Una promesa que resuelve con un array de objetos, donde cada objeto es una fila del CSV. */ async function fetchAndParseCSV(url) { const response = await fetch(url); const text = await response.text(); const parseCSV = (csvText) => { const results = []; // Divide el texto por líneas, manejando diferentes tipos de saltos de línea. const lines = csvText.split(/\r?\n/); if (lines.length === 0) return results; // Parseo de las cabeceras del CSV. const headerLine = lines[0]; const headers = []; let inQuote = false; let currentHeader = ''; for (let i = 0; i < headerLine.length; i++) { const char = headerLine[i]; if (char === '"') { inQuote = !inQuote; } else if (char === ',' && !inQuote) { headers.push(currentHeader.trim()); currentHeader = ''; } else { currentHeader += char; } } headers.push(currentHeader.trim()); // Añade la última cabecera. // Parseo de las filas de datos. for (let i = 1; i < lines.length; i++) { const line = lines[i]; if (line.trim() === '') continue; // Ignora líneas vacías. const row = {}; let currentCell = ''; let colIndex = 0; inQuote = false; // Reinicia el estado de comillas para cada celda. for (let j = 0; j < line.length; j++) { const char = line[j]; if (char === '"') { // Maneja comillas dobles escapadas ("" dentro de una celda con comillas). if (j + 1 < line.length && line[j + 1] === '"') { currentCell += '"'; j++; // Salta la siguiente comilla escapada. } else { inQuote = !inQuote; // Alterna el estado de comillas. } } else if (char === ',' && !inQuote) { // Si es una coma y no estamos dentro de comillas, es un separador de celda. if (headers[colIndex]) { row[headers[colIndex]] = currentCell.trim(); } currentCell = ''; colIndex++; } else { currentCell += char; // Construye el contenido de la celda. } } // Añade la última celda de la fila. if (headers[colIndex]) { row[headers[colIndex]] = currentCell.trim(); } results.push(row); } return results; }; const parsedData = parseCSV(text); console.log("Parsed CSV Data:", parsedData); // Para depuración. return parsedData; } /** * Procesa los datos crudos del CSV principal para añadir propiedades calculadas * y normalizar los datos para su uso en la aplicación. * @param {Array<Object>} rawData - El array de objetos tal como se parseó del CSV. * @returns {Array<Object>} Los datos procesados. * * Asunciones de columnas CSV: * - 'ID' o 'id': ID único del ítem. Si no existe, se generará uno. * - 'fotoX', 'textoX': Para galerías de imágenes (foto1, texto1, foto2, texto2...). * - 'Rating 0-10': Para la valoración del ítem. * - 'Precio/Valor': Para el precio o valor numérico. * - 'Fecha' o 'FechaEvento': Para la agrupación cronológica. * - 'linkFacebook', 'linkTwitter', 'linkInstagram', 'linkWebsite', 'linkMapa': Para enlaces de contacto. */ function processMainData(rawData) { return rawData.map((item, index) => { const processedItem = { ...item }; // Asegura que cada ítem tenga un ID único, usando 'ID', 'id' o generando uno. processedItem.id = item.ID || item.id || `item-${index}`; // Lógica para detectar y estructurar columnas de fotos en un array de galería. processedItem.gallery = []; for (let i = 1; ; i++) { const photoCol = `foto${i}`; const textCol = `texto${i}`; if (item[photoCol] && item[photoCol].trim() !== '') { processedItem.gallery.push({ src: item[photoCol], alt: item[textCol] || `Imagen ${i} de ${item['Título'] || 'ítem'}` }); } else { break; // Sale del bucle si no hay más columnas de foto. } } // Convierte el rating a número, con un fallback de 0 si no es válido. processedItem.rating = parseFloat(item['Rating 0-10']) || 0; // Convierte el precio/valor a número, con un fallback de 0 si no es válido. processedItem.price = parseFloat(item['Precio/Valor']) || 0; // Intenta parsear una fecha para la agrupación cronológica. // Busca las columnas 'Fecha' o 'FechaEvento'. if (item['Fecha'] && !isNaN(new Date(item['Fecha']))) { processedItem.date = new Date(item['Fecha']); } else if (item['FechaEvento'] && !isNaN(new Date(item['FechaEvento']))) { processedItem.date = new Date(item['FechaEvento']); } else { processedItem.date = null; // No hay fecha válida. } // Detecta enlaces de redes sociales y mapas del CSV. processedItem.socialLinks = {}; if (item['linkFacebook'] && item['linkFacebook'].trim() !== '') processedItem.socialLinks.facebook = item['linkFacebook']; if (item['linkTwitter'] && item['linkTwitter'].trim() !== '') processedItem.socialLinks.twitter = item['linkTwitter']; if (item['linkInstagram'] && item['linkInstagram'].trim() !== '') processedItem.socialLinks.instagram = item['linkInstagram']; if (item['linkWebsite'] && item['linkWebsite'].trim() !== '') processedItem.socialLinks.website = item['linkWebsite']; if (item['linkMapa'] && item['linkMapa'].trim() !== '') processedItem.socialLinks.map = item['linkMapa']; // Opcional: Si tienes latitud y longitud, puedes construir un enlace de mapa aquí. // if (item['latitud'] && item['longitud']) { // processedItem.socialLinks.map = `https://www.google.com/maps?q=${item['latitud']},${item['longitud']}`; // } return processedItem; }); } // =============================================================================================== // UTILIDADES: LAZY LOADING DE IMÁGENES // =============================================================================================== let lazyImageObserver; // Instancia del IntersectionObserver. /** * Inicializa un IntersectionObserver para cargar imágenes de forma diferida (lazy loading). * Las imágenes deben tener un atributo `data-src` en lugar de `src` inicialmente. * Cuando la imagen entra en el viewport, `data-src` se mueve a `src` y la imagen se carga. */ function observeLazyImages() { // Verifica si el navegador soporta IntersectionObserver. if ('IntersectionObserver' in window) { // Crea una nueva instancia de IntersectionObserver. lazyImageObserver = new IntersectionObserver(function(entries, observer) { entries.forEach(function(entry) { // Si la imagen está intersectando (visible o cerca del viewport). if (entry.isIntersecting) { let lazyImage = entry.target; // Si tiene el atributo data-src, lo transfiere a src para cargar la imagen. if (lazyImage.dataset.src) { lazyImage.src = lazyImage.dataset.src; lazyImage.removeAttribute('data-src'); // Elimina data-src una vez cargada. } observer.unobserve(lazyImage); // Deja de observar esta imagen específica. } }); }, { rootMargin: '0px 0px 100px 0px' // Carga las imágenes cuando están a 100px por debajo del viewport. }); // Observa todas las imágenes que tienen el atributo data-src. document.querySelectorAll('img[data-src]').forEach(function(lazyImage) { lazyImageObserver.observe(lazyImage); }); } else { // Fallback para navegadores antiguos: carga todas las imágenes inmediatamente. console.log('IntersectionObserver no soportado, cargando todas las imágenes directamente.'); document.querySelectorAll('img[data-src]').forEach(function(lazyImage) { if (lazyImage.dataset.src) { lazyImage.src = lazyImage.dataset.src; lazyImage.removeAttribute('data-src'); } }); } } // =============================================================================================== // FUNCIONES DE RENDERIZADO DE VISTAS // =============================================================================================== /** * Renderiza la vista de Landing Page. * Muestra una cuadrícula de categorías únicas basadas en 'Nivel 1' de los datos. */ function renderLanding() { console.log('Rendering Landing View'); const categoriesGrid = document.getElementById('landing-categories-grid'); categoriesGrid.innerHTML = ''; // Limpia el contenido existente. // Obtiene categorías únicas de la columna 'Nivel 1' de los datos principales. const uniqueCategories = [...new Set(state.mainData.map(item => item['Nivel 1']))].filter(Boolean); if (uniqueCategories.length === 0) { categoriesGrid.innerHTML = '<p class="text-center text-light col-span-full">No hay categorías disponibles.</p>'; return; } // Crea una tarjeta para cada categoría única. uniqueCategories.forEach(category => { const card = document.createElement('div'); card.className = 'bg-surface p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer'; card.innerHTML = ` <h3 class="text-xl font-semibold mb-2">${category}</h3> <p class="text-light">Explora opciones en ${category}.</p> `; // Al hacer clic en una tarjeta, se establece el filtro 'Nivel 1' y se navega al wizard. card.addEventListener('click', (event) => { event.preventDefault(); state.filters = { 'Nivel 1': category }; updateView('filter-wizard'); }); categoriesGrid.appendChild(card); }); lucide.createIcons(); // Vuelve a crear los íconos si se añaden dinámicamente. } /** * Renderiza el Wizard de Filtrado (Drill-down). * Genera selectores dinámicos para cada nivel de filtro (Nivel 1, Nivel 2, etc.) * y autoselecciona opciones si solo hay una. */ function renderFilterWizard() { console.log('Rendering Filter Wizard View with filters:', state.filters); const filterLevelsContainer = document.getElementById('filter-levels'); filterLevelsContainer.innerHTML = ''; // Limpia los selectores existentes. let currentFilteredData = state.mainData; // Datos para filtrar las opciones de los selectores. // Aplica los filtros existentes para determinar las opciones de los selectores subsiguientes. state.filterLevels.forEach(levelKey => { if (state.filters[levelKey]) { currentFilteredData = currentFilteredData.filter(item => item[levelKey] === state.filters[levelKey]); } }); // Itera sobre los niveles de filtro definidos para crear los selectores. state.filterLevels.forEach((levelKey, index) => { const previousLevelKey = state.filterLevels[index - 1]; // Solo renderiza un selector si los niveles anteriores están seleccionados o si es el primer nivel. if (index > 0 && !state.filters[previousLevelKey]) { return; } // Obtiene opciones únicas para el nivel actual, basándose en los datos ya filtrados. const uniqueOptionsForLevel = [ ...new Set(currentFilteredData.map(item => item[levelKey])) ].filter(Boolean); // Filtra valores vacíos/nulos. // No muestra el selector si no hay opciones y no hay un filtro aplicado para este nivel. if (uniqueOptionsForLevel.length === 0 && !state.filters[levelKey]) { return; } const wrapperDiv = document.createElement('div'); wrapperDiv.className = 'p-4 bg-surface rounded-lg shadow-sm'; const label = document.createElement('label'); label.htmlFor = `filter-${levelKey.replace(/\s/g, '-')}`; label.className = 'block text-light mb-2'; label.textContent = `${levelKey}:`; wrapperDiv.appendChild(label); const select = document.createElement('select'); select.id = `filter-${levelKey.replace(/\s/g, '-')}`; select.className = 'w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary'; select.name = levelKey; // Asocia el nombre del selector con la clave del filtro. wrapperDiv.appendChild(select); const defaultOption = document.createElement('option'); defaultOption.value = ''; defaultOption.textContent = `Selecciona ${levelKey}`; select.appendChild(defaultOption); // Añade las opciones únicas al selector. uniqueOptionsForLevel.sort().forEach(optionValue => { const optionElement = document.createElement('option'); optionElement.value = optionValue; optionElement.textContent = optionValue; select.appendChild(optionElement); }); // Establece el valor seleccionado si ya existe un filtro para este nivel. if (state.filters[levelKey]) { select.value = state.filters[levelKey]; } // Lógica de autoselección: si solo hay una opción y no hay filtro aplicado. if (uniqueOptionsForLevel.length === 1 && !state.filters[levelKey]) { select.value = uniqueOptionsForLevel[0]; state.filters[levelKey] = uniqueOptionsForLevel[0]; // Actualiza el estado del filtro. } // Añade un event listener para manejar cambios en el selector. select.addEventListener('change', (event) => { const selectedValue = event.target.value; const changedLevel = event.target.name; if (selectedValue === '') { delete state.filters[changedLevel]; // Elimina el filtro si la opción es vacía. } else { state.filters[changedLevel] = selectedValue; // Establece el nuevo filtro. } // Limpia los filtros de los niveles subsiguientes para un comportamiento de drill-down correcto. const changedLevelIndex = state.filterLevels.indexOf(changedLevel); state.filterLevels.slice(changedLevelIndex + 1).forEach(subsequentLevel => { delete state.filters[subsequentLevel]; }); renderFilterWizard(); // Re-renderiza el wizard para actualizar los selectores y opciones. }); filterLevelsContainer.appendChild(wrapperDiv); // Re-filtra currentFilteredData para el siguiente nivel de selectores. if (state.filters[levelKey]) { currentFilteredData = currentFilteredData.filter(item => item[levelKey] === state.filters[levelKey]); } }); // Habilita/deshabilita el botón "Mostrar Resultados" según si hay filtros aplicados. const showResultsBtn = document.getElementById('show-results-btn'); const hasFilters = Object.keys(state.filters).length > 0; showResultsBtn.disabled = !hasFilters; showResultsBtn.classList.toggle('opacity-50', !hasFilters); showResultsBtn.classList.toggle('cursor-not-allowed', !hasFilters); lucide.createIcons(); } /** * Renderiza la cuadrícula de resultados, aplicando filtros y ordenación (alfabética) * si es necesario. Delega a `renderChronologicalView` si el orden es cronológico. */ function renderResultsGrid() { console.log('Rendering Results Grid View with current filters:', state.filters, 'and sort order:', state.sortOrder); const resultsContainer = document.getElementById('results-container'); resultsContainer.innerHTML = ''; // Limpia resultados existentes. let filteredItems = state.mainData; // Aplica todos los filtros del estado a los datos principales. Object.keys(state.filters).forEach(filterKey => { const filterValue = state.filters[filterKey]; if (filterValue) { filteredItems = filteredItems.filter(item => item[filterKey] === filterValue); } }); // Aplica ordenación alfabética si está seleccionada. if (state.sortOrder === 'alphabetical') { filteredItems.sort((a, b) => { const titleA = a['Título'] || ''; const titleB = b['Título'] || ''; return titleA.localeCompare(titleB); }); } // Si el orden es cronológico, delega a la función específica. if (state.sortOrder === 'chronological') { renderChronologicalView(filteredItems); return; } if (filteredItems.length === 0) { resultsContainer.innerHTML = '<p class="text-center text-light col-span-full">No hay resultados que coincidan con tus filtros.</p>'; return; } // Crea una tarjeta para cada ítem filtrado. filteredItems.forEach(item => { const card = document.createElement('div'); card.className = 'bg-surface rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer'; const imageUrl = item.gallery.length > 0 ? item.gallery[0].src : 'https://via.placeholder.com/400x250?text=No+Image'; const title = item['Título'] || 'Ítem sin título'; const description = item['Descripción Corta'] || 'Descripción no disponible.'; const rating = item.rating; card.innerHTML = ` <img data-src="${imageUrl}" alt="${title}" class="w-full h-48 object-cover lazyload"> <div class="p-4"> <h3 class="text-xl font-semibold mb-2">${title}</h3> <p class="text-light text-sm mb-3">${description}</p> <div class="flex items-center"> <div class="flex text-yellow-400"> ${'<i data-lucide="star" class="w-4 h-4 fill-current"></i>'.repeat(Math.floor(rating / 2))} ${rating % 2 !== 0 ? '<i data-lucide="star-half" class="w-4 h-4 fill-current"></i>' : ''} ${'<i data-lucide="star" class="w-4 h-4"></i>'.repeat(5 - Math.ceil(rating / 2))} </div> <span class="ml-2 text-sm text-light">(${rating.toFixed(1)}/10)</span> </div> </div> `; // Al hacer clic en una tarjeta, se navega a la vista de detalle del ítem. card.addEventListener('click', (event) => { event.preventDefault(); updateView('detail', item.id); }); resultsContainer.appendChild(card); }); lucide.createIcons(); observeLazyImages(); // Inicia el lazy loading para las nuevas imágenes. } /** * Renderiza una vista especial agrupando los ítems por mes y año. * Requiere que los ítems tengan una propiedad `date` válida. * @param {Array<Object>} items - Los ítems a agrupar y mostrar. */ function renderChronologicalView(items) { console.log('Rendering Chronological View'); const resultsContainer = document.getElementById('results-container'); resultsContainer.innerHTML = ''; // Limpia el contenedor de resultados. // Filtra los ítems que tienen una fecha válida. const itemsWithDates = items.filter(item => item.date instanceof Date && !isNaN(item.date)); if (itemsWithDates.length === 0) { resultsContainer.innerHTML = '<p class="text-center text-light col-span-full">No hay ítems con fechas válidas para agrupar cronológicamente.</p>'; return; } // Ordena los ítems por fecha, del más reciente al más antiguo. itemsWithDates.sort((a, b) => b.date.getTime() - a.date.getTime()); const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]; const groupedByMonth = {}; // Agrupa los ítems por "Mes Año". itemsWithDates.forEach(item => { const year = item.date.getFullYear(); const month = months[item.date.getMonth()]; const monthYearKey = `${month} ${year}`; if (!groupedByMonth[monthYearKey]) { groupedByMonth[monthYearKey] = []; } groupedByMonth[monthYearKey].push(item); }); // Itera sobre los grupos de meses para renderizarlos. for (const monthYearKey in groupedByMonth) { const groupDiv = document.createElement('div'); groupDiv.className = 'mb-8'; groupDiv.innerHTML = `<h3 class="text-2xl font-bold mb-4 text-primary">${monthYearKey}</h3>`; const groupGrid = document.createElement('div'); groupGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'; // Crea una tarjeta para cada ítem dentro del grupo del mes. groupedByMonth[monthYearKey].forEach(item => { const card = document.createElement('div'); card.className = 'bg-surface rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer'; const imageUrl = item.gallery.length > 0 ? item.gallery[0].src : 'https://via.placeholder.com/400x250?text=No+Image'; const title = item['Título'] || 'Ítem sin título'; const description = item['Descripción Corta'] || 'Descripción no disponible.'; const rating = item.rating; card.innerHTML = ` <img data-src="${imageUrl}" alt="${title}" class="w-full h-48 object-cover lazyload"> <div class="p-4"> <h4 class="text-xl font-semibold mb-2">${title}</h4> <p class="text-light text-sm mb-3">${description}</p> <div class="flex items-center"> <div class="flex text-yellow-400"> ${'<i data-lucide="star" class="w-4 h-4 fill-current"></i>'.repeat(Math.floor(rating / 2))} ${rating % 2 !== 0 ? '<i data-lucide="star-half" class="w-4 h-4 fill-current"></i>' : ''} ${'<i data-lucide="star" class="w-4 h-4"></i>'.repeat(5 - Math.ceil(rating / 2))} </div> <span class="ml-2 text-sm text-light">(${rating.toFixed(1)}/10)</span> </div> </div> `; // Al hacer clic en una tarjeta, se navega a la vista de detalle del ítem. card.addEventListener('click', (event) => { event.preventDefault(); updateView('detail', item.id); }); groupGrid.appendChild(card); }); groupDiv.appendChild(groupGrid); resultsContainer.appendChild(groupDiv); } lucide.createIcons(); observeLazyImages(); // Inicia el lazy loading para las nuevas imágenes. } /** * Renderiza la Vista de Detalle (Overlay/Modal) para un ítem específico. * Rellena todos los campos de la interfaz con los datos del ítem. * @param {Object} item - El objeto de datos del ítem a mostrar. */ function renderDetail(item) { console.log('Rendering Detail View for:', item); const detailContent = document.getElementById('detail-content'); if (!item) { detailContent.innerHTML = '<p class="text-center text-red-500">No se pudo cargar la información del ítem. Revisa que el ID del ítem exista en los datos principales.</p>'; return; } // 1. Cabecera con foto grande, Título y Descripción Corta. const headerImage = document.getElementById('detail-header-image'); headerImage.dataset.src = item.gallery.length > 0 ? item.gallery[0].src : 'https://via.placeholder.com/800x400?text=No+Image'; headerImage.src = headerImage.dataset.src; // Carga la imagen de cabecera inmediatamente. headerImage.alt = item['Título'] || 'Ítem Detallado'; document.querySelector('#detail-content h2').textContent = item['Título'] || 'Ítem Detallado'; document.querySelector('#detail-content p.text-xl').textContent = item['Descripción Corta'] || ''; // 2. Bloque de Valoración dinámico. const ratingValue = item.rating; const starOverlay = document.querySelector('#detail-view-overlay .absolute.inset-0.flex.text-yellow-400'); if (starOverlay) { const filledStarsWidth = (ratingValue / 10) * 100; // Convierte el rating (0-10) a porcentaje. starOverlay.style.width = `${filledStarsWidth}%`; // Ajusta el ancho de las estrellas rellenas. } document.querySelector('#detail-view-overlay .ml-4.text-2xl').textContent = `${ratingValue.toFixed(1)}/10`; // 3. Descripción Larga (con soporte HTML básico, asumiendo que el contenido es seguro). const longDescriptionContainer = document.getElementById('detail-long-description'); longDescriptionContainer.innerHTML = ` <h3 class="text-2xl font-semibold mb-3">Acerca de este lugar</h3> ${item['Descripción Larga'] || '<p class="text-light">Descripción larga no disponible.</p>'} `; // 4. Galería de Imágenes interactiva. const galleryContainer = document.getElementById('detail-gallery'); galleryContainer.innerHTML = ''; // Limpia la galería existente. if (item.gallery.length > 0) { item.gallery.forEach((img, index) => { const imgElement = document.createElement('img'); imgElement.dataset.src = img.src; // Usa data-src para lazy loading. imgElement.alt = img.alt; imgElement.className = 'w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity lazyload'; // Al hacer clic en una imagen de la galería, abre el lightbox. imgElement.addEventListener('click', () => { state.currentGallery = item.gallery; // Establece la galería para el lightbox. state.currentGalleryIndex = index; // Establece el índice de la imagen clicada. showLightbox(); }); galleryContainer.appendChild(imgElement); }); } else { galleryContainer.innerHTML = '<p class="text-light col-span-full">No hay imágenes en la galería para este ítem.</p>'; } // 5. Información de Contacto (botones de RRSS/Mapas). const contactButtonsContainer = document.querySelector('#detail-view-overlay .flex.space-x-4'); contactButtonsContainer.innerHTML = ''; // Limpia los botones existentes. const socialLinks = item.socialLinks || {}; // Obtiene los enlaces sociales procesados. // Renderiza los botones solo si los enlaces existen en los datos. if (socialLinks.facebook) { contactButtonsContainer.innerHTML += ` <a href="${socialLinks.facebook}" target="_blank" class="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center"> <i data-lucide="facebook" class="w-6 h-6"></i> </a> `; } if (socialLinks.twitter) { contactButtonsContainer.innerHTML += ` <a href="${socialLinks.twitter}" target="_blank" class="p-3 rounded-full bg-blue-400 text-white hover:bg-blue-500 transition-colors flex items-center justify-center"> <i data-lucide="twitter" class="w-6 h-6"></i> </a> `; } if (socialLinks.instagram) { contactButtonsContainer.innerHTML += ` <a href="${socialLinks.instagram}" target="_blank" class="p-3 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition-colors flex items-center justify-center"> <i data-lucide="instagram" class="w-6 h-6"></i> </a> `; } if (socialLinks.website) { contactButtonsContainer.innerHTML += ` <a href="${socialLinks.website}" target="_blank" class="p-3 rounded-full bg-gray-700 text-white hover:bg-gray-800 transition-colors flex items-center justify-center"> <i data-lucide="globe" class="w-6 h-6"></i> </a> `; } if (socialLinks.map) { contactButtonsContainer.innerHTML += ` <a href="${socialLinks.map}" target="_blank" class="p-3 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors flex items-center justify-center"> <i data-lucide="map-pin" class="w-6 h-6"></i> </a> `; } if (contactButtonsContainer.innerHTML === '') { contactButtonsContainer.innerHTML = '<p class="text-light col-span-full">No hay información de contacto disponible.</p>'; } // 6. Lógica para Ítems Relacionados. const relatedItemsContainer = document.getElementById('detail-related-items').querySelector('div.grid'); relatedItemsContainer.innerHTML = ''; // Limpia los ítems relacionados existentes. // Filtra los ítems relacionados del CSV secundario por el ID del ítem principal. // Asume que el CSV de relacionados tiene una columna 'main_item_ID'. const related = state.relatedData.filter(relItem => relItem.main_item_ID === (item.id || item.ID)); if (related.length > 0) { related.forEach(relItem => { const relCard = document.createElement('div'); relCard.className = 'bg-gray-100 p-4 rounded-lg shadow-sm'; relCard.innerHTML = ` <h4 class="font-semibold">${relItem['Título']}</h4> <p class="text-sm text-light">${relItem['Descripción Corta'] || ''} ${relItem['Fecha'] ? `Fecha: ${relItem['Fecha']}` : ''}</p> `; // Opcional: si los ítems relacionados también tienen vistas de detalle, se podría añadir un click listener aquí. relatedItemsContainer.appendChild(relCard); }); } else { relatedItemsContainer.innerHTML = '<p class="text-light col-span-full">No hay ítems relacionados para mostrar.</p>'; } lucide.createIcons(); // Vuelve a crear los íconos para elementos dinámicos. observeLazyImages(); // Inicia el lazy loading para las nuevas imágenes en la galería de detalle. } /** * Muestra el lightbox propietario con la imagen actual de la galería. */ function showLightbox() { if (state.currentGallery.length === 0) return; // No abrir si la galería está vacía. customLightbox.classList.remove('hidden'); // Muestra el lightbox. updateLightboxImage(); // Carga la imagen actual en el lightbox. } /** * Oculta el lightbox y resetea su estado. */ function hideLightbox() { customLightbox.classList.add('hidden'); // Oculta el lightbox. state.currentGallery = []; // Limpia la galería del lightbox. state.currentGalleryIndex = 0; // Resetea el índice. } /** * Actualiza la imagen mostrada en el lightbox según `state.currentGalleryIndex`. */ function updateLightboxImage() { const lightboxImg = document.getElementById('lightbox-img'); const currentImage = state.currentGallery[state.currentGalleryIndex]; if (currentImage) { // Las imágenes del lightbox se cargan directamente ya que el lightbox está visible. lightboxImg.src = currentImage.src; lightboxImg.alt = currentImage.alt; lightboxImg.removeAttribute('data-src'); // Asegura que no tenga data-src. } else { hideLightbox(); // Si no hay imagen, cierra el lightbox. } } // =============================================================================================== // EVENT LISTENERS GLOBALES // =============================================================================================== // Event listener para abrir el sidebar en móvil. menuToggleBtn.addEventListener('click', () => { sidebarOffcanvas.classList.remove('-translate-x-full'); }); // Event listener para cerrar el sidebar en móvil. sidebarCloseBtn.addEventListener('click', () => { sidebarOffcanvas.classList.add('-translate-x-full'); }); // Cierra el sidebar si se hace clic fuera de él (solo en pantallas pequeñas). document.addEventListener('click', (event) => { if (window.innerWidth < 768 && !sidebarOffcanvas.contains(event.target) && !menuToggleBtn.contains(event.target) && !sidebarOffcanvas.classList.contains('-translate-x-full')) { sidebarOffcanvas.classList.add('-translate-x-full'); } }); // Manejo de clics en enlaces de navegación (navbar, sidebar, footer) que tienen `data-nav-link`. document.querySelectorAll('[data-nav-link]').forEach(link => { link.addEventListener('click', (event) => { event.preventDefault(); // Previene el comportamiento por defecto de recarga de la página. const dataLink = event.currentTarget.dataset.navLink; let view = dataLink; let sort = 'default'; // Determina la vista y el ordenación según el `data-nav-link`. if (dataLink === 'results-grid-alpha') { view = 'results-grid'; sort = 'alphabetical'; } else if (dataLink === 'results-grid-chrono') { view = 'results-grid'; sort = 'chronological'; } updateView(view, null, sort); // Llama a updateView con los parámetros correctos. }); }); // Event listener para el botón "Mostrar Resultados" en el wizard de filtros. document.getElementById('show-results-btn').addEventListener('click', (event) => { event.preventDefault(); updateView('results-grid'); // Navega a la vista de resultados con los filtros actuales. }); // Cierre de la vista de detalle (overlay). document.getElementById('detail-close-btn').addEventListener('click', (event) => { event.preventDefault(); // Utiliza history.back() para una navegación natural si se abrió desde otra vista con pushState. history.back(); }); // Manejo del Botón Flotante (FAB) y su Popover. fabBtn.addEventListener('click', (event) => { event.stopPropagation(); // Evita que el clic se propague al documento. fabPopover.classList.toggle('hidden'); // Alterna la visibilidad del popover. }); // Oculta el popover del FAB si se hace clic fuera de él. document.addEventListener('click', (event) => { if (!fabBtn.contains(event.target) && !fabPopover.contains(event.target)) { fabPopover.classList.add('hidden'); } }); // Event listeners específicos para la navegación del Lightbox. document.getElementById('lightbox-close-btn').addEventListener('click', hideLightbox); document.getElementById('lightbox-prev-btn').addEventListener('click', () => { if (state.currentGallery.length > 0) { state.currentGalleryIndex = (state.currentGalleryIndex - 1 + state.currentGallery.length) % state.currentGallery.length; updateLightboxImage(); } }); document.getElementById('lightbox-next-btn').addEventListener('click', () => { if (state.currentGallery.length > 0) { state.currentGalleryIndex = (state.currentGalleryIndex + 1) % state.currentGallery.length; updateLightboxImage(); } }); // Manejo del teclado para navegación del Lightbox y cierre de detalle/lightbox con 'Escape'. document.addEventListener('keydown', (event) => { // Lógica para el Lightbox. if (!customLightbox.classList.contains('hidden')) { if (event.key === 'ArrowLeft') { document.getElementById('lightbox-prev-btn').click(); } else if (event.key === 'ArrowRight') { document.getElementById('lightbox-next-btn').click(); } else if (event.key === 'Escape') { hideLightbox(); } } // Lógica para cerrar el overlay de detalle con 'Escape'. else if (!detailViewOverlay.classList.contains('hidden')) { if (event.key === 'Escape') { document.getElementById('detail-close-btn').click(); } } }); // =============================================================================================== // INICIO DE LA APLICACIÓN // =============================================================================================== /** * Función asíncrona para inicializar la aplicación. * Carga los datos, oculta el loader y establece la vista inicial. */ async function initApp() { try { // Cargar datos principales del CSV. const mainRawData = await fetchAndParseCSV(CSV_MAIN_DATA_URL); state.mainData = processMainData(mainRawData); // Cargar datos relacionados del CSV secundario (si la URL está definida). if (CSV_RELATED_DATA_URL && CSV_RELATED_DATA_URL.trim() !== '') { const relatedRawData = await fetchAndParseCSV(CSV_RELATED_DATA_URL); state.relatedData = relatedRawData; } // Ocultar el loader inicial y mostrar el contenido principal de la aplicación. appLoader.style.opacity = '0'; setTimeout(() => { appLoader.classList.add('hidden'); appContainer.classList.remove('hidden'); // Después de cargar, determina la vista inicial basada en la URL actual. handleLocationChange(); }, 300); // Coincide con la duración de la transición de opacidad del loader. } catch (error) { console.error("Error al cargar o parsear datos:", error); // Muestra un mensaje de error si la carga falla. appLoader.innerHTML = '<p class="text-red-500">Error al cargar la aplicación. Intenta de nuevo. Revisa la consola para más detalles.</p>'; appLoader.style.backgroundColor = 'white'; } } // Inicia la aplicación cuando el DOM esté completamente cargado. document.addEventListener('DOMContentLoaded', initApp); </script> </body> </html> 
+﻿<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master SPA Template</title>
+  <!-- Google Fonts: Inter (moderna y limpia) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS (via CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Variables de colores para fácil personalización */
+    :root {
+      --color-primary: #3b82f6;
+      /* Azul Neutro */
+      --color-secondary: #60a5fa;
+      /* Azul Claro */
+      --color-background: #f3f4f6;
+      /* Gris Muy Claro */
+      --color-surface: #ffffff;
+      /* Blanco para superficies/cards */
+      --color-text-default: #374151;
+      /* Gris oscuro para texto */
+      --color-text-light: #6b7280;
+      /* Gris medio para texto secundario */
+      --color-accent: #ef4444;
+      /* Rojo para acentos o advertencias */
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: var(--color-background);
+      color: var(--color-text-default);
+    }
+
+    /* Configuración de Tailwind para usar las variables CSS */
+    /* Puedes expandir esto en un archivo tailwind.config.js si no usas CDN */
+    .bg-primary {
+      background-color: var(--color-primary);
+    }
+
+    .text-primary {
+      color: var(--color-primary);
+    }
+
+    .bg-secondary {
+      background-color: var(--color-secondary);
+    }
+
+    .text-secondary {
+      color: var(--color-secondary);
+    }
+
+    .bg-background {
+      background-color: var(--color-background);
+    }
+
+    .text-background {
+      color: var(--color-background);
+    }
+
+    .bg-surface {
+      background-color: var(--color-surface);
+    }
+
+    .text-surface {
+      color: var(--color-surface);
+    }
+
+    .text-default {
+      color: var(--color-text-default);
+    }
+
+    .text-light {
+      color: var(--color-light);
+    }
+
+    .bg-accent {
+      background-color: var(--color-accent);
+    }
+
+    .text-accent {
+      color: var(--color-accent);
+    }
+
+    /* Estilo básico para el loader */
+    #app-loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--color-primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+  <!-- Lucide Icons (via CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="min-h-screen flex flex-col">
+  <!-- Loader Inicial -->
+  <div id="app-loader">
+    <div class="spinner"></div>
+  </div>
+  <!-- Contenedor principal de la aplicación -->
+  <div id="app-container" class="flex flex-col flex-1 hidden">
+    <!-- Barra de Navegación Superior Fija -->
+    <header id="main-navbar" class="fixed top-0 left-0 w-full bg-surface shadow-md p-4 z-10">
+      <div class="container mx-auto flex justify-between items-center">
+        <a href="/" class="text-xl font-bold text-primary" data-nav-link="landing">SPA Master</a>
+        <nav class="hidden md:flex space-x-4">
+          <a href="/#" class="hover:text-primary transition-colors" data-nav-link="landing">Inicio</a>
+          <a href="/#filters" class="hover:text-primary transition-colors" data-nav-link="filter-wizard">Filtrar</a>
+          <a href="/#results" class="hover:text-primary transition-colors" data-nav-link="results-grid">Resultados</a>
+          <a href="/#results/alphabetical" class="hover:text-primary transition-colors"
+            data-nav-link="results-grid-alpha">A-Z</a>
+          <a href="/#results/chronological" class="hover:text-primary transition-colors"
+            data-nav-link="results-grid-chrono">Cronológico</a>
+        </nav>
+        <!-- Botón para Sidebar en móvil/desktop -->
+        <button id="menu-toggle-btn" class="md:hidden p-2 rounded-md hover:bg-gray-100">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </header>
+    <!-- Sidebar "Offcanvas" -->
+    <aside id="sidebar-offcanvas"
+      class="fixed top-0 left-0 h-full w-64 bg-surface shadow-lg z-20 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+      <div class="p-4 flex justify-between items-center border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-primary">Menú</h2>
+        <button id="sidebar-close-btn" class="md:hidden p-2 rounded-md hover:bg-gray-100">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+      <nav class="mt-4 p-4">
+        <ul>
+          <li class="mb-2">
+            <a href="/#" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center"
+              data-nav-link="landing"><i data-lucide="home" class="w-5 h-5 mr-2"></i>Inicio</a>
+          </li>
+          <li class="mb-2">
+            <a href="/#filters" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center"
+              data-nav-link="filter-wizard"><i data-lucide="filter" class="w-5 h-5 mr-2"></i>Filtrar</a>
+          </li>
+          <li class="mb-2">
+            <a href="/#results" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center"
+              data-nav-link="results-grid"><i data-lucide="grid" class="w-5 h-5 mr-2"></i>Resultados
+              (Default)</a>
+          </li>
+          <li class="mb-2">
+            <a href="/#results/alphabetical"
+              class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center"
+              data-nav-link="results-grid-alpha"><i data-lucide="abc" class="w-5 h-5 mr-2"></i>Orden
+              Alfabético</a>
+          </li>
+          <li class="mb-2">
+            <a href="/#results/chronological"
+              class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center"
+              data-nav-link="results-grid-chrono"><i data-lucide="calendar" class="w-5 h-5 mr-2"></i>Agrupación
+              Cronológica</a>
+          </li>
+          <li class="mb-2">
+            <a href="/#about" class="block p-2 rounded-md hover:bg-gray-100 transition-colors flex items-center"><i
+                data-lucide="info" class="w-5 h-5 mr-2"></i>Acerca de</a>
+          </li>
+          <!-- Aquí se añadirán los filtros dinámicos del wizard -->
+        </ul>
+      </nav>
+    </aside>
+    <!-- Contenido Principal (con padding para la navbar) -->
+    <main class="flex-1 pt-20 pb-16 md:pl-64">
+      <!-- Ajustar pt y pl según navbar y sidebar -->
+      <div class="container mx-auto p-4">
+        <!-- Sección para la Landing Page -->
+        <section id="landing-view" class="view">
+          <h1 class="text-4xl font-bold text-center mb-8">
+            Bienvenido a tu SPA Maestra
+          </h1>
+          <p class="text-center text-lg text-light mb-12">
+            Explora un mundo de posibilidades con datos dinámicos.
+          </p>
+          <div id="landing-categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Aquí se renderizarán las cards de categoría -->
+            <div class="bg-surface p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                Categoría de Ejemplo 1
+              </h3>
+              <p class="text-light">
+                Descripción corta de la categoría. Lorem ipsum dolor sit amet.
+              </p>
+            </div>
+            <div class="bg-surface p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                Categoría de Ejemplo 2
+              </h3>
+              <p class="text-light">
+                Descripción corta de la categoría. Consequatur unde aliquid.
+              </p>
+            </div>
+          </div>
+        </section>
+        <!-- Sección para el Wizard de Filtrado -->
+        <section id="filter-wizard-view" class="view hidden">
+          <h2 class="text-3xl font-bold mb-6">Wizard de Filtrado</h2>
+          <div id="filter-levels" class="space-y-4">
+            <!-- Aquí se renderizarán los selectores de Nivel 1, Nivel 2, etc. -->
+            <div class="p-4 bg-surface rounded-lg shadow-sm">
+              <label for="filter-level1" class="block text-light mb-2">Nivel 1:</label>
+              <select id="filter-level1"
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+                <option value="">Selecciona Nivel 1</option>
+              </select>
+            </div>
+          </div>
+          <button id="show-results-btn"
+            class="mt-6 px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary transition-colors">
+            Mostrar Resultados
+          </button>
+        </section>
+        <!-- Sección para el Grid de Resultados -->
+        <section id="results-grid-view" class="view hidden">
+          <h2 class="text-3xl font-bold mb-6">Resultados de Búsqueda</h2>
+          <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Aquí se renderizarán las tarjetas de resultados -->
+            <div class="bg-surface rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <img data-src="https://via.placeholder.com/400x250?text=Item+Image" alt="Item"
+                class="w-full h-48 object-cover lazyload" />
+              <div class="p-4">
+                <h3 class="text-xl font-semibold mb-2">Título del Ítem</h3>
+                <p class="text-light text-sm mb-3">
+                  Descripción corta del ítem. Lorem ipsum dolor sit amet
+                  consectetur.
+                </p>
+                <div class="flex items-center">
+                  <div class="flex text-yellow-400">
+                    <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    <i data-lucide="star" class="w-4 h-4"></i>
+                    <i data-lucide="star" class="w-4 h-4"></i>
+                  </div>
+                  <span class="ml-2 text-sm text-light">(7.5/10)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Sección para la Vista de Detalle (Overlay/Modal) -->
+        <section id="detail-view-overlay"
+          class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-30 hidden p-4">
+          <div class="bg-surface rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
+            <button id="detail-close-btn"
+              class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 z-40">
+              <i data-lucide="x" class="w-6 h-6 text-default"></i>
+            </button>
+            <div id="detail-content" class="p-6">
+              <!-- Cabecera con foto grande -->
+              <div class="mb-6">
+                <img data-src="https://via.placeholder.com/800x400?text=Detail+Header+Image" alt="Item Header"
+                  class="w-full h-80 object-cover rounded-lg mb-4 cursor-pointer" id="detail-header-image" />
+                <h2 class="text-4xl font-bold text-primary mb-2">
+                  Título del Ítem Detallado
+                </h2>
+                <p class="text-xl text-light">Descripción Corta Aquí</p>
+              </div>
+              <!-- Bloque de Valoración -->
+              <div class="flex items-center mb-6">
+                <div class="relative w-48 h-8">
+                  <!-- Fondo de estrellas grises -->
+                  <div class="absolute inset-0 flex text-gray-300">
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                    <i data-lucide="star" cla ss="w-8 h-8 fill-current"></i>
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                  </div>
+                  <!-- Superposición de estrellas con gradiente (ejemplo para 7.5/10 = 3.75 estrellas) -->
+                  <div class="absolute inset-0 flex text-yellow-400 overflow-hidden" style="width: 75%">
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                    <i data-lucide="star" class="w-8 h-8 fill-current"></i>
+                  </div>
+                </div>
+                <span class="ml-4 text-2xl font-semibold text-default">7.5/10</span>
+              </div>
+              <!-- Descripción Larga -->
+              <div class="mb-6 prose max-w-none" id="detail-long-description">
+                <h3 class="text-2xl font-semibold mb-3">
+                  Acerca de este lugar
+                </h3>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  do eiusmod tempor incididunt ut labore et dolore magna
+                  aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                  ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+                <p>
+                  Duis aute irure dolor in reprehenderit in voluptate velit
+                  esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+                  occaecat cupidatat non proident, sunt in culpa qui officia
+                  deserunt mollit anim id est laborum.
+                </p>
+              </div>
+              <!-- Galería de Imágenes -->
+              <div class="mb-6">
+                <h3 class="text-2xl font-semibold mb-3">Galería</h3>
+                <div id="detail-gallery" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <!-- Las imágenes de la galería se renderizarán aquí -->
+                  <img data-src="https://via.placeholder.com/300x200?text=Gallery+1" alt="Gallery item 1"
+                    class="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" />
+                  <img data-src="https://via.placeholder.com/300x200?text=Gallery+2" alt="Gallery item 2"
+                    class="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" />
+                </div>
+              </div>
+              <!-- Información de Contacto (RRSS/Mapas) -->
+              <div class="mb-6">
+                <h3 class="text-2xl font-semibold mb-3">Contacto</h3>
+                <div class="flex space-x-4">
+                  <!-- Los botones dinámicos se insertarán aquí -->
+                  <a href="#" target="_blank"
+                    class="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center">
+                    <i data-lucide="facebook" class="w-6 h-6"></i>
+                  </a>
+                  <a href="#" target="_blank"
+                    class="p-3 rounded-full bg-blue-400 text-white hover:bg-blue-500 transition-colors flex items-center justify-center">
+                    <i data-lucide="twitter" class="w-6 h-6"></i>
+                  </a>
+                  <a href="#" target="_blank"
+                    class="p-3 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors flex items-center justify-center">
+                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                  </a>
+                </div>
+              </div>
+              <!-- Relacionados -->
+              <div id="detail-related-items">
+                <h3 class="text-2xl font-semibold mb-3">
+                  Items Relacionados
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <!-- Aquí se renderizarán los ítems relacionados del segundo CSV -->
+                  <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
+                    <h4 class="font-semibold">Evento Relacionado 1</h4>
+                    <p class="text-sm text-light">
+                      Breve descripción del evento. Fecha: DD/MM/AAAA
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Lightbox Propietario -->
+        <div id="custom-lightbox"
+          class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50 hidden p-4">
+          <button id="lightbox-close-btn" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300">
+            <i data-lucide="x" class="w-6 h-6 text-default"></i>
+          </button>
+          <button id="lightbox-prev-btn" class="absolute left-4 p-3 rounded-full bg-gray-200 hover:bg-gray-300">
+            <i data-lucide="chevron-left" class="w-8 h-8 text-default"></i>
+          </button>
+          <img id="lightbox-img" src="" alt="Imagen en Lightbox" class="max-w-[90%] max-h-[90%] object-contain" />
+          <button id="lightbox-next-btn" class="absolute right-4 p-3 rounded-full bg-gray-200 hover:bg-gray-300">
+            <i data-lucide="chevron-right" class="w-8 h-8 text-default"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+    <!-- Footer -->
+    <footer id="main-footer" class="bg-surface shadow-inner p-4 mt-auto">
+      <div class="container mx-auto flex justify-center space-x-6 text-light">
+        <a href="/#" class="hover:text-primary transition-colors flex items-center flex-col" data-nav-link="landing"><i
+            data-lucide="home" class="w-5 h-5"></i><span class="text-xs mt-1">Inicio</span></a>
+        <a href="/#filters" class="hover:text-primary transition-colors flex items-center flex-col"
+          data-nav-link="filter-wizard"><i data-lucide="search" class="w-5 h-5"></i><span
+            class="text-xs mt-1">Buscar</span></a>
+        <a href="/#settings" class="hover:text-primary transition-colors flex items-center flex-col"
+          data-nav-link="settings"><i data-lucide="settings" class="w-5 h-5"></i><span
+            class="text-xs mt-1">Ajustes</span></a>
+      </div>
+    </footer>
+    <!-- Botón Flotante (FAB) con Popover -->
+    <div id="fab-container" class="fixed bottom-4 right-4 z-40">
+      <button id="fab-btn"
+        class="bg-accent text-white p-4 rounded-full shadow-lg hover:bg-red-600 transition-colors flex items-center justify-center">
+        <i data-lucide="message-square" class="w-6 h-6"></i>
+      </button>
+      <div id="fab-popover" class="absolute bottom-full right-0 mb-2 p-3 bg-surface rounded-lg shadow-lg hidden w-64">
+        <p class="text-sm text-default">
+          ¡Hola! Aquí puedes encontrar información útil o acceder a un atajo.
+        </p>
+        <button class="mt-2 text-primary text-sm font-semibold hover:underline">
+          Ver más
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Fin de app-container -->
+    <script type="module">
+      // ===============================================================================================
+      // INICIALIZACIÓN Y REFERENCIAS DOM
+      // ===============================================================================================
+
+      // Inicializar Lucide Icons
+      lucide.createIcons();
+
+      // Referencias a elementos clave del DOM
+      const appLoader = document.getElementById('app-loader');
+      const appContainer = document.getElementById('app-container');
+      const views = document.querySelectorAll('.view');
+
+      // Vistas específicas
+      const landingView = document.getElementById('landing-view');
+      const filterWizardView = document.getElementById('filter-wizard-view');
+      const resultsGridView = document.getElementById('results-grid-view');
+      const detailViewOverlay = document.getElementById('detail-view-overlay');
+      const customLightbox = document.getElementById('custom-lightbox');
+
+      // Elementos de la barra lateral y navegación
+      const sidebarOffcanvas = document.getElementById('sidebar-offcanvas');
+      const menuToggleBtn = document.getElementById('menu-toggle-btn');
+      const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+
+      // Botón flotante (FAB) y su popover
+      const fabBtn = document.getElementById('fab-btn');
+      const fabPopover = document.getElementById('fab-popover');
+
+      // ===============================================================================================
+      // CONFIGURACIÓN GLOBAL
+      // ===============================================================================================
+      const CSV_MAIN_DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G-G/pub?output=csv';
+      const CSV_RELATED_DATA_URL = ''; // URL secundaria si aplica
+
+      // ===============================================================================================
+      // MOTOR DE NAVEGACIÓN Y ESTADO (CORE SPA LOGIC)
+      // ===============================================================================================
+      const state = {
+        currentView: 'landing',
+        filters: {},
+        selectedItem: null,
+        mainData: [],
+        relatedData: [],
+        currentGallery: [],
+        currentGalleryIndex: 0,
+        filterLevels: ['Nivel 1', 'Nivel 2', 'Nivel 3', 'Nivel 4'],
+        sortOrder: 'default'
+      };
+
+      /**
+       * Actualiza la vista principal de la aplicación.
+       */
+      function updateView(newView, itemId = null, sort = 'default', pushState = true) {
+        views.forEach(view => view.classList.add('hidden'));
+        detailViewOverlay.classList.add('hidden');
+        customLightbox.classList.add('hidden');
+
+        let newPath = '/';
+        state.sortOrder = sort;
+
+        switch (newView) {
+          case 'landing':
+            landingView.classList.remove('hidden');
+            newPath = '/';
+            renderLanding();
+            break;
+          case 'filter-wizard':
+            filterWizardView.classList.remove('hidden');
+            newPath = '/#filters';
+            renderFilterWizard();
+            break;
+          case 'results-grid':
+            resultsGridView.classList.remove('hidden');
+            newPath = `/#results${sort !== 'default' ? `/${sort}` : ''}`;
+            renderResultsGrid();
+            break;
+          case 'detail':
+            detailViewOverlay.classList.remove('hidden');
+            if (state.currentView !== 'results-grid' && state.currentView !== 'filter-wizard') {
+              resultsGridView.classList.remove('hidden');
+            }
+            if (itemId) {
+              state.selectedItem = state.mainData.find(item => (item.id === itemId || item.ID === itemId));
+              if (!state.selectedItem) {
+                updateView(state.currentView);
+                return;
+              }
+              renderDetail(state.selectedItem);
+              newPath = `/#detail/${itemId}`;
+            }
+            break;
+          case 'settings':
+            console.log('Navegando a Ajustes...');
+            newPath = '/#settings';
+            break;
+          default:
+            landingView.classList.remove('hidden');
+            newView = 'landing';
+            renderLanding();
+        }
+
+        state.currentView = newView;
+        if (pushState) {
+          history.pushState(state, '', newPath);
+        }
+
+        if (window.innerWidth < 768) {
+          sidebarOffcanvas.classList.add('-translate-x-full');
+        }
+        lucide.createIcons();
+      }
+
+      window.addEventListener('popstate', (event) => {
+        if (event.state) {
+          Object.assign(state, event.state);
+          if (state.currentView === 'detail' && state.selectedItem) {
+            updateView('detail', state.selectedItem.id || state.selectedItem.ID, state.sortOrder, false);
+          } else {
+            updateView(state.currentView, null, state.sortOrder, false);
+          }
+        } else {
+          handleLocationChange();
+        }
+      });
+
+      function handleLocationChange() {
+        const path = window.location.hash.substring(1);
+        const parts = path.split('/');
+        let view = 'landing';
+        let itemId = null;
+        let sort = 'default';
+
+        if (parts[0] === 'filters') {
+          view = 'filter-wizard';
+        } else if (parts[0] === 'results') {
+          view = 'results-grid';
+          if (parts[1]) sort = parts[1];
+        } else if (parts[0] === 'detail' && parts[1]) {
+          view = 'detail';
+          itemId = parts[1];
+        }
+        updateView(view, itemId, sort, false);
+      }
+
+      // ===============================================================================================
+      // UTILIDADES: INGESTA Y PROCESAMIENTO DE DATOS CSV
+      // ===============================================================================================
+      async function fetchAndParseCSV(url) {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Error al descargar el CSV');
+          const text = await response.text();
+          return parseCSV(text);
+        } catch (e) {
+          console.error("Error al cargar CSV:", e);
+          return [];
+        }
+      }
+
+      function parseCSV(csvText) {
+        const results = [];
+        const lines = csvText.split(/\r?\n/);
+        if (lines.length === 0) return results;
+
+        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i];
+          if (line.trim() === '') continue;
+          
+          const row = {};
+          let currentCell = '';
+          let inQuote = false;
+          let colIndex = 0;
+
+          for (let j = 0; j < line.length; j++) {
+            const char = line[j];
+            if (char === '"') {
+              if (j + 1 < line.length && line[j + 1] === '"') {
+                currentCell += '"';
+                j++;
+              } else {
+                inQuote = !inQuote;
+              }
+            } else if (char === ',' && !inQuote) {
+              row[headers[colIndex]] = currentCell.trim();
+              currentCell = '';
+              colIndex++;
+            } else {
+              currentCell += char;
+            }
+          }
+          row[headers[colIndex]] = currentCell.trim();
+          results.push(row);
+        }
+        return results;
+      }
+
+      function processMainData(rawData) {
+        return rawData.map((item, index) => {
+          const processedItem = { ...item };
+          processedItem.id = item.ID || item.id || `item-${index}`;
+          processedItem.gallery = [];
+          for (let i = 1; ; i++) {
+            const photoCol = `foto${i}`;
+            const textCol = `texto${i}`;
+            if (item[photoCol] && item[photoCol].trim() !== '') {
+              processedItem.gallery.push({
+                src: item[photoCol],
+                alt: item[textCol] || `Imagen ${i}`
+              });
+            } else break;
+          }
+          processedItem.rating = parseFloat(item['Rating 0-10']) || 0;
+          processedItem.price = parseFloat(item['Precio/Valor']) || 0;
+          
+          processedItem.socialLinks = {};
+          if (item['linkFacebook']) processedItem.socialLinks.facebook = item['linkFacebook'];
+          if (item['linkTwitter']) processedItem.socialLinks.twitter = item['linkTwitter'];
+          if (item['linkInstagram']) processedItem.socialLinks.instagram = item['linkInstagram'];
+          if (item['linkWebsite']) processedItem.socialLinks.website = item['linkWebsite'];
+          if (item['linkMapa']) processedItem.socialLinks.map = item['linkMapa'];
+
+          return processedItem;
+        });
+      }
+
+      function observeLazyImages() {
+        if (!('IntersectionObserver' in window)) return;
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              if (img.dataset.src) {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+              }
+              observer.unobserve(img);
+            }
+          });
+        }, { rootMargin: '0px 0px 100px 0px' });
+        document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
+      }
+
+      // ===============================================================================================
+      // FUNCIONES DE RENDERIZADO
+      // ===============================================================================================
+      function renderLanding() {
+        const grid = document.getElementById('landing-categories-grid');
+        grid.innerHTML = '';
+        const categories = [...new Set(state.mainData.map(item => item['Nivel 1']))].filter(Boolean);
+        
+        categories.forEach(cat => {
+          const card = document.createElement('div');
+          card.className = 'bg-surface p-6 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer';
+          card.innerHTML = `<h3 class="text-xl font-semibold mb-2">${cat}</h3><p class="text-light">Explora opciones en ${cat}.</p>`;
+          card.onclick = (e) => {
+            e.preventDefault();
+            state.filters = { 'Nivel 1': cat };
+            updateView('filter-wizard');
+          };
+          grid.appendChild(card);
+        });
+        lucide.createIcons();
+      }
+
+      function renderFilterWizard() {
+        const container = document.getElementById('filter-levels');
+        container.innerHTML = '';
+        let currentData = state.mainData;
+
+        state.filterLevels.forEach((level, idx) => {
+          const prevLevel = state.filterLevels[idx - 1];
+          if (idx > 0 && !state.filters[prevLevel]) return;
+
+          const options = [...new Set(currentData.map(item => item[level]))].filter(Boolean);
+          if (options.length === 0) return;
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'p-4 bg-surface rounded-lg shadow-sm mb-4';
+          wrapper.innerHTML = `<label class="block text-light mb-2">${level}:</label>`;
+          
+          const select = document.createElement('select');
+          select.className = 'w-full p-2 border border-gray-300 rounded';
+          select.innerHTML = `<option value="">Selecciona ${level}</option>`;
+          options.sort().forEach(opt => {
+            const isSelected = state.filters[level] === opt ? 'selected' : '';
+            select.innerHTML += `<option value="${opt}" ${isSelected}>${opt}</option>`;
+          });
+
+          select.onchange = (e) => {
+            const val = e.target.value;
+            if (val === '') delete state.filters[level];
+            else state.filters[level] = val;
+            state.filterLevels.slice(idx + 1).forEach(l => delete state.filters[l]);
+            renderFilterWizard();
+          };
+
+          wrapper.appendChild(select);
+          container.appendChild(wrapper);
+
+          if (state.filters[level]) {
+            currentData = currentData.filter(item => item[level] === state.filters[level]);
+          }
+        });
+
+        const btn = document.getElementById('show-results-btn');
+        btn.disabled = Object.keys(state.filters).length === 0;
+      }
+
+      function renderResultsGrid() {
+        const container = document.getElementById('results-container');
+        container.innerHTML = '';
+        let items = state.mainData;
+
+        Object.keys(state.filters).forEach(k => {
+          if (state.filters[k]) items = items.filter(i => i[k] === state.filters[k]);
+        });
+
+        if (items.length === 0) {
+          container.innerHTML = '<p class="text-center text-light col-span-full">Sin resultados.</p>';
+          return;
+        }
+
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'bg-surface rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer';
+          card.innerHTML = `
+            <img data-src="${item.gallery[0]?.src || ''}" class="w-full h-48 object-cover">
+            <div class="p-4">
+              <h3 class="text-xl font-semibold mb-2">${item['Título'] || 'Sin título'}</h3>
+              <p class="text-light text-sm">${item['Descripción Corta'] || ''}</p>
+            </div>
+          `;
+          card.onclick = () => updateView('detail', item.id);
+          container.appendChild(card);
+        });
+        observeLazyImages();
+        lucide.createIcons();
+      }
+
+      function renderDetail(item) {
+        document.getElementById('detail-header-image').src = item.gallery[0]?.src || '';
+        document.querySelector('#detail-content h2').textContent = item['Título'] || '';
+        document.querySelector('#detail-content p.text-xl').textContent = item['Descripción Corta'] || '';
+        document.getElementById('detail-long-description').innerHTML = item['Descripción Larga'] || 'Sin descripción adicional.';
+
+        const gal = document.getElementById('detail-gallery');
+        gal.innerHTML = '';
+        item.gallery.forEach((img, idx) => {
+          const el = document.createElement('img');
+          el.src = img.src;
+          el.className = 'w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition';
+          el.onclick = () => {
+            state.currentGallery = item.gallery;
+            state.currentGalleryIndex = idx;
+            showLightbox();
+          };
+          gal.appendChild(el);
+        });
+        
+        lucide.createIcons();
+      }
+
+      function showLightbox() {
+        if (state.currentGallery.length === 0) return;
+        customLightbox.classList.remove('hidden');
+        updateLightboxImage();
+      }
+
+      function updateLightboxImage() {
+        const img = document.getElementById('lightbox-img');
+        const cur = state.currentGallery[state.currentGalleryIndex];
+        if (cur) {
+          img.src = cur.src;
+          img.alt = cur.alt;
+        } else {
+          customLightbox.classList.add('hidden');
+        }
+      }
+
+      // Event Listeners Globales
+      menuToggleBtn.onclick = () => sidebarOffcanvas.classList.remove('-translate-x-full');
+      sidebarCloseBtn.onclick = () => sidebarOffcanvas.classList.add('-translate-x-full');
+      document.getElementById('show-results-btn').onclick = () => updateView('results-grid');
+      document.getElementById('detail-close-btn').onclick = () => history.back();
+      
+      document.getElementById('lightbox-close-btn').onclick = () => customLightbox.classList.add('hidden');
+      document.getElementById('lightbox-next-btn').onclick = () => {
+        state.currentGalleryIndex = (state.currentGalleryIndex + 1) % state.currentGallery.length;
+        updateLightboxImage();
+      };
+      document.getElementById('lightbox-prev-btn').onclick = () => {
+        state.currentGalleryIndex = (state.currentGalleryIndex - 1 + state.currentGallery.length) % state.currentGallery.length;
+        updateLightboxImage();
+      };
+
+      document.querySelectorAll('[data-nav-link]').forEach(l => {
+        l.onclick = (e) => {
+          e.preventDefault();
+          updateView(e.currentTarget.dataset.navLink);
+        };
+      });
+
+      fabBtn.onclick = (e) => {
+        e.stopPropagation();
+        fabPopover.classList.toggle('hidden');
+      };
+
+      document.addEventListener('click', (e) => {
+        if (!fabBtn.contains(e.target)) fabPopover.classList.add('hidden');
+      });
+
+      async function initApp() {
+        try {
+          const raw = await fetchAndParseCSV(CSV_MAIN_DATA_URL);
+          state.mainData = processMainData(raw);
+          appLoader.style.opacity = '0';
+          setTimeout(() => {
+            appLoader.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            handleLocationChange();
+          }, 300);
+        } catch (e) {
+          console.error(e);
+          appLoader.innerHTML = '<p class="text-red-500 p-4 bg-white rounded">Error al iniciar la aplicación.</p>';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+
+</html>
