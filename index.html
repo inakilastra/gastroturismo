@@ -316,6 +316,7 @@
         };
 
         let DATA = [];
+        let DISTANCIAS = [];
 
         const MENUS = [
             { id: 'landing', label: 'Inicio', icon: 'home' },
@@ -402,15 +403,24 @@
         // --- INICIALIZACIÓN DE DATOS ---
         async function loadData() {
             try {
-                const [sitesRes, eventsRes, eventsPuntualesRes] = await Promise.all([
+                const [sitesRes, eventsRes, eventsPuntualesRes, distanciasRes] = await Promise.all([
                     fetch(CSV_URL),
                     fetch(EVENTOS_CSV_URL),
-                    fetch(EVENTOS_PUNTUALES_CSV_URL)
+                    fetch(EVENTOS_PUNTUALES_CSV_URL),
+                    fetch('distancias.json').catch(e => null)
                 ]);
 
                 const sitesRaw = parseCSV(await sitesRes.text()).slice(1);
                 const eventsRaw = parseCSV(await eventsRes.text()).slice(1);
                 const eventsPuntualesRaw = parseCSV(await eventsPuntualesRes.text()).slice(1);
+
+                if (distanciasRes && distanciasRes.ok) {
+                    try {
+                        DISTANCIAS = await distanciasRes.json();
+                    } catch(e) {
+                        console.error('Error al cargar distancias:', e);
+                    }
+                }
 
                 const sitesProcessed = sitesRaw.map(row => {
                     let type = 'pintxos';
@@ -1185,6 +1195,40 @@
                                         </div>
                                     ` : ''}
                                 </div>
+
+                                ${DISTANCIAS.filter(d => d.origen === item.name).length > 0 ? `
+                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm">
+                                    <h3 class="text-lg font-brand font-bold text-darkTeal mb-4 flex items-center border-b border-teal-200 pb-2">
+                                        <i data-lucide="route" width="20" class="mr-2"></i> Distancias a pie
+                                    </h3>
+                                    <div class="space-y-4">
+                                        ${DISTANCIAS.filter(d => d.origen === item.name).map(loc => {
+                                            const destinoData = DATA.find(d => d.name === loc.destino);
+                                            const imgHtml = destinoData && destinoData.image 
+                                                ? \`<img src="\${destinoData.image}" class="w-10 h-10 rounded-full object-cover border border-teal-100">\`
+                                                : \`<div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 border border-teal-200"><i data-lucide="map-pin" width="16"></i></div>\`;
+                                            const clickAttr = destinoData ? \`onclick="openDetail('\${destinoData.id}')" class="cursor-pointer hover:bg-teal-50 p-2 -mx-2 rounded-xl transition-colors"\` : 'class="p-2 -mx-2"';
+                                            
+                                            return \`
+                                            <div \${clickAttr}>
+                                                <div class="flex items-center gap-3">
+                                                    \${imgHtml}
+                                                    <div class="flex-1 min-w-0">
+                                                        <h4 class="text-sm font-bold text-slate-800 truncate">\${loc.destino}</h4>
+                                                        <div class="flex items-center text-xs text-gray-500 gap-2 mt-0.5 font-medium">
+                                                            <span class="flex items-center bg-white px-1.5 py-0.5 rounded border border-gray-100"><i data-lucide="map" width="12" class="mr-1 text-teal-500"></i> \${loc.distancia}</span>
+                                                            <span class="flex items-center bg-white px-1.5 py-0.5 rounded border border-gray-100"><i data-lucide="clock" width="12" class="mr-1 text-teal-500"></i> \${loc.tiempo}</span>
+                                                        </div>
+                                                    </div>
+                                                    \${destinoData ? \`<i data-lucide="chevron-right" width="16" class="text-teal-300"></i>\` : ''}
+                                                </div>
+                                            </div>
+                                            \`;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                                ` : ''}
+
                             </div>
                         </div>
 
