@@ -1198,9 +1198,10 @@
                                                     ${imgHtml}
                                                     <div class="flex-1 min-w-0">
                                                         <h4 class="text-base sm:text-lg font-bold text-slate-800 truncate">${loc.destino}</h4>
-                                                        <div class="flex items-center text-sm text-gray-500 gap-3 mt-2 font-medium">
+                                                        <div class="flex flex-wrap items-center text-sm text-gray-500 gap-3 mt-2 font-medium">
                                                             <span class="flex items-center bg-gray-50 px-3 py-1 rounded border border-gray-100"><i data-lucide="map" width="14" class="mr-1.5 text-teal-500"></i> ${loc.distancia}</span>
                                                             <span class="flex items-center bg-gray-50 px-3 py-1 rounded border border-gray-100"><i data-lucide="clock" width="14" class="mr-1.5 text-teal-500"></i> ${loc.tiempo}</span>
+                                                            ${destinoData && destinoData.rating ? `<span class="flex items-center bg-yellow-50 px-3 py-1 rounded border border-yellow-100 text-yellow-700"><svg class="w-3.5 h-3.5 fill-current text-yellow-500 mr-1.5" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> ${destinoData.rating}</span>` : ''}
                                                         </div>
                                                     </div>
                                                     ${destinoData ? `<i id="dist-icon-${idx}" data-lucide="chevron-right" width="24" class="text-teal-400 transition-transform"></i>` : ''}
