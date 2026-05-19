@@ -1202,7 +1202,16 @@
                                         <i data-lucide="route" width="20" class="mr-2"></i> Distancias a pie
                                     </h3>
                                     <div class="space-y-4">
-                                        ${DISTANCIAS.filter(d => d.origen === item.name).map(loc => {
+                                        ${DISTANCIAS.filter(d => d.origen === item.name)
+                                            .sort((a, b) => {
+                                                const timeA = parseInt(a.tiempo) || 0;
+                                                const timeB = parseInt(b.tiempo) || 0;
+                                                if (timeA !== timeB) return timeA - timeB;
+                                                const distA = parseInt(a.distancia) || 0;
+                                                const distB = parseInt(b.distancia) || 0;
+                                                return distA - distB;
+                                            })
+                                            .map(loc => {
                                             const destinoData = DATA.find(d => d.name === loc.destino);
                                             const imgHtml = destinoData && destinoData.image 
                                                 ? `<img src="${destinoData.image}" class="w-10 h-10 rounded-full object-cover border border-teal-100">`
