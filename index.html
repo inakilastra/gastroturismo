@@ -1235,6 +1235,7 @@
                                                 
                                                 ${destinoData ? `
                                                 <div id="dist-info-${idx}" class="hidden bg-teal-50/50 p-4 border-t border-teal-100/50">
+                                                    ${destinoData.image ? `<div class="w-full h-40 mb-3 rounded-xl overflow-hidden shadow-sm relative group cursor-pointer" onclick="openDetail('${destinoData.id}')"><img src="${destinoData.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div></div>` : ''}
                                                     <p class="text-sm text-gray-600 line-clamp-3 mb-4">${destinoData.desc}</p>
                                                     <div class="flex items-center justify-between">
                                                         <div class="flex items-center gap-1 text-yellow-500">
