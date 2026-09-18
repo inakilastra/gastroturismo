@@ -1248,12 +1248,17 @@
                                                 ${DISTANCIAS.filter(d => d.origen === item.name).length} cercanos
                                             </span>
                                         </h3>
-                                        <div class="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200/60 shadow-inner">
-                                            <button id="btn-dist-list" onclick="switchDistView('list')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-[#0F2A3F] text-white shadow-sm flex items-center gap-1.5 cursor-pointer">
-                                                <i data-lucide="list" width="14"></i> Lista
-                                            </button>
-                                            <button id="btn-dist-map" onclick="switchDistView('map')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-[#0F2A3F] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer">
-                                                <i data-lucide="map" width="14"></i> Mapa
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <div class="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200/60 shadow-inner">
+                                                <button id="btn-dist-list" onclick="switchDistView('list')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-[#0F2A3F] text-white shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                                    <i data-lucide="list" width="14"></i> Lista
+                                                </button>
+                                                <button id="btn-dist-map" onclick="switchDistView('map')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-[#0F2A3F] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer">
+                                                    <i data-lucide="map" width="14"></i> Mapa
+                                                </button>
+                                            </div>
+                                            <button onclick="openDistModalFullscreen()" class="bg-[#0F2A3F] hover:bg-[#E65C19] text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer" title="Ver mapa en pantalla completa">
+                                                <i data-lucide="maximize" width="14"></i> Pantalla Completa ⤢
                                             </button>
                                         </div>
                                     </div>
@@ -1317,11 +1322,16 @@
                                         }).join('')}
                                     </div>
 
-                                    <div id="distancias-map-container" class="hidden relative group">
-                                        <button id="btn-fullscreen-map" onclick="toggleDistMapFullscreen()" class="absolute top-3 right-3 z-[400] bg-white/95 hover:bg-white text-[#0F2A3F] px-3.5 py-2 rounded-xl shadow-md border border-slate-200 backdrop-blur-md transition-all flex items-center gap-1.5 text-xs font-bold hover:scale-105 cursor-pointer">
-                                            <i data-lucide="maximize-2" width="14" id="fullscreen-icon"></i> <span id="fullscreen-text">Ampliar mapa</span>
-                                        </button>
-                                        <div id="dist-map" class="w-full h-96 sm:h-[480px] rounded-2xl overflow-hidden border border-slate-200 shadow-sm transition-all"></div>
+                                    <div id="distancias-map-container" class="hidden flex flex-col gap-3">
+                                        <div class="flex items-center justify-between bg-slate-100 p-2.5 rounded-2xl border border-slate-200/70">
+                                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 pl-1">
+                                                <i data-lucide="map" width="16" class="text-[#E65C19]"></i> Vista en Mapa
+                                            </span>
+                                            <button onclick="openDistModalFullscreen()" class="bg-[#0F2A3F] hover:bg-[#E65C19] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer">
+                                                <i data-lucide="maximize-2" width="14"></i> Pantalla Completa ⤢
+                                            </button>
+                                        </div>
+                                        <div id="dist-map" class="w-full h-[500px] sm:h-[600px] rounded-2xl overflow-hidden border border-slate-200 shadow-sm transition-all"></div>
                                     </div>
                                     ` : ''}
                                 </div>
@@ -1511,40 +1521,202 @@
         // --- MAPA DE DISTANCIAS INTERACTIVO ---
         window.currentDistMap = null;
         window.currentDistMarkers = {};
-        window.isMapFullscreen = false;
+        window.fullscreenDistMap = null;
+        window.fullscreenDistMarkers = {};
 
-        function toggleDistMapFullscreen() {
-            const container = document.getElementById('distancias-map-container');
-            const mapEl = document.getElementById('dist-map');
-            const iconEl = document.getElementById('fullscreen-icon');
-            const textEl = document.getElementById('fullscreen-text');
+        function openDistModalFullscreen() {
+            const modal = document.getElementById('dist-modal-fullscreen');
+            if (!modal || !state.selectedItem) return;
 
-            if (!container || !mapEl) return;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
 
-            window.isMapFullscreen = !window.isMapFullscreen;
+            const titleEl = document.getElementById('dist-modal-title');
+            if (titleEl) titleEl.textContent = `Sitios cercanos a ${state.selectedItem.name}`;
 
-            if (window.isMapFullscreen) {
-                container.classList.add('fixed', 'inset-2', 'sm:inset-6', 'z-[1050]', 'bg-white', 'p-3', 'rounded-3xl', 'shadow-2xl', 'flex', 'flex-col', 'border-2', 'border-[#0F2A3F]');
-                container.classList.remove('relative');
-                mapEl.classList.remove('h-96', 'sm:h-[480px]', 'rounded-2xl');
-                mapEl.classList.add('flex-1', 'w-full', 'h-full', 'rounded-2xl');
-                if (iconEl) iconEl.setAttribute('data-lucide', 'minimize-2');
-                if (textEl) textEl.textContent = 'Reducir';
-            } else {
-                container.classList.remove('fixed', 'inset-2', 'sm:inset-6', 'z-[1050]', 'bg-white', 'p-3', 'rounded-3xl', 'shadow-2xl', 'flex', 'flex-col', 'border-2', 'border-[#0F2A3F]');
-                container.classList.add('relative');
-                mapEl.classList.remove('flex-1', 'w-full', 'h-full');
-                mapEl.classList.add('h-96', 'sm:h-[480px]', 'rounded-2xl');
-                if (iconEl) iconEl.setAttribute('data-lucide', 'maximize-2');
-                if (textEl) textEl.textContent = 'Ampliar mapa';
+            const distances = DISTANCIAS.filter(d => d.origen === state.selectedItem.name)
+                .sort((a, b) => {
+                    const timeA = parseInt(a.tiempo) || 0;
+                    const timeB = parseInt(b.tiempo) || 0;
+                    if (timeA !== timeB) return timeA - timeB;
+                    return (parseInt(a.distancia) || 0) - (parseInt(b.distancia) || 0);
+                });
+
+            const footerEl = document.getElementById('dist-modal-footer');
+            if (footerEl) {
+                footerEl.innerHTML = distances.map((loc) => {
+                    const destData = DATA.find(d => d.name === loc.destino);
+                    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(state.selectedItem.name + ' ' + (state.selectedItem.ciudad || ''))}&destination=${encodeURIComponent(loc.destino + ' ' + (destData?.ciudad || ''))}`;
+                    return `
+                        <div class="flex-shrink-0 bg-white border border-slate-200 p-2.5 rounded-2xl shadow-sm flex items-center gap-3 min-w-[250px] max-w-[280px]">
+                            ${destData && destData.image ? `<img src="${destData.image}" class="w-12 h-12 rounded-xl object-cover border border-slate-100 shadow-xs">` : `<div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">🍷</div>`}
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-bold text-xs text-slate-800 truncate">${escapeHtml(loc.destino)}</h4>
+                                <div class="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5 font-medium">
+                                    <span>🚶 ${escapeHtml(loc.distancia)}</span>
+                                    <span>⏱️ ${escapeHtml(loc.tiempo)}</span>
+                                    ${destData && destData.rating ? `<span class="text-yellow-600 font-bold">⭐ ${destData.rating}</span>` : ''}
+                                </div>
+                                <div class="flex items-center gap-1.5 mt-1.5">
+                                    <button onclick="focusFullscreenMarker('${escapeHtml(loc.destino)}')" class="text-[11px] font-bold bg-[#0F2A3F] hover:bg-[#E65C19] text-white px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1">
+                                        📍 Centrar
+                                    </button>
+                                    <a href="${mapsUrl}" target="_blank" class="text-[11px] font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-2 py-1 rounded-lg transition-colors text-decoration-none">
+                                        GPS 🗺️
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             }
 
             refreshIcons();
 
-            if (window.currentDistMap) {
-                setTimeout(() => {
-                    window.currentDistMap.invalidateSize();
-                }, 150);
+            setTimeout(() => {
+                initFullscreenDistMap(state.selectedItem);
+            }, 100);
+        }
+
+        function closeDistModalFullscreen() {
+            const modal = document.getElementById('dist-modal-fullscreen');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            if (state.selectedItem) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function initFullscreenDistMap(originItem) {
+            const mapElement = document.getElementById('dist-modal-map');
+            if (!mapElement) return;
+
+            if (window.fullscreenDistMap) {
+                window.fullscreenDistMap.remove();
+                window.fullscreenDistMap = null;
+            }
+
+            window.fullscreenDistMarkers = {};
+
+            const originCoords = extractCoords(originItem) || [40.6565, -4.6818];
+            const distances = DISTANCIAS.filter(d => d.origen === originItem.name);
+
+            const map = L.map('dist-modal-map', {
+                zoomControl: true,
+                scrollWheelZoom: true,
+                touchZoom: true,
+                tap: true
+            }).setView(originCoords, 16);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            window.fullscreenDistMap = map;
+
+            // Pin Origen
+            const originIcon = L.divIcon({
+                className: 'custom-map-pin-origin-full',
+                html: `
+                    <div class="relative flex items-center justify-center">
+                        <div class="w-11 h-11 bg-[#E65C19] text-white rounded-full flex items-center justify-center shadow-2xl border-2 border-white ring-4 ring-[#E65C19]/40 animate-pulse">
+                            <span class="text-lg font-bold">📍</span>
+                        </div>
+                    </div>
+                `,
+                iconSize: [44, 44],
+                iconAnchor: [22, 22],
+                popupAnchor: [0, -22]
+            });
+
+            const originMarker = L.marker(originCoords, { icon: originIcon }).addTo(map);
+            originMarker.bindPopup(`
+                <div class="p-2 text-center min-w-[170px]">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#E65C19] bg-[#E65C19]/10 px-2.5 py-0.5 rounded-full">Estás aquí</span>
+                    <h4 class="font-black text-[#0F2A3F] text-base mt-1.5">${escapeHtml(originItem.name)}</h4>
+                    ${originItem.address ? `<p class="text-xs text-slate-500 mt-1">${escapeHtml(originItem.address)}</p>` : ''}
+                </div>
+            `);
+
+            const bounds = [originCoords];
+
+            distances.forEach((loc) => {
+                const destinoData = DATA.find(d => d.name === loc.destino);
+                const destCoords = extractCoords(destinoData);
+
+                if (destCoords) {
+                    bounds.push(destCoords);
+
+                    L.polyline([originCoords, destCoords], {
+                        color: '#2F70B3',
+                        weight: 3.5,
+                        dashArray: '6, 8',
+                        opacity: 0.85
+                    }).addTo(map);
+
+                    const destIcon = L.divIcon({
+                        className: 'custom-map-pin-dest-full',
+                        html: `
+                            <div class="relative flex items-center justify-center cursor-pointer group">
+                                <div class="w-9 h-9 bg-[#0F2A3F] text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white group-hover:bg-[#E65C19] group-hover:scale-110 transition-all">
+                                    <span class="text-sm font-bold">🍷</span>
+                                </div>
+                            </div>
+                        `,
+                        iconSize: [36, 36],
+                        iconAnchor: [18, 18],
+                        popupAnchor: [0, -18]
+                    });
+
+                    const marker = L.marker(destCoords, { icon: destIcon }).addTo(map);
+                    window.fullscreenDistMarkers[loc.destino] = marker;
+
+                    const mapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originItem.name + ' ' + (originItem.ciudad || ''))}&destination=${encodeURIComponent(loc.destino + ' ' + (destinoData?.ciudad || ''))}`;
+
+                    const popupContent = `
+                        <div class="p-2 max-w-[230px]">
+                            ${destinoData && destinoData.image ? `<img src="${destinoData.image}" class="w-full h-24 object-cover rounded-xl mb-2.5 shadow-xs">` : ''}
+                            <h4 class="font-black text-[#0F2A3F] text-sm leading-snug">${escapeHtml(loc.destino)}</h4>
+                            <div class="flex flex-wrap items-center gap-2 text-xs text-slate-600 my-2 font-bold">
+                                <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">🚶 ${escapeHtml(loc.distancia)}</span>
+                                <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">⏱️ ${escapeHtml(loc.tiempo)}</span>
+                                ${destinoData && destinoData.rating ? `<span class="bg-[#BA2B2B]/10 text-[#BA2B2B] px-2 py-0.5 rounded border border-[#BA2B2B]/20">⭐ ${destinoData.rating}</span>` : ''}
+                            </div>
+                            <div class="flex flex-col gap-1.5 mt-2">
+                                <a href="${mapsDirUrl}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 rounded-xl font-bold transition-colors shadow-xs flex items-center justify-center gap-1 text-decoration-none">
+                                    🗺️ Cómo llegar GPS
+                                </a>
+                                ${destinoData ? `
+                                <button onclick="closeDistModalFullscreen(); openDetail('${destinoData.id}');" class="w-full bg-[#0F2A3F] text-white text-xs py-2 rounded-xl font-bold hover:bg-[#E65C19] transition-colors shadow-xs flex items-center justify-center gap-1">
+                                    Ver ficha completa ➔
+                                </button>` : ''}
+                            </div>
+                        </div>
+                    `;
+
+                    marker.bindPopup(popupContent);
+                }
+            });
+
+            if (bounds.length > 1) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 150);
+        }
+
+        function focusFullscreenMarker(destinoName) {
+            if (window.fullscreenDistMarkers && window.fullscreenDistMarkers[destinoName]) {
+                const marker = window.fullscreenDistMarkers[destinoName];
+                if (window.fullscreenDistMap) {
+                    window.fullscreenDistMap.setView(marker.getLatLng(), 17, { animate: true });
+                    marker.openPopup();
+                }
             }
         }
 
@@ -1806,6 +1978,37 @@
             <span class="sr-only">Recomendaciones de ComoVisito</span>
         </button>
     </div>
+
+    <!-- Modal Pantalla Completa para Mapa de Distancias -->
+    <div id="dist-modal-fullscreen" class="fixed inset-0 z-[2000] bg-black/85 backdrop-blur-md hidden flex flex-col">
+        <!-- Barra superior del mapa modal -->
+        <div class="bg-[#0F2A3F] text-white px-4 py-3.5 flex items-center justify-between shadow-xl border-b border-white/10 z-20">
+            <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                <span class="w-8 h-8 rounded-full bg-[#E65C19] flex items-center justify-center text-white text-base font-bold shadow-sm">📍</span>
+                <h3 id="dist-modal-title" class="font-brand font-black text-sm sm:text-lg text-white truncate">Mapa de Sitios Cercanos</h3>
+            </div>
+            <button onclick="closeDistModalFullscreen()" class="bg-[#E65C19] hover:bg-[#BA2B2B] text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors shadow-md cursor-pointer flex-shrink-0">
+                <i data-lucide="x" width="16"></i> <span>Cerrar</span>
+            </button>
+        </div>
+        
+        <!-- Canvas del mapa a toda pantalla -->
+        <div class="flex-1 w-full h-full relative overflow-hidden">
+            <div id="dist-modal-map" class="w-full h-full"></div>
+        </div>
+
+        <!-- Barra inferior deslizante con tarjetas de locales cercanos -->
+        <div class="bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 z-20 shadow-2xl flex flex-col gap-1.5">
+            <div class="flex items-center justify-between px-1">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Sitios cercanos (Toca para centrar)</span>
+                <span class="text-[11px] text-slate-400 font-medium">Desliza ↔</span>
+            </div>
+            <div id="dist-modal-footer" class="overflow-x-auto flex gap-3 pb-1 pt-1 no-scrollbar">
+                <!-- Rellenado dinámicamente con las tarjetas de los sitios cercanos -->
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
