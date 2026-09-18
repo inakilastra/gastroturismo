@@ -4,31 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aneki | Gastroturismo</title>
+    <title>ComoVisito | Gastronomía & Turismo</title>
 
     <!-- SEO Meta Tags -->
     <meta name="description"
-        content="Descubre nuestras experiencias gastronómicas y turísticas. Pintxos, restaurantes, bodegas, eventos culinarios y mucho más.">
+        content="Descubre las mejores experiencias gastronómicas y turísticas en ComoVisito. Pintxos, restaurantes, bodegas, eventos culinarios y rutas únicas.">
     <meta name="author" content="Angels & Iñaki">
-    <meta name="keywords" content="guia, pintxos, restaurantes, bodegas, turismo gastronómico">
+    <meta name="keywords" content="comovisito, guia, pintxos, restaurantes, bodegas, turismo gastronomico, tapas, vino">
 
     <!-- Open Graph / Social Media -->
-    <meta property="og:title" content="Aneki | Gastroturismo">
-    <meta property="og:description" content="Compartimos nuestras experiencias gastronómicas y turísticas">
+    <meta property="og:title" content="ComoVisito | Gastronomía & Turismo">
+    <meta property="og:description" content="Compartimos nuestras experiencias gastronómicas y turísticas favoritas">
     <meta property="og:type" content="website">
     <meta property="og:image"
         content="https://drive.google.com/thumbnail?id=1_ac1UF-huYLYVO2pCSK-eFqk3k67l3zZ&sz=w1200">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍷</text></svg>">
 
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- Leaflet.js para Mapas Interactivos -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script>
         tailwind.config = {
@@ -39,18 +43,19 @@
                         brand: ['Outfit', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#009688',       /* Teal 500 */
-                        secondary: '#4DB6AC',     /* Teal 300 */
-                        surface: '#E0F2F1',       /* Teal 50 */
-                        background: '#F0FDFD',
-                        primaryContainer: '#A7FFEB', /* Teal A100 */
-                        darkTeal: '#004D40',      /* Teal 900 */
-                        /* 
-                            star
-                            teal-500 #009688
-                            #30cfc0
-                            yellow-400 #f6e05e 
-                        */
+                        brandBg: '#F3EFE0',       /* Fondo Principal Beige/Hueso */
+                        brandOrange: '#E65C19',   /* Naranja Terracota "COMO" */
+                        brandNavy: '#0F2A3F',     /* Azul Marino "VISITO" / Textos */
+                        brandWine: '#BA2B2B',     /* Rojo Vino / Granate */
+                        brandBlue: '#2F70B3',     /* Azul Marcador / Mapa */
+                        brandSurface: '#FAF7EF',  /* Tarjeta Suave */
+
+                        primary: '#0F2A3F',
+                        secondary: '#E65C19',
+                        surface: '#FAF7EF',
+                        background: '#F3EFE0',
+                        primaryContainer: '#FFEFE5',
+                        darkTeal: '#0F2A3F',
                     }
                 }
             }
@@ -58,6 +63,11 @@
     </script>
 
     <style>
+        body {
+            background-color: #F3EFE0;
+            color: #0F2A3F;
+        }
+
         .fade-in {
             animation: fadeIn 0.4s ease-out forwards;
             opacity: 0;
@@ -80,26 +90,26 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #F3EFE0;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #009688;
+            background: #E65C19;
             border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #004D40;
+            background: #0F2A3F;
         }
 
         /* Loader */
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #009688;
+            border: 4px solid #E2DAC6;
+            border-top: 4px solid #E65C19;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            width: 44px;
+            height: 44px;
+            animation: spin 0.9s linear infinite;
         }
 
         @keyframes spin {
@@ -118,14 +128,14 @@
             left: 0;
             z-index: 1060;
             display: block;
-            max-width: 276px;
+            max-width: 280px;
             font-family: 'Outfit', sans-serif;
             font-size: .875rem;
-            background-color: #fff;
+            background-color: #FAF7EF;
             background-clip: padding-box;
-            border: 1px solid rgba(0, 0, 0, .175);
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E2DAC6;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(15, 42, 63, 0.15);
         }
 
         .popover-arrow {
@@ -136,24 +146,20 @@
         }
 
         .popover-header {
-            padding: 1rem 2rem 1rem 2rem;
-            /* Arriba - Derecha - Abajo - Izquierda */
+            padding: 1rem 1.5rem;
             margin-bottom: 0;
             font-size: 1rem;
-            background-color: #E0F2F1;
-            /* surface */
-            border-bottom: 1px solid #A7FFEB;
-            /* primaryContainer */
-            border-top-left-radius: calc(0.5rem - 1px);
-            border-top-right-radius: calc(0.5rem - 1px);
-            color: #004D40;
-            /* darkTeal */
-            font-weight: 600;
+            background-color: #0F2A3F;
+            border-bottom: 1px solid #2F70B3;
+            border-top-left-radius: calc(0.75rem - 1px);
+            border-top-right-radius: calc(0.75rem - 1px);
+            color: #F3EFE0;
+            font-weight: 700;
         }
 
         .popover-body {
             padding: 1rem 1rem;
-            color: #334155;
+            color: #0F2A3F;
             text-align: center;
         }
 
@@ -164,115 +170,106 @@
         .bs-popover-top>.popover-arrow::before {
             bottom: 0;
             border-width: 0.5rem 0.5rem 0;
-            border-top-color: rgba(0, 0, 0, .175);
+            border-top-color: rgba(15, 42, 63, .2);
         }
 
         .bs-popover-top>.popover-arrow::after {
             bottom: 1px;
             border-width: 0.5rem 0.5rem 0;
-            border-top-color: #fff;
+            border-top-color: #FAF7EF;
         }
 
         .custom-popover {
-            border-color: #009688;
-            box-shadow: 0 4px 20px rgba(0, 150, 136, 0.2);
+            border-color: #E65C19;
+            box-shadow: 0 6px 24px rgba(230, 92, 25, 0.25);
         }
     </style>
 </head>
 
 <body
-    class="bg-background text-slate-800 h-screen flex overflow-hidden font-sans selection:bg-primaryContainer selection:text-darkTeal">
+    class="bg-[#F3EFE0] text-[#0F2A3F] h-screen flex overflow-hidden font-sans selection:bg-[#E65C19] selection:text-white">
 
     <div id="loading-overlay"
-        class="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        class="fixed inset-0 bg-[#F3EFE0] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="loader mb-4"></div>
-        <h2 id="loading-text" class="font-brand text-2xl text-darkTeal">Cargando Aneki...</h2>
+        <div class="text-center">
+            <h2 id="loading-text" class="font-brand text-3xl font-black text-[#0F2A3F] tracking-tight">
+                <span class="text-[#E65C19]">COMO</span><span class="text-[#0F2A3F]">VISITO</span>
+            </h2>
+            <p class="text-xs text-[#2F70B3] font-bold tracking-widest mt-1 uppercase">Gastronomía & Turismo</p>
+        </div>
     </div>
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity" onclick="toggleMenu()"
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity backdrop-blur-xs" onclick="toggleMenu()"
         aria-hidden="true"></div>
 
     <aside id="sidebar"
-        class="fixed inset-y-0 left-0 z-50 w-64 bg-darkTeal text-white transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
-        <div class="p-6 flex justify-between items-center border-b border-teal-800/50">
-            <div class="font-brand text-2xl tracking-widest text-primaryContainer">ANeKI</div>
-            <button onclick="toggleMenu()" class="text-teal-200 hover:text-white">
-                <i data-lucide="x"></i>
+        class="fixed inset-y-0 left-0 z-50 w-72 bg-[#0F2A3F] text-white transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
+        <div class="p-6 flex justify-between items-center border-b border-[#2F70B3]/30 bg-[#0A1C2B]">
+            <div>
+                <div class="font-brand text-2xl font-black tracking-tight">
+                    <span class="text-[#E65C19]">COMO</span><span class="text-white">VISITO</span>
+                </div>
+                <div class="text-[10px] text-[#2F70B3] font-bold tracking-widest uppercase">Gastronomía & Turismo</div>
+            </div>
+            <button onclick="toggleMenu()" class="text-slate-300 hover:text-white p-1 rounded-lg">
+                <i data-lucide="x" width="22"></i>
             </button>
         </div>
 
-        <nav class="p-4 space-y-1 flex-1 overflow-y-auto" id="nav-menu" aria-label="Navegación principal">
+        <nav class="p-4 space-y-1.5 flex-1 overflow-y-auto" id="nav-menu" aria-label="Navegación principal">
         </nav>
 
-        <div class="p-6 bg-teal-950/30 text-xs text-center text-teal-200 font-brand">
-            <p>Aneki | Gastroturismo</p>
-            <p>© Angels & Iñaki</p>
+        <div class="p-5 bg-[#0A1C2B] text-xs text-center text-slate-300 font-brand border-t border-[#2F70B3]/20">
+            <p class="font-bold text-[#E65C19]">ComoVisito</p>
+            <p class="text-slate-400 mt-0.5">Gastronomía & Turismo</p>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full relative w-full transition-all duration-300 bg-[#F0FDFD]">
+    <main class="flex-1 flex flex-col h-full relative w-full transition-all duration-300 bg-[#F3EFE0]">
 
         <!-- Header / Barra Superior -->
-        <div class="h-[70px] bg-primary flex items-center px-4 text-white shadow-lg flex-shrink-0 z-20 justify-between relative">
+        <div class="h-[72px] bg-[#0F2A3F] flex items-center px-4 text-white shadow-md flex-shrink-0 z-20 justify-between relative gap-2 border-b border-[#2F70B3]/20">
             
             <!-- 1. Botón Menú (Izquierda) -->
             <div class="flex items-center z-10">
-                <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-3"
+                <button onclick="toggleMenu()" class="p-2 -ml-2 hover:bg-white/10 rounded-full transition mr-1 sm:mr-3 text-amber-100"
                     aria-label="Abrir menú de navegación">
-                    <i data-lucide="menu"></i>
+                    <i data-lucide="menu" width="24"></i>
                 </button>
             </div>
 
-            <!-- 2. Título Centrado (Esto es lo que falta o hay que asegurar) -->
-            <span class="font-brand text-xl tracking-wide absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none">
-                Aneki | Gastroturismo
-            </span>
+            <!-- 2. Título / Marca -->
+            <button onclick="navigate('landing')" class="font-brand text-lg md:text-2xl tracking-tight hover:opacity-95 transition font-black flex items-center gap-2 z-10 text-left">
+                <span class="bg-[#FAF7EF] px-3 py-1 rounded-full shadow-inner flex items-center gap-1.5 border border-[#E2DAC6]">
+                    <span class="text-[#E65C19] font-black">COMO</span><span class="text-[#0F2A3F] font-black">VISITO</span>
+                </span>
+                <span class="text-[#2F70B3] text-xs font-bold hidden sm:inline tracking-wider uppercase">| GASTRONOMÍA & TURISMO</span>
+            </button>
 
-            <!-- 3. Espaciador Invisible (Derecha) para equilibrar -->
-            <div class="w-10"></div>
+            <!-- 3. Buscador en Header -->
+            <div class="flex items-center z-10 relative flex-1 max-w-[220px] sm:max-w-xs ml-auto">
+                <div class="relative w-full">
+                    <input type="text" id="global-search-input" placeholder="Buscar tapa, restaurante, ciudad..." 
+                        oninput="handleSearchInput(this.value)"
+                        class="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-[#0A1C2B] text-white placeholder-slate-400 rounded-full border border-[#2F70B3]/40 focus:outline-none focus:border-[#E65C19] focus:ring-1 focus:ring-[#E65C19] transition-all shadow-inner">
+                    <i data-lucide="search" width="16" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                    <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white">
+                        <i data-lucide="x" width="14"></i>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- Nuevo contenedor que hace el scroll -->
-        <div class="flex-1 overflow-y-auto relative scroll-smooth">
+        <!-- Contenedor principal con scroll -->
+        <div class="flex-1 overflow-y-auto relative scroll-smooth bg-[#F3EFE0]">
 
-            <!-- El contenido se carga aquí (quitamos las clases de scroll de este div) -->
-            <div id="app-content" class="p-4 md:p-8 pb-24">
+            <!-- Contenido dinámico -->
+            <div id="app-content" class="p-4 md:p-8 pb-28">
             </div>
 
-            <!-- Footer al final del contenido -->
-            <footer class="fixed bottom-0 left-0 w-full bg-primary/90 backdrop-blur-md p-3 flex justify-center items-center gap-4 z-[1000] border-t border-white/10 shadow-[0_-4px_15px_rgba(0,0,0,0.1)]">
-                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
-                    <i data-lucide="utensils-crossed" class="text-primary w-4 h-4"></i>
-                </div>
-
-                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
-                    <i data-lucide="chef-hat" class="text-primary w-4 h-4"></i>
-                </div>
-
-                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
-                    <i data-lucide="wine" class="text-primary w-4 h-4"></i>
-                </div>
-
-                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
-                    <i data-lucide="compass" class="text-primary w-4 h-4"></i>
-                </div>
-
-                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
-                    <i data-lucide="calendar-heart" class="text-primary w-4 h-4"></i>
-                </div>
-
-                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
-                    <i data-lucide="map" class="text-primary w-4 h-4"></i>
-                </div>
-
-                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
-                    <i data-lucide="shopping-bag" class="text-primary w-4 h-4"></i>
-                </div>
-
-                <div class="bg-white/90 p-1.5 rounded-full hover:scale-110 transition-transform shadow-sm">
-                    <i data-lucide="help-circle" class="text-primary w-4 h-4"></i>
-                </div>
-
+            <!-- Footer al final -->
+            <footer class="fixed bottom-0 left-0 w-full bg-[#0F2A3F]/95 backdrop-blur-md px-3 py-2.5 flex justify-center items-center gap-2 sm:gap-4 z-[1000] border-t border-[#2F70B3]/30 shadow-[0_-4px_20px_rgba(0,0,0,0.25)] overflow-x-auto" id="footer-nav">
             </footer>
         </div>
     </main>
@@ -335,14 +332,55 @@
             filters: {},
             selectedItem: null,
             filterStep: 0,
+            searchQuery: '',
 
             // Método helper para resetear estado
             reset() {
                 this.filters = {};
                 this.selectedItem = null;
                 this.filterStep = 0;
+                this.searchQuery = '';
             }
         };
+
+        // --- BUSCADOR Y NAVEGACIÓN DINÁMICA ---
+        function handleSearchInput(value) {
+            state.searchQuery = (value || '').trim().toLowerCase();
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (clearBtn) {
+                clearBtn.classList.toggle('hidden', !state.searchQuery);
+            }
+            // Al buscar, salimos del detalle para ver los resultados
+            state.selectedItem = null;
+            renderAppContent();
+        }
+
+        function clearSearch() {
+            state.searchQuery = '';
+            const input = document.getElementById('global-search-input');
+            if (input) input.value = '';
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (clearBtn) clearBtn.classList.add('hidden');
+            renderAppContent();
+        }
+
+        function renderFooter() {
+            const footerNav = document.getElementById('footer-nav');
+            if (!footerNav) return;
+
+            footerNav.innerHTML = MENUS.map(item => {
+                const isActive = state.view === item.id && !state.searchQuery;
+                return `
+                    <button onclick="clearSearch(); navigate('${item.id}')" title="${escapeHtml(item.label)}"
+                        class="p-2 sm:px-3 sm:py-2 rounded-full transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm ${isActive ? 'bg-[#E65C19] text-white scale-110 ring-2 ring-white/60 font-bold' : 'bg-[#FAF7EF] text-[#0F2A3F] hover:bg-white hover:scale-105'}">
+                        <i data-lucide="${item.icon}" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                        <span class="sr-only sm:not-sr-only text-xs font-bold hidden md:inline">${escapeHtml(item.label)}</span>
+                    </button>
+                `;
+            }).join('');
+
+            refreshIcons();
+        }
 
         // --- FUNCIONES HELPER ---
 
@@ -403,6 +441,10 @@
         // --- INICIALIZACIÓN DE DATOS ---
         async function loadData() {
             try {
+                if (window.location.protocol === 'file:') {
+                    throw new Error("cfile_protocol_error");
+                }
+
                 const [sitesRes, eventsRes, eventsPuntualesRes, distanciasRes] = await Promise.all([
                     fetch(CSV_URL),
                     fetch(EVENTOS_CSV_URL),
@@ -443,14 +485,6 @@
                         // Para turismo, museos o cualquier otro caso no contemplado arriba
                         type = 'turismo';
                     }
-                    /*const rawType = (row[COLS.tipositio] || '').toLowerCase();*/
-
-                    /*if (rawType.includes('Bar') || rawType.includes('Bar y Restaurante')) type = 'pintxos';
-                    else if (rawType.includes('Restaurante') || rawType.includes('Bar y Restaurante')) type = 'restaurantes';
-                    else if (rawType.includes('bodega') || rawType.includes('vino')) type = 'bodegas';
-                    else if (rawType.includes('turismo') || rawType.includes('')) type = 'turismo';
-                    else if (rawType.includes('tienda') || rawType.includes('comercio')) type = 'tiendas';
-                    else if (rawType.includes('curiosidad') || rawType.includes('señal')) type = 'curiosidades';*/
 
                     const gallery = [];
                     for (let i = 1; i <= 40; i++) {
@@ -499,11 +533,8 @@
                 });
 
                 const eventsProcessed = eventsRaw.map((row, idx) => {
-                    // 1. Creamos la galería del evento
                     const gallery = [];
-                    // Iteramos hasta 20
                     for (let i = 1; i <= 20; i++) {
-                        // CORRECCIÓN: Usamos directamente 'foto' + i
                         const photoCol = COLS_EVENTOS[`foto${i}`];
                         const textCol = COLS_EVENTOS[`text${i}`];
 
@@ -515,7 +546,6 @@
                         }
                     }
 
-                    // 2. Devolvemos el objeto con la galería incluida
                     return {
                         id: `evt-${idx}`,
                         idSitio: row[COLS_EVENTOS.idSitio],
@@ -544,7 +574,7 @@
                     return {
                         id: `evt-puntual-${idx}`,
                         idSitio: row[COLS_EVENTOS.idSitio],
-                        type: 'eventosPuntuales', // Tipo diferenciado
+                        type: 'eventosPuntuales',
                         name: row[COLS_EVENTOS.eventoCulinario],
                         mes: row[COLS_EVENTOS.eventoMes],
                         anyo: row[COLS_EVENTOS.eventoAnyo],
@@ -565,19 +595,41 @@
                 const loader = document.querySelector('.loader');
                 if (loader) loader.style.display = 'none';
                 if (loadingText) {
-                    loadingText.innerHTML = `
-                        <span class="text-red-600 font-bold">¡Ups! Algo falló.</span><br>
-                        <span class="text-sm text-red-400">${escapeHtml(err.message)}</span><br>
-                        <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-darkTeal transition-colors font-bold">
-                            Reintentar
-                        </button>
-                    `;
+                    if (window.location.protocol === 'file:' || err.message === 'cfile_protocol_error') {
+                        loadingText.innerHTML = `
+                            <div class="max-w-md mx-4 p-6 bg-white rounded-2xl shadow-xl border border-red-200 text-center">
+                                <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">⚠️</div>
+                                <h3 class="font-brand text-xl text-red-600 font-bold mb-2">Se requiere servidor web</h3>
+                                <p class="text-xs sm:text-sm text-slate-600 mb-4 leading-relaxed">
+                                    Has abierto <code>index.html</code> como un archivo local (<code>file://</code>). Por motivos de seguridad (CORS), los navegadores bloquean las peticiones <code>fetch</code> a Google Sheets.
+                                </p>
+                                <div class="bg-slate-50 p-3 rounded-lg text-left text-xs text-slate-700 font-mono mb-4 border border-slate-200 space-y-1">
+                                    <p class="font-sans font-bold text-slate-900 mb-1">💡 Para verlo correctamente:</p>
+                                    <p>1. <strong>VS Code:</strong> Clic derecho en <code>index.html</code> ➔ <em>Open with Live Server</em></p>
+                                    <p>2. <strong>Terminal:</strong> <code>npx serve</code> o <code>python -m http.server 8000</code></p>
+                                    <p>3. <strong>Hosting:</strong> GitHub Pages / Vercel / Netlify</p>
+                                </div>
+                                <button onclick="location.reload()" class="px-5 py-2 bg-[#0F2A3F] text-white rounded-xl hover:bg-[#E65C19] transition-all font-semibold text-sm shadow-md">
+                                    Reintentar
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        loadingText.innerHTML = `
+                            <span class="text-red-600 font-bold">¡Ups! Algo falló.</span><br>
+                            <span class="text-sm text-red-400">${escapeHtml(err.message)}</span><br>
+                            <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-[#0F2A3F] text-white rounded-lg hover:bg-[#E65C19] transition-colors font-bold">
+                                Reintentar
+                            </button>
+                        `;
+                    }
                 }
             }
         }
 
         function initApp() {
             renderSidebar();
+            renderFooter();
             navigate('landing');
             refreshIcons();
 
@@ -633,17 +685,62 @@
 
         function updateActiveMenu(viewId) {
             renderSidebar();
+            renderFooter();
         }
 
         function renderSidebar() {
             const container = document.getElementById('nav-menu');
             container.innerHTML = MENUS.map(item => `
-                <button onclick="navigate('${item.id}')" class="w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${state.view === item.id ? 'bg-primary text-white shadow-lg shadow-teal-900/50 translate-x-1' : 'hover:bg-teal-800/50 text-teal-100 hover:text-white hover:translate-x-1'}">
-                    <i data-lucide="${item.icon}" class="${state.view === item.id ? 'text-teal-50' : 'text-teal-300'}"></i>
+                <button onclick="clearSearch(); navigate('${item.id}')" class="w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${state.view === item.id && !state.searchQuery ? 'bg-[#E65C19] text-white font-bold shadow-lg shadow-orange-950/40 translate-x-1' : 'hover:bg-[#2F70B3]/20 text-slate-200 hover:text-white hover:translate-x-1'}">
+                    <i data-lucide="${item.icon}" class="${state.view === item.id && !state.searchQuery ? 'text-white' : 'text-[#2F70B3]'}"></i>
                     <span class="font-medium">${item.label}</span>
                 </button>
             `).join('');
+            renderFooter();
             refreshIcons();
+        }
+
+        function renderSearchResultsHtml(query) {
+            const q = query.toLowerCase();
+            const results = DATA.filter(item => {
+                const name = (item.name || '').toLowerCase();
+                const desc = (item.desc || '').toLowerCase();
+                const fullDesc = (item.fullDesc || '').toLowerCase();
+                const comida = (item.comida || '').toLowerCase();
+                const ciudad = (item.ciudad || '').toLowerCase();
+                const provincia = (item.provincia || '').toLowerCase();
+                const autonomia = (item.autonomia || '').toLowerCase();
+                const barrio = (item.barrio || '').toLowerCase();
+                return name.includes(q) || desc.includes(q) || fullDesc.includes(q) || comida.includes(q) || ciudad.includes(q) || provincia.includes(q) || autonomia.includes(q) || barrio.includes(q);
+            });
+
+            return `
+                <div class="fade-in pb-24 max-w-7xl mx-auto">
+                    <header class="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E2DAC6] pb-4">
+                        <div>
+                            <h1 class="text-3xl font-brand font-black text-[#0F2A3F]">Resultados de búsqueda</h1>
+                            <p class="text-slate-500 text-sm mt-1">Buscando: "<span class="font-bold text-[#E65C19]">${escapeHtml(query)}</span>" — ${results.length} coincidencias</p>
+                        </div>
+                        <button onclick="clearSearch()" class="text-xs font-bold text-[#0F2A3F] bg-white px-4 py-2 rounded-xl border border-[#E2DAC6] hover:bg-[#FAF7EF] transition-all shadow-sm flex items-center gap-1.5">
+                            <i data-lucide="x" width="14"></i> Limpiar búsqueda
+                        </button>
+                    </header>
+                    ${results.length === 0 ? `
+                        <div class="text-center py-16 bg-white rounded-3xl border border-dashed border-[#E2DAC6]">
+                            <div class="bg-[#FAF7EF] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-[#E65C19]">
+                                <i data-lucide="search-x" width="28" height="28"></i>
+                            </div>
+                            <p class="text-[#0F2A3F] font-bold text-lg">No encontramos resultados para "${escapeHtml(query)}".</p>
+                            <p class="text-slate-500 text-sm mt-1">Prueba a buscar por ciudad (ej: Ávila, León, Zaragoza), tipo de plato o nombre del local.</p>
+                            <button onclick="clearSearch()" class="mt-4 px-5 py-2.5 bg-[#0F2A3F] text-white rounded-full font-bold text-sm hover:bg-[#E65C19] transition">Ver todos los sitios</button>
+                        </div>
+                    ` : `
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            ${results.map(item => renderCard(item)).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
         }
 
         function renderAppContent() {
@@ -654,6 +751,8 @@
 
             if (state.selectedItem) {
                 htmlContent = getDetailHtml(state.selectedItem);
+            } else if (state.searchQuery) {
+                htmlContent = renderSearchResultsHtml(state.searchQuery);
             } else if (state.view === 'landing') {
                 htmlContent = getLandingHtml();
             } else {
@@ -667,6 +766,7 @@
                 }
             }
             container.innerHTML = htmlContent;
+            renderFooter();
             refreshIcons();
             container.scrollTo(0, 0);
         }
@@ -676,60 +776,44 @@
         function getLandingHtml() {
             const cards = MENUS.filter(m => m.id !== 'landing');
 
-            // Mapa de clases completas para TailwindCSS (CDN no soporta clases dinámicas)
-            const colorClasses = {
-                orange: 'bg-orange-50 hover:bg-orange-100 border-orange-200 text-orange-600',
-                red: 'bg-red-50 hover:bg-red-100 border-red-200 text-red-600',
-                purple: 'bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-600',
-                blue: 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-600',
-                green: 'bg-green-50 hover:bg-green-100 border-green-200 text-green-600',
-                teal: 'bg-teal-50 hover:bg-teal-100 border-teal-200 text-teal-600',
-                pink: 'bg-pink-50 hover:bg-pink-100 border-pink-200 text-pink-600',
-                yellow: 'bg-yellow-50 hover:bg-yellow-100 border-yellow-200 text-yellow-600'
-            };
-            const colors = Object.keys(colorClasses);
-
             return `
                 <div class="fade-in max-w-6xl mx-auto pb-32">
-                    <section class="relative h-[500px] rounded-3xl overflow-hidden mb-10 shadow-2xl">
+                    <section class="relative h-[480px] rounded-3xl overflow-hidden mb-10 shadow-2xl border border-[#E2DAC6]">
                         <img src="https://drive.google.com/thumbnail?id=16FRveDGCnFoiLNLkAADY3MblBrIgYhWX&sz=w1200" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-darkTeal/90 to-transparent flex flex-col justify-end p-8 text-center">
-                            <h1 class="font-brand text-4xl md:text-6xl text-white mb-2 text-shadow">Comer de Vicio y Viajar de 10</h1>
-                            <p class="text-teal-100 text-lg md:text-xl font-light">Te chivamos nuestras joyas secretas y esos sitios que son un auténtico escándalo. ¿Listos para disfrutar?</p>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0F2A3F]/95 via-[#0F2A3F]/40 to-transparent flex flex-col justify-end p-8 md:p-12 text-center">
+                            <div class="inline-block mx-auto bg-[#FAF7EF]/90 backdrop-blur-md px-6 py-2 rounded-full border border-[#E2DAC6] shadow-md mb-4">
+                                <span class="text-[#E65C19] font-black text-2xl md:text-3xl tracking-tight">COMO</span><span class="text-[#0F2A3F] font-black text-2xl md:text-3xl tracking-tight">VISITO</span>
+                            </div>
+                            <h1 class="font-brand text-3xl md:text-5xl text-white mb-3 font-extrabold drop-shadow-md">Gastronomía & Turismo de Calidad</h1>
+                            <p class="text-amber-100/90 text-base md:text-xl font-light max-w-2xl mx-auto">Te chivamos nuestros rincones favoritos, pintxos memorables y bodegas indispensables. ¿Listos para disfrutar?</p>
                         </div>
                     </section>
                     
-                    <div class="mt-16 mb-10 bg-white rounded-3xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-8">
-                        <div class="text-center">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-3">¡Muy buenas! Somos Angels e Iñaki 👋</h2>
+                    <div class="mb-10 bg-[#FAF7EF] rounded-3xl p-8 border border-[#E2DAC6] shadow-sm flex flex-col md:flex-row items-center gap-8">
+                        <div class="text-center w-full">
+                            <h2 class="text-2xl md:text-3xl font-black text-[#0F2A3F] mb-3 font-brand">¡Bienvenido a <span class="text-[#E65C19]">COMO</span><span class="text-[#0F2A3F]">VISITO</span>! 👋</h2>
                           
-                            <p class="mb-2 text-gray-700 leading-relaxed text-lg">
-                                Bienvenidos a nuestra particular <strong>locura gastronómica y viajera</strong>.
+                            <p class="mb-2 text-[#0F2A3F]/80 leading-relaxed text-lg font-medium">
+                                Tu guía de confianza para disfrutar de la mejor <strong>gastronomía y experiencias turísticas</strong>.
                             </p>
                           
-                            <p class="text-gray-700 leading-relaxed">
-                                Aquí no nos guardamos nada. Os traemos de todo: desde ese bocado que es un auténtico <span class="text-black font-bold">vicio inconfesable 😋</span>, hasta kilómetros de ruta que son una <span class="text-black font-bold">aventura brutal ✨</span>.
+                            <p class="text-slate-600 leading-relaxed max-w-3xl mx-auto">
+                                Desde pequeñas tabernas con pintxos espectaculares <span class="text-[#BA2B2B] font-bold">🍷</span> hasta restaurantes galardonados, bodegas únicas y rincones con encanto <span class="text-[#2F70B3] font-bold">📍</span>.
                             </p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        ${cards.map((c, idx) => {
-                const color = colors[idx % colors.length];
-                const classes = colorClasses[color].split(' ');
-                const bgClass = classes[0];
-                const hoverBgClass = classes[1];
-                const borderClass = classes[2];
-                const iconClass = classes[3];
-
-                return `
-                            <button onclick="navigate('${escapeHtml(c.id)}')" class="${bgClass} ${hoverBgClass} border ${borderClass} p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
-                                <div class="bg-white p-4 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                    <i data-lucide="${c.icon}" class="${iconClass}" width="32" height="32"></i>
-                                </div>
-                                <span class="font-bold text-slate-800 group-hover:text-darkTeal font-brand text-lg">${escapeHtml(c.label)}</span>
-                            </button>
-                        `}).join('')}
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                        ${cards.map((c) => {
+                            return `
+                                <button onclick="navigate('${escapeHtml(c.id)}')" class="bg-white hover:bg-[#FAF7EF] border border-[#E2DAC6] p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center aspect-square text-center group cursor-pointer w-full">
+                                    <div class="bg-[#F3EFE0] p-4 rounded-full mb-4 shadow-inner group-hover:scale-110 group-hover:bg-[#E65C19] transition-all duration-300">
+                                        <i data-lucide="${c.icon}" class="text-[#0F2A3F] group-hover:text-white transition-colors" width="32" height="32"></i>
+                                    </div>
+                                    <span class="font-bold text-[#0F2A3F] group-hover:text-[#E65C19] font-brand text-base md:text-lg transition-colors">${escapeHtml(c.label)}</span>
+                                </button>
+                            `;
+                        }).join('')}
                     </div>
                 </div>
             `;
@@ -766,10 +850,8 @@
             if (state.filterStep === 99) {
                 const activeFilters = levels.filter(l => state.filters[l]);
                 if (activeFilters.length === 0) {
-                    // No hay filtros activos, volver al inicio
                     navigate('landing');
                 } else {
-                    // Hay filtros activos, volver al último paso de filtrado
                     state.filterStep = activeFilters.length - 1;
                     renderAppContent();
                 }
@@ -833,40 +915,39 @@
         function renderFilterWizard(title, level, options) {
             const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
             
-            // Calcular la ruta actual para el indicador
             const levels = ['autonomia', 'provincia', 'ciudad', 'barrio'];
             const path = levels.map(l => state.filters[l]).filter(Boolean);
             const pathHtml = path.length > 0 ? `
-                <div class="flex flex-wrap justify-center items-center gap-2 mb-6 text-xs font-bold text-teal-600 bg-teal-50/50 py-2 px-4 rounded-full border border-teal-100/50">
-                    ${path.join(' <i data-lucide="chevron-right" width="12" class="text-teal-300"></i> ')}
+                <div class="flex flex-wrap justify-center items-center gap-2 mb-6 text-xs font-bold text-[#2F70B3] bg-[#FAF7EF] py-2.5 px-4 rounded-full border border-[#E2DAC6] shadow-xs">
+                    ${path.join(' <i data-lucide="chevron-right" width="12" class="text-[#E65C19]"></i> ')}
                 </div>
             ` : '';
 
             return `
                 <div class="fade-in max-w-lg mx-auto p-6 mt-4">
-                    <button onclick="goBackOneStep()" class="mb-6 flex items-center text-slate-500 font-bold hover:text-primary transition-colors">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center mr-2 group-hover:bg-primary/10">
+                    <button onclick="goBackOneStep()" class="mb-6 flex items-center text-slate-600 font-bold hover:text-[#E65C19] transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-[#FAF7EF] border border-[#E2DAC6] flex items-center justify-center mr-2 group-hover:bg-[#E65C19] group-hover:text-white">
                             <i data-lucide="arrow-left" width="18"></i>
                         </div>
                         Atrás / Anterior
                     </button>
 
-                    <h2 class="text-3xl font-brand font-bold mb-2 text-center text-darkTeal">
+                    <h2 class="text-3xl font-brand font-black mb-2 text-center text-[#0F2A3F]">
                         ${title}
                     </h2>
                     ${pathHtml}
-                    <p class="text-center text-gray-500 mb-8">Selecciona ${levelLabel}:</p>
+                    <p class="text-center text-slate-500 mb-8 font-medium">Selecciona ${levelLabel}:</p>
                     
                     <div class="space-y-3">
                         ${options.map(opt => `
-                            <button onclick="selectFilter('${level}', '${opt}')" class="w-full p-5 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:border-teal-400 hover:bg-teal-50 transition-all bg-white group text-slate-700">
-                                <span class="text-lg font-medium">${opt}</span>
-                                <i data-lucide="chevron-right" class="text-gray-300 group-hover:text-primary transition-colors"></i>
+                            <button onclick="selectFilter('${level}', '${opt}')" class="w-full p-5 rounded-2xl shadow-sm border border-[#E2DAC6] flex justify-between items-center hover:border-[#E65C19] hover:bg-[#FAF7EF] transition-all bg-white group text-[#0F2A3F]">
+                                <span class="text-lg font-bold">${opt}</span>
+                                <i data-lucide="chevron-right" class="text-slate-300 group-hover:text-[#E65C19] transition-colors"></i>
                             </button>
                         `).join('')}
                     </div>
-                    <div class="mt-8 pt-6 border-t border-gray-200">
-                        <button onclick="showAllFilters()" class="w-full py-4 rounded-xl bg-primary text-white font-bold shadow-lg shadow-teal-500/20 hover:bg-darkTeal transition-all">
+                    <div class="mt-8 pt-6 border-t border-[#E2DAC6]">
+                        <button onclick="showAllFilters()" class="w-full py-4 rounded-xl bg-[#0F2A3F] text-white font-bold shadow-lg hover:bg-[#E65C19] transition-all">
                             Mostrar todos los resultados
                         </button>
                     </div>
@@ -895,16 +976,16 @@
             const title = MENUS.find(m => m.id === type)?.label || type;
 
             return `
-                <div class="fade-in pb-24">
-                    <header class="mb-8 border-b-4 border-secondary inline-block pb-2">
-                        <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                <div class="fade-in pb-24 max-w-7xl mx-auto">
+                    <header class="mb-8 border-b-4 border-[#E65C19] inline-block pb-2">
+                        <h1 class="text-3xl font-brand font-black text-[#0F2A3F]">${title}</h1>
                     </header>
                     <div class="space-y-12">
                         ${sortedMonths.map(month => `
                             <div class="relative">
-                                <div class="sticky top-0 z-10 bg-[#F0FDFD]/95 backdrop-blur py-3 mb-4 border-b border-teal-100 flex items-center">
-                                    <span class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold uppercase tracking-wider mr-3">${month}</span>
-                                    <span class="text-gray-400 text-sm">${grouped[month].length} eventos</span>
+                                <div class="sticky top-0 z-10 bg-[#F3EFE0]/95 backdrop-blur py-3 mb-4 border-b border-[#E2DAC6] flex items-center">
+                                    <span class="bg-[#0F2A3F] text-white px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider mr-3">${month}</span>
+                                    <span class="text-slate-500 text-sm font-medium">${grouped[month].length} eventos</span>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     ${grouped[month].map(item => renderCard(item)).join('')}
@@ -923,63 +1004,62 @@
         }
 
         function renderResultsGrid(title, items, showFilterBtn = true) {
+            const hasFilters = Object.keys(state.filters).length > 0;
+            const canGoBack = hasFilters || state.filterStep === 99;
+
             if (items.length === 0) {
                 return `
-                      <div class="fade-in pb-24">
+                      <div class="fade-in pb-24 max-w-7xl mx-auto">
                          <header class="mb-8 flex justify-between items-center">
                             <div class="flex items-center gap-3">
-                                <button onclick="goBackOneStep()" class="p-2 bg-white rounded-full border border-gray-200 hover:border-primary hover:text-primary transition"><i data-lucide="arrow-left"></i></button>
-                                <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
+                                <button onclick="goBackOneStep()" class="p-2 bg-white rounded-full border border-[#E2DAC6] hover:bg-[#0F2A3F] hover:text-white transition"><i data-lucide="arrow-left"></i></button>
+                                <h1 class="text-3xl font-brand font-black text-[#0F2A3F]">${title}</h1>
                             </div>
                             ${showFilterBtn && hasFilters ? `
                                 <div class="flex items-center gap-3 flex-wrap justify-end">
-                                    <div class="flex items-center gap-2 text-xs font-bold text-teal-600 bg-white px-3 py-2 rounded-lg border border-teal-100 shadow-sm">
-                                        ${Object.values(state.filters).join(' <i data-lucide="chevron-right" width="12" class="text-teal-300"></i> ')}
+                                    <div class="flex items-center gap-2 text-xs font-bold text-[#2F70B3] bg-white px-3 py-2 rounded-lg border border-[#E2DAC6] shadow-sm">
+                                        ${Object.values(state.filters).join(' <i data-lucide="chevron-right" width="12" class="text-[#E65C19]"></i> ')}
                                     </div>
-                                    <button onclick="resetFilters()" class="text-xs font-bold text-white bg-primary px-3 py-2 rounded-lg hover:bg-darkTeal transition-all shadow-md">
+                                    <button onclick="resetFilters()" class="text-xs font-bold text-white bg-[#0F2A3F] px-3 py-2 rounded-lg hover:bg-[#E65C19] transition-all shadow-md">
                                         Borrar filtros
                                     </button>
                                 </div>
                             ` : ''}
                          </header>
-                         <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
-                             <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                         <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-[#E2DAC6]">
+                             <div class="bg-[#FAF7EF] w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-[#E65C19]">
                                 <i data-lucide="search" width="32" height="32"></i>
                              </div>
-                             <p class="text-gray-500 font-medium text-lg">No hemos encontrado nada aquí.</p>
-                             <button onclick="goBackOneStep()" class="text-primary font-bold mt-4 border border-primary px-4 py-2 rounded-full hover:bg-primary hover:text-white transition">Volver atrás</button>
+                             <p class="text-[#0F2A3F] font-bold text-lg">No hemos encontrado nada aquí.</p>
+                             <button onclick="goBackOneStep()" class="text-[#0F2A3F] font-bold mt-4 border border-[#0F2A3F] px-5 py-2.5 rounded-full hover:bg-[#0F2A3F] hover:text-white transition">Volver atrás</button>
                          </div>
                       </div>
                 `;
             }
 
-            const hasFilters = Object.keys(state.filters).length > 0;
-            // ESTA ES LA LÍNEA QUE FALTABA:
-            const canGoBack = hasFilters || state.filterStep === 99;
-
             return `
-                <div class="fade-in pb-24">
+                <div class="fade-in pb-24 max-w-7xl mx-auto">
                     <header class="mb-8">
                         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                             <div class="flex items-start gap-4">
                                 ${canGoBack ? `
-                                <button onclick="goBackOneStep()" class="mt-1 p-2 bg-white rounded-full shadow-sm border border-gray-200 hover:bg-primary hover:text-white transition-colors group" title="Volver un paso">
+                                <button onclick="goBackOneStep()" class="mt-1 p-2.5 bg-white rounded-full shadow-sm border border-[#E2DAC6] hover:bg-[#0F2A3F] hover:text-white transition-colors group" title="Volver un paso">
                                     <i data-lucide="arrow-left" width="20"></i>
                                 </button>
                                 ` : ''}
                                 
                                 <div>
-                                    <h1 class="text-3xl font-brand font-bold text-darkTeal">${title}</h1>
-                                    <p class="text-gray-500 text-sm mt-1">Mostrando ${items.length} resultados</p>
+                                    <h1 class="text-3xl font-brand font-black text-[#0F2A3F]">${title}</h1>
+                                    <p class="text-slate-500 text-sm mt-1">Mostrando ${items.length} resultados</p>
                                 </div>
                             </div>
 
                             ${showFilterBtn && hasFilters ? `
                                 <div class="flex items-center gap-3 flex-wrap justify-end">
-                                    <div class="flex items-center gap-2 text-xs font-bold text-teal-600 bg-white px-3 py-2 rounded-lg border border-teal-100 shadow-sm">
-                                        ${Object.values(state.filters).join(' <i data-lucide="chevron-right" width="12" class="text-teal-300"></i> ')}
+                                    <div class="flex items-center gap-2 text-xs font-bold text-[#2F70B3] bg-white px-3 py-2 rounded-lg border border-[#E2DAC6] shadow-sm">
+                                        ${Object.values(state.filters).join(' <i data-lucide="chevron-right" width="12" class="text-[#E65C19]"></i> ')}
                                     </div>
-                                    <button onclick="resetFilters()" class="text-xs font-bold text-white bg-primary px-3 py-2 rounded-lg hover:bg-darkTeal transition-all shadow-md">
+                                    <button onclick="resetFilters()" class="text-xs font-bold text-white bg-[#0F2A3F] px-3 py-2 rounded-lg hover:bg-[#E65C19] transition-all shadow-md">
                                         Borrar filtros
                                     </button>
                                 </div>
@@ -999,46 +1079,43 @@
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
                 if (diff >= 1) {
-                    // Estrella completa
-                    return `<svg class="w-6 h-6 text-yellow-400 fill-current" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    return `<svg class="w-5 h-5 text-[#BA2B2B] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
                 } else if (diff >= 0.5) {
-                    // Media estrella (con degradado)
                     const gradId = `grad-${Math.random().toString(36).substr(2, 9)}`;
-                    return `<svg class="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0">
+                    return `<svg class="w-5 h-5 text-[#BA2B2B]" viewBox="0 0 24 24">
                         <defs>
                             <linearGradient id="${gradId}">
                                 <stop offset="50%" stop-color="currentColor"/>
-                                <stop offset="50%" stop-color="#30cfc0"/>
+                                <stop offset="50%" stop-color="#E2DAC6"/>
                             </linearGradient>
                         </defs>
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#${gradId})"></polygon>
                     </svg>`;
                 } else {
-                    // Estrella vacía
-                    return `<svg class="w-6 h-6 text-teal-400 fill-current" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    return `<svg class="w-5 h-5 text-[#E2DAC6] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
                 }
             }).join('');
 
             return `
-                <div onclick="openDetail('${item.id}')" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col h-full">
+                <div onclick="openDetail('${item.id}')" class="bg-white rounded-2xl shadow-sm border border-[#E2DAC6] overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col h-full">
                     <div class="h-48 overflow-hidden relative">
                         <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
-                        <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-darkTeal px-3 py-1 text-xs font-bold rounded-lg shadow-sm">
+                        <div class="absolute inset-0 bg-[#0F2A3F]/20 group-hover:bg-transparent transition-colors"></div>
+                        <div class="absolute bottom-2 right-2 bg-[#0F2A3F]/90 backdrop-blur-sm text-white px-3 py-1 text-xs font-bold rounded-lg shadow-sm">
                             ${item.ciudad || item.provincia || 'General'}
                         </div>
                     </div>
                     <div class="p-5 flex-1 flex flex-col">
                         <div class="mb-2">
-                             <h3 class="text-lg font-bold text-slate-800 leading-snug group-hover:text-primary transition-colors font-brand">${item.name}</h3>
-                             ${item.mes ? `<span class="text-xs font-bold uppercase tracking-wide text-secondary mt-1 block">${item.mes}</span>` : ''}
+                             <h3 class="text-lg font-black text-[#0F2A3F] leading-snug group-hover:text-[#E65C19] transition-colors font-brand">${item.name}</h3>
+                             ${item.mes ? `<span class="text-xs font-extrabold uppercase tracking-wide text-[#E65C19] mt-1 block">${item.mes}</span>` : ''}
                         </div>
                         
-                        <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1 font-light leading-relaxed">${item.desc}</p>
+                        <p class="text-slate-600 text-sm line-clamp-2 mb-4 flex-1 font-light leading-relaxed">${item.desc}</p>
                         
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-[#E2DAC6]">
                             <div class="flex items-center space-x-1">${starHtml}</div>
-                            <span class="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <span class="w-8 h-8 rounded-full bg-[#FAF7EF] border border-[#E2DAC6] flex items-center justify-center text-[#0F2A3F] group-hover:bg-[#E65C19] group-hover:text-white transition-all">
                                 <i data-lucide="chevron-right" width="16"></i>
                             </span>
                         </div>
@@ -1051,14 +1128,12 @@
 
         function openDetail(id) {
             state.selectedItem = DATA.find(d => d.id === id);
-            // Prevenir scroll del body en móvil
             document.body.style.overflow = 'hidden';
             renderAppContent();
         }
 
         function closeDetail() {
             state.selectedItem = null;
-            // Restaurar scroll del body
             document.body.style.overflow = '';
             renderAppContent();
         }
@@ -1070,185 +1145,194 @@
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
                 if (diff >= 1) {
-                    // Estrella completa
-                    return `<svg class="w-11 h-11 text-yellow-400 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    return `<svg class="w-10 h-10 text-[#BA2B2B] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
                 } else if (diff >= 0.5) {
-                    // Media estrella
                     const gradId = `grad-detail-${Math.random().toString(36).substr(2, 9)}`;
-                    return `<svg class="w-11 h-11 text-yellow-400" viewBox="0 0 24 24">
+                    return `<svg class="w-10 h-10 text-[#BA2B2B]" viewBox="0 0 24 24">
                         <defs>
                             <linearGradient id="${gradId}">
                                 <stop offset="50%" stop-color="currentColor"/>
-                                <stop offset="50%" stop-color="#30cfc0"/>
+                                <stop offset="50%" stop-color="#E2DAC6"/>
                             </linearGradient>
                         </defs>
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#${gradId})"></polygon>
                     </svg>`;
                 } else {
-                    // Estrella vacía
-                    return `<svg class="w-11 h-11 text-teal-400 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    return `<svg class="w-10 h-10 text-[#E2DAC6] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
                 }
             }).join('');
 
-            const locationStr = [item.direccion, item.ciudad, item.provincia].filter(Boolean).join(', ');
             let priceText = '';
-            if (item.priceCode == PRICE_CODES.VERY_GOOD) priceText = '<span class="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Precio Muy Bueno ✅</span>';
-            else if (item.priceCode == PRICE_CODES.FAIR) priceText = '<span class="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">Precio Justo ⚖️</span>';
-            else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Precio Caro 💀</span>';
+            if (item.priceCode == PRICE_CODES.VERY_GOOD) priceText = '<span class="text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200">Precio Muy Bueno ✅</span>';
+            else if (item.priceCode == PRICE_CODES.FAIR) priceText = '<span class="text-sky-700 font-bold bg-sky-50 px-3 py-1 rounded-lg border border-sky-200">Precio Justo ⚖️</span>';
+            else if (item.priceCode == PRICE_CODES.EXPENSIVE) priceText = '<span class="text-rose-700 font-bold bg-rose-50 px-3 py-1 rounded-lg border border-rose-200">Precio Alto 🍷</span>';
 
             const remainingGallery = item.gallery;
             const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery.slice(1));
             const eventosPuntualesGallery = eventosPuntualesRelacionados.flatMap(evt => evt.gallery.slice(1));
             item.eventGallery = [...eventosGallery, ...eventosPuntualesGallery];
 
-            // CAMBIO AQUÍ: Se añade 'fixed inset-0 z-[60]' para móvil, y 'md:absolute md:z-20' para escritorio.
-            // Esto hace que en el móvil la ficha tape el menú verde superior.
             return `
-                <div class="bg-white min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-32">
+                <div class="bg-[#F3EFE0] min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-32">
                     
-                    <button onclick="closeDetail()" class="fixed top-4 left-4 md:left-[280px] z-[70] bg-teal-800 text-white sm:bg-white/90 sm:text-slate-800 backdrop-blur p-3 rounded-full shadow-2xl hover:bg-primary hover:text-white transition-all group border border-gray-100 flex items-center gap-2 pr-4">
+                    <button onclick="closeDetail()" class="fixed top-4 left-4 z-[70] bg-[#0F2A3F] text-white backdrop-blur p-3 rounded-full shadow-2xl hover:bg-[#E65C19] transition-all group border border-white/20 flex items-center gap-2 pr-4" title="Volver al listado">
                         <i data-lucide="arrow-left" class="group-hover:-translate-x-1 transition-transform"></i>
                         <span class="font-bold text-sm hidden sm:inline">Volver</span>
                     </button>
                     
-                    <div class="h-[50vh] w-full relative cursor-pointer group" onclick="openLightbox(0)">
+                    <div class="h-[45vh] w-full relative cursor-pointer group" onclick="openLightbox(0)">
                         <img src="${item.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0F2A3F] via-[#0F2A3F]/30 to-transparent pointer-events-none"></div>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
-                             <span class="bg-black/50 text-white px-4 py-2 rounded-full backdrop-blur text-sm font-bold">Ver Galería</span>
+                             <span class="bg-[#0F2A3F]/80 text-white px-5 py-2.5 rounded-full backdrop-blur text-sm font-bold border border-white/20">Ver Galería</span>
                         </div>
-                        <div class="absolute bottom-0 left-0 w-full p-6 pb-12 md:p-12 pointer-events-none">    
+                        <div class="absolute bottom-0 left-0 w-full p-6 pb-10 md:p-12 pointer-events-none">    
                             <div class="max-w-4xl mx-auto">
-                                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 bg-primary text-white shadow-lg border border-white/20">
+                                <span class="inline-block px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-3 bg-[#E65C19] text-white shadow-md border border-white/20">
                                     ${MENUS.find(m => m.id === item.type)?.label || item.type}
                                 </span>
-                                <h2 class="font-brand text-4xl md:text-5xl text-white mb-2 leading-tight drop-shadow-lg">${item.name}</h2>
-                                <p class="text-gray-200 text-sm md:text-base flex items-center font-medium opacity-90">
-                                    <i data-lucide="map-pin" width="16" class="mr-2 text-primaryContainer"></i> ${item.ciudad}
+                                <h2 class="font-brand text-3xl md:text-5xl text-white mb-2 font-black leading-tight drop-shadow-md">${item.name}</h2>
+                                <p class="text-amber-100 text-sm md:text-base flex items-center font-medium">
+                                    <i data-lucide="map-pin" width="18" class="mr-2 text-[#2F70B3]"></i> ${item.ciudad || item.provincia || ''}
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="max-w-5xl mx-auto -mt-10 relative px-4 md:px-0">
-                        <div class="bg-white rounded-t-3xl shadow-xl border-t border-gray-100 p-6 md:p-10 flex flex-col md:flex-row gap-10">
+                    <div class="max-w-5xl mx-auto -mt-6 relative px-4 md:px-0">
+                        <div class="bg-white rounded-3xl shadow-xl border border-[#E2DAC6] p-6 md:p-10 flex flex-col md:flex-row gap-10">
                             
                             <div class="flex-1 space-y-8">
                                 
-                                <div class="flex flex-wrap items-start justify-between gap-4 border-b border-dashed border-gray-200 pb-6">
+                                <div class="flex flex-wrap items-start justify-between gap-4 border-b border-dashed border-[#E2DAC6] pb-6">
                                 
                                     <div class="flex flex-col gap-4">
                                         <div>
-                                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Nuestra Valoración</h3>
+                                            <h3 class="text-lg font-brand font-black text-[#0F2A3F] mb-4 pl-4 border-l-4 border-[#E65C19]">Nuestra Valoración</h3>
                                         </div>
                                         <div class="flex items-center space-x-4">
-                                            <span class="flex items-center justify-center w-16 h-16 bg-primary text-white rounded-full text-3xl font-brand font-bold shadow-md">${item.rating.toString().replace('.', ',')}</span>
+                                            <span class="flex items-center justify-center w-16 h-16 bg-[#BA2B2B] text-white rounded-2xl text-3xl font-brand font-black shadow-md">${item.rating.toString().replace('.', ',')}</span>
                                             <div class="flex">${starHtml}</div>
                                         </div>
-                                        <div class="text-center">
-                                            <h2 class="text-xl font-bold text-darkTeal mb-3 font-brand tracking-widest">${priceText}</h2>
+                                        <div class="mt-1">
+                                            <h2 class="text-base font-bold text-[#0F2A3F] font-brand tracking-wide">${priceText}</h2>
                                         </div>
                                     </div>
                                 
                                 </div>
 
                                 <div>
-                                    <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                    <div class="prose text-slate-700 leading-relaxed text-lg font-normal">
                                         ${item.fullDesc || item.desc}
                                     </div>
                                      ${item.loultimo ? `
                                         <br>
-                                        <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary">Última Visita ${(item.precioultimo && parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
-                                        <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
+                                        <h3 class="text-lg font-brand font-black text-[#0F2A3F] mb-4 pl-4 border-l-4 border-[#E65C19]">Última Visita ${(item.precioultimo && parseFloat(item.precioultimo) > 0) ? ` 💰 ${item.precioultimo}` : ''}</h3>
+                                        <div class="prose text-slate-700 leading-relaxed text-lg font-normal bg-[#FAF7EF] p-4 rounded-2xl border border-[#E2DAC6]">
                                             ${item.loultimo}
                                         </div>
                                     ` : ''}
                                     ${item.links.post ? `
                                         <br>
-                                        <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Nuestro úlimo Instagram</h3>
-                                        <div class="prose prose-teal text-gray-600 leading-loose text-lg font-light">
-                                            <a href="${item.links.post}" target="_blank" class="flex-1 min-w-[140px] text-center bg-fuchsia-100 hover:bg-teal-100 text-fuchsia-800 hover:text-teal-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="camera"></i> Post</a>
+                                        <h3 class="text-lg font-brand font-black text-[#0F2A3F] mb-4 pl-4 border-l-4 border-[#E65C19]">Nuestro último Instagram</h3>
+                                        <div class="prose text-slate-700 leading-relaxed text-lg font-normal">
+                                            <a href="${item.links.post}" target="_blank" class="inline-flex text-center bg-[#E65C19] hover:bg-[#BA2B2B] text-white px-6 py-3 rounded-xl font-bold transition justify-center items-center gap-2 shadow-sm"><i data-lucide="instagram"></i> Ver Post en Instagram</a>
                                         </div>
                                     ` : ''}
                                     ${DISTANCIAS.filter(d => d.origen === item.name).length > 0 ? `
-                                    <br>
-                                    <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Distancias a pie</h3>
-                                    <div class="flex flex-col gap-4">
-                                        ${DISTANCIAS.filter(d => d.origen === item.name)
-                                            .sort((a, b) => {
-                                                const timeA = parseInt(a.tiempo) || 0;
-                                                const timeB = parseInt(b.tiempo) || 0;
-                                                if (timeA !== timeB) return timeA - timeB;
-                                                const distA = parseInt(a.distancia) || 0;
-                                                const distB = parseInt(b.distancia) || 0;
-                                                return distA - distB;
-                                            })
-                                            .slice(0, 10)
-                                            .map((loc, idx) => {
-                                            const destinoData = DATA.find(d => d.name === loc.destino);
-                                            const imgHtml = destinoData && destinoData.image 
-                                                ? `<img src="${destinoData.image}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-teal-100 shadow-sm">`
-                                                : `<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 border-2 border-teal-200 shadow-sm"><i data-lucide="map-pin" width="20"></i></div>`;
-                                            
-                                            const clickAttr = destinoData ? `onclick="document.getElementById('dist-info-${idx}').classList.toggle('hidden'); document.getElementById('dist-icon-${idx}').classList.toggle('rotate-90');"` : '';
-                                            
-                                            return `
-                                            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
-                                                <div ${clickAttr} class="p-4 flex items-center gap-4 ${destinoData ? 'cursor-pointer hover:bg-teal-50 transition-colors' : ''}">
-                                                    ${imgHtml}
-                                                    <div class="flex-1 min-w-0">
-                                                        <h4 class="text-base sm:text-lg font-bold text-slate-800 truncate">${loc.destino}</h4>
-                                                        <div class="flex flex-wrap items-center text-sm text-gray-500 gap-3 mt-2 font-medium">
-                                                            <span class="flex items-center bg-gray-50 px-3 py-1 rounded border border-gray-100"><i data-lucide="map" width="14" class="mr-1.5 text-teal-500"></i> ${loc.distancia}</span>
-                                                            <span class="flex items-center bg-gray-50 px-3 py-1 rounded border border-gray-100"><i data-lucide="clock" width="14" class="mr-1.5 text-teal-500"></i> ${loc.tiempo}</span>
-                                                            ${destinoData && destinoData.rating ? `<span class="flex items-center bg-yellow-50 px-3 py-1 rounded border border-yellow-100 text-yellow-700"><svg class="w-3.5 h-3.5 fill-current text-yellow-500 mr-1.5" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> ${destinoData.rating}</span>` : ''}
-                                                        </div>
-                                                    </div>
-                                                    ${destinoData ? `<i id="dist-icon-${idx}" data-lucide="chevron-right" width="24" class="text-teal-400 transition-transform"></i>` : ''}
-                                                </div>
-                                                
-                                                ${destinoData ? `
-                                                <div id="dist-info-${idx}" class="hidden bg-teal-50/50 p-5 border-t border-teal-100/50">
-                                                    ${destinoData.image ? `<div class="w-full h-48 mb-4 rounded-xl overflow-hidden shadow-sm relative group cursor-pointer" onclick="openDetail('${destinoData.id}')"><img src="${destinoData.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div></div>` : ''}
-                                                    <p class="text-base text-gray-600 line-clamp-3 mb-4">${destinoData.desc}</p>
-                                                    <div class="flex items-center justify-between">
-                                                        <div class="flex items-center gap-1.5 text-yellow-500">
-                                                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                                                            <span class="text-sm font-bold text-slate-700">${destinoData.rating}</span>
-                                                        </div>
-                                                        <button onclick="openDetail('${destinoData.id}')" class="text-sm font-bold bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-darkTeal transition-colors shadow-sm flex items-center gap-2">
-                                                            Ver ficha completa <i data-lucide="external-link" width="16"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                ` : ''}
-                                            </div>
-                                            `;
-                                        }).join('')}
-                                    </div>
-                                    ` : ''}
+                                     <br>
+                                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-l-4 border-[#E65C19] pl-4">
+                                         <h3 class="text-lg font-brand font-black text-[#0F2A3F]">Distancias a pie</h3>
+                                         <div class="inline-flex p-1 bg-[#FAF7EF] rounded-xl border border-[#E2DAC6]">
+                                             <button id="btn-dist-list" onclick="switchDistView('list')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-[#0F2A3F] text-white shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                                 <i data-lucide="list" width="14"></i> Listado
+                                             </button>
+                                             <button id="btn-dist-map" onclick="switchDistView('map')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-[#0F2A3F] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer">
+                                                 <i data-lucide="map" width="14"></i> Mapa Interactivo
+                                             </button>
+                                         </div>
+                                     </div>
+
+                                     <div id="distancias-list-container" class="flex flex-col gap-4">
+                                         ${DISTANCIAS.filter(d => d.origen === item.name)
+                                             .sort((a, b) => {
+                                                 const timeA = parseInt(a.tiempo) || 0;
+                                                 const timeB = parseInt(b.tiempo) || 0;
+                                                 if (timeA !== timeB) return timeA - timeB;
+                                                 const distA = parseInt(a.distancia) || 0;
+                                                 const distB = parseInt(b.distancia) || 0;
+                                                 return distA - distB;
+                                             })
+                                             .slice(0, 10)
+                                             .map((loc, idx) => {
+                                             const destinoData = DATA.find(d => d.name === loc.destino);
+                                             const imgHtml = destinoData && destinoData.image 
+                                                 ? `<img src="${destinoData.image}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-[#E2DAC6] shadow-sm">`
+                                                 : `<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#FAF7EF] flex items-center justify-center text-[#2F70B3] border-2 border-[#E2DAC6] shadow-sm"><i data-lucide="map-pin" width="20"></i></div>`;
+                                             
+                                             const clickAttr = destinoData ? `onclick="document.getElementById('dist-info-${idx}').classList.toggle('hidden'); document.getElementById('dist-icon-${idx}').classList.toggle('rotate-90');"` : '';
+                                             
+                                             return `
+                                             <div class="bg-[#FAF7EF] rounded-2xl border border-[#E2DAC6] shadow-xs overflow-hidden transition-all hover:shadow-md">
+                                                 <div ${clickAttr} class="p-4 flex items-center gap-4 ${destinoData ? 'cursor-pointer hover:bg-white transition-colors' : ''}">
+                                                     ${imgHtml}
+                                                     <div class="flex-1 min-w-0">
+                                                         <h4 class="text-base sm:text-lg font-black text-[#0F2A3F] truncate">${loc.destino}</h4>
+                                                         <div class="flex flex-wrap items-center text-xs text-slate-600 gap-3 mt-2 font-bold">
+                                                             <span class="flex items-center bg-white px-3 py-1 rounded-lg border border-[#E2DAC6]"><i data-lucide="map" width="14" class="mr-1.5 text-[#2F70B3]"></i> ${loc.distancia}</span>
+                                                             <span class="flex items-center bg-white px-3 py-1 rounded-lg border border-[#E2DAC6]"><i data-lucide="clock" width="14" class="mr-1.5 text-[#E65C19]"></i> ${loc.tiempo}</span>
+                                                             ${destinoData && destinoData.rating ? `<span class="flex items-center bg-[#BA2B2B]/10 px-3 py-1 rounded-lg border border-[#BA2B2B]/20 text-[#BA2B2B]"><svg class="w-3.5 h-3.5 fill-current text-[#BA2B2B] mr-1.5" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> ${destinoData.rating}</span>` : ''}
+                                                         </div>
+                                                     </div>
+                                                     ${destinoData ? `<i id="dist-icon-${idx}" data-lucide="chevron-right" width="24" class="text-[#2F70B3] transition-transform"></i>` : ''}
+                                                 </div>
+                                                 
+                                                 ${destinoData ? `
+                                                 <div id="dist-info-${idx}" class="hidden bg-white p-5 border-t border-[#E2DAC6]">
+                                                     ${destinoData.image ? `<div class="w-full h-48 mb-4 rounded-xl overflow-hidden shadow-sm relative group cursor-pointer" onclick="openDetail('${destinoData.id}')"><img src="${destinoData.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div></div>` : ''}
+                                                     <p class="text-base text-slate-600 line-clamp-3 mb-4">${destinoData.desc}</p>
+                                                     <div class="flex items-center justify-between">
+                                                         <div class="flex items-center gap-1.5 text-[#BA2B2B]">
+                                                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                                             <span class="text-sm font-bold text-[#0F2A3F]">${destinoData.rating}</span>
+                                                         </div>
+                                                         <button onclick="openDetail('${destinoData.id}')" class="text-sm font-bold bg-[#0F2A3F] text-white px-5 py-2.5 rounded-xl hover:bg-[#E65C19] transition-colors shadow-sm flex items-center gap-2">
+                                                             Ver ficha completa <i data-lucide="external-link" width="16"></i>
+                                                         </button>
+                                                     </div>
+                                                 </div>
+                                                 ` : ''}
+                                             </div>
+                                             `;
+                                         }).join('')}
+                                     </div>
+
+                                     <div id="distancias-map-container" class="hidden">
+                                         <div id="dist-map" class="w-full h-[420px] rounded-2xl border-2 border-[#E2DAC6] shadow-md z-0 relative"></div>
+                                     </div>
+                                     ` : ''}
                                 </div>
                             </div>
 
                             <div class="w-full md:w-80 flex-shrink-0 space-y-6">
-                                <div class="bg-[#F0FDFD] p-6 rounded-2xl border border-teal-100 shadow-sm sticky top-6">
-                                    <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 flex items-center border-b border-teal-200 pb-2">
-                                        <i data-lucide="map-pin" width="20" class="mr-2"></i> ¡Anímate a conocerles!
+                                <div class="bg-[#FAF7EF] p-6 rounded-2xl border border-[#E2DAC6] shadow-sm sticky top-6">
+                                    <h3 class="text-lg font-brand font-black text-[#0F2A3F] mb-6 flex items-center border-b border-[#E2DAC6] pb-3">
+                                        <i data-lucide="map-pin" width="20" class="mr-2 text-[#2F70B3]"></i> Información & Enlaces
                                     </h3>
                                     
                                     ${item.address ? `
-                                    <div class="mb-4">
-                                        <span class="text-xs text-gray-400 font-bold uppercase">Dirección</span>
-                                        <p class="text-sm font-medium text-slate-700 mt-1">${item.address}</p>
+                                    <div class="mb-5">
+                                        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Dirección</span>
+                                        <p class="text-sm font-bold text-[#0F2A3F] mt-1">${item.address}</p>
                                     </div>` : ''}
 
                                     ${(item.links.maps || item.links.web || item.links.instagram || item.links.facebook) ? `
-                                        <div class="flex flex-wrap gap-3">
-                                            ${item.links.reviews ? `<a href="${item.links.reviews}" target="_blank" class="flex-1 min-w-[140px] text-center bg-yellow-100 hover:bg-teal-100 text-yellow-800 hover:text-teal-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="star"></i> Reseñas Google</a>` : ''}
-                                            ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="flex-1 min-w-[140px] text-center bg-emerald-200 hover:bg-teal-100 text-emerald-800 hover:text-teal-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="map-pin"></i> Ver Mapa</a>` : ''}
-                                            ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="flex-1 min-w-[140px] text-center bg-indigo-200 hover:bg-teal-100 text-indigo-800 hover:text-teal-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="globe"></i> Web</a>` : ''}
-                                            ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="flex-1 min-w-[140px] text-center bg-fuchsia-200 hover:bg-teal-100 text-fuchsia-800 hover:text-teal-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="instagram"></i> Instagram</a>` : ''}
-                                            ${item.links.facebook ? `<a href="${item.links.facebook}" target="_blank" class="flex-1 min-w-[140px] text-center bg-blue-200 hover:bg-teal-100 text-blue-800 hover:text-teal-800 py-3 rounded-xl font-bold transition flex justify-center items-center gap-2"><i data-lucide="facebook"></i> Facebook</a>` : ''}
+                                        <div class="flex flex-col gap-2.5">
+                                            ${item.links.reviews ? `<a href="${item.links.reviews}" target="_blank" class="w-full text-center bg-[#BA2B2B] text-white hover:bg-[#0F2A3F] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="star"></i> Reseñas Google</a>` : ''}
+                                            ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="w-full text-center bg-[#2F70B3] text-white hover:bg-[#0F2A3F] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="map-pin"></i> Ver en Mapa</a>` : ''}
+                                            ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="w-full text-center bg-[#0F2A3F] text-white hover:bg-[#E65C19] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="globe"></i> Sitio Web</a>` : ''}
+                                            ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="w-full text-center bg-[#E65C19] text-white hover:bg-[#BA2B2B] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="instagram"></i> Instagram</a>` : ''}
+                                            ${item.links.facebook ? `<a href="${item.links.facebook}" target="_blank" class="w-full text-center bg-[#2F70B3]/20 text-[#0F2A3F] hover:bg-[#2F70B3] hover:text-white py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="facebook"></i> Facebook</a>` : ''}
                                         </div>
                                     ` : ''}
                                 </div>
@@ -1257,13 +1341,13 @@
 
                         ${remainingGallery.length > 0 ? `
                         <div class="mt-12 mb-12">
-                            <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Galería de Fotos</h3>
+                            <h3 class="text-lg font-brand font-black text-[#0F2A3F] mb-6 pl-4 border-l-4 border-[#E65C19]">Galería de Fotos</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${remainingGallery.map((img, idx) => `
-                                    <div onclick="openLightbox(${idx})" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                    <div onclick="openLightbox(${idx})" class="aspect-square rounded-2xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-[#E65C19]/40 border border-[#E2DAC6]">
                                         <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
                                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                                        <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                                             <i data-lucide="maximize-2" width="16" height="16"></i>
                                         </div>
                                         ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
@@ -1272,25 +1356,25 @@
                             </div>
                         </div>` : ''}
                         ${eventosRelacionados.length > 0 ? `
-                            <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
-                               <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Eventos Habituales</h3>
+                            <div class="mt-6 border-t border-dashed border-[#E2DAC6] pt-6">
+                               <h3 class="text-lg font-brand font-black text-[#0F2A3F] mb-6 pl-4 border-l-4 border-[#E65C19]">Eventos Habituales</h3>
                             </div>
                         ` : ''} 
                         ${eventosRelacionados.map(evento => `
                             <div class="mt-6">
-                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
+                                <h2 class="text-lg font-bold text-[#0F2A3F] mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
                                 ${evento.desc ? `${evento.desc}` : ''}
                             </div>
                         `).join('')} 
                         ${eventosGallery.length > 0 ? `
                         <div class="mt-12 mb-12">
-                            <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Fotos de los Eventos Habituales</h2>
+                            <h2 class="text-lg font-bold text-[#0F2A3F] mb-3 font-brand tracking-widest">Fotos de los Eventos Habituales</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${eventosGallery.map((img, idx) => `
-                                    <div onclick="openLightbox(${idx}, 'events')" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                    <div onclick="openLightbox(${idx}, 'events')" class="aspect-square rounded-2xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-[#E65C19]/40 border border-[#E2DAC6]">
                                         <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
                                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                                        <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                                             <i data-lucide="maximize-2" width="16" height="16"></i>
                                         </div>
                                         ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
@@ -1299,26 +1383,25 @@
                             </div>
                         </div>` : ''} 
                         ${eventosPuntualesRelacionados.length > 0 ? `
-                            <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
-                               <h3 class="text-lg font-brand font-bold text-darkTeal mb-6 pl-4 border-l-4 border-secondary"> Eventos Puntuales</h3>
+                            <div class="mt-6 border-t border-dashed border-[#E2DAC6] pt-6">
+                               <h3 class="text-lg font-brand font-black text-[#0F2A3F] mb-6 pl-4 border-l-4 border-[#E65C19]">Eventos Puntuales</h3>
                             </div>
                         ` : ''} 
                         ${eventosPuntualesRelacionados.map(evento => `
                             <div class="mt-6">
-                                <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
+                                <h2 class="text-lg font-bold text-[#0F2A3F] mb-3 font-brand tracking-widest">${evento.name} ${evento.anyo}</h2>
                                 ${evento.desc ? `${evento.desc}` : ''}
                             </div>
                         `).join('')} 
                         ${eventosPuntualesGallery.length > 0 ? `
                         <div class="mt-12 mb-12">
-                            <h2 class="text-lg font-bold text-darkTeal mb-3 font-brand tracking-widest"> Fotos de Eventos Puntuales</h2>
+                            <h2 class="text-lg font-bold text-[#0F2A3F] mb-3 font-brand tracking-widest">Fotos de Eventos Puntuales</h2>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 ${eventosPuntualesGallery.map((img, idx) => `
-                                    <!-- Nota: sumamos eventosGallery.length al índice para que el lightbox sepa que son las fotos siguientes -->
-                                    <div onclick="openLightbox(${idx + eventosGallery.length}, 'events')" class="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-primary/30">
+                                    <div onclick="openLightbox(${idx + eventosGallery.length}, 'events')" class="aspect-square rounded-2xl overflow-hidden cursor-pointer hover:opacity-90 transition shadow-md group relative hover:ring-4 hover:ring-[#E65C19]/40 border border-[#E2DAC6]">
                                         <img src="${img.url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
                                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
-                                        <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                                             <i data-lucide="maximize-2" width="16" height="16"></i>
                                         </div>
                                         ${img.caption ? `<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent text-white text-[10px] p-3 pt-6 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0 font-medium truncate">${img.caption}</div>` : ''}
@@ -1412,54 +1495,235 @@
             if (e.key === 'ArrowRight') changeLightboxSlide(1);
         }
 
+        // --- MAPA DE DISTANCIAS INTERACTIVO ---
+        window.currentDistMap = null;
+
+        function switchDistView(mode) {
+            const listContainer = document.getElementById('distancias-list-container');
+            const mapContainer = document.getElementById('distancias-map-container');
+            const btnList = document.getElementById('btn-dist-list');
+            const btnMap = document.getElementById('btn-dist-map');
+
+            if (!listContainer || !mapContainer) return;
+
+            if (mode === 'list') {
+                listContainer.classList.remove('hidden');
+                mapContainer.classList.add('hidden');
+
+                if (btnList && btnMap) {
+                    btnList.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all bg-[#0F2A3F] text-white shadow-sm flex items-center gap-1.5 cursor-pointer";
+                    btnMap.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all text-[#0F2A3F] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer";
+                }
+            } else {
+                listContainer.classList.add('hidden');
+                mapContainer.classList.remove('hidden');
+
+                if (btnList && btnMap) {
+                    btnMap.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all bg-[#0F2A3F] text-white shadow-sm flex items-center gap-1.5 cursor-pointer";
+                    btnList.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all text-[#0F2A3F] hover:bg-white/80 flex items-center gap-1.5 cursor-pointer";
+                }
+
+                if (state.selectedItem) {
+                    initDistancesMap(state.selectedItem);
+                }
+            }
+        }
+
+        function extractCoords(item) {
+            if (!item) return null;
+            if (item.lat && item.lng) return [parseFloat(item.lat), parseFloat(item.lng)];
+            
+            const url = item.links ? item.links.maps : null;
+            if (url) {
+                // 1. Coordenadas explícitas de destino (!3d<lat>!4d<lng>)
+                let m = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+                if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+
+                // 2. Coordenadas de destino en enlaces de ruta (!1d<lng>!2d<lat> o !2d<lat>!1d<lng>)
+                m = url.match(/!1d(-?\d+\.\d+)!2d(-?\d+\.\d+)/);
+                if (m) return [parseFloat(m[2]), parseFloat(m[1])];
+
+                m = url.match(/!2d(-?\d+\.\d+)!1d(-?\d+\.\d+)/);
+                if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+
+                // 3. Parámetros de consulta (?q=lat,lng o ?ll=lat,lng)
+                m = url.match(/[?&](?:q|ll)=(-?\d+\.\d+),(-?\d+\.\d+)/);
+                if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+
+                // 4. Posición de cámara/visor de Google Maps (@lat,lng) solo como último recurso
+                m = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+            }
+
+            const refText = `${item.pueblo || ''} ${item.ciudad || ''} ${item.provincia || ''} ${item.address || ''} ${item.name || ''}`.toLowerCase();
+            if (refText.includes('ávila') || refText.includes('avila')) return [40.6565, -4.6818];
+            if (refText.includes('león') || refText.includes('leon')) return [42.5987, -5.5671];
+            if (refText.includes('basauri') || refText.includes('bilbao') || refText.includes('bizkaia')) return [43.235, -2.890];
+            if (refText.includes('zaragoza')) return [41.656, -0.877];
+            if (refText.includes('madrid')) return [40.4168, -3.7038];
+
+            return null;
+        }
+
+        function initDistancesMap(originItem) {
+            const mapElement = document.getElementById('dist-map');
+            if (!mapElement) return;
+
+            if (window.currentDistMap) {
+                window.currentDistMap.remove();
+                window.currentDistMap = null;
+            }
+
+            const originCoords = extractCoords(originItem) || [40.6565, -4.6818];
+            const distances = DISTANCIAS.filter(d => d.origen === originItem.name);
+
+            const map = L.map('dist-map', {
+                zoomControl: true,
+                scrollWheelZoom: false
+            }).setView(originCoords, 16);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            window.currentDistMap = map;
+
+            // Pin Origen (Terracota)
+            const originIcon = L.divIcon({
+                className: 'custom-map-pin-origin',
+                html: `
+                    <div class="relative flex items-center justify-center">
+                        <div class="w-10 h-10 bg-[#E65C19] text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white ring-4 ring-[#E65C19]/30 animate-pulse">
+                            <span class="text-base font-bold">📍</span>
+                        </div>
+                    </div>
+                `,
+                iconSize: [40, 40],
+                iconAnchor: [20, 20],
+                popupAnchor: [0, -20]
+            });
+
+            const originMarker = L.marker(originCoords, { icon: originIcon }).addTo(map);
+            originMarker.bindPopup(`
+                <div class="p-2 text-center min-w-[160px]">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#E65C19] bg-[#E65C19]/10 px-2 py-0.5 rounded-full">Estás aquí</span>
+                    <h4 class="font-black text-[#0F2A3F] text-base mt-1.5">${escapeHtml(originItem.name)}</h4>
+                    ${originItem.address ? `<p class="text-xs text-slate-500 mt-1">${escapeHtml(originItem.address)}</p>` : ''}
+                </div>
+            `);
+
+            const bounds = [originCoords];
+
+            distances.forEach((loc) => {
+                const destinoData = DATA.find(d => d.name === loc.destino);
+                const destCoords = extractCoords(destinoData);
+
+                if (destCoords) {
+                    bounds.push(destCoords);
+
+                    // Línea discontinua de ruta
+                    L.polyline([originCoords, destCoords], {
+                        color: '#2F70B3',
+                        weight: 3,
+                        dashArray: '6, 8',
+                        opacity: 0.8
+                    }).addTo(map);
+
+                    // Pin Destino (Azul Marino)
+                    const destIcon = L.divIcon({
+                        className: 'custom-map-pin-dest',
+                        html: `
+                            <div class="relative flex items-center justify-center cursor-pointer group">
+                                <div class="w-8 h-8 bg-[#0F2A3F] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white group-hover:bg-[#E65C19] group-hover:scale-110 transition-all">
+                                    <span class="text-xs font-bold">🍷</span>
+                                </div>
+                            </div>
+                        `,
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16],
+                        popupAnchor: [0, -16]
+                    });
+
+                    const marker = L.marker(destCoords, { icon: destIcon }).addTo(map);
+
+                    const popupContent = `
+                        <div class="p-2 max-w-[220px]">
+                            ${destinoData && destinoData.image ? `<img src="${destinoData.image}" class="w-full h-24 object-cover rounded-xl mb-2.5 shadow-xs">` : ''}
+                            <h4 class="font-black text-[#0F2A3F] text-sm leading-snug">${escapeHtml(loc.destino)}</h4>
+                            <div class="flex flex-wrap items-center gap-2 text-xs text-slate-600 my-2 font-bold">
+                                <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">🚶 ${escapeHtml(loc.distancia)}</span>
+                                <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">⏱️ ${escapeHtml(loc.tiempo)}</span>
+                                ${destinoData && destinoData.rating ? `<span class="bg-[#BA2B2B]/10 text-[#BA2B2B] px-2 py-0.5 rounded border border-[#BA2B2B]/20">⭐ ${destinoData.rating}</span>` : ''}
+                            </div>
+                            ${destinoData ? `
+                            <button onclick="openDetail('${destinoData.id}')" class="w-full mt-1 bg-[#0F2A3F] text-white text-xs py-2 rounded-xl font-bold hover:bg-[#E65C19] transition-colors shadow-xs flex items-center justify-center gap-1">
+                                Ver ficha completa ➔
+                            </button>` : ''}
+                        </div>
+                    `;
+
+                    marker.bindPopup(popupContent);
+                }
+            });
+
+            if (bounds.length > 1) {
+                map.fitBounds(bounds, { padding: [40, 40] });
+            }
+
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 200);
+        }
+
         // --- INICIAR ---
         document.addEventListener('DOMContentLoaded', loadData);
 
     </script>
 
     <div id="lightbox"
-        class="fixed inset-0 z-[100] bg-teal-800/80 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm"
+        class="fixed inset-0 z-[100] bg-slate-950/95 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center backdrop-blur-md"
         onclick="if(event.target === this) closeLightbox()">
 
         <button onclick="closeLightbox()"
-            class="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-teal-500/80 bg-teal-500/30 rounded-full p-2 transition-all z-50">
-            <i data-lucide="x" width="32" height="32"></i>
+            class="absolute top-4 right-4 text-white/80 hover:text-white hover:bg-white/20 bg-white/10 rounded-full p-2.5 transition-all z-50 backdrop-blur-md border border-white/10 shadow-lg" title="Cerrar (Esc)">
+            <i data-lucide="x" width="24" height="24"></i>
         </button>
 
         <button onclick="changeLightboxSlide(-1)"
-            class="absolute left-2 md:left-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-teal-500/80 hover:bg-teal-800/50 rounded-full">
-            <i data-lucide="chevron-left" width="40" height="40"></i>
+            class="absolute left-3 md:left-8 text-white/80 hover:text-white hover:scale-110 transition-all p-3 z-50 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md border border-white/10 shadow-lg" title="Anterior">
+            <i data-lucide="chevron-left" width="32" height="32"></i>
         </button>
 
         <div
             class="relative max-w-7xl max-h-screen w-full h-full flex flex-col items-center justify-center p-4 md:p-10">
 
             <img id="lightbox-img" src=""
-                class="max-h-[80vh] max-w-full object-contain shadow-2xl rounded-md select-none transition-transform duration-300"
+                class="max-h-[82vh] max-w-full object-contain shadow-2xl rounded-xl select-none transition-transform duration-300 border border-white/10"
                 alt="Galería">
 
             <div id="lightbox-caption-container"
-                class="absolute bottom-8 left-0 right-0 text-center pointer-events-none">
-                <div class="inline-block bg-black/60 backdrop-blur-md text-white px-6 py-3 rounded-full max-w-[90%]">
-                    <p id="lightbox-caption" class="text-sm md:text-lg font-brand tracking-wide"></p>
-                    <p id="lightbox-counter" class="text-xs text-white/60 mt-1 font-sans uppercase tracking-widest"></p>
+                class="absolute bottom-6 left-0 right-0 text-center pointer-events-none">
+                <div class="inline-block bg-[#0F2A3F]/90 backdrop-blur-md text-white px-6 py-3 rounded-2xl max-w-[90%] border border-[#E2DAC6]/30 shadow-xl">
+                    <p id="lightbox-caption" class="text-sm md:text-base font-brand tracking-wide font-medium"></p>
+                    <p id="lightbox-counter" class="text-xs text-[#E65C19] mt-1 font-sans uppercase tracking-widest font-bold"></p>
                 </div>
             </div>
         </div>
 
         <button onclick="changeLightboxSlide(1)"
-            class="absolute right-2 md:right-8 text-white/70 hover:text-white hover:scale-110 transition-all p-2 z-50 bg-teal-500/80 hover:bg-teal-800/50 rounded-full">
-            <i data-lucide="chevron-right" width="40" height="40"></i>
+            class="absolute right-3 md:right-8 text-white/80 hover:text-white hover:scale-110 transition-all p-3 z-50 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md border border-white/10 shadow-lg" title="Siguiente">
+            <i data-lucide="chevron-right" width="32" height="32"></i>
         </button>
     </div>
-    <div class="fixed bottom-14 right-2 z-[1050] fab-container"
-        title="¿Buscas joyas? ¡Te chivamos los mejores sitios! 🤫">
+    <div class="fixed bottom-14 right-4 z-[1050] fab-container"
+        title="¿Buscas recomendaciones? ¡Te chivamos los mejores sitios! 🤫">
         <button type="button"
-            class="group w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-darkTeal hover:scale-110 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-secondary/50"
+            class="group w-14 h-14 bg-[#E65C19] text-white rounded-full shadow-xl hover:bg-[#0F2A3F] hover:scale-110 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-[#E65C19]/50 border-2 border-white/30"
             data-bs-toggle="popover" data-bs-placement="top" data-bs-offset="-125, 15"
             data-bs-custom-class="custom-popover" data-bs-html="true"
-            data-bs-title="<div class='flex items-center gap-2'><svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='16' x2='12' y2='12'></line><line x1='12' y1='8' x2='12.01' y2='8'></line></svg> <span class='font-bold'>Aviso Importante</span></div>"
-            data-bs-content="<div class='text-sm text-slate-700 mb-3'>Usamos la magia de <b>NotebookLM</b> para darte recomendaciones <b>brutales</b>.<br><br>Necesitas tu cuenta de <b>Google</b> para entrar al paraíso foodie.<br><br></div><a href='https://notebooklm.google.com/notebook/6b38dfab-ba8b-449f-a4f3-48154aaa29e4' target='_blank' rel='noopener noreferrer' class='inline-block px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-darkTeal transition-colors shadow-md text-decoration-none'>¡Al lío! Ir al Chat 🚀</a>">
+            data-bs-title="<div class='flex items-center gap-2'><svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='16' x2='12' y2='12'></line><line x1='12' y1='8' x2='12.01' y2='8'></line></svg> <span class='font-bold'>Recomendador de ComoVisito</span></div>"
+            data-bs-content="<div class='text-sm text-[#0F2A3F] mb-3'>Usamos la magia de <b>Gemini Notebook</b> para darte recomendaciones gastronómicas <b>únicas</b>.<br><br>Necesitas tu cuenta de <b>Google</b>.<br><br></div><a href='https://notebooklm.google.com/notebook/6b38dfab-ba8b-449f-a4f3-48154aaa29e4' target='_blank' rel='noopener noreferrer' class='inline-block px-4 py-2 bg-[#0F2A3F] text-white text-sm font-bold rounded-xl hover:bg-[#E65C19] transition-colors shadow-md text-decoration-none'>¡Ir al Chat! 🚀</a>">
 
             <!-- Icono del Botón -->
             <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 fill-current group-hover:animate-pulse"
@@ -1467,7 +1731,7 @@
                 <path d="M0 0h24v24H0V0z" fill="none" />
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
             </svg>
-            <span class="sr-only">Habla con tu Colega del Tapeo</span>
+            <span class="sr-only">Recomendaciones de ComoVisito</span>
         </button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
