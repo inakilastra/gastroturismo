@@ -1747,21 +1747,6 @@
                 map.invalidateSize();
             }, 200);
         }
-                        </div>
-                    `;
-
-                    marker.bindPopup(popupContent);
-                }
-            });
-
-            if (bounds.length > 1) {
-                map.fitBounds(bounds, { padding: [40, 40] });
-            }
-
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 200);
-        }
 
         // --- INICIAR ---
         document.addEventListener('DOMContentLoaded', loadData);
