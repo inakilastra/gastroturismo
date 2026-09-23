@@ -1124,10 +1124,10 @@
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
                 if (diff >= 1) {
-                    return `<svg class="w-5 h-5 text-[#BA2B2B] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    return `<svg class="w-5 h-5 text-[#E65C19] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
                 } else if (diff >= 0.5) {
                     const gradId = `grad-${Math.random().toString(36).substr(2, 9)}`;
-                    return `<svg class="w-5 h-5 text-[#BA2B2B]" viewBox="0 0 24 24">
+                    return `<svg class="w-5 h-5 text-[#E65C19]" viewBox="0 0 24 24">
                         <defs>
                             <linearGradient id="${gradId}">
                                 <stop offset="50%" stop-color="currentColor"/>
@@ -1190,10 +1190,10 @@
             const starHtml = Array(5).fill(0).map((_, i) => {
                 const diff = rating - i;
                 if (diff >= 1) {
-                    return `<svg class="w-10 h-10 text-[#BA2B2B] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    return `<svg class="w-10 h-10 text-[#E65C19] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
                 } else if (diff >= 0.5) {
                     const gradId = `grad-detail-${Math.random().toString(36).substr(2, 9)}`;
-                    return `<svg class="w-10 h-10 text-[#BA2B2B]" viewBox="0 0 24 24">
+                    return `<svg class="w-10 h-10 text-[#E65C19]" viewBox="0 0 24 24">
                         <defs>
                             <linearGradient id="${gradId}">
                                 <stop offset="50%" stop-color="currentColor"/>
@@ -1216,6 +1216,8 @@
             const eventosGallery = eventosRelacionados.flatMap(evt => evt.gallery.slice(1));
             const eventosPuntualesGallery = eventosPuntualesRelacionados.flatMap(evt => evt.gallery.slice(1));
             item.eventGallery = [...eventosGallery, ...eventosPuntualesGallery];
+
+            const mapLink = item.links.maps || (item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name + ', ' + item.address)}` : (item.ciudad ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name + ' ' + item.ciudad)}` : ''));
 
             return `
                 <div class="bg-[#F3EFE0] min-h-full fixed inset-0 z-[60] md:absolute md:z-20 md:inset-0 overflow-y-auto animate-fadeIn pb-32">
@@ -1256,7 +1258,7 @@
                                             <h3 class="text-lg font-brand font-black text-[#0F2A3F] mb-4 pl-4 border-l-4 border-[#E65C19]">Nuestra Valoración</h3>
                                         </div>
                                         <div class="flex items-center space-x-4">
-                                            <span class="flex items-center justify-center w-16 h-16 bg-[#BA2B2B] text-white rounded-2xl text-3xl font-brand font-black shadow-md">${item.rating.toString().replace('.', ',')}</span>
+                                            <span class="flex items-center justify-center w-16 h-16 bg-[#E65C19] text-white rounded-2xl text-3xl font-brand font-black shadow-md">${item.rating.toString().replace('.', ',')}</span>
                                             <div class="flex">${starHtml}</div>
                                         </div>
                                         <div class="mt-1">
@@ -1325,7 +1327,9 @@
                                                 ? `<img src="${destinoData.image}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-teal-100 shadow-sm">`
                                                 : `<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 border-2 border-teal-200 shadow-sm"><i data-lucide="map-pin" width="20"></i></div>`;
                                             
-                                            const mapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(item.name + ' ' + (item.ciudad || ''))}&destination=${encodeURIComponent(loc.destino + ' ' + (destinoData?.ciudad || ''))}`;
+                                            const originDirAddr = item.address ? `${item.name}, ${item.address}` : `${item.name} ${item.ciudad || ''}`;
+                                            const destDirAddr = (destinoData && destinoData.address) ? `${loc.destino}, ${destinoData.address}` : `${loc.destino} ${destinoData?.ciudad || ''}`;
+                                            const mapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originDirAddr)}&destination=${encodeURIComponent(destDirAddr)}`;
                                             const clickAttr = destinoData ? `onclick="document.getElementById('dist-info-${idx}').classList.toggle('hidden'); document.getElementById('dist-icon-${idx}').classList.toggle('rotate-90');"` : '';
                                             
                                             return `
@@ -1394,10 +1398,10 @@
                                         <p class="text-sm font-bold text-[#0F2A3F] mt-1">${item.address}</p>
                                     </div>` : ''}
 
-                                    ${(item.links.maps || item.links.web || item.links.instagram || item.links.facebook) ? `
+                                    ${(mapLink || item.links.web || item.links.instagram || item.links.facebook) ? `
                                         <div class="flex flex-col gap-2.5">
                                             ${item.links.reviews ? `<a href="${item.links.reviews}" target="_blank" class="w-full text-center bg-[#BA2B2B] text-white hover:bg-[#0F2A3F] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="star"></i> Reseñas Google</a>` : ''}
-                                            ${item.links.maps ? `<a href="${item.links.maps}" target="_blank" class="w-full text-center bg-[#2F70B3] text-white hover:bg-[#0F2A3F] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="map-pin"></i> Ver en Mapa</a>` : ''}
+                                            ${mapLink ? `<a href="${mapLink}" target="_blank" class="w-full text-center bg-[#2F70B3] text-white hover:bg-[#0F2A3F] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="map-pin"></i> Ver en Mapa</a>` : ''}
                                             ${item.links.web ? `<a href="${item.links.web}" target="_blank" class="w-full text-center bg-[#0F2A3F] text-white hover:bg-[#E65C19] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="globe"></i> Sitio Web</a>` : ''}
                                             ${item.links.instagram ? `<a href="${item.links.instagram}" target="_blank" class="w-full text-center bg-[#E65C19] text-white hover:bg-[#BA2B2B] py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="instagram"></i> Instagram</a>` : ''}
                                             ${item.links.facebook ? `<a href="${item.links.facebook}" target="_blank" class="w-full text-center bg-[#2F70B3]/20 text-[#0F2A3F] hover:bg-[#2F70B3] hover:text-white py-3 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-sm text-sm"><i data-lucide="facebook"></i> Facebook</a>` : ''}
@@ -1591,7 +1595,9 @@
             if (footerEl) {
                 footerEl.innerHTML = distances.map((loc) => {
                     const destData = DATA.find(d => d.name === loc.destino);
-                    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(state.selectedItem.name + ' ' + (state.selectedItem.ciudad || ''))}&destination=${encodeURIComponent(loc.destino + ' ' + (destData?.ciudad || ''))}`;
+                    const originDirAddr = state.selectedItem.address ? `${state.selectedItem.name}, ${state.selectedItem.address}` : `${state.selectedItem.name} ${state.selectedItem.ciudad || ''}`;
+                    const destDirAddr = (destData && destData.address) ? `${loc.destino}, ${destData.address}` : `${loc.destino} ${destData?.ciudad || ''}`;
+                    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originDirAddr)}&destination=${encodeURIComponent(destDirAddr)}`;
                     return `
                         <div class="flex-shrink-0 bg-white border border-slate-200 p-2.5 rounded-2xl shadow-sm flex items-center gap-3 min-w-[250px] max-w-[280px]">
                             ${destData && destData.image ? `<img src="${destData.image}" class="w-12 h-12 rounded-xl object-cover border border-slate-100 shadow-xs">` : `<div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">🍷</div>`}
@@ -1719,7 +1725,9 @@
                     const marker = L.marker(destCoords, { icon: destIcon }).addTo(map);
                     window.fullscreenDistMarkers[loc.destino] = marker;
 
-                    const mapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originItem.name + ' ' + (originItem.ciudad || ''))}&destination=${encodeURIComponent(loc.destino + ' ' + (destinoData?.ciudad || ''))}`;
+                    const originDirAddr = originItem.address ? `${originItem.name}, ${originItem.address}` : `${originItem.name} ${originItem.ciudad || ''}`;
+                    const destDirAddr = (destinoData && destinoData.address) ? `${loc.destino}, ${destinoData.address}` : `${loc.destino} ${destinoData?.ciudad || ''}`;
+                    const mapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originDirAddr)}&destination=${encodeURIComponent(destDirAddr)}`;
 
                     const popupContent = `
                         <div class="w-full flex flex-col font-sans box-border">
@@ -1812,6 +1820,23 @@
         function extractCoords(item) {
             if (!item) return null;
             if (item.lat && item.lng) return [parseFloat(item.lat), parseFloat(item.lng)];
+
+            const normName = (item.name || '').trim().toLowerCase();
+            const normAddr = (item.address || '').trim().toLowerCase();
+
+            // Ubicaciones de alta precisión en El Tubo / Zaragoza
+            if (normName.includes('taberna amy') || normAddr.includes('cinegio, 1') || normAddr.includes('cinegio 1')) {
+                return [41.65271, -0.87980];
+            }
+            if (normName.includes('mestiso') || normAddr.includes('cinegio, 2') || normAddr.includes('cinegio 2')) {
+                return [41.6526842, -0.8798464];
+            }
+            if (normName.includes('limpia') || normAddr.includes('cuatro de agosto, 17') || normAddr.includes('cuatro de agosto 17')) {
+                return [41.6529792, -0.8804323];
+            }
+            if (normName.includes('delfina') || normAddr.includes('cuatro de agosto, 18') || normAddr.includes('cuatro de agosto 18')) {
+                return [41.6529345, -0.8804595];
+            }
             
             const url = item.links ? item.links.maps : null;
             if (url) {
@@ -1836,10 +1861,11 @@
             }
 
             const refText = `${item.pueblo || ''} ${item.ciudad || ''} ${item.provincia || ''} ${item.address || ''} ${item.name || ''}`.toLowerCase();
+            if (refText.includes('el tubo')) return [41.6528, -0.8801];
             if (refText.includes('ávila') || refText.includes('avila')) return [40.6565, -4.6818];
             if (refText.includes('león') || refText.includes('leon')) return [42.5987, -5.5671];
             if (refText.includes('basauri') || refText.includes('bilbao') || refText.includes('bizkaia')) return [43.235, -2.890];
-            if (refText.includes('zaragoza')) return [41.656, -0.877];
+            if (refText.includes('zaragoza')) return [41.6528, -0.8801];
             if (refText.includes('madrid')) return [40.4168, -3.7038];
 
             return null;
@@ -1932,7 +1958,9 @@
                     const marker = L.marker(destCoords, { icon: destIcon }).addTo(map);
                     window.currentDistMarkers[loc.destino] = marker;
 
-                    const mapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originItem.name + ' ' + (originItem.ciudad || ''))}&destination=${encodeURIComponent(loc.destino + ' ' + (destinoData?.ciudad || ''))}`;
+                    const originDirAddr = originItem.address ? `${originItem.name}, ${originItem.address}` : `${originItem.name} ${originItem.ciudad || ''}`;
+                    const destDirAddr = (destinoData && destinoData.address) ? `${loc.destino}, ${destinoData.address}` : `${loc.destino} ${destinoData?.ciudad || ''}`;
+                    const mapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originDirAddr)}&destination=${encodeURIComponent(destDirAddr)}`;
 
                     const popupContent = `
                         <div class="w-full flex flex-col font-sans box-border">
